@@ -5,20 +5,20 @@ import { CheckCircle } from "lucide-react";
 
 const stats = [
   {
-    value: "100% Conforme",
-    label: "Répond aux exigences de l'Article 4",
+    value: "Dossier de preuve Art. 4",
+    label: "Attestations de suivi et registre des usages",
   },
   {
-    value: "Conçu par des experts",
-    label: "Contenus certifiés RS6776 & RS6601",
+    value: "RS6776 & RS6601",
+    label: "Parcours alignés, avec nos partenaires certificateurs",
   },
   {
-    value: "Attestation à valeur légale",
-    label: "Nominative, générée automatiquement",
+    value: "Attestation de suivi",
+    label: "Nominative et horodatée",
   },
   {
-    value: "Tableau de bord RH",
-    label: "Suivi en temps réel & export en 1 clic",
+    value: "Registre pour le DPO",
+    label: "Traçabilité des mesures et des usages couverts",
   },
   {
     value: "Prise en main immédiate",

@@ -6,44 +6,44 @@ import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
-    question: "L'Article 4 de l'AI Act est-il vraiment obligatoire pour mon entreprise ?",
+    question: "L'article 4 de l'AI Act s'applique-t-il à mon entreprise ?",
     answer:
-      "Oui. L'Article 4 du Règlement (UE) 2024/1689 (EU AI Act) impose à tous les déployeurs et fournisseurs de systèmes d'IA de s'assurer que leur personnel dispose d'un niveau suffisant de littératie en matière d'IA. Cette obligation est entrée en vigueur le 2 août 2025 et s'applique à toutes les entreprises établies ou opérant dans l'Union Européenne, quelle que soit leur taille.",
+      "Oui, si vos équipes utilisent une IA pour le compte de l'entreprise. Depuis le 2 février 2025, vous devez prendre des mesures pour développer leur maîtrise. Aucun niveau individuel n'est exigé. Les contrôles commencent le 2 août 2026.",
   },
   {
-    question: "Que risque mon entreprise en cas de contrôle sans attestations de formation ?",
+    question: "Que se passe-t-il si aucune mesure n'est documentée ?",
     answer:
-      "En l'absence de preuves documentées de formation, votre entreprise s'expose à des sanctions administratives pouvant atteindre 7% du chiffre d'affaires mondial annuel pour les violations les plus graves. Même pour les infractions mineures, des amendes de plusieurs dizaines de milliers d'euros sont prévues. La conservation des attestations nominatives horodatées constitue votre meilleure défense lors d'un audit.",
+      "L'article 4 demande des mesures, pas un score à atteindre. Ce site n'affiche aucun montant d'amende : cela se vérifie avec un avocat. Le registre et les attestations montrent ce que vous avez mis en place.",
   },
   {
     question: "Combien de temps dure la formation pour mes salariés ?",
     answer:
-      "Le parcours complet (AI Act + RGPD) est conçu pour être finalisé en 2 heures maximum. Il est découpé en micro-modules de 10 à 15 minutes chacun, que vos collaborateurs peuvent répartir sur plusieurs sessions. Il n'y a aucune contrainte de connexion simultanée ni de durée minimale par session.",
+      "Deux heures au plus, en modules de 10 à 15 minutes. Chacun avance quand il veut.",
   },
   {
-    question: "Les attestations générées ont-elles une vraie valeur légale ?",
+    question: "L'attestation de suivi vaut-elle diplôme ou certification officielle ?",
     answer:
-      "Oui. Chaque attestation est nominative, horodatée et générée avec un identifiant unique vérifiable. Elles sont conformes aux exigences de preuve documentaire posées par l'Article 4 de l'AI Act. L'archivage est assuré pendant 5 ans sur nos serveurs (hébergés en France, conformément au RGPD).",
+      "Non. C'est une attestation au nom du salarié, avec la date et un identifiant. Elle reste dans le dossier de l'entreprise pendant le contrat, puis 12 mois après. Ce n'est pas un diplôme.",
   },
   {
     question: "Comment vous assurez-vous que les salariés ne trichent pas lors des évaluations ?",
     answer:
-      "Notre plateforme intègre des contrôles anti-triche natifs : désactivation du copier-coller, quiz chronométrés, cas pratiques sous forme de scénarios visuels et détection d'inactivité. Nous garantissons aux RH et aux auditeurs la validité juridique absolue des attestations délivrées.",
+      "Le copier-coller est limité, les quiz sont chronométrés et l'inactivité est détectée. Cela rend le suivi plus fiable. Cela ne suffit pas, à soi seul, à lui donner une valeur juridique.",
   },
   {
-    question: "Doit-on former tous les salariés, même ceux qui n'utilisent pas l'IA ?",
+    question: "Faut-il former tous les salariés, même ceux qui n'utilisent pas l'IA ?",
     answer:
-      "L'Article 4 vise les entreprises qui déploient des systèmes d'IA — ce qui inclut l'utilisation d'outils comme ChatGPT, Copilot, ou tout assistant IA dans le cadre professionnel. Nous recommandons de former l'ensemble du personnel pour une couverture juridique complète.",
+      "Non. Il vise les personnes qui utilisent l'IA pour l'entreprise. Formez-les en priorité, et notez-le dans le registre.",
   },
   {
     question: "Puis-je gérer la formation en interne sans ConformAI ?",
     answer:
-      "Techniquement oui, mais cela implique de concevoir un contenu pédagogique à jour sur l'AI Act et le RGPD, mettre en place un système de quiz et de validation, générer des attestations légalement valides, et maintenir un registre de suivi RH. En pratique, cela représente plusieurs semaines de travail. ConformAI vous délègue l'intégralité de cette charge pour quelques centaines d'euros par an.",
+      "Oui. Il faut alors le contenu, les attestations et le registre. ConformAI réunit les trois.",
   },
   {
     question: "Mes données et celles de mes salariés sont-elles sécurisées ?",
     answer:
-      "Absolument. ConformAI est hébergé sur des serveurs localisés en France (OVHcloud). Nous ne transférons aucune donnée hors de l'UE. Les données des apprenants sont chiffrées au repos et en transit. Vous disposez d'un registre de traitement complet et pouvez exercer vos droits depuis votre tableau de bord administrateur.",
+      "Oui. Hébergement en France, données chiffrées, aucun transfert hors de l'Union européenne.",
   },
 ];
 
@@ -73,7 +73,7 @@ function FAQItem({ faq, isOpen, onToggle, index }: FAQItemProps) {
         aria-expanded={isOpen}
       >
         <span
-          className={`text-sm sm:text-base font-semibold leading-snug text-justify hyphens-auto transition-colors duration-200 ${
+          className={`text-sm sm:text-base font-semibold leading-snug transition-colors duration-200 ${
             isOpen
               ? "text-blue-700 dark:text-blue-400"
               : "text-slate-900 dark:text-slate-100 group-hover:text-slate-900 dark:group-hover:text-white"

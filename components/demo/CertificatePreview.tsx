@@ -3,10 +3,19 @@
 import { X } from "lucide-react";
 import type { Employee } from "./data";
 
-const proofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
+const demoProofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
   "2": { score: 94, date: "28/09/2026", time: "16:42", serial: "M4K2L" },
   "3": { score: 88, date: "22/09/2026", time: "11:05", serial: "B7N3Q" },
   "5": { score: 97, date: "29/09/2026", time: "09:18", serial: "L2P8C" },
+};
+
+export type CertificateProof = {
+  score: number;
+  date: string;
+  time: string;
+  serial: string;
+  certificateId?: string;
+  specimen?: boolean;
 };
 
 function FakeQr() {
@@ -36,16 +45,31 @@ function FakeQr() {
 export default function CertificatePreview({
   employee,
   onClose,
+  companyName = "Atelier Lumière",
+  proof: proofProp,
 }: {
   employee: Employee;
   onClose: () => void;
+  companyName?: string;
+  proof?: CertificateProof;
 }) {
   const [first, ...rest] = employee.name.split(" ");
   const last = rest.join(" ");
-  const proof = proofs[employee.id] ?? { score: 90, date: employee.lastSeen, time: "10:00", serial: "X0000" };
-  const certificateId = `CONF-2026-${proof.serial}`;
+  const demo = demoProofs[employee.id] ?? {
+    score: employee.quizScore ?? 90,
+    date: employee.lastSeen,
+    time: "10:00",
+    serial: "X0000",
+  };
+  const proof: CertificateProof = proofProp ?? {
+    ...demo,
+    certificateId: employee.certificateId ?? `CONF-2026-${demo.serial}`,
+    specimen: !employee.certificateId,
+  };
+  const certificateId = proof.certificateId ?? `CONF-2026-${proof.serial}`;
   const hash = `a9f3c1${proof.serial.toLowerCase()}8e42b7d0`;
   const issuedAt = `${proof.date} à ${proof.time} (Europe/Paris)`;
+  const specimen = proof.specimen ?? !Boolean(employee.certificateId);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/60 px-4 py-8" onClick={onClose}>
@@ -71,8 +95,8 @@ export default function CertificatePreview({
             <p className="text-center text-sm text-slate-600">Intelligence artificielle — EU AI Act &amp; RGPD</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
               <span>Attestation n° {certificateId}</span>
-              <span>Version 1.0</span>
-              <span className="text-amber-700 font-semibold">Spécimen de démonstration</span>
+              <span>Version CDC V2.6</span>
+              {specimen && <span className="text-amber-700 font-semibold">Spécimen de démonstration</span>}
             </div>
           </header>
 
@@ -89,7 +113,7 @@ export default function CertificatePreview({
               </div>
               <div>
                 <div className="text-xs text-slate-500">Entreprise</div>
-                <div className="font-semibold">Atelier Lumière</div>
+                <div className="font-semibold">{employee.companyName ?? companyName}</div>
               </div>
             </div>
           </section>
@@ -123,7 +147,7 @@ export default function CertificatePreview({
             <table className="w-full text-sm text-left border border-slate-200">
               <tbody>
                 {[
-                  ["Durée pédagogique prévue", "1 h 30"],
+                  ["Durée pédagogique prévue", "≈ 1 h"],
                   ["Parcours complété", "100 %"],
                   ["Évaluation finale", `${proof.score} / 100`],
                   ["Seuil de réussite", "80 / 100"],
@@ -162,11 +186,7 @@ export default function CertificatePreview({
                 </div>
                 <div>
                   <div className="text-xs text-slate-500">Version du parcours</div>
-                  <div>2026.1</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500">Vérification</div>
-                  <div className="font-mono text-xs">conformai.fr/verifier/{certificateId}</div>
+                  <div>CDC V2.6</div>
                 </div>
               </div>
               <FakeQr />
@@ -176,7 +196,9 @@ export default function CertificatePreview({
           <footer className="border-t border-slate-200 pt-6 space-y-3 text-sm">
             <div>
               <div className="font-semibold">ConformAI</div>
-              <div className="text-slate-600">Émetteur — spécimen de démonstration</div>
+              <div className="text-slate-600">
+                {specimen ? "Émetteur — spécimen de démonstration" : "Émetteur — attestation de suivi"}
+              </div>
             </div>
             <p className="text-left text-xs text-slate-500 leading-relaxed">
               Cette attestation documente le suivi et la validation du parcours indiqué ci-dessus. Elle ne constitue pas, à elle seule, une certification professionnelle ou une certification de conformité réglementaire de l&apos;entreprise.

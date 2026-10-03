@@ -6,44 +6,40 @@ import { Award, Check, Download } from "lucide-react";
 const features = [
   {
     number: "01",
-    title: "Formations courtes adaptées aux rythmes de vos équipes",
-    subtitle: "Format ultra-court",
+    title: "Des formations courtes",
+    subtitle: "Sans bloquer la journée",
     description:
-      "Vos salariés se forment en autonomie sans interrompre leur journée. Des contenus pratiques sur l'IA et le RGPD, conçus pour une assimilation rapide et immédiate.",
+      "Vos équipes avancent seules, en modules courts, sur l'IA et le RGPD.",
     points: [
-      "Parcours personnalisés par profil métier",
-      "Mises à jour réglementaires automatiques",
-      "Accessible sur mobile, tablette et ordinateur",
-      "Déploiement instantané sans installation",
+      "Un parcours selon le métier",
+      "Sur mobile, tablette ou ordinateur",
+      "Rien à installer",
     ],
     preview: "course" as const,
   },
   {
     number: "02",
-    title: "Attestations nominatives et preuves inaltérables",
-    subtitle: "Valeur juridique",
+    title: "Une attestation, un dossier",
+    subtitle: "Article 4",
     description:
-      "Chaque module validé génère automatiquement une attestation officielle horodatée. Vous disposez d'un dossier de preuve complet et irréprochable en cas d'audit ou de contrôle.",
+      "Chaque parcours validé produit une attestation nominative. Le dossier indique qui a suivi quoi, et quand.",
     points: [
-      "Attestation PDF individuelle générée dès réussite",
-      "Horodatage sécurisé et archivage légal (5 ans)",
-      "Notification automatique envoyée au salarié",
-      "Traçabilité 100% conforme aux exigences de l'Article 4",
-      "Système anti-triche : parcours sécurisé et évaluation anti-IA",
+      "PDF dès la validation",
+      "Conservée pendant le contrat, puis 12 mois",
+      "Visible par la direction et le DPO",
     ],
     preview: "diploma" as const,
   },
   {
     number: "03",
-    title: "Pilotez la conformité de toute l'entreprise en 1 clic",
-    subtitle: "Pilotage global",
+    title: "Un registre pour le DPO",
+    subtitle: "Gouvernance",
     description:
-      "Suivez la progression globale par équipe ou filiale. Relancez les retardataires en un clic et exportez votre registre de conformité en quelques secondes.",
+      "Avancement, usages couverts et relances au même endroit. Y compris les outils utilisés hors charte.",
     points: [
-      "Suivi en temps réel de l'avancement par département",
-      "Relances automatiques pour les salariés en retard",
-      "Export immédiat des rapports de conformité (PDF & CSV)",
-      "Gestion multi-administrateurs et accès DPO dédiés",
+      "Suivi par équipe",
+      "Relances automatiques",
+      "Export PDF et CSV",
     ],
     preview: "admin" as const,
   },
@@ -72,7 +68,7 @@ function CoursePreview() {
     { label: "RGPD", state: "current" },
     { label: "Usages", state: "todo" },
     { label: "Quiz", state: "todo" },
-    { label: "Diplôme", state: "diploma" },
+    { label: "Preuve", state: "diploma" },
   ];
 
   return (
@@ -150,13 +146,13 @@ function DiplomaPreview() {
         </div>
 
         <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">
-          Preuve de conformité
+          Dossier de preuve Article 4
         </p>
-        <h3 className="mt-2 max-w-[14rem] text-xl font-bold leading-snug text-slate-900 dark:text-white">
-          Une attestation qui protège vraiment
+        <h3 className="mt-2 max-w-[16rem] text-xl font-bold leading-snug text-slate-900 dark:text-white">
+          Une attestation de suivi nominative
         </h3>
         <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-          Horodatée, nominative, prête pour l&apos;audit — générée automatiquement.
+          Horodatée, versée au registre.
         </p>
 
         <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
@@ -175,7 +171,7 @@ function AdminPreview() {
       <div className="mt-3 grid grid-cols-3 gap-2">
         {[
           ["2/6", "Formés"],
-          ["33 %", "Conformité"],
+          ["33 %", "Suivi"],
           ["90 j", "Échéance"],
         ].map(([value, label]) => (
           <div key={label} className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-center dark:border-slate-700 dark:bg-slate-800">
@@ -223,11 +219,11 @@ export default function FeaturesSection() {
           className="text-center mb-20 space-y-4"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white hyphens-none">
-            La conformité AI Act &amp; RGPD, entièrement{" "}
-            <span className="text-blue-600 dark:text-blue-400">automatisée</span>
+            Former, attester,{" "}
+            <span className="text-blue-600 dark:text-blue-400">exporter</span>
           </h2>
           <p className="text-center text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-none">
-            Formez vos collaborateurs, collectez les preuves légales et suivez l&apos;avancement RH depuis une plateforme unique.
+            Trois fonctions. Un seul dossier pour la direction et le DPO.
           </p>
         </motion.div>
 

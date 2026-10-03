@@ -10,7 +10,6 @@ const legal = [
 const conformity = [
   { label: "AI Act", href: "#" },
   { label: "RGPD", href: "#" },
-  { label: "RS6776 & RS6601", href: "#" },
 ];
 
 function LinkLine({
@@ -59,6 +58,13 @@ export default function Footer() {
         <div className="mt-3 text-center text-xs text-slate-500">
           © {new Date().getFullYear()} ConformAI — Hébergé en France
         </div>
+        <p className="mt-2 text-center text-xs text-slate-400">
+          Prise en charge OPCO possible via un organisme de formation partenaire Qualiopi, selon éligibilité.
+        </p>
+        <p className="mx-auto mt-3 max-w-3xl text-center text-[11px] leading-relaxed text-slate-500">
+          Outils d&apos;aide à la conformité, pas un conseil juridique. L&apos;attestation
+          documente vos mesures au titre de l&apos;article 4. Elle ne certifie pas l&apos;entreprise.
+        </p>
       </div>
     </footer>
   );

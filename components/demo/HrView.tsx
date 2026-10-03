@@ -1,12 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { Award, ArrowDown, ArrowUp, ArrowUpDown, Download, Eye, Info, Lock, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Award, ArrowDown, ArrowUp, ArrowUpDown, Check, Copy, Download, Info, Trash2 } from "lucide-react";
 import { employees, type Employee } from "./data";
 import CertificatePreview from "./CertificatePreview";
 import CompanyCertificate from "./CompanyCertificate";
+import { formatProofDate } from "@/lib/formation/proof";
 
 type SortKey = "name" | "email" | "percent" | "lastSeen";
+
+function exportProofCsv(rows: Employee[], companyName: string) {
+  const header = [
+    "Nom",
+    "Email",
+    "Fonction",
+    "Avancement %",
+    "N° attestation",
+    "Date émission",
+    "Score QCM",
+    "Entreprise",
+  ];
+  const lines = rows.map((e) =>
+    [
+      e.name,
+      e.email,
+      e.role,
+      String(e.percent),
+      e.certificateId ?? "",
+      e.certifiedAt ? formatProofDate(e.certifiedAt).date : "",
+      e.quizScore != null ? String(e.quizScore) : "",
+      companyName,
+    ]
+      .map((cell) => `"${String(cell).replaceAll('"', '""')}"`)
+      .join(";"),
+  );
+  const csv = `\uFEFF${[header.join(";"), ...lines].join("\n")}`;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `dossier-preuve-article4-${companyName.replace(/\s+/g, "-").toLowerCase()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 function dateValue(value: string) {
   const [day, month, year] = value.split("/").map(Number);
@@ -31,77 +67,63 @@ function SortHeader({
       <button
         type="button"
         onClick={onClick}
-        className={`inline-flex items-center gap-1 ${active ? "text-blue-700 dark:text-blue-300" : "hover:text-slate-800 dark:hover:text-slate-200"}`}
+        className="inline-flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white"
       >
         {label}
-        <Icon className="h-3.5 w-3.5" />
+        <Icon className="h-3.5 w-3.5 opacity-60" />
       </button>
     </th>
   );
 }
 
-function ProgressBar({ value, onDownload }: { value: number; onDownload?: () => void }) {
-  const color =
-    value >= 100
-      ? "bg-lime-400"
-      : value >= 80
-        ? "bg-emerald-500"
-        : value > 20
-          ? "bg-yellow-400"
-          : value > 0
-            ? "bg-orange-500"
-            : "bg-red-500";
-
+function ProgressBar({
+  value,
+  onDownload,
+}: {
+  value: number;
+  onDownload?: () => void;
+}) {
   return (
-    <div className="mx-auto flex w-[7.5rem] items-center" aria-label={`${value} %`}>
-      <div
-        className={`h-1.5 w-16 shrink-0 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden ${
-          value >= 100 ? "shadow-[0_0_10px_rgba(163,230,53,0.95)]" : ""
-        }`}
-      >
+    <div className="flex items-center justify-center gap-2">
+      <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
         <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: value === 0 ? "8px" : `${value}%` }}
+          className="h-full rounded-full bg-blue-600 transition-all"
+          style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
         />
       </div>
-      <span className="w-9 shrink-0 text-right text-xs font-semibold tabular-nums text-slate-900 dark:text-white">
-        {value}%
-      </span>
-      <span className="ml-1.5 flex w-3.5 shrink-0 justify-center">
-        {onDownload && (
-          <button
-            type="button"
-            onClick={onDownload}
-            aria-label="Télécharger l'attestation"
-            className="inline-flex text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            <Download className="w-3.5 h-3.5" />
-          </button>
-        )}
-      </span>
+      <span className="w-10 text-xs tabular-nums text-slate-600 dark:text-slate-300">{value}%</span>
+      {onDownload && (
+        <button
+          type="button"
+          onClick={onDownload}
+          aria-label="Voir l'attestation"
+          className="inline-flex text-blue-600 hover:text-blue-700 dark:text-blue-400"
+        >
+          <Download className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
 
 function NameWithService({ name, role }: { name: string; role: string }) {
-  const [first, ...rest] = name.split(" ");
-  const last = rest.join(" ");
   const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+  const parts = name.trim().split(/\s+/);
+  const first = parts[0] ?? name;
+  const last = parts.slice(1).join(" ");
 
   return (
     <>
       <span
-        className="cursor-default border-b border-dotted border-slate-300 dark:border-slate-500"
-        onMouseEnter={(event) => {
-          const rect = event.currentTarget.getBoundingClientRect();
-          setTip({ x: rect.left + rect.width / 2, y: rect.bottom + 6 });
-        }}
+        className="cursor-default"
+        onMouseEnter={(event) => setTip({ x: event.clientX, y: event.clientY + 16 })}
+        onMouseMove={(event) => setTip({ x: event.clientX, y: event.clientY + 16 })}
         onMouseLeave={() => setTip(null)}
       >
         {first}
       </span>
       {last ? ` ${last}` : null}
-      {tip && (
+      {tip && role.trim() && (
         <span
           className="fixed z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs font-medium text-white shadow-lg"
           style={{ left: tip.x, top: tip.y }}
@@ -113,16 +135,28 @@ function NameWithService({ name, role }: { name: string; role: string }) {
   );
 }
 
-export default function HrView() {
-  const [roster, setRoster] = useState<Employee[]>(employees);
+export default function HrView({
+  initialEmployees = employees,
+  companyName = "Atelier Lumière",
+  structureInviteLink,
+}: {
+  initialEmployees?: Employee[];
+  companyName?: string;
+  structureId?: string;
+  structureInviteLink?: string | null;
+  seatsMax?: number;
+}) {
+  const [roster, setRoster] = useState<Employee[]>(initialEmployees);
   const [preview, setPreview] = useState<string | null>(null);
   const [archivedIds, setArchivedIds] = useState<string[]>([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [draftName, setDraftName] = useState("");
-  const [draftEmail, setDraftEmail] = useState("");
+  const [copiedPermanent, setCopiedPermanent] = useState(false);
   const [query, setQuery] = useState("");
   const [showCompany, setShowCompany] = useState(false);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "name", dir: "asc" });
+
+  useEffect(() => {
+    setRoster(initialEmployees);
+  }, [initialEmployees]);
 
   const active = roster.filter((employee) => !archivedIds.includes(employee.id));
   const archived = roster.filter((employee) => archivedIds.includes(employee.id));
@@ -153,27 +187,19 @@ export default function HrView() {
     );
   }
 
-  function addCollaborator() {
-    const name = draftName.trim();
-    const email = draftEmail.trim();
-    if (!name || !email) return;
-    setRoster((current) => [
-      ...current,
-      {
-        id: crypto.randomUUID(),
-        name,
-        email,
-        role: "À préciser",
-        path: "IA + RGPD",
-        status: "todo",
-        percent: 0,
-        lastSeen: "—",
-        dueDate: "15/10/2026",
-      },
-    ]);
-    setDraftName("");
-    setDraftEmail("");
-    setShowAdd(false);
+  const permanentLink = structureInviteLink || "/rejoindre/demo";
+
+  async function copyPermanentLink() {
+    const absolute = permanentLink.startsWith("http")
+      ? permanentLink
+      : `${window.location.origin}${permanentLink}`;
+    try {
+      await navigator.clipboard.writeText(absolute);
+      setCopiedPermanent(true);
+      window.setTimeout(() => setCopiedPermanent(false), 1800);
+    } catch {
+      /* ignore */
+    }
   }
 
   return (
@@ -183,18 +209,39 @@ export default function HrView() {
       {companyReady && (
         <div className="space-y-3">
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-            Félicitations. Votre entreprise est 100 % conforme à l&apos;article 4 de l&apos;AI Act et au RGPD. Votre registre est à jour.
+            Registre à jour : chaque collaborateur actif a une attestation de suivi. Ce document trace vos mesures ; il ne certifie pas l&apos;entreprise.
           </div>
-          <div className="flex items-center justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => setShowCompany(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-700"
             >
               <Award className="h-4 w-4" />
-              Certificat global de conformité 2026
+              Dossier de preuve Article 4
+            </button>
+            <button
+              type="button"
+              onClick={() => exportProofCsv(active, companyName)}
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50"
+            >
+              <Download className="h-4 w-4" />
+              Exporter le registre (CSV)
             </button>
           </div>
+        </div>
+      )}
+
+      {!companyReady && active.length > 0 && (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => exportProofCsv(active, companyName)}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          >
+            <Download className="h-4 w-4" />
+            Exporter le registre (CSV)
+          </button>
         </div>
       )}
 
@@ -205,52 +252,48 @@ export default function HrView() {
         </div>
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-5 text-center shadow-sm">
           <div className="text-2xl font-bold text-slate-900 dark:text-white">{rate} %</div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de conformité</div>
+          <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de suivi</div>
         </div>
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-5 text-center shadow-sm">
           <div className="text-2xl font-bold text-slate-900 dark:text-white">90 jours</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
         </div>
-        <div className="col-start-2 -mt-1 flex flex-col items-center gap-1">
+      </div>
+
+      <div className="mx-auto max-w-xl space-y-2 text-center">
+        <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
+          Lien d&apos;invitation (tous les collaborateurs)
+        </p>
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Un seul lien à partager : chacun s&apos;inscrit avec son e-mail et mot de passe.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 pt-0.5">
+          <span className="break-all text-center text-sm font-medium text-blue-600 dark:text-blue-400">
+            {permanentLink}
+          </span>
           <button
             type="button"
-            onClick={() => setShowCompany(true)}
-            aria-label="Voir l'aperçu du diplôme de conformité"
-            className="inline-flex text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+            onClick={() => void copyPermanentLink()}
+            className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
           >
-            <Eye className="h-4 w-4" />
+            {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copiedPermanent ? "Copié" : "Copier"}
           </button>
-          <p className="flex items-center justify-center gap-1 text-[11px] leading-tight text-slate-400">
-            {!companyReady && <Lock className="h-3 w-3 shrink-0" />}
-            Certificat d&apos;entreprise{!companyReady ? " (déblocage à 100 %)" : ""}
-          </p>
         </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden text-left">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white whitespace-nowrap">
-              Liste des collaborateurs ({visible.length})
-            </h2>
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Rechercher"
-              className="w-full sm:w-52 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-            />
-          </div>
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setShowAdd(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4" />
-              Ajouter
-            </button>
-          </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white whitespace-nowrap">
+            Liste des collaborateurs ({visible.length})
+          </h2>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Rechercher"
+            className="w-full sm:w-52 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+          />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
@@ -274,7 +317,13 @@ export default function HrView() {
                   <td className="px-4 py-3">
                     <ProgressBar
                       value={employee.percent}
-                      onDownload={employee.percent >= 100 ? () => setPreview(employee.id) : undefined}
+                      onDownload={
+                        employee.percent >= 100 && employee.certificateId
+                          ? () => setPreview(employee.id)
+                          : employee.percent >= 100
+                            ? () => setPreview(employee.id)
+                            : undefined
+                      }
                     />
                   </td>
                   <td className="relative px-4 py-3 text-slate-600 dark:text-slate-300 whitespace-nowrap">
@@ -315,56 +364,31 @@ export default function HrView() {
         </div>
       )}
 
-      {selected && <CertificatePreview employee={selected} onClose={() => setPreview(null)} />}
+      {selected && (
+        <CertificatePreview
+          employee={selected}
+          companyName={companyName}
+          proof={
+            selected.certificateId
+              ? {
+                  score: selected.quizScore ?? 80,
+                  ...formatProofDate(selected.certifiedAt ?? new Date().toISOString()),
+                  serial: selected.certificateId.replace(/^CONF-\d+-/, ""),
+                  certificateId: selected.certificateId,
+                  specimen: false,
+                }
+              : undefined
+          }
+          onClose={() => setPreview(null)}
+        />
+      )}
       {showCompany && (
         <CompanyCertificate
-          company="Atelier Lumière"
+          company={companyName}
           done={done}
           total={active.length}
           onClose={() => setShowCompany(false)}
         />
-      )}
-
-      {showAdd && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4" onClick={() => setShowAdd(false)}>
-          <form
-            className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-6 text-left shadow-xl space-y-4"
-            onClick={(event) => event.stopPropagation()}
-            onSubmit={(event) => {
-              event.preventDefault();
-              addCollaborator();
-            }}
-          >
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white text-center">Ajouter un collaborateur</h2>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              Nom et prénom
-              <input
-                value={draftName}
-                onChange={(event) => setDraftName(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2"
-                required
-              />
-            </label>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              E-mail
-              <input
-                type="email"
-                value={draftEmail}
-                onChange={(event) => setDraftEmail(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2"
-                required
-              />
-            </label>
-            <div className="flex justify-end gap-2">
-              <button type="button" onClick={() => setShowAdd(false)} className="px-3 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
-                Annuler
-              </button>
-              <button type="submit" className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700">
-                Ajouter
-              </button>
-            </div>
-          </form>
-        </div>
       )}
     </div>
   );

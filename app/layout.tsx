@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import Providers from "@/components/Providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ConformAI — Formation EU AI Act & RGPD pour les entreprises",
   description:
-    "La plateforme SaaS clé en main pour certifier vos salariés, respecter l'AI Act Article 4 et suivre la conformité RH sans effort.",
+    "Formez les équipes qui utilisent l'IA. Attestations de suivi et registre pour la direction et le DPO.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -26,8 +27,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-          <ThemeProvider>{children}</ThemeProvider>
-        </body>
+        <ThemeProvider>
+          <Providers>{children}</Providers>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

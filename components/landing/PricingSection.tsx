@@ -15,46 +15,62 @@ interface Plan {
 
 const plans: Plan[] = [
   {
-    name: "TPE",
-    seats: "1 à 10 salariés",
-    price: "490 €",
+    name: "Micro",
+    seats: "1 à 5 salariés",
+    price: "290 €",
     priceLabel: "/ an HT",
     highlight: false,
     features: [
-      "Jusqu'à 10 accès collaborateurs",
-      "Formations complètes IA Act & RGPD",
-      "Attestations PDF nominatives automatiques",
-      "Tableau de bord RH de suivi",
+      "Jusqu'à 5 accès utilisateurs",
+      "Socle commun + Parcours Métiers",
+      "Attestations nominatives horodatées",
+      "Tableau de bord RH & Export du dossier de preuve",
       "Support par email",
     ],
     cta: "Démarrer maintenant",
   },
   {
+    name: "TPE",
+    seats: "6 à 20 salariés",
+    price: "590 €",
+    priceLabel: "/ an HT",
+    highlight: false,
+    features: [
+      "Jusqu'à 20 accès utilisateurs",
+      "Tout le plan Micro inclus",
+      "Relances automatiques des apprenants",
+      "Registre des usages IA (AI Use Case Register)",
+      "Support prioritaire",
+    ],
+    cta: "Démarrer maintenant",
+  },
+  {
     name: "PME",
-    seats: "11 à 50 salariés",
+    seats: "21 à 50 salariés",
     price: "990 €",
     priceLabel: "/ an HT",
     highlight: true,
     features: [
-      "Jusqu'à 50 accès collaborateurs",
+      "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
-      "Dashboard RH avancé + Relances auto",
-      "Exports de conformité en 1 clic (PDF/CSV)",
-      "Archivage légal 5 ans & Support prioritaire",
+      "Re-certification & veille réglementaire automatique",
+      "Evidence Center complet (Export ZIP / PDF / JSON)",
+      "Conservation des preuves 12 mois post-contrat",
     ],
-    cta: "Mettre ma PME en conformité",
+    cta: "Constituer le dossier de preuve",
   },
   {
-    name: "Entreprise",
+    name: "ETI",
     seats: "+50 salariés",
     price: "Sur devis",
+    priceLabel: "à partir de 1 490 € / an HT",
     highlight: false,
     features: [
-      "Nombre de comptes sur-mesure",
-      "Intégration SSO & API dédiées",
-      "Accompagnement DPO & Marque blanche",
-      "Création de modules et cas pratiques sur-mesure",
-      "Contrat SLA 99,9% garanti",
+      "Accès sur-mesure ou facturation au siège",
+      "Intégration SSO / LMS (SCORM) & API dédiées",
+      "Option Marque Blanche",
+      "Module métier sur-mesure sur demande",
+      "Contrat SLA & support dédié",
     ],
     cta: "Contacter l'équipe",
   },
@@ -72,50 +88,59 @@ export default function PricingSection() {
           className="text-center mb-16 space-y-4"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, une{" "}
-            <span className="text-blue-600 dark:text-blue-400">conformité</span> totale
+            Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, un{" "}
+            <span className="text-blue-600 dark:text-blue-400">registre</span> à jour
           </h2>
           <p className="text-center text-slate-900 dark:text-slate-100 max-w-xl mx-auto text-lg">
             Abonnement annuel sans frais cachés. Mises à jour réglementaires incluses.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`relative flex flex-col hover:z-20 ${plan.highlight ? "md:-translate-y-3 z-10" : ""}`}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className={`relative flex flex-col hover:z-20 ${plan.highlight ? "lg:-translate-y-3 z-10" : ""}`}
             >
               <motion.div
-                whileHover={{ scale: 1.045, y: -10 }}
+                whileHover={{ scale: 1.03, y: -8 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className={`relative flex flex-col h-full rounded-2xl border bg-white p-7 text-center transition-shadow duration-300 dark:bg-slate-800 hover:shadow-2xl ${
+                className={`relative flex flex-col h-full rounded-2xl border bg-white p-6 text-center transition-shadow duration-300 dark:bg-slate-800 hover:shadow-2xl ${
                   plan.highlight
                     ? "border-blue-600 shadow-md hover:shadow-blue-200/80 dark:border-blue-500 dark:hover:shadow-blue-900/40"
                     : "border-slate-200 shadow-sm hover:shadow-slate-300/70 dark:border-slate-700 dark:hover:shadow-slate-950/50"
                 }`}
               >
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{plan.name}</h3>
-                  <p className="text-left text-sm text-black dark:text-white mt-1">{plan.seats}</p>
+                <div className="mb-5">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">{plan.name}</h3>
+                  <p className="text-center text-sm text-black dark:text-white mt-1">{plan.seats}</p>
                 </div>
 
-                <div className="mb-7 pb-7 border-b border-slate-100 dark:border-slate-700">
-                  {plan.priceLabel ? (
+                <div className="mb-6 pb-6 border-b border-slate-100 dark:border-slate-700">
+                  {plan.priceLabel && plan.price !== "Sur devis" ? (
                     <div className="flex items-end justify-center gap-2">
-                      <span className="text-4xl font-extrabold text-slate-900 dark:text-white">{plan.price}</span>
-                      <span className="text-slate-500 dark:text-slate-400 text-sm mb-1.5">{plan.priceLabel}</span>
+                      <span className="text-3xl font-extrabold text-slate-900 dark:text-white">{plan.price}</span>
+                      <span className="text-slate-500 dark:text-slate-400 text-sm mb-1">{plan.priceLabel}</span>
                     </div>
                   ) : (
-                    <span className="text-4xl font-extrabold text-slate-900 dark:text-white">{plan.price}</span>
+                    <div className="space-y-1">
+                      <span className="block text-3xl font-extrabold text-slate-900 dark:text-white">
+                        {plan.price}
+                      </span>
+                      {plan.priceLabel && (
+                        <span className="block text-xs text-slate-500 dark:text-slate-400">
+                          {plan.priceLabel}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
 
-                <ul className="flex-1 space-y-3 mb-8 w-fit mx-auto text-left">
+                <ul className="flex-1 space-y-3 mb-7 w-fit mx-auto text-left">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2.5 text-sm text-slate-900 dark:text-slate-100">
                       <Check className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />

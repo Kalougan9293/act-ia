@@ -1,0 +1,252 @@
+rules_version = '2';
+
+/**
+ * Isolation multi-tenant ConformAI
+ * Super admin = uniquement jonathan.seroussi.92100@gmail.com
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasProfile() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function allowedSuperAdminEmail() {
+      return request.auth.token.email == "jonathan.seroussi.92100@gmail.com";
+    }
+
+    function isSuperAdmin() {
+      return hasProfile()
+        && userDoc().role == "super_admin"
+        && allowedSuperAdminEmail();
+    }
+
+    function isRh() {
+      return hasProfile() && userDoc().role == "rh";
+    }
+
+    function myStructureId() {
+      return userDoc().structureId;
+    }
+
+    function sameStructure(structureId) {
+      return myStructureId() != null && myStructureId() == structureId;
+    }
+
+    function bootstrapOpen() {
+      return !exists(/databases/$(database)/documents/config/initialized);
+    }
+
+    function inviteDoc(token) {
+      return get(/databases/$(database)/documents/invites/$(token)).data;
+    }
+
+    function structureInviteDoc(token) {
+      return get(/databases/$(database)/documents/structureInvites/$(token)).data;
+    }
+
+    function structureBillingSeats(structureId) {
+      return get(/databases/$(database)/documents/structures/$(structureId)).data.billing.seats;
+    }
+
+    function structureHasOpenSeat(structureId) {
+      let token = get(/databases/$(database)/documents/structures/$(structureId)).data.inviteToken;
+      return token is string
+        && exists(/databases/$(database)/documents/structureInvites/$(token))
+        && structureInviteDoc(token).seatsUsed is int
+        && structureInviteDoc(token).seatsMax is int
+        && structureInviteDoc(token).seatsUsed < structureInviteDoc(token).seatsMax;
+    }
+
+    function validStructureInviteClaim() {
+      return request.resource.data.structureInviteToken is string
+        && exists(/databases/$(database)/documents/structureInvites/$(request.resource.data.structureInviteToken))
+        && structureInviteDoc(request.resource.data.structureInviteToken).structureId == request.resource.data.structureId
+        && structureInviteDoc(request.resource.data.structureInviteToken).seatsUsed is int
+        && structureInviteDoc(request.resource.data.structureInviteToken).seatsMax is int
+        && structureInviteDoc(request.resource.data.structureInviteToken).seatsUsed
+            < structureInviteDoc(request.resource.data.structureInviteToken).seatsMax
+        && request.resource.data.role == "employee"
+        && request.resource.data.email == request.auth.token.email;
+    }
+
+    function validInviteClaim() {
+      return request.resource.data.inviteToken is string
+        && exists(/databases/$(database)/documents/invites/$(request.resource.data.inviteToken))
+        && inviteDoc(request.resource.data.inviteToken).status == "pending"
+        && inviteDoc(request.resource.data.inviteToken).email == request.auth.token.email
+        && inviteDoc(request.resource.data.inviteToken).role == request.resource.data.role
+        && inviteDoc(request.resource.data.inviteToken).structureId == request.resource.data.structureId
+        && (
+          request.resource.data.role == "rh"
+          || structureHasOpenSeat(request.resource.data.structureId)
+        );
+    }
+
+    match /config/{docId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && docId == "initialized"
+        && bootstrapOpen()
+        && allowedSuperAdminEmail();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    match /firstLogin/{email} {
+      allow get: if signedIn() && request.auth.token.email == email;
+      allow create, update: if isSuperAdmin();
+      allow delete: if isSuperAdmin()
+        || (signedIn() && request.auth.token.email == email);
+    }
+
+    match /structureInvites/{token} {
+      allow get: if true;
+      allow create: if isSuperAdmin()
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.seatsMax == structureBillingSeats(myStructureId())
+            && request.resource.data.seatsUsed is int
+            && request.resource.data.seatsUsed >= 0
+            && request.resource.data.seatsUsed <= request.resource.data.seatsMax);
+      allow update: if isSuperAdmin()
+        // RH : seatsMax calé sur l'offre admin, seatsUsed intouchable (anti-triche)
+        || (isRh()
+            && resource.data.structureId == myStructureId()
+            && request.resource.data.structureId == resource.data.structureId
+            && request.resource.data.seatsMax == structureBillingSeats(myStructureId())
+            && request.resource.data.seatsUsed == resource.data.seatsUsed)
+        // Inscription collaborateur : +1 siège
+        || (signedIn()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
+            && request.resource.data.seatsUsed is int
+            && resource.data.seatsUsed is int
+            && request.resource.data.seatsUsed == resource.data.seatsUsed + 1
+            && request.resource.data.seatsUsed <= resource.data.seatsMax)
+        // RH : -1 siège uniquement après départ d'un collaborateur
+        || (isRh()
+            && resource.data.structureId == myStructureId()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
+            && request.resource.data.seatsUsed is int
+            && resource.data.seatsUsed is int
+            && request.resource.data.seatsUsed == resource.data.seatsUsed - 1
+            && request.resource.data.seatsUsed >= 0);
+      allow delete: if isSuperAdmin();
+    }
+
+    match /structures/{structureId} {
+      allow read: if isSuperAdmin() || (hasProfile() && sameStructure(structureId));
+      allow create: if isSuperAdmin();
+      allow update: if isSuperAdmin()
+        || (isRh()
+            && sameStructure(structureId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["inviteToken"]));
+      allow delete: if isSuperAdmin();
+    }
+
+    match /invites/{token} {
+      // Le token est le secret (lien d'invitation)
+      allow get: if true;
+      allow list: if isSuperAdmin() || isRh();
+      allow create: if isSuperAdmin()
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role == "rh")
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role == "employee"
+            && structureHasOpenSeat(myStructureId()));
+      allow update, delete: if isSuperAdmin()
+        || (isRh() && resource.data.structureId == myStructureId())
+        || (signedIn()
+            && resource.data.email == request.auth.token.email
+            && resource.data.status == "pending");
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn() && (
+        (request.auth.uid == userId
+          && allowedSuperAdminEmail()
+          && request.resource.data.email == "jonathan.seroussi.92100@gmail.com"
+          && request.resource.data.role == "super_admin"
+          && request.resource.data.structureId == null
+          && bootstrapOpen())
+        // Première connexion via invitation
+        || (request.auth.uid == userId
+            && request.resource.data.email == request.auth.token.email
+            && request.resource.data.role in ["rh", "employee"]
+            && validInviteClaim())
+        || (request.auth.uid == userId
+            && request.resource.data.email == request.auth.token.email
+            && validStructureInviteClaim())
+        || (isSuperAdmin()
+            && request.resource.data.role in ["rh", "employee"]
+            && request.resource.data.email is string)
+        || (signedIn()
+            && request.auth.uid == userId
+            && request.resource.data.email == request.auth.token.email
+            && request.resource.data.status == "active"
+            && request.resource.data.role in ["rh", "employee"]
+            && exists(/databases/$(database)/documents/firstLogin/$(request.auth.token.email))
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.status == "pending"
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.role == request.resource.data.role
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.structureId == request.resource.data.structureId)
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role == "rh"
+            && request.resource.data.email is string)
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role == "employee"
+            && request.resource.data.email is string
+            && structureHasOpenSeat(myStructureId()))
+      );
+
+      allow read: if isSuperAdmin()
+        || (signedIn() && request.auth.uid == userId)
+        || (isRh() && resource.data.structureId == myStructureId());
+
+      allow update: if isSuperAdmin()
+        || (signedIn() && request.auth.uid == userId
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.structureId == resource.data.structureId)
+        || (isRh()
+            && resource.data.structureId == myStructureId()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role in ["employee", "rh"]);
+
+      allow delete: if isSuperAdmin()
+        || (isRh() && resource.data.structureId == myStructureId() && userId != request.auth.uid)
+        || (signedIn()
+            && userId != request.auth.uid
+            && resource.data.email == request.auth.token.email
+            && resource.data.status == "invited");
+
+      match /progress/{docId} {
+        allow read: if isSuperAdmin()
+          || (signedIn() && request.auth.uid == userId)
+          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+
+        allow write: if isSuperAdmin()
+          || (signedIn() && request.auth.uid == userId);
+      }
+
+      match /certificates/{certId} {
+        allow read: if isSuperAdmin()
+          || (signedIn() && request.auth.uid == userId)
+          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+
+        allow create: if isSuperAdmin()
+          || (signedIn() && request.auth.uid == userId);
+
+        allow update, delete: if isSuperAdmin();
+      }
+    }
+  }
+}

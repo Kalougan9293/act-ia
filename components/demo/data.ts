@@ -10,6 +10,12 @@ export interface Employee {
   percent: number;
   lastSeen: string;
   dueDate?: string;
+  /** Token d'invitation pending — si présent, le compte n'est pas encore activé */
+  inviteToken?: string;
+  certificateId?: string | null;
+  certifiedAt?: string | null;
+  quizScore?: number | null;
+  companyName?: string;
 }
 
 export const employees: Employee[] = [
@@ -40,7 +46,7 @@ export const curriculum = [
     theme: "La réglementation",
     modules: [
       { id: "1.1", title: "Pourquoi cette loi ?", summary: "Qu'est-ce que l'AI Act et pourquoi l'Europe encadre l'IA." },
-      { id: "1.2", title: "L'Article 4 et la littératie IA", summary: "L'obligation légale pour chaque salarié d'être formé et responsable." },
+      { id: "1.2", title: "L'Article 4 et la littératie IA", summary: "Prendre des mesures pour soutenir la maîtrise de l'IA, sans niveau individuel garanti." },
       { id: "1.3", title: "La classification des risques", summary: "Niveaux de risque : interdit, haut risque, risque limité et IA générative, et ce que ça change au quotidien." },
     ],
   },
@@ -69,5 +75,5 @@ export const pathSteps = [
   { label: "RGPD", title: "Chapitre 2 — RGPD & Protection des données", state: "current" },
   { label: "Usages", title: "Chapitre 3 — Bonnes pratiques & Usages au travail", state: "todo" },
   { label: "Quiz", title: "Quiz de validation · 10 à 15 questions · 80 % pour réussir", state: "todo" },
-  { label: "Diplôme", title: "Attestation individuelle horodatée", state: "diploma" },
+  { label: "Preuve", title: "Attestation de suivi horodatée", state: "diploma" },
 ] as const;

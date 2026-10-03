@@ -5,20 +5,22 @@ import { motion } from "framer-motion";
 const problems = [
   {
     tag: "AI Act • Article 4",
-    title: "Contraintes & Sanctions financières",
+    title: "Contraintes en cas de contrôle",
     description:
-      "L'Article 4 oblige chaque entreprise à prouver la formation de ses équipes à l'IA. L'absence de preuve documentée expose à des sanctions lourdes en cas de contrôle.",
-    stat: "Jusqu'à 15M€ ou 3%",
-    statLabel: "du Chiffre d'Affaires mondial",
+      "L'article 4 demande des mesures pour les équipes qui utilisent l'IA. L'absence de preuve documentée ne laisse rien à montrer en cas de contrôle.",
+    stat: "En vigueur depuis le 2 février 2025",
+    statLabel: "Contrôles dès le 2 août 2026",
+    statClass: "text-base",
     card: "bg-blue-50/80 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900",
   },
   {
     tag: "RGPD & Sécurité",
     title: "Fuites de données clients & PI",
     description:
-      "Sans directives claires, l'usage non encadré de ChatGPT ou Copilot par vos salariés entraîne la fuite de données confidentielles ou à caractère personnel.",
-    stat: "83% des salariés",
-    statLabel: "utilisent l'IA sans aucune formation",
+      "Sans directives claires, l'usage non encadré de ChatGPT ou Copilot par vos salariés peut faire sortir des données confidentielles ou à caractère personnel.",
+    stat: "Sans cadre",
+    statLabel: "un usage peut sortir du registre",
+    statClass: "text-xl",
     card: "bg-sky-50/90 border-sky-200 dark:bg-sky-950/30 dark:border-sky-900",
   },
   {
@@ -28,6 +30,7 @@ const problems = [
       "Coordonner des formations externes et collecter manuellement les preuves de présence mobilise inutilement vos équipes RH.",
     stat: "40h+ perdues",
     statLabel: "par an en gestion administrative",
+    statClass: "text-xl",
     card: "bg-indigo-50/80 border-indigo-200 dark:bg-indigo-950/30 dark:border-indigo-900",
   },
 ];
@@ -44,10 +47,15 @@ export default function ProblemSection() {
           className="text-center mb-8 space-y-3"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Ce que <span className="text-blue-600 dark:text-blue-400">l&apos;absence de formation</span> fait risquer à votre entreprise
+            Ce que{" "}
+            <span className="text-blue-600 dark:text-blue-400">
+              l&apos;absence de formation
+            </span>{" "}
+            fait risquer à votre entreprise
           </h2>
           <p className="text-center text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg">
-            L&apos;entrée en vigueur des contrôles de l&apos;AI Act impose une mise en conformité immédiate.
+            L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA.
+            Les attestations et le registre les rendent visibles.
           </p>
         </motion.div>
 
@@ -66,13 +74,13 @@ export default function ProblemSection() {
                     {problem.tag}
                   </p>
                   <h3 className="text-center text-base font-bold text-slate-900 dark:text-white">{problem.title}</h3>
-                  <p className="text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
+                  <p className="text-center text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
                     {problem.description}
                   </p>
                 </div>
 
                 <div className="mt-auto pt-3 border-t border-slate-100 dark:border-slate-700 text-center">
-                  <p className="text-center text-xl font-extrabold text-slate-900 dark:text-slate-100">
+                  <p className={`text-center font-extrabold text-slate-900 dark:text-slate-100 ${problem.statClass}`}>
                     {problem.stat}
                   </p>
                   <p className="text-center text-sm text-black dark:text-white mt-0.5">

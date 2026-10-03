@@ -27,7 +27,7 @@ export default function CompanyCertificate({
   const issued = new Date();
   const date = issued.toLocaleDateString("fr-FR");
   const time = issued.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  const badgeText = `${company} — 100 % des collaborateurs formés à l'AI Act (article 4) et au RGPD. Registre ConformAI REG-CONF-2026-89A4.`;
+  const badgeText = `${company} — attestations de suivi à jour pour l'article 4 et le RGPD. Registre ConformAI REG-CONF-2026-89A4.`;
 
   async function copyBadge() {
     try {
@@ -58,14 +58,14 @@ export default function CompanyCertificate({
             <div className="border border-emerald-700/30 px-6 py-8 text-center">
               {!unlocked && (
                 <div className="mb-4 text-xs font-semibold uppercase tracking-widest text-amber-700">
-                  Aperçu — délivré lorsque 100 % des collaborateurs sont formés
+                  Aperçu — disponible lorsque chaque collaborateur a une attestation de suivi
                 </div>
               )}
               <Seal />
               <h2 className="mt-5 text-xl font-bold tracking-tight sm:text-2xl">
-                Attestation globale de conformité réglementaire
+                Dossier de preuve employeur — article 4
               </h2>
-              <p className="mt-2 text-sm text-slate-600">Conformité EU AI Act (article 4) &amp; RGPD</p>
+              <p className="mt-2 text-sm text-slate-600">Attestations de suivi · AI Act (article 4) &amp; RGPD</p>
 
               <p className="mt-8 text-xs uppercase tracking-[0.2em] text-slate-500">Raison sociale</p>
               <p className="mt-1 text-3xl font-semibold">{company}</p>
@@ -95,7 +95,7 @@ export default function CompanyCertificate({
               </dl>
 
               <p className="mx-auto mt-8 max-w-md text-xs leading-relaxed text-slate-500">
-                Document émis par ConformAI et conservé dans le registre de suivi. Il atteste la formation des collaborateurs. Il ne constitue pas, à lui seul, une certification réglementaire de l&apos;entreprise.
+                Document émis par ConformAI et conservé dans le registre de suivi. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique.
               </p>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function CompanyCertificate({
             </span>
             <span className="text-left">
               <span className="block text-sm font-bold text-emerald-900">{company}</span>
-              <span className="block text-xs text-emerald-800">100 % formés · AI Act &amp; RGPD · 2026</span>
+              <span className="block text-xs text-emerald-800">Suivi à jour · AI Act &amp; RGPD · 2026</span>
             </span>
           </div>
           <button
