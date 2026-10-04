@@ -29,7 +29,7 @@ export default function RejoindrePage() {
   const [company, setCompany] = useState<string | null>(null);
   const [seatsFull, setSeatsFull] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState<"first" | "login">("first");
+  const [mode, setMode] = useState<"first" | "login">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -45,13 +45,7 @@ export default function RejoindrePage() {
         const invite = await getStructureInvite(token);
         if (!cancelled) {
           setCompany(invite?.name ?? null);
-          const full = !!invite && invite.seatsUsed >= invite.seatsMax;
-          setSeatsFull(full);
-          if (full) {
-            setError(
-              `Nombre d'accès atteint (${invite!.seatsMax}). Contactez votre RH.`,
-            );
-          }
+          setSeatsFull(!!invite && invite.seatsUsed >= invite.seatsMax);
         }
       } catch (e) {
         if (!cancelled) {
@@ -142,7 +136,7 @@ export default function RejoindrePage() {
       <main className="mx-auto max-w-lg px-4 py-12 text-center space-y-6">
         <div className="text-center">
           <h1 className="text-center text-2xl font-bold tracking-tight">
-            {mode === "first" ? "Première connexion" : "Connexion"}
+            {mode === "first" ? "Première connexion" : "Se connecter"}
           </h1>
           <p className="mt-2 text-center text-sm text-slate-500">
             {company

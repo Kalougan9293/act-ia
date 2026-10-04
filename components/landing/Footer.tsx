@@ -1,15 +1,16 @@
+import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 
 const legal = [
-  { label: "Mentions légales", href: "#" },
-  { label: "Confidentialité", href: "#" },
-  { label: "CGU", href: "#" },
-  { label: "Cookies", href: "#" },
+  { label: "Mentions légales", href: "/mentions-legales" },
+  { label: "Confidentialité", href: "/confidentialite" },
+  { label: "CGU", href: "/cgu" },
+  { label: "Cookies", href: "/cookies" },
 ];
 
 const conformity = [
-  { label: "AI Act", href: "#" },
-  { label: "RGPD", href: "#" },
+  { label: "AI Act", href: "/ai-act" },
+  { label: "RGPD", href: "/rgpd" },
 ];
 
 function LinkLine({
@@ -32,9 +33,9 @@ function LinkLine({
               ·
             </span>
           )}
-          <a href={item.href} className="hover:text-white transition-colors">
+          <Link href={item.href} className="hover:text-white transition-colors">
             {item.label}
-          </a>
+          </Link>
         </span>
       ))}
     </div>
@@ -46,10 +47,13 @@ export default function Footer() {
     <footer className="bg-slate-900 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col items-center gap-3 lg:grid lg:grid-cols-3 lg:items-center">
-          <a href="#" className="flex items-center gap-1.5 justify-self-start shrink-0 font-bold text-white text-lg tracking-tight">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-1.5 justify-self-start text-lg font-bold tracking-tight text-white"
+          >
             Conform<span className="text-blue-400">AI</span>
-            <GraduationCap className="w-5 h-5 text-blue-400" strokeWidth={2} aria-hidden="true" />
-          </a>
+            <GraduationCap className="h-5 w-5 text-blue-400" strokeWidth={2} aria-hidden="true" />
+          </Link>
           <LinkLine items={legal} />
           <div className="lg:justify-self-end">
             <LinkLine items={conformity} align="right" />

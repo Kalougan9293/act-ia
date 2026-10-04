@@ -1,11 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Award, ArrowDown, ArrowUp, ArrowUpDown, Check, Copy, Download, Info, Trash2 } from "lucide-react";
+import {
+  Award,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Building2,
+  Check,
+  Copy,
+  Download,
+  Info,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { employees, type Employee } from "./data";
 import CertificatePreview from "./CertificatePreview";
 import CompanyCertificate from "./CompanyCertificate";
 import { formatProofDate } from "@/lib/formation/proof";
+import {
+  emptyCompanyModule,
+  type CompanyModuleContent,
+} from "@/lib/admin/types";
+import { PlainText } from "@/lib/format/plain-text";
+import { createInvite, inviteLink } from "@/lib/firebase/invites";
 
 type SortKey = "name" | "email" | "percent" | "lastSeen";
 
@@ -138,13 +157,18 @@ function NameWithService({ name, role }: { name: string; role: string }) {
 export default function HrView({
   initialEmployees = employees,
   companyName = "Atelier Lumière",
+  structureId,
   structureInviteLink,
+  companyModule: companyModuleProp,
+  onSaveCompanyModule,
 }: {
   initialEmployees?: Employee[];
   companyName?: string;
   structureId?: string;
   structureInviteLink?: string | null;
   seatsMax?: number;
+  companyModule?: CompanyModuleContent;
+  onSaveCompanyModule?: (module: CompanyModuleContent) => Promise<void>;
 }) {
   const [roster, setRoster] = useState<Employee[]>(initialEmployees);
   const [preview, setPreview] = useState<string | null>(null);
@@ -152,11 +176,39 @@ export default function HrView({
   const [copiedPermanent, setCopiedPermanent] = useState(false);
   const [query, setQuery] = useState("");
   const [showCompany, setShowCompany] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [draftFirst, setDraftFirst] = useState("");
+  const [draftLast, setDraftLast] = useState("");
+  const [draftEmail, setDraftEmail] = useState("");
+  const [draftRole, setDraftRole] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [inviteShare, setInviteShare] = useState<{
+    name: string;
+    email: string;
+    link: string;
+  } | null>(null);
+  const [copiedInvite, setCopiedInvite] = useState(false);
+  const [showModuleEditor, setShowModuleEditor] = useState(false);
+  const [moduleDraft, setModuleDraft] = useState<CompanyModuleContent>(
+    () => companyModuleProp ?? emptyCompanyModule(),
+  );
+  const [moduleSaved, setModuleSaved] = useState<CompanyModuleContent>(
+    () => companyModuleProp ?? emptyCompanyModule(),
+  );
+  const [moduleSaving, setModuleSaving] = useState(false);
+  const [moduleError, setModuleError] = useState<string | null>(null);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "name", dir: "asc" });
 
   useEffect(() => {
     setRoster(initialEmployees);
   }, [initialEmployees]);
+
+  useEffect(() => {
+    const next = companyModuleProp ?? emptyCompanyModule();
+    setModuleSaved(next);
+    if (!showModuleEditor) setModuleDraft(next);
+  }, [companyModuleProp, showModuleEditor]);
 
   const active = roster.filter((employee) => !archivedIds.includes(employee.id));
   const archived = roster.filter((employee) => archivedIds.includes(employee.id));
@@ -176,9 +228,11 @@ export default function HrView({
             : dateValue(a.lastSeen) - dateValue(b.lastSeen);
     return sort.dir === "asc" ? result : -result;
   });
-  const done = active.filter((employee) => employee.status === "done").length;
+  const done = active.filter((employee) => employee.percent >= 100).length;
+  const certified = active.filter((employee) => Boolean(employee.certificateId)).length;
   const rate = active.length === 0 ? 0 : Math.round((done / active.length) * 100);
-  const companyReady = active.length > 0 && done === active.length;
+  /** Dossier de preuve : tout le monde a une attestation (après entreprise + métier) */
+  const companyReady = active.length > 0 && certified === active.length;
   const selected = roster.find((employee) => employee.id === preview) ?? null;
 
   function toggleSort(key: SortKey) {
@@ -202,9 +256,122 @@ export default function HrView({
     }
   }
 
+  function openAddForm() {
+    setDraftFirst("");
+    setDraftLast("");
+    setDraftEmail("");
+    setDraftRole("");
+    setAddError(null);
+    setShowAdd(true);
+  }
+
+  async function addCollaborator() {
+    const first = draftFirst.trim();
+    const last = draftLast.trim();
+    const email = draftEmail.trim().toLowerCase();
+    const jobTitle = draftRole.trim();
+    if (!first || !last || !email || adding) return;
+
+    setAdding(true);
+    setAddError(null);
+    try {
+      if (structureId) {
+        const { invite, link } = await createInvite({
+          email,
+          name: `${first} ${last}`,
+          role: "employee",
+          structureId,
+          jobTitle,
+        });
+        setRoster((current) => [
+          ...current.filter((e) => e.email.toLowerCase() !== email),
+          {
+            id: `invite:${invite.token}`,
+            name: invite.name,
+            email: invite.email,
+            role: jobTitle || "Collaborateur",
+            path: "IA + RGPD",
+            status: "todo",
+            percent: 0,
+            lastSeen: "Invité",
+            inviteToken: invite.token,
+          },
+        ]);
+        setInviteShare({ name: invite.name, email: invite.email, link });
+      } else {
+        const token = crypto.randomUUID().replace(/-/g, "");
+        const link = inviteLink(token);
+        setRoster((current) => [
+          ...current,
+          {
+            id: `invite:${token}`,
+            name: `${first} ${last}`,
+            email,
+            role: jobTitle || "Collaborateur",
+            path: "IA + RGPD",
+            status: "todo",
+            percent: 0,
+            lastSeen: "Invité",
+            inviteToken: token,
+          },
+        ]);
+        setInviteShare({ name: `${first} ${last}`, email, link });
+      }
+      setShowAdd(false);
+      setDraftFirst("");
+      setDraftLast("");
+      setDraftEmail("");
+      setDraftRole("");
+    } catch (e) {
+      setAddError(e instanceof Error ? e.message : "Invitation impossible");
+    } finally {
+      setAdding(false);
+    }
+  }
+
+  async function copyInviteShare() {
+    if (!inviteShare) return;
+    try {
+      await navigator.clipboard.writeText(inviteShare.link);
+      setCopiedInvite(true);
+      window.setTimeout(() => setCopiedInvite(false), 1800);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function openModuleEditor() {
+    setModuleDraft(moduleSaved);
+    setModuleError(null);
+    setShowModuleEditor(true);
+  }
+
+  async function saveModuleEditor() {
+    setModuleSaving(true);
+    setModuleError(null);
+    try {
+      const next = {
+        tools: moduleDraft.tools.trim(),
+        charter: moduleDraft.charter.trim(),
+        contacts: moduleDraft.contacts.trim(),
+        declaration: moduleDraft.declaration.trim(),
+      };
+      if (onSaveCompanyModule) await onSaveCompanyModule(next);
+      setModuleSaved(next);
+      setShowModuleEditor(false);
+    } catch (e) {
+      setModuleError(e instanceof Error ? e.message : "Enregistrement impossible");
+    } finally {
+      setModuleSaving(false);
+    }
+  }
+
   return (
     <div className="space-y-8 text-center">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Pilotage RH</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Pilotage RH</h1>
+        <p className="mt-1 text-sm text-blue-700/70 dark:text-blue-300/70">{companyName}</p>
+      </div>
 
       {companyReady && (
         <div className="space-y-3">
@@ -222,6 +389,14 @@ export default function HrView({
             </button>
             <button
               type="button"
+              onClick={openModuleEditor}
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200"
+            >
+              <Building2 className="h-4 w-4" />
+              Module entreprise
+            </button>
+            <button
+              type="button"
               onClick={() => exportProofCsv(active, companyName)}
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50"
             >
@@ -232,35 +407,45 @@ export default function HrView({
         </div>
       )}
 
-      {!companyReady && active.length > 0 && (
-        <div className="flex justify-center">
+      {!companyReady && (
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => exportProofCsv(active, companyName)}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            onClick={openModuleEditor}
+            className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200"
           >
-            <Download className="h-4 w-4" />
-            Exporter le registre (CSV)
+            <Building2 className="h-4 w-4" />
+            Module entreprise
           </button>
+          {active.length > 0 && (
+            <button
+              type="button"
+              onClick={() => exportProofCsv(active, companyName)}
+              className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <Download className="h-4 w-4" />
+              Exporter le registre (CSV)
+            </button>
+          )}
         </div>
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-5 text-center shadow-sm">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">{done}/{active.length}</div>
+        <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{done}/{active.length}</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Salariés formés</div>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-5 text-center shadow-sm">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">{rate} %</div>
+        <div className="rounded-xl border border-sky-100 bg-gradient-to-br from-white to-sky-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+          <div className="text-2xl font-bold text-sky-700 dark:text-sky-300">{rate} %</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de suivi</div>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-5 text-center shadow-sm">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">90 jours</div>
+        <div className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-xl space-y-2 text-center">
+      <div className="mx-auto max-w-xl space-y-2 rounded-2xl border border-blue-100 bg-white/70 px-4 py-4 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/70">
         <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
           Lien d&apos;invitation (tous les collaborateurs)
         </p>
@@ -282,18 +467,57 @@ export default function HrView({
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden text-left">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+      {inviteShare && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-3 text-center dark:border-blue-800 dark:bg-blue-950/30">
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">
+            Lien à envoyer à {inviteShare.name}
+          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{inviteShare.email}</p>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+            <span className="break-all text-sm font-medium text-blue-600 dark:text-blue-400">
+              {inviteShare.link}
+            </span>
+            <button
+              type="button"
+              onClick={() => void copyInviteShare()}
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600"
+            >
+              {copiedInvite ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copiedInvite ? "Copié" : "Copier"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setInviteShare(null)}
+              className="text-xs font-medium text-slate-400 hover:text-slate-600"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-hidden rounded-xl border border-blue-100 bg-white/90 shadow-sm dark:border-slate-700 dark:bg-slate-800 text-left">
+        <div className="flex flex-col gap-3 border-b border-blue-50 bg-gradient-to-r from-blue-50/90 to-sky-50/50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white whitespace-nowrap">
             Liste des collaborateurs ({visible.length})
           </h2>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Rechercher"
-            className="w-full sm:w-52 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
-          />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={openAddForm}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4" />
+              Ajouter
+            </button>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Rechercher"
+              className="w-full sm:w-52 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+            />
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
@@ -389,6 +613,218 @@ export default function HrView({
           total={active.length}
           onClose={() => setShowCompany(false)}
         />
+      )}
+
+      {showAdd && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void addCollaborator();
+            }}
+            className="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-xl dark:border-slate-700 dark:bg-slate-900"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                Ajouter un collaborateur
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowAdd(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
+                aria-label="Fermer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-500">
+              Un lien d&apos;invitation personnel sera généré. Vous pourrez aussi utiliser le lien permanent de la structure.
+            </p>
+            <label className="block text-sm text-slate-700 dark:text-slate-200">
+              Prénom
+              <input
+                value={draftFirst}
+                onChange={(event) => setDraftFirst(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
+                required
+                autoComplete="given-name"
+              />
+            </label>
+            <label className="block text-sm text-slate-700 dark:text-slate-200">
+              Nom
+              <input
+                value={draftLast}
+                onChange={(event) => setDraftLast(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
+                required
+                autoComplete="family-name"
+              />
+            </label>
+            <label className="block text-sm text-slate-700 dark:text-slate-200">
+              E-mail
+              <input
+                type="email"
+                value={draftEmail}
+                onChange={(event) => setDraftEmail(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
+                required
+                autoComplete="email"
+              />
+            </label>
+            <label className="block text-sm text-slate-700 dark:text-slate-200">
+              Fonction <span className="text-xs text-slate-400">facultatif</span>
+              <input
+                value={draftRole}
+                onChange={(event) => setDraftRole(event.target.value)}
+                placeholder="Commerce, RH, Support…"
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
+                autoComplete="organization-title"
+              />
+            </label>
+            {addError && (
+              <p className="text-center text-sm text-red-600 dark:text-red-400">{addError}</p>
+            )}
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowAdd(false)}
+                disabled={adding}
+                className="px-3 py-2 text-sm font-semibold text-slate-600 disabled:opacity-50 dark:text-slate-300"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={adding}
+                className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {adding ? "…" : "Ajouter"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {showModuleEditor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-xl dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Module « Votre entreprise »
+                </h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  Visible dans le parcours collaborateurs. Écrivez en texte simple — le rendu se met en forme tout seul.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowModuleEditor(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                aria-label="Fermer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/80 px-3.5 py-3 text-xs leading-relaxed text-blue-900 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-100">
+              <p className="font-semibold">Astuces de saisie</p>
+              <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
+                <li>
+                  Une ligne qui commence par <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">-</code> ou{" "}
+                  <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">1.</code> devient une liste.
+                </li>
+                <li>Laissez une ligne vide entre deux paragraphes.</li>
+                <li>Les e-mails et liens (https://…) deviennent cliquables automatiquement.</li>
+                <li>Champ vide = non affiché côté collaborateur.</li>
+              </ul>
+            </div>
+
+            <div className="mt-5 space-y-5">
+              {(
+                [
+                  {
+                    key: "tools" as const,
+                    label: "Outils autorisés",
+                    why: "Liste claire des IA validées, et ce qui est interdit (données clients, secrets, etc.).",
+                    placeholder:
+                      "Outils validés :\n- Microsoft Copilot (messagerie & documents internes)\n- ChatGPT Entreprise (compte pro uniquement)\n\nInterdit :\n- Toute IA grand public pour des données clients ou RH\n- Extensions navigateur non validées",
+                  },
+                  {
+                    key: "charter" as const,
+                    label: "Charte IA",
+                    why: "Les 4–6 règles que chacun doit connaître. Pas besoin d’un PDF : 1 règle par ligne suffit.",
+                    placeholder:
+                      "Règles d'usage :\n1. Je n'y mets jamais de données personnelles ou confidentielles sans validation.\n2. Je vérifie toujours le résultat avant de l'envoyer à un client ou un collègue.\n3. Je reste responsable de ce que je publie ou décide.\n4. En cas de doute, je demande au référent IA avant d'utiliser un nouvel outil.",
+                  },
+                  {
+                    key: "contacts" as const,
+                    label: "Référent IA & DPO",
+                    why: "Qui contacter pour une question, un incident ou un doute. Indiquez nom + e-mail (ou canal Slack/Teams).",
+                    placeholder:
+                      "Référent IA : Marie Dupont — marie.dupont@entreprise.fr\nDPO : dpo@entreprise.fr\nCanal interne : #ia-questions (Teams)",
+                  },
+                  {
+                    key: "declaration" as const,
+                    label: "Procédure de déclaration",
+                    why: "Comment un collab demande un nouvel outil ou signale un usage. Étapes courtes + délai attendu.",
+                    placeholder:
+                      "Pour déclarer un nouvel outil ou usage :\n1. Remplir le formulaire : https://intranet.entreprise.fr/ia\n2. Attendre le statut « validé » (délai indicatif : 5 jours ouvrés)\n3. Ne pas utiliser l'outil tant qu'il n'est pas au registre",
+                  },
+                ] as const
+              ).map((field) => {
+                const value = moduleDraft[field.key];
+                return (
+                  <div key={field.key} className="space-y-2">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{field.label}</p>
+                      <p className="mt-0.5 text-xs text-slate-500">{field.why}</p>
+                    </div>
+                    <textarea
+                      value={value}
+                      onChange={(event) =>
+                        setModuleDraft((current) => ({ ...current, [field.key]: event.target.value }))
+                      }
+                      rows={6}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-blue-500/30 placeholder:text-slate-400 focus:ring-2 dark:border-slate-600 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500"
+                      placeholder={field.placeholder}
+                    />
+                    {value.trim() ? (
+                      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950/60">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          Aperçu collaborateur
+                        </p>
+                        <PlainText text={value} compact />
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+
+            {moduleError && (
+              <p className="mt-3 text-center text-sm text-red-600 dark:text-red-400">{moduleError}</p>
+            )}
+
+            <div className="mt-5 flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowModuleEditor(false)}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                disabled={moduleSaving}
+                onClick={() => void saveModuleEditor()}
+                className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {moduleSaving ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

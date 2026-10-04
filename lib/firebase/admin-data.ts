@@ -26,6 +26,7 @@ function toIsoDate(value: unknown): string {
 
 export function mapStructure(id: string, data: Record<string, unknown>): Structure {
   const billing = (data.billing ?? {}) as Record<string, unknown>;
+  const company = (data.companyModule ?? {}) as Record<string, unknown>;
   return {
     id,
     name: String(data.name ?? ""),
@@ -33,6 +34,12 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
     status: (data.status as Structure["status"]) ?? "active",
     archivedAt: data.archivedAt ? toIsoDate(data.archivedAt) : null,
     inviteToken: data.inviteToken ? String(data.inviteToken) : null,
+    companyModule: {
+      tools: String(company.tools ?? ""),
+      charter: String(company.charter ?? ""),
+      contacts: String(company.contacts ?? ""),
+      declaration: String(company.declaration ?? ""),
+    },
     billing: {
       companyName: String(billing.companyName ?? data.name ?? ""),
       siret: String(billing.siret ?? ""),
@@ -85,14 +92,19 @@ export async function listUsers(): Promise<PlatformUser[]> {
 
 export async function saveStructure(structure: Structure): Promise<void> {
   const db = requireDb();
-  await setDoc(doc(db, "structures", structure.id), {
-    name: structure.name,
-    createdAt: structure.createdAt,
-    status: structure.status,
-    archivedAt: structure.archivedAt,
-    inviteToken: structure.inviteToken,
-    billing: structure.billing,
-  });
+  await setDoc(
+    doc(db, "structures", structure.id),
+    {
+      name: structure.name,
+      createdAt: structure.createdAt,
+      status: structure.status,
+      archivedAt: structure.archivedAt,
+      inviteToken: structure.inviteToken,
+      billing: structure.billing,
+      companyModule: structure.companyModule,
+    },
+    { merge: true },
+  );
 }
 
 export async function saveUser(user: PlatformUser): Promise<void> {

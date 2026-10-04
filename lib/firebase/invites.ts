@@ -130,24 +130,37 @@ export async function createInvite(params: {
   return { invite, link: inviteLink(token) };
 }
 
+function mapInviteDoc(id: string, data: Record<string, unknown>): InviteRecord {
+  return {
+    token: id,
+    email: String(data.email ?? ""),
+    name: String(data.name ?? ""),
+    role: data.role as InviteRecord["role"],
+    structureId: String(data.structureId ?? ""),
+    jobTitle: data.jobTitle ? String(data.jobTitle) : null,
+    status: "pending",
+    createdAt: String(data.createdAt ?? todayIso()),
+  };
+}
+
 export async function listPendingInvites(): Promise<InviteRecord[]> {
   const db = requireDb();
   const snap = await getDocs(
     query(collection(db, "invites"), where("status", "==", "pending")),
   );
-  return snap.docs.map((d) => {
-    const data = d.data();
-    return {
-      token: d.id,
-      email: String(data.email ?? ""),
-      name: String(data.name ?? ""),
-      role: data.role as InviteRecord["role"],
-      structureId: String(data.structureId ?? ""),
-      jobTitle: data.jobTitle ? String(data.jobTitle) : null,
-      status: "pending",
-      createdAt: String(data.createdAt ?? todayIso()),
-    };
-  });
+  return snap.docs.map((d) => mapInviteDoc(d.id, d.data() as Record<string, unknown>));
+}
+
+export async function listPendingInvitesByStructure(structureId: string): Promise<InviteRecord[]> {
+  const db = requireDb();
+  const snap = await getDocs(
+    query(
+      collection(db, "invites"),
+      where("structureId", "==", structureId),
+      where("status", "==", "pending"),
+    ),
+  );
+  return snap.docs.map((d) => mapInviteDoc(d.id, d.data() as Record<string, unknown>));
 }
 
 export async function getInvite(token: string): Promise<InviteRecord | null> {

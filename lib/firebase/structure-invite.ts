@@ -59,6 +59,7 @@ export async function ensureStructureInviteToken(
           archivedAt: structure.archivedAt,
           inviteToken: token,
           billing: structure.billing,
+          companyModule: structure.companyModule,
         },
         { merge: true },
       );

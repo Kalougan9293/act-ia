@@ -651,7 +651,7 @@ export default function UserView() {
         ) : contentDone ? (
           <article className="rounded-xl border border-violet-200 bg-white p-5 dark:border-violet-800 dark:bg-slate-800">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Quiz de validation</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">10 à 15 questions. 80 % pour réussir.</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">20 questions tirées au sort. 80 % pour réussir.</p>
             <button
               type="button"
               onClick={() => setQuizDone(true)}

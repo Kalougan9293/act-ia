@@ -66,6 +66,14 @@ export function useFormationProgress(uid: string | null) {
         if (cert) {
           setCertificate({ ...cert, careerPathId: next.careerPathId });
         }
+        // Recalcule le % RH (100 dès l'examen) pour les progressions déjà en base.
+        if (next.quizPassed && computeFormationPercent(next) === 100) {
+          void saveFormationProgress(uid, next).then((result) => {
+            if (!cancelled && result.certificate) {
+              setCertificate(result.certificate);
+            }
+          });
+        }
       } catch {
         const local = readLocal(uid);
         if (!cancelled) setProgress(local ?? emptyProgress());
@@ -101,6 +109,13 @@ export function useFormationProgress(uid: string | null) {
     void persist({ ...progress, introDone: true });
   }, [persist, progress]);
 
+  const markPositioning = useCallback(
+    (score: number) => {
+      void persist({ ...progress, positioningDone: true, positioningScore: score });
+    },
+    [persist, progress],
+  );
+
   const markChapterDone = useCallback(
     (chapterId: string) => {
       if (progress.completedChapters.includes(chapterId)) return;
@@ -117,8 +132,8 @@ export function useFormationProgress(uid: string | null) {
   }, [persist, progress]);
 
   const markQuiz = useCallback(
-    (score: number, passed: boolean) => {
-      void persist({ ...progress, quizScore: score, quizPassed: passed });
+    (score: number, passed: boolean, quizAttempts: number) => {
+      void persist({ ...progress, quizScore: score, quizPassed: passed, quizAttempts });
     },
     [persist, progress],
   );
@@ -143,6 +158,7 @@ export function useFormationProgress(uid: string | null) {
     doneChapters,
     certificate,
     markIntroDone,
+    markPositioning,
     markChapterDone,
     markCompanyDone,
     markQuiz,

@@ -7,18 +7,23 @@ import { GraduationCap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import FormationExperience from "@/components/user/FormationExperience";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import type { CompanyModuleContent } from "@/lib/admin/types";
+import { emptyCompanyModule } from "@/lib/admin/types";
 import { getStructure } from "@/lib/firebase/tenant-data";
 
 export default function UserApp() {
   const router = useRouter();
   const { ready, session, signOutUser } = useAuth();
   const [companyName, setCompanyName] = useState("Votre entreprise");
+  const [companyModule, setCompanyModule] = useState<CompanyModuleContent>(() => emptyCompanyModule());
 
   useEffect(() => {
     if (!session?.structureId) return;
     let cancelled = false;
     void getStructure(session.structureId).then((structure) => {
-      if (!cancelled && structure?.name) setCompanyName(structure.name);
+      if (cancelled || !structure) return;
+      if (structure.name) setCompanyName(structure.name);
+      setCompanyModule(structure.companyModule ?? emptyCompanyModule());
     });
     return () => {
       cancelled = true;
@@ -63,17 +68,17 @@ export default function UserApp() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+        <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="relative z-10 flex min-w-0 items-center gap-2.5">
             <ThemeToggle />
             <Link
               href="/"
-              className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight shrink-0"
+              className="flex shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
             >
               Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
               <GraduationCap
-                className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                className="h-5 w-5 text-blue-600 dark:text-blue-400"
                 strokeWidth={2}
                 aria-hidden="true"
               />
@@ -83,16 +88,16 @@ export default function UserApp() {
             </span>
           </div>
 
-          <div className="text-center leading-tight min-w-0 px-2">
-            <p className="text-center text-sm text-slate-700 dark:text-slate-200 truncate">
-              {session.name}
-            </p>
-            <p className="text-center text-xs text-slate-400 truncate">
-              {companyName} · {session.email}
-            </p>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-28 sm:px-40">
+            <div className="min-w-0 max-w-full text-center leading-tight">
+              <p className="truncate text-sm text-slate-700 dark:text-slate-200">{session.name}</p>
+              <p className="truncate text-xs text-slate-400">
+                {companyName} · {session.email}
+              </p>
+            </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="relative z-10 flex shrink-0 justify-end">
             <button
               type="button"
               onClick={async () => {
@@ -114,6 +119,7 @@ export default function UserApp() {
           firstName={firstName}
           fullName={session.name}
           companyName={companyName}
+          companyModule={companyModule}
         />
       </main>
     </div>

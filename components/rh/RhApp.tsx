@@ -8,12 +8,16 @@ import ThemeToggle from "@/components/ThemeToggle";
 import HrView from "@/components/demo/HrView";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { Employee, EmployeeStatus } from "@/components/demo/data";
-import type { PlatformUser, Structure } from "@/lib/admin/types";
-import { getStructure, listUsersByStructure } from "@/lib/firebase/tenant-data";
+import type { CompanyModuleContent, PlatformUser, Structure } from "@/lib/admin/types";
+import { getStructure, listUsersByStructure, saveCompanyModule } from "@/lib/firebase/tenant-data";
 import {
   ensureStructureInviteToken,
   structureInviteLink,
 } from "@/lib/firebase/structure-invite";
+import {
+  listPendingInvitesByStructure,
+  type InviteRecord,
+} from "@/lib/firebase/invites";
 
 function toStatus(percent: number | null): EmployeeStatus {
   if (percent == null || percent <= 0) return "todo";
@@ -28,8 +32,12 @@ function formatLastSeen(iso: string | null): string {
   return `${d}/${m}/${y}`;
 }
 
-function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
-  return users
+function toEmployees(
+  users: PlatformUser[],
+  invites: InviteRecord[],
+  companyName: string,
+): Employee[] {
+  const members = users
     .filter((u) => u.role === "employee" || u.role === "rh")
     .map((u) => ({
       id: u.id,
@@ -45,6 +53,22 @@ function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
       quizScore: u.quizScore,
       companyName,
     }));
+  const memberEmails = new Set(members.map((m) => m.email.toLowerCase()));
+  const pending = invites
+    .filter((invite) => invite.role === "employee" && !memberEmails.has(invite.email.toLowerCase()))
+    .map((invite) => ({
+      id: `invite:${invite.token}`,
+      name: invite.name,
+      email: invite.email,
+      role: invite.jobTitle?.trim() || "Collaborateur",
+      path: "IA + RGPD" as const,
+      status: "todo" as const,
+      percent: 0,
+      lastSeen: "Invité",
+      inviteToken: invite.token,
+      companyName,
+    }));
+  return [...members, ...pending];
 }
 
 export default function RhApp() {
@@ -66,9 +90,10 @@ export default function RhApp() {
       setLoading(true);
       setError(null);
       try {
-        const [nextStructure, members] = await Promise.all([
+        const [nextStructure, members, pendingInvites] = await Promise.all([
           getStructure(session.structureId!),
           listUsersByStructure(session.structureId!),
+          listPendingInvitesByStructure(session.structureId!),
         ]);
         if (cancelled) return;
         let structureReady = nextStructure;
@@ -82,7 +107,9 @@ export default function RhApp() {
             ? structureInviteLink(structureReady.inviteToken)
             : null,
         );
-        setEmployees(toEmployees(members, structureReady?.name ?? "Entreprise"));
+        setEmployees(
+          toEmployees(members, pendingInvites, structureReady?.name ?? "Entreprise"),
+        );
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Chargement impossible");
@@ -111,18 +138,22 @@ export default function RhApp() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+    <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-sky-100/80 via-blue-50 to-slate-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.14),_transparent_65%)] dark:bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.12),_transparent_65%)]"
+      />
+      <header className="sticky top-0 z-20 border-b border-blue-100/80 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
+        <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="relative z-10 flex min-w-0 items-center gap-2.5">
             <ThemeToggle />
             <Link
               href="/"
-              className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight shrink-0"
+              className="flex shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
             >
               Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
               <GraduationCap
-                className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                className="h-5 w-5 text-blue-600 dark:text-blue-400"
                 strokeWidth={2}
                 aria-hidden="true"
               />
@@ -132,12 +163,14 @@ export default function RhApp() {
             </span>
           </div>
 
-          <div className="text-center leading-tight min-w-0 px-2">
-            <p className="text-center text-sm text-slate-700 dark:text-slate-200 truncate">{session.name}</p>
-            <p className="text-center text-xs text-slate-400 truncate">{session.email}</p>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-28 sm:px-40">
+            <div className="min-w-0 max-w-full text-center leading-tight">
+              <p className="truncate text-sm text-slate-700 dark:text-slate-200">{session.name}</p>
+              <p className="truncate text-xs text-slate-400">{session.email}</p>
+            </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="relative z-10 flex shrink-0 justify-end">
             <button
               type="button"
               onClick={async () => {
@@ -152,7 +185,7 @@ export default function RhApp() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {error && (
           <p className="mb-4 text-center text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
@@ -165,6 +198,11 @@ export default function RhApp() {
             companyName={structure?.name ?? "Entreprise"}
             structureId={session.structureId}
             structureInviteLink={inviteLink}
+            companyModule={structure?.companyModule}
+            onSaveCompanyModule={async (module: CompanyModuleContent) => {
+              await saveCompanyModule(session.structureId!, module);
+              setStructure((current) => (current ? { ...current, companyModule: module } : current));
+            }}
           />
         )}
       </main>

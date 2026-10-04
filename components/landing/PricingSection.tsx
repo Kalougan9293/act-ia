@@ -53,7 +53,7 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
-      "Re-certification & veille réglementaire automatique",
+      "Mise à jour du parcours et veille réglementaire",
       "Evidence Center complet (Export ZIP / PDF / JSON)",
       "Conservation des preuves 12 mois post-contrat",
     ],

@@ -18,6 +18,28 @@ export interface BillingInfo {
   nextInvoiceAt: string;
 }
 
+/** Contenu du module « Votre entreprise » vu par les collaborateurs */
+export type CompanyModuleContent = {
+  tools: string;
+  charter: string;
+  contacts: string;
+  declaration: string;
+};
+
+export function emptyCompanyModule(): CompanyModuleContent {
+  return { tools: "", charter: "", contacts: "", declaration: "" };
+}
+
+export function isCompanyModuleFilled(module: CompanyModuleContent | null | undefined): boolean {
+  if (!module) return false;
+  return Boolean(
+    module.tools.trim() ||
+      module.charter.trim() ||
+      module.contacts.trim() ||
+      module.declaration.trim(),
+  );
+}
+
 export interface Structure {
   id: string;
   name: string;
@@ -28,6 +50,8 @@ export interface Structure {
   archivedAt: string | null;
   /** Lien permanent d'invitation collaborateurs */
   inviteToken: string | null;
+  /** Module entreprise renseigné par le RH */
+  companyModule: CompanyModuleContent;
 }
 
 export interface PlatformUser {

@@ -18,7 +18,7 @@ const faqs = [
   {
     question: "Combien de temps dure la formation pour mes salariés ?",
     answer:
-      "Deux heures au plus, en modules de 10 à 15 minutes. Chacun avance quand il veut.",
+      "Parcours complet : 1h00. Peut être suivi en plusieurs sessions.",
   },
   {
     question: "L'attestation de suivi vaut-elle diplôme ou certification officielle ?",

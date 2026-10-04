@@ -95,7 +95,7 @@ export default function CertificatePreview({
             <p className="text-center text-sm text-slate-600">Intelligence artificielle — EU AI Act &amp; RGPD</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
               <span>Attestation n° {certificateId}</span>
-              <span>Version CDC V2.6</span>
+              <span>Version CDC V2.7</span>
               {specimen && <span className="text-amber-700 font-semibold">Spécimen de démonstration</span>}
             </div>
           </header>
@@ -147,7 +147,7 @@ export default function CertificatePreview({
             <table className="w-full text-sm text-left border border-slate-200">
               <tbody>
                 {[
-                  ["Durée pédagogique prévue", "≈ 1 h"],
+                  ["Durée pédagogique prévue", "≈ 1 h 25 à 1 h 30"],
                   ["Parcours complété", "100 %"],
                   ["Évaluation finale", `${proof.score} / 100`],
                   ["Seuil de réussite", "80 / 100"],
@@ -186,7 +186,7 @@ export default function CertificatePreview({
                 </div>
                 <div>
                   <div className="text-xs text-slate-500">Version du parcours</div>
-                  <div>CDC V2.6</div>
+                  <div>CDC V2.7</div>
                 </div>
               </div>
               <FakeQr />
@@ -201,7 +201,7 @@ export default function CertificatePreview({
               </div>
             </div>
             <p className="text-left text-xs text-slate-500 leading-relaxed">
-              Cette attestation documente le suivi et la validation du parcours indiqué ci-dessus. Elle ne constitue pas, à elle seule, une certification professionnelle ou une certification de conformité réglementaire de l&apos;entreprise.
+              Ce document constitue un justificatif de suivi délivré à l&apos;entreprise pour documenter sa démarche de maîtrise de l&apos;IA. Il ne constitue ni une certification officielle de conformité à l&apos;AI Act ou au RGPD, ni une certification délivrée par l&apos;Union européenne.
             </p>
             <div className="text-xs text-slate-500">
               Référence {certificateId} · Document {hash.slice(-8)}

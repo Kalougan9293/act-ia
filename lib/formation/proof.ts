@@ -2,40 +2,57 @@ import { allChapterIds } from "@/lib/formation/curriculum";
 
 export type FormationProgress = {
   introDone: boolean;
+  /** Test de positionnement (non éliminatoire). N'entre pas dans la validation. */
+  positioningDone: boolean;
+  positioningScore: number | null;
   completedChapters: string[];
   companyModuleDone: boolean;
   quizScore: number | null;
   quizPassed: boolean;
+  quizAttempts: number;
   careerPathId: string | null;
 };
 
-export const CURRICULUM_VERSION = "CDC-V2.6";
+export const CURRICULUM_VERSION = "CDC-V2.7";
+export const CURRICULUM_LABEL = "CDC V2.7";
 
 export function emptyProgress(): FormationProgress {
   return {
     introDone: false,
+    positioningDone: false,
+    positioningScore: null,
     completedChapters: [],
     companyModuleDone: false,
     quizScore: null,
     quizPassed: false,
+    quizAttempts: 0,
     careerPathId: null,
   };
 }
 
+/**
+ * Avancement RH / barre : socle + examen uniquement.
+ * Module entreprise et parcours métier viennent après, sans bloquer le 100 %.
+ */
 export function computeFormationPercent(progress: FormationProgress): number {
-  const totalChapters = allChapterIds().length;
-  const doneChapters = progress.completedChapters.length;
-  const totalSteps = 1 + totalChapters + 1 + 1 + 1;
+  const chapters = allChapterIds();
+  const totalChapters = chapters.length;
+  if (totalChapters === 0) return 0;
+
+  if (progress.quizPassed) {
+    const allChaptersDone = chapters.every((id) => progress.completedChapters.includes(id));
+    if (progress.introDone && allChaptersDone) return 100;
+  }
+
+  const totalSteps = 1 + totalChapters + 1;
   const doneSteps =
     Number(progress.introDone) +
-    doneChapters +
-    Number(progress.companyModuleDone) +
-    Number(progress.quizPassed) +
-    Number(!!progress.careerPathId);
-  return Math.round((doneSteps / totalSteps) * 100);
+    progress.completedChapters.length +
+    Number(progress.quizPassed);
+  return Math.min(99, Math.round((doneSteps / totalSteps) * 100));
 }
 
-/** Parcours validé = socle + QCM ≥ 80 % + parcours métier */
+/** Attestation : socle + QCM ≥ 80 % + module entreprise + parcours métier */
 export function isFormationComplete(progress: FormationProgress): boolean {
   const chapters = allChapterIds();
   const allChaptersDone = chapters.every((id) => progress.completedChapters.includes(id));

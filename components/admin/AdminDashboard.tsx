@@ -26,6 +26,7 @@ import { structureGraduates } from "@/lib/admin/stats";
 import {
   PLAN_PRICES,
   PLAN_SEATS,
+  emptyCompanyModule,
   type PlanId,
   type PlatformUser,
   type Structure,
@@ -376,6 +377,7 @@ export default function AdminDashboard() {
           status: "active",
           archivedAt: null,
           inviteToken,
+          companyModule: emptyCompanyModule(),
           billing: {
             companyName: form.name.trim(),
             siret: form.siret.trim(),

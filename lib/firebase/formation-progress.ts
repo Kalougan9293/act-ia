@@ -35,6 +35,11 @@ function parseProgress(data: Record<string, unknown> | undefined): FormationProg
     : [];
   return {
     introDone: Boolean(data.introDone),
+    positioningDone: Boolean(data.positioningDone),
+    positioningScore:
+      data.positioningScore === null || data.positioningScore === undefined
+        ? null
+        : Number(data.positioningScore),
     completedChapters: chapters,
     companyModuleDone: Boolean(data.companyModuleDone),
     quizScore:
@@ -42,6 +47,7 @@ function parseProgress(data: Record<string, unknown> | undefined): FormationProg
         ? null
         : Number(data.quizScore),
     quizPassed: Boolean(data.quizPassed),
+    quizAttempts: Number(data.quizAttempts ?? 0) || 0,
     careerPathId: data.careerPathId ? String(data.careerPathId) : null,
   };
 }
@@ -157,7 +163,24 @@ export async function migrateLocalProgressIfNeeded(
   uid: string,
   local: FormationProgress | null,
 ): Promise<FormationProgress> {
-  const remote = await loadFormationProgress(uid);
+  const db = requireDb();
+  const progressRef = doc(db, "users", uid, "progress", "formation");
+  const snap = await getDoc(progressRef);
+  const raw = snap.exists() ? (snap.data() as Record<string, unknown>) : undefined;
+
+  // Remise à zéro demandée : le cache local ne doit pas réécrire l'ancien parcours.
+  if (raw?.clearedAt) {
+    const empty = emptyProgress();
+    await setDoc(progressRef, {
+      ...empty,
+      percent: 0,
+      curriculumVersion: CURRICULUM_VERSION,
+      updatedAt: serverTimestamp(),
+    });
+    return empty;
+  }
+
+  const remote = parseProgress(raw);
   const remoteEmpty =
     !remote.introDone &&
     remote.completedChapters.length === 0 &&

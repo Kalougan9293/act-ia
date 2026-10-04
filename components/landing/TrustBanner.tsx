@@ -10,7 +10,7 @@ const stats = [
   },
   {
     value: "RS6776 & RS6601",
-    label: "Parcours alignés, avec nos partenaires certificateurs",
+    label: "Parcours proposé avec un organisme de formation partenaire",
   },
   {
     value: "Attestation de suivi",
