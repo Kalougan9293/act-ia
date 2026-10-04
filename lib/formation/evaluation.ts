@@ -1,4 +1,4 @@
-/** Banque d'évaluation Layer 1 — ConformAI CDC V2.7 */
+/** Banque d'évaluation Layer 1 — ConformAI V1.0 */
 
 export type QuizQuestion = {
   id: string;

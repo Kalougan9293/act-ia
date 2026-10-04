@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,19 +13,67 @@ import {
 import ThemeToggle from "@/components/ThemeToggle";
 import AdminCertificatePreview from "@/components/admin/AdminCertificatePreview";
 import { formatDate } from "@/lib/admin/format";
-import { findStructureById, findUserById } from "@/lib/admin/mock-data";
-import { ROLE_LABELS, STATUS_LABELS } from "@/lib/admin/types";
+import { ROLE_LABELS, STATUS_LABELS, type PlatformUser, type Structure } from "@/lib/admin/types";
+import { getStructureById, getUserById } from "@/lib/firebase/admin-data";
 
 export default function CandidateProfile({ userId }: { userId: string }) {
-  const user = findUserById(userId);
-  const structure = user ? findStructureById(user.structureId) : null;
+  const [user, setUser] = useState<PlatformUser | null>(null);
+  const [structure, setStructure] = useState<Structure | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showPdf, setShowPdf] = useState(false);
 
-  if (!user || user.role === "super_admin") {
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const nextUser = await getUserById(userId);
+        if (cancelled) return;
+        if (!nextUser || nextUser.role === "super_admin") {
+          setUser(null);
+          setStructure(null);
+          return;
+        }
+        setUser(nextUser);
+        if (nextUser.structureId) {
+          const nextStructure = await getStructureById(nextUser.structureId);
+          if (!cancelled) setStructure(nextStructure);
+        } else {
+          setStructure(null);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Chargement impossible");
+          setUser(null);
+          setStructure(null);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center text-sm text-slate-500">
+          Chargement de la fiche…
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !user || user.role === "super_admin") {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center space-y-4">
-          <h1 className="text-xl font-bold">Candidat introuvable</h1>
+          <h1 className="text-xl font-bold">{error ?? "Candidat introuvable"}</h1>
           <Link href="/admin" className="text-sm font-semibold text-blue-600 hover:underline">
             Retour à l&apos;admin
           </Link>

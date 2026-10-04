@@ -11,7 +11,7 @@ export const SEVEN_REFLEXES = [
   "Dois-je déclarer cet usage (registre, manager, référent) ?",
 ] as const;
 
-/** Socle V2.8 — une activité courte, puis une autre. Seul le QCM final est noté. */
+/** Socle V1.0 — une activité courte, puis une autre. Seul le QCM final est noté. */
 export const BLOCKS: Block[] = [
   {
     id: "bloc-1",

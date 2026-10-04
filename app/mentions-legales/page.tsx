@@ -29,8 +29,8 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Hébergement</h2>
         <p>
-          Application web : Vercel Inc. Données applicatives : Google Firebase / Google Cloud
-          (Union européenne, selon configuration du projet).
+          Application web : Vercel Inc. Données applicatives : Google Firebase / Google Cloud —
+          Firestore en Union européenne (région eur3).
         </p>
       </section>
 

@@ -39,7 +39,7 @@ const features = [
     points: [
       "Suivi par équipe",
       "Relances automatiques",
-      "Export PDF et CSV",
+      "Export CSV et attestations",
     ],
     preview: "admin" as const,
   },

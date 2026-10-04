@@ -18,25 +18,56 @@ export interface BillingInfo {
   nextInvoiceAt: string;
 }
 
+/** Ligne du registre des usages IA (AI Use Case Register) */
+export type AiUseCaseEntry = {
+  id: string;
+  tool: string;
+  purpose: string;
+  owner: string;
+  status: "authorized" | "review" | "forbidden";
+};
+
+export const AI_USE_CASE_STATUS_LABELS: Record<AiUseCaseEntry["status"], string> = {
+  authorized: "Autorisé",
+  review: "En revue",
+  forbidden: "Interdit",
+};
+
 /** Contenu du module « Votre entreprise » vu par les collaborateurs */
 export type CompanyModuleContent = {
   tools: string;
   charter: string;
   contacts: string;
   declaration: string;
+  /** Registre structuré des outils / usages IA */
+  useCases: AiUseCaseEntry[];
 };
 
 export function emptyCompanyModule(): CompanyModuleContent {
-  return { tools: "", charter: "", contacts: "", declaration: "" };
+  return { tools: "", charter: "", contacts: "", declaration: "", useCases: [] };
+}
+
+export function emptyAiUseCase(): AiUseCaseEntry {
+  return {
+    id: `uc_${Math.random().toString(36).slice(2, 10)}`,
+    tool: "",
+    purpose: "",
+    owner: "",
+    status: "authorized",
+  };
 }
 
 export function isCompanyModuleFilled(module: CompanyModuleContent | null | undefined): boolean {
   if (!module) return false;
+  const hasUseCase = module.useCases?.some(
+    (row) => row.tool.trim() || row.purpose.trim() || row.owner.trim(),
+  );
   return Boolean(
     module.tools.trim() ||
       module.charter.trim() ||
       module.contacts.trim() ||
-      module.declaration.trim(),
+      module.declaration.trim() ||
+      hasUseCase,
   );
 }
 

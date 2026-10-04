@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import type { Employee } from "./data";
+import { CURRICULUM_LABEL } from "@/lib/formation/proof";
 
 const demoProofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
   "2": { score: 94, date: "28/09/2026", time: "16:42", serial: "M4K2L" },
@@ -95,7 +96,7 @@ export default function CertificatePreview({
             <p className="text-center text-sm text-slate-600">Intelligence artificielle — EU AI Act &amp; RGPD</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
               <span>Attestation n° {certificateId}</span>
-              <span>Version CDC V2.7</span>
+              <span>Version {CURRICULUM_LABEL}</span>
               {specimen && <span className="text-amber-700 font-semibold">Spécimen de démonstration</span>}
             </div>
           </header>
@@ -186,7 +187,7 @@ export default function CertificatePreview({
                 </div>
                 <div>
                   <div className="text-xs text-slate-500">Version du parcours</div>
-                  <div>CDC V2.7</div>
+                  <div>{CURRICULUM_LABEL}</div>
                 </div>
               </div>
               <FakeQr />

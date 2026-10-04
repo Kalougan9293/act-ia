@@ -1,4 +1,4 @@
-/** Activités du socle — structure pédagogique V2.8. Seul le QCM final est noté. */
+/** Activités du socle — structure pédagogique V1.0. Seul le QCM final est noté. */
 
 export type ActivityChoice = {
   label: string;

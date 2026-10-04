@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -24,10 +25,10 @@ export default function Navbar() {
       )}
     >
       <nav className="max-w-7xl mx-auto pl-4 pr-6 sm:pl-6 sm:pr-8 lg:pl-8 lg:pr-12 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight">
+        <Link href="/" className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight">
           Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
           <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" strokeWidth={2} aria-hidden="true" />
-        </a>
+        </Link>
 
         <div className="flex items-center gap-3">
           <ThemeToggle />

@@ -43,6 +43,7 @@ import {
   needsAck,
 } from "@/lib/formation/pace";
 import {
+  AI_USE_CASE_STATUS_LABELS,
   emptyCompanyModule,
   isCompanyModuleFilled,
   type CompanyModuleContent,
@@ -1438,12 +1439,15 @@ function CompanyScreen({
   onComplete: () => void;
 }) {
   const filled = isCompanyModuleFilled(companyModule);
+  const useCases = (companyModule.useCases ?? []).filter(
+    (row) => row.tool.trim() || row.purpose.trim() || row.owner.trim(),
+  );
   const cards = [
     {
-      title: "Outils autorisés",
+      title: "Précisions / interdits",
       body: companyModule.tools.trim(),
       fallback:
-        "Liste des outils d'IA validés par votre entreprise (usages permis / données interdites). À renseigner par votre RH.",
+        "Complément au registre : règles transverses et données interdites. À renseigner par votre RH.",
     },
     {
       title: "Charte IA",
@@ -1481,6 +1485,51 @@ function CompanyScreen({
           {filled ? `Consignes internes · ${companyName}` : `En attente de votre RH · ${companyName}`}
         </p>
       </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
+          Registre des usages IA
+        </p>
+        {useCases.length > 0 ? (
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[28rem] text-left text-xs">
+              <thead className="text-slate-500">
+                <tr className="border-b border-slate-200 dark:border-slate-700">
+                  <th className="py-2 pr-2 font-medium">Outil</th>
+                  <th className="py-2 pr-2 font-medium">Finalité</th>
+                  <th className="py-2 pr-2 font-medium">Responsable</th>
+                  <th className="py-2 font-medium">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {useCases.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-slate-100 last:border-0 dark:border-slate-800"
+                  >
+                    <td className="py-2 pr-2 font-medium text-slate-900 dark:text-white">
+                      {row.tool || "—"}
+                    </td>
+                    <td className="py-2 pr-2 text-slate-600 dark:text-slate-300">
+                      {row.purpose || "—"}
+                    </td>
+                    <td className="py-2 pr-2 text-slate-600 dark:text-slate-300">
+                      {row.owner || "—"}
+                    </td>
+                    <td className="py-2 text-slate-700 dark:text-slate-200">
+                      {AI_USE_CASE_STATUS_LABELS[row.status]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="mt-2 text-center text-xs italic text-slate-400">
+            Votre RH n&apos;a pas encore renseigné le registre des outils IA.
+          </p>
+        )}
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2">
         {cards.map((card) => (
           <div

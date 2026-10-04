@@ -54,7 +54,7 @@ const plans: Plan[] = [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
       "Mise à jour du parcours et veille réglementaire",
-      "Evidence Center complet (Export ZIP / PDF / JSON)",
+      "Export du dossier de preuve (CSV + attestations)",
       "Conservation des preuves 12 mois post-contrat",
     ],
     cta: "Constituer le dossier de preuve",
@@ -67,7 +67,7 @@ const plans: Plan[] = [
     highlight: false,
     features: [
       "Accès sur-mesure ou facturation au siège",
-      "Intégration SSO / LMS (SCORM) & API dédiées",
+      "Intégrations sur devis (vos outils RH / SI)",
       "Option Marque Blanche",
       "Module métier sur-mesure sur demande",
       "Contrat SLA & support dédié",
@@ -150,7 +150,11 @@ export default function PricingSection() {
                 </ul>
 
                 <a
-                  href="#"
+                  href={
+                    plan.name === "ETI"
+                      ? "mailto:contact@conformai.fr?subject=ConformAI%20ETI%20-%20devis"
+                      : "mailto:contact@conformai.fr?subject=ConformAI%20-%20demarrer"
+                  }
                   className={`w-full text-center px-5 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
                     plan.highlight
                       ? "bg-blue-600 hover:bg-blue-700 text-white"
@@ -166,7 +170,10 @@ export default function PricingSection() {
 
         <p className="text-center text-sm text-slate-600 dark:text-slate-300 mt-10">
           Besoin d&apos;un module spécifique à votre métier ? On l&apos;ajoute au parcours, sur devis.{" "}
-          <a href="#" className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400">
+          <a
+            href="mailto:contact@conformai.fr?subject=ConformAI%20-%20module%20sur-mesure"
+            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+          >
             Demander du sur-mesure
           </a>
         </p>

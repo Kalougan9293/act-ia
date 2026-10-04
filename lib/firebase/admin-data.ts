@@ -2,12 +2,14 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   writeBatch,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import type { PlatformUser, Structure } from "@/lib/admin/types";
+import type { AiUseCaseEntry, PlatformUser, Structure } from "@/lib/admin/types";
+import { emptyCompanyModule } from "@/lib/admin/types";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -27,6 +29,21 @@ function toIsoDate(value: unknown): string {
 export function mapStructure(id: string, data: Record<string, unknown>): Structure {
   const billing = (data.billing ?? {}) as Record<string, unknown>;
   const company = (data.companyModule ?? {}) as Record<string, unknown>;
+  const rawCases = Array.isArray(company.useCases) ? company.useCases : [];
+  const useCases: AiUseCaseEntry[] = rawCases.map((row, index) => {
+    const item = (row ?? {}) as Record<string, unknown>;
+    const status = item.status;
+    return {
+      id: String(item.id ?? `uc_${index}`),
+      tool: String(item.tool ?? ""),
+      purpose: String(item.purpose ?? ""),
+      owner: String(item.owner ?? ""),
+      status:
+        status === "review" || status === "forbidden" || status === "authorized"
+          ? status
+          : "authorized",
+    };
+  });
   return {
     id,
     name: String(data.name ?? ""),
@@ -35,10 +52,12 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
     archivedAt: data.archivedAt ? toIsoDate(data.archivedAt) : null,
     inviteToken: data.inviteToken ? String(data.inviteToken) : null,
     companyModule: {
+      ...emptyCompanyModule(),
       tools: String(company.tools ?? ""),
       charter: String(company.charter ?? ""),
       contacts: String(company.contacts ?? ""),
       declaration: String(company.declaration ?? ""),
+      useCases,
     },
     billing: {
       companyName: String(billing.companyName ?? data.name ?? ""),
@@ -88,6 +107,20 @@ export async function listUsers(): Promise<PlatformUser[]> {
   const db = requireDb();
   const snap = await getDocs(collection(db, "users"));
   return snap.docs.map((d) => mapUser(d.id, d.data() as Record<string, unknown>));
+}
+
+export async function getUserById(userId: string): Promise<PlatformUser | null> {
+  const db = requireDb();
+  const snap = await getDoc(doc(db, "users", userId));
+  if (!snap.exists()) return null;
+  return mapUser(snap.id, snap.data() as Record<string, unknown>);
+}
+
+export async function getStructureById(structureId: string): Promise<Structure | null> {
+  const db = requireDb();
+  const snap = await getDoc(doc(db, "structures", structureId));
+  if (!snap.exists()) return null;
+  return mapStructure(snap.id, snap.data() as Record<string, unknown>);
 }
 
 export async function saveStructure(structure: Structure): Promise<void> {

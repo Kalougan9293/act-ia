@@ -39,9 +39,10 @@ export default function ConfidentialitePage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Conservation</h2>
         <p>
-          Les données de compte et de preuve de formation sont conservées pendant la durée du
-          contrat puis archivées le temps nécessaire aux obligations légales ou aux besoins de
-          preuve de l&apos;employeur, sauf demande de suppression légitime.
+          Pendant le contrat : compte, progression et attestations restent disponibles pour
+          l&apos;employeur. Après la fin du contrat : les preuves de formation (attestations,
+          registre de suivi) sont conservées jusqu&apos;à 12 mois, sauf demande de suppression
+          légitime ou obligation légale plus longue. Même règle pour tous les plans.
         </p>
       </section>
 
@@ -59,8 +60,8 @@ export default function ConfidentialitePage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Sous-traitants</h2>
         <p>
-          Hébergement et authentification via des prestataires cloud (notamment Vercel et Google
-          Firebase), avec mesures de sécurité adaptées.
+          Application web : Vercel. Données et authentification : Google Firebase / Google Cloud,
+          base Firestore en Union européenne (région eur3).
         </p>
       </section>
     </LegalShell>

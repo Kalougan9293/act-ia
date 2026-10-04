@@ -13,8 +13,8 @@ export type FormationProgress = {
   careerPathId: string | null;
 };
 
-export const CURRICULUM_VERSION = "CDC-V2.7";
-export const CURRICULUM_LABEL = "CDC V2.7";
+export const CURRICULUM_VERSION = "V1.0";
+export const CURRICULUM_LABEL = "V1.0";
 
 export function emptyProgress(): FormationProgress {
   return {

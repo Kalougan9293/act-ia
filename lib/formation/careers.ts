@@ -1,4 +1,4 @@
-/** Parcours métiers — ConformAI CDC V2.7 */
+/** Parcours métiers — ConformAI V1.0 */
 
 import type { QuizQuestion } from "@/lib/formation/evaluation";
 
@@ -112,7 +112,7 @@ export const CAREER_PATHS: CareerPath[] = [
           "Aucune preuve n'est nécessaire.",
         ],
         correctIndex: 1,
-        explanation: "L'Evidence Center sert précisément à constituer ce dossier.",
+        explanation: "Le dossier de preuve (registre, attestations, suivi formation) sert à documenter la démarche.",
       },
     ],
   },

@@ -60,7 +60,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-3 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} ConformAI — Hébergé en France
+          © {new Date().getFullYear()} ConformAI — Données Firebase (UE) · App Vercel
         </div>
         <p className="mt-2 text-center text-xs text-slate-400">
           Prise en charge OPCO possible via un organisme de formation partenaire Qualiopi, selon éligibilité.
