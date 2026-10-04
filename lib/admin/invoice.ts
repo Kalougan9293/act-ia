@@ -51,11 +51,14 @@ function invoiceHtml(structure: Structure) {
 </head>
 <body>
   <div class="emitter">
-    <strong>FitOps AI</strong><br>
+    <strong>FITOPS AI</strong><br>
+    Micro-entreprise<br>
     119 rue Jules Parent<br>
     Rueil-Malmaison (92500)<br>
+    06.62.28.86.56<br>
     contact@lockin-web.online<br>
-    SIRET 853 780 906 00063
+    SIRET 853 780 906 00063<br>
+    TVA non applicable, art. 293 B du CGI
   </div>
   <div class="client-wrap">
     <div class="client">
@@ -85,6 +88,7 @@ function invoiceHtml(structure: Structure) {
     </tbody>
   </table>
   <p class="total">Total ${escapeHtml(money(billing.priceMonthlyEur))}</p>
+  <p class="muted">TVA non applicable, art. 293 B du CGI</p>
 </body>
 </html>`;
 }

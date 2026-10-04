@@ -42,6 +42,13 @@ export default function CookiesPage() {
           Vous pouvez effacer les données du site via les paramètres de votre navigateur. La
           déconnexion met fin à la session active.
         </p>
+        <p>
+          Contact :{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="mailto:contact@lockin-web.online">
+            contact@lockin-web.online
+          </a>
+          .
+        </p>
       </section>
     </LegalShell>
   );

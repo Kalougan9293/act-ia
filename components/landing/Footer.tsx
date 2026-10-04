@@ -5,6 +5,7 @@ const legal = [
   { label: "Mentions légales", href: "/mentions-legales" },
   { label: "Confidentialité", href: "/confidentialite" },
   { label: "CGU", href: "/cgu" },
+  { label: "CGV", href: "/cgv" },
   { label: "Cookies", href: "/cookies" },
 ];
 
@@ -62,10 +63,10 @@ export default function Footer() {
         <div className="mt-3 text-center text-xs text-slate-500">
           © {new Date().getFullYear()} ConformAI — Données Firebase (UE) · App Vercel
         </div>
-        <p className="mt-2 text-center text-xs text-slate-400">
+        <p className="mt-2 text-justify text-xs text-slate-400 hyphens-auto">
           Prise en charge OPCO possible via un organisme de formation partenaire Qualiopi, selon éligibilité.
         </p>
-        <p className="mx-auto mt-3 max-w-3xl text-center text-[11px] leading-relaxed text-slate-500">
+        <p className="mx-auto mt-3 max-w-3xl text-justify text-[11px] leading-relaxed text-slate-500 hyphens-auto">
           Outils d&apos;aide à la conformité, pas un conseil juridique. L&apos;attestation
           documente vos mesures au titre de l&apos;article 4. Elle ne certifie pas l&apos;entreprise.
         </p>

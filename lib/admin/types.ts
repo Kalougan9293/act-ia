@@ -18,20 +18,71 @@ export interface BillingInfo {
   nextInvoiceAt: string;
 }
 
-/** Ligne du registre des usages IA (AI Use Case Register) */
+/** Statuts du workflow Shadow AI (CDC) */
+export type AiUseCaseStatus = "draft" | "analysis" | "pending" | "conditional" | "forbidden";
+
+/** Fiche du registre des usages IA */
 export type AiUseCaseEntry = {
   id: string;
-  tool: string;
-  purpose: string;
+  service: string;
   owner: string;
-  status: "authorized" | "review" | "forbidden";
+  population: string;
+  tool: string;
+  vendor: string;
+  purpose: string;
+  data: string;
+  legalBasis: string;
+  article22: string;
+  aiAct: string;
+  aiActJustification: string;
+  aipd: string;
+  dpa: string;
+  transfers: string;
+  /** Prochaine réévaluation, AAAA-MM-JJ */
+  reviewAt: string;
+  status: AiUseCaseStatus;
 };
 
-export const AI_USE_CASE_STATUS_LABELS: Record<AiUseCaseEntry["status"], string> = {
-  authorized: "Autorisé",
-  review: "En revue",
+export type ModuleRevision = {
+  at: string;
+  summary: string;
+};
+
+export const AI_USE_CASE_STATUS_LABELS: Record<AiUseCaseStatus, string> = {
+  draft: "Brouillon",
+  analysis: "En analyse",
+  pending: "En attente",
+  conditional: "Autorisé sous conditions",
   forbidden: "Interdit",
 };
+
+const LEGACY_USE_CASE_STATUS: Record<string, AiUseCaseStatus> = {
+  authorized: "conditional",
+  review: "analysis",
+  forbidden: "forbidden",
+  draft: "draft",
+  analysis: "analysis",
+  pending: "pending",
+  conditional: "conditional",
+};
+
+const USE_CASE_TEXT_KEYS = [
+  "service",
+  "owner",
+  "population",
+  "tool",
+  "vendor",
+  "purpose",
+  "data",
+  "legalBasis",
+  "article22",
+  "aiAct",
+  "aiActJustification",
+  "aipd",
+  "dpa",
+  "transfers",
+  "reviewAt",
+] as const;
 
 /** Contenu du module « Votre entreprise » vu par les collaborateurs */
 export type CompanyModuleContent = {
@@ -41,27 +92,54 @@ export type CompanyModuleContent = {
   declaration: string;
   /** Registre structuré des outils / usages IA */
   useCases: AiUseCaseEntry[];
+  /** Historique horodaté des enregistrements du module */
+  revisions: ModuleRevision[];
 };
 
 export function emptyCompanyModule(): CompanyModuleContent {
-  return { tools: "", charter: "", contacts: "", declaration: "", useCases: [] };
+  return { tools: "", charter: "", contacts: "", declaration: "", useCases: [], revisions: [] };
 }
 
 export function emptyAiUseCase(): AiUseCaseEntry {
   return {
     id: `uc_${Math.random().toString(36).slice(2, 10)}`,
-    tool: "",
-    purpose: "",
+    service: "",
     owner: "",
-    status: "authorized",
+    population: "",
+    tool: "",
+    vendor: "",
+    purpose: "",
+    data: "",
+    legalBasis: "",
+    article22: "",
+    aiAct: "",
+    aiActJustification: "",
+    aipd: "",
+    dpa: "",
+    transfers: "",
+    reviewAt: "",
+    status: "draft",
   };
+}
+
+export function normalizeAiUseCase(raw: unknown, index = 0): AiUseCaseEntry {
+  const item = (raw ?? {}) as Record<string, unknown>;
+  const blank = emptyAiUseCase();
+  const next: AiUseCaseEntry = { ...blank, id: String(item.id ?? `uc_${index}`) };
+  for (const key of USE_CASE_TEXT_KEYS) {
+    next[key] = String(item[key] ?? "");
+  }
+  next.status = LEGACY_USE_CASE_STATUS[String(item.status ?? "")] ?? "draft";
+  return next;
+}
+
+export function isAiUseCaseFilled(row: AiUseCaseEntry): boolean {
+  return USE_CASE_TEXT_KEYS.some((key) => key !== "reviewAt" && row[key].trim().length > 0);
 }
 
 export function isCompanyModuleFilled(module: CompanyModuleContent | null | undefined): boolean {
   if (!module) return false;
-  const hasUseCase = module.useCases?.some(
-    (row) => row.tool.trim() || row.purpose.trim() || row.owner.trim(),
-  );
+  const hasUseCase = module.useCases?.some((row) => isAiUseCaseFilled(row));
   return Boolean(
     module.tools.trim() ||
       module.charter.trim() ||

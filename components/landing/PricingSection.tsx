@@ -24,7 +24,7 @@ const plans: Plan[] = [
       "Jusqu'à 5 accès utilisateurs",
       "Socle commun + Parcours Métiers",
       "Attestations nominatives horodatées",
-      "Tableau de bord RH & Export du dossier de preuve",
+      "Tableau de bord RH, registre des usages et export ZIP / JSON",
       "Support par email",
     ],
     cta: "Démarrer maintenant",
@@ -39,7 +39,6 @@ const plans: Plan[] = [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
       "Relances automatiques des apprenants",
-      "Registre des usages IA (AI Use Case Register)",
       "Support prioritaire",
     ],
     cta: "Démarrer maintenant",
@@ -54,7 +53,7 @@ const plans: Plan[] = [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
       "Mise à jour du parcours et veille réglementaire",
-      "Export du dossier de preuve (CSV + attestations)",
+      "Dossier de preuve : attestations, registre, historique",
       "Conservation des preuves 12 mois post-contrat",
     ],
     cta: "Constituer le dossier de preuve",
@@ -91,8 +90,8 @@ export default function PricingSection() {
             Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, un{" "}
             <span className="text-blue-600 dark:text-blue-400">registre</span> à jour
           </h2>
-          <p className="text-center text-slate-900 dark:text-slate-100 max-w-xl mx-auto text-lg">
-            Abonnement annuel sans frais cachés. Mises à jour réglementaires incluses.
+          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-xl mx-auto text-lg hyphens-auto">
+            Abonnement annuel sans frais cachés. Veille incluse : vous êtes informés des évolutions, le parcours suit l'actualité.
           </p>
         </motion.div>
 
@@ -168,7 +167,26 @@ export default function PricingSection() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-slate-600 dark:text-slate-300 mt-10">
+        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-white px-5 py-5 text-left shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Marque blanche</p>
+          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+            Pour les organismes de formation et les cabinets RH
+          </h3>
+          <p className="mt-2 text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300">
+            Vous accompagnez déjà des entreprises. ConformAI passe à vos couleurs : parcours,
+            QCM, attestations et registre, pour que vos clients documentent leurs mesures au titre
+            de l&apos;article 4. Licence annuelle de 2&nbsp;000 à 5&nbsp;000&nbsp;€ par partenaire,
+            plus un montant par apprenant.
+          </p>
+          <a
+            href="mailto:contact@conformai.fr?subject=ConformAI%20marque%20blanche"
+            className="mt-3 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+          >
+            En parler
+          </a>
+        </div>
+
+        <p className="mx-auto mt-10 max-w-3xl text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
           Besoin d&apos;un module spécifique à votre métier ? On l&apos;ajoute au parcours, sur devis.{" "}
           <a
             href="mailto:contact@conformai.fr?subject=ConformAI%20-%20module%20sur-mesure"
@@ -183,9 +201,9 @@ export default function PricingSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4"
+          className="mx-auto mt-4 max-w-3xl text-justify text-xs text-slate-500 hyphens-auto dark:text-slate-400"
         >
-          Paiement annuel par carte ou virement • Facture avec TVA • Mises à jour légales incluses.
+          Paiement annuel par carte ou virement • TVA non applicable, art. 293 B du CGI • Mises à jour légales incluses.
         </motion.p>
       </div>
     </section>

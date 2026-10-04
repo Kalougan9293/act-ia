@@ -11,26 +11,43 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Éditeur</h2>
         <p>
-          ConformAI — plateforme de formation et de traçabilité relative à la maîtrise de l&apos;IA
-          (article 4 du règlement européen sur l&apos;IA).
+          Le site ConformAI, plateforme de formation et de traçabilité relative à la maîtrise de
+          l&apos;IA (article 4 du règlement européen sur l&apos;IA), est édité par :
         </p>
         <p>
-          Contact :{" "}
-          <a className="text-blue-600 hover:underline dark:text-blue-400" href="mailto:contact@conformai.fr">
-            contact@conformai.fr
-          </a>
+          FITOPS AI
+          <br />
+          119 rue Jules Parent
+          <br />
+          Rueil-Malmaison (92500)
+          <br />
+          SIRET 853 780 906 00063
         </p>
-        <p className="text-xs text-slate-400">
-          Raison sociale, forme juridique, SIRET et adresse du siège : à compléter avant mise en
-          production commerciale.
+        <p>Micro-entreprise, sans capital social. Non immatriculée au RCS.</p>
+        <p>TVA non applicable, article 293 B du CGI.</p>
+        <p>Directeur de la publication : Jonathan Seroussi.</p>
+        <p>
+          Contact :{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="mailto:contact@lockin-web.online">
+            contact@lockin-web.online
+          </a>
+          {" · "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="tel:+33662288656">
+            06.62.28.86.56
+          </a>
         </p>
       </section>
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Hébergement</h2>
         <p>
-          Application web : Vercel Inc. Données applicatives : Google Firebase / Google Cloud —
-          Firestore en Union européenne (région eur3).
+          Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723,
+          États-Unis.
+        </p>
+        <p>
+          Les données de la plateforme (comptes, formation, registre) sont hébergées par Google
+          Firebase / Google Cloud. La base Firestore est située dans l&apos;Union européenne
+          (région eur3).
         </p>
       </section>
 

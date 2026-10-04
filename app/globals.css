@@ -44,29 +44,10 @@ p.text-center {
   hyphens: manual;
 }
 
-#features p,
 #features li,
 #features h2,
 #features h3 {
   hyphens: none;
-}
-
-#features p.text-left {
-  text-align: left;
-}
-
-@media (max-width: 767px) {
-  #features p,
-  #features h3,
-  #features p.text-left {
-    text-align: center;
-  }
-}
-
-#pricing p,
-#pricing h3,
-#pricing p.text-left {
-  text-align: center;
 }
 
 @keyframes border-orbit {

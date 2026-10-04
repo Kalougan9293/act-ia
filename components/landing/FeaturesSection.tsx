@@ -6,10 +6,10 @@ import { Award, Check, Download } from "lucide-react";
 const features = [
   {
     number: "01",
-    title: "Des formations courtes",
+    title: "Des formations opérationnelles",
     subtitle: "Sans bloquer la journée",
     description:
-      "Vos équipes avancent seules, en modules courts, sur l'IA et le RGPD.",
+      "Vos équipes avancent seules, à leur rythme, sur l'IA et le RGPD.",
     points: [
       "Un parcours selon le métier",
       "Sur mobile, tablette ou ordinateur",
@@ -39,7 +39,7 @@ const features = [
     points: [
       "Suivi par équipe",
       "Relances automatiques",
-      "Export CSV et attestations",
+      "Export ZIP / JSON et attestations",
     ],
     preview: "admin" as const,
   },
@@ -222,7 +222,7 @@ export default function FeaturesSection() {
             Former, attester,{" "}
             <span className="text-blue-600 dark:text-blue-400">exporter</span>
           </h2>
-          <p className="text-center text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-none">
+          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-auto">
             Trois fonctions. Un seul dossier pour la direction et le DPO.
           </p>
         </motion.div>
@@ -249,7 +249,7 @@ export default function FeaturesSection() {
                     </p>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white hyphens-none">{feature.title}</h3>
                   </div>
-                  <p className="text-left text-slate-900 dark:text-slate-100 leading-relaxed hyphens-none">{feature.description}</p>
+                  <p className="text-justify text-slate-900 dark:text-slate-100 leading-relaxed hyphens-auto">{feature.description}</p>
                   <ul className="space-y-2.5 w-fit mx-auto md:mx-0 text-left">
                     {feature.points.map((point) => (
                       <li key={point} className="flex items-start gap-2.5 text-sm text-slate-900 dark:text-slate-100 hyphens-none">

@@ -9,7 +9,7 @@ export const mockStructures: Structure[] = [
     status: "active",
     archivedAt: null,
     inviteToken: "invite_atelier_demo",
-    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [] },
+    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [], revisions: [] },
     billing: {
       companyName: "Atelier Lumière SAS",
       siret: "812 456 789 00012",
@@ -29,7 +29,7 @@ export const mockStructures: Structure[] = [
     status: "active",
     archivedAt: null,
     inviteToken: "invite_nova_demo",
-    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [] },
+    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [], revisions: [] },
     billing: {
       companyName: "Nova Retail SA",
       siret: "521 334 110 00045",
@@ -49,7 +49,7 @@ export const mockStructures: Structure[] = [
     status: "invited",
     archivedAt: null,
     inviteToken: "invite_green_demo",
-    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [] },
+    companyModule: { tools: "", charter: "", contacts: "", declaration: "", useCases: [], revisions: [] },
     billing: {
       companyName: "GreenTech Solutions SARL",
       siret: "901 223 445 00033",

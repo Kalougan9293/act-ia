@@ -16,6 +16,11 @@ const faqs = [
       "L'article 4 demande des mesures, pas un score à atteindre. Ce site n'affiche aucun montant d'amende : cela se vérifie avec un avocat. Le registre et les attestations montrent ce que vous avez mis en place.",
   },
   {
+    question: "Serons-nous informés si la réglementation change ?",
+    answer:
+      "Oui. La veille signale les évolutions de l'AI Act et du RGPD, et le parcours est mis à jour. Votre démarche reste actuelle. La validation des usages reste celle de votre entreprise.",
+  },
+  {
     question: "Combien de temps dure la formation pour mes salariés ?",
     answer:
       "Parcours complet : 1h00. Peut être suivi en plusieurs sessions.",
@@ -101,7 +106,7 @@ function FAQItem({ faq, isOpen, onToggle, index }: FAQItemProps) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="px-6 pb-5 text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
+            <p className="px-6 pb-5 text-justify text-sm text-slate-900 dark:text-slate-100 leading-relaxed hyphens-auto">
               {faq.answer}
             </p>
           </motion.div>

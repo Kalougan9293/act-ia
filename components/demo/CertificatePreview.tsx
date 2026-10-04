@@ -148,7 +148,7 @@ export default function CertificatePreview({
             <table className="w-full text-sm text-left border border-slate-200">
               <tbody>
                 {[
-                  ["Durée pédagogique prévue", "≈ 1 h 25 à 1 h 30"],
+                  ["Durée pédagogique prévue", "1 h 00"],
                   ["Parcours complété", "100 %"],
                   ["Évaluation finale", `${proof.score} / 100`],
                   ["Seuil de réussite", "80 / 100"],

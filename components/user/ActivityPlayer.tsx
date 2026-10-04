@@ -23,7 +23,7 @@ function Feedback({ text }: { text: string }) {
       <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
         À retenir
       </p>
-      <p className="mt-3 text-center text-base font-semibold leading-relaxed text-slate-900 dark:text-white">
+      <p className="mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto dark:text-white">
         {text}
       </p>
     </div>
@@ -129,7 +129,7 @@ function TextActivity({
   return (
     <div className="space-y-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
       {activity.kind === "fiche" && (
-        <p className="text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">{activity.intro}</p>
+        <p className="text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">{activity.intro}</p>
       )}
       {activity.kind === "text" && (
         <div className="space-y-3">
@@ -1057,7 +1057,7 @@ function TrafficActivity({
             {item.label}
           </p>
           {revealed && (
-            <p className="mt-4 text-center text-sm font-medium leading-relaxed text-white/95">{item.explanation}</p>
+            <p className="mt-4 text-justify text-sm font-medium leading-relaxed text-white/95 hyphens-auto">{item.explanation}</p>
           )}
         </div>
       </div>
@@ -1244,7 +1244,7 @@ function StampActivity({
             {card.label}
           </p>
           {revealed && (
-            <p className="mt-4 text-center text-sm font-medium leading-relaxed text-white/95">{card.explanation}</p>
+            <p className="mt-4 text-justify text-sm font-medium leading-relaxed text-white/95 hyphens-auto">{card.explanation}</p>
           )}
         </div>
       </div>
@@ -1421,7 +1421,7 @@ function TimelineActivity({
             <p className="text-center text-[10px] font-semibold tracking-[0.16em] text-slate-500 uppercase dark:text-slate-400">
               En clair
             </p>
-            <p className="mt-1 text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">{active.detail}</p>
+            <p className="mt-1 text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">{active.detail}</p>
           </div>
         </div>
       )}
@@ -1781,14 +1781,14 @@ function TetrisActivity({
   if (!started) {
     return (
       <div className="mx-auto w-full max-w-md space-y-5 px-1">
-        <p className="whitespace-pre-line text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+        <p className="whitespace-pre-line text-justify text-base font-semibold leading-snug text-slate-900 hyphens-auto dark:text-white">
           {activity.intro}
         </p>
         <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 sm:px-5 dark:border-slate-700 dark:bg-slate-900">
           <p className="text-center text-xs font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
             Comment jouer
           </p>
-          <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+          <ul className="mt-3 space-y-2.5 text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">
             <li>
               <span className="font-semibold text-slate-900 dark:text-white">← →</span> déplacer
             </li>

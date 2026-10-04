@@ -24,6 +24,10 @@ const stats = [
     value: "Prise en main immédiate",
     label: "100 % SaaS, aucune installation",
   },
+  {
+    value: "Veille réglementaire",
+    label: "Vous êtes informés des évolutions de l'AI Act et du RGPD. Le parcours suit l'actualité.",
+  },
 ];
 
 export default function TrustBanner() {

@@ -29,7 +29,6 @@ import {
   type Block,
 } from "@/lib/formation/curriculum";
 import {
-  POSITIONING_SIZE,
   QUIZ_DRAW_SIZE,
   QUIZ_PASS_PERCENT,
   QUIZ_TIMER_SECONDS,
@@ -45,6 +44,7 @@ import {
 import {
   AI_USE_CASE_STATUS_LABELS,
   emptyCompanyModule,
+  isAiUseCaseFilled,
   isCompanyModuleFilled,
   type CompanyModuleContent,
 } from "@/lib/admin/types";
@@ -110,7 +110,7 @@ export default function FormationExperience({
   const [positioningRound] = useState(() => toRound(drawPositioningQuiz()));
   const [positioningIndex, setPositioningIndex] = useState(0);
   const [positioningAnswers, setPositioningAnswers] = useState<(number | null)[]>(() =>
-    Array.from({ length: POSITIONING_SIZE }, () => null),
+    Array.from({ length: positioningRound.length }, () => null),
   );
   const [positioningReveal, setPositioningReveal] = useState(false);
   const [positioningFinished, setPositioningFinished] = useState(false);
@@ -165,6 +165,7 @@ export default function FormationExperience({
         quizPassed={progress.quizPassed}
         companyDone={progress.companyModuleDone}
         careerPathId={progress.careerPathId}
+        positioningCount={positioningRound.length}
         onOpenPositioning={() => {
           if (!progress.introDone) markIntroDone();
           setScreen({ kind: "positioning" });
@@ -510,6 +511,7 @@ function IntroScreen({
   quizPassed,
   companyDone,
   careerPathId,
+  positioningCount,
   onOpenPositioning,
   onOpenBlock,
   onOpenCompany,
@@ -523,6 +525,7 @@ function IntroScreen({
   quizPassed: boolean;
   companyDone: boolean;
   careerPathId: string | null;
+  positioningCount: number;
   onOpenPositioning: () => void;
   onOpenBlock: (blockId: string) => void;
   onOpenCompany: () => void;
@@ -647,7 +650,7 @@ function IntroScreen({
             <span>
               {positioningDone
                 ? "Niveau situé"
-                : `Avant de commencer, situez votre niveau · ${POSITIONING_SIZE} questions, sans enjeu`}
+                : `Avant de commencer, situez votre niveau · ${positioningCount} questions, sans enjeu`}
             </span>
           </span>
           <span className="sr-only">
@@ -790,14 +793,19 @@ function IntroScreen({
         </div>
       </div>
 
-      <p className="mx-auto w-full max-w-3xl pt-6 text-center text-sm font-normal leading-relaxed text-slate-500 dark:text-slate-400">
+      <p className="mx-auto w-full max-w-3xl pt-6 text-justify text-sm font-normal leading-relaxed text-slate-500 hyphens-auto dark:text-slate-400">
         L&apos;avancement passe à 100 % dès la réussite de l&apos;examen (≥ {QUIZ_PASS_PERCENT} %).
         L&apos;attestation est délivrée après le module entreprise et le parcours métier.
       </p>
 
-      <p className="text-center text-xs text-slate-400">
+      <p className="text-justify text-xs text-slate-400 hyphens-auto">
         Parcours complet : 1h00. Peut être suivi en plusieurs sessions.
       </p>
+      {careerPathId && (
+        <p className="text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
+          On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
+        </p>
+      )}
     </div>
   );
 }
@@ -907,6 +915,9 @@ function HubScreen({
           </p>
           <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
             Conservée dans le dossier de preuve de votre entreprise (Art. 4).
+          </p>
+          <p className="mt-2 text-justify text-sm text-slate-600 hyphens-auto dark:text-emerald-100/90">
+            On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
           </p>
           <button
             type="button"
@@ -1193,7 +1204,7 @@ function BlockScreen({
           Bloc {block.number} · {block.duration}
         </p>
         <h1 className="mt-1 text-center text-2xl font-bold text-slate-900 dark:text-white">{block.title}</h1>
-        <p className="mx-auto mt-2 max-w-sm text-center text-sm text-slate-500">{block.goal}</p>
+        <p className="mx-auto mt-2 max-w-sm text-justify text-sm text-slate-500 hyphens-auto">{block.goal}</p>
       </div>
       <ul className="mx-auto grid max-w-2xl grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4">
         {block.chapters.map((chapter, index) => {
@@ -1439,9 +1450,7 @@ function CompanyScreen({
   onComplete: () => void;
 }) {
   const filled = isCompanyModuleFilled(companyModule);
-  const useCases = (companyModule.useCases ?? []).filter(
-    (row) => row.tool.trim() || row.purpose.trim() || row.owner.trim(),
-  );
+  const useCases = (companyModule.useCases ?? []).filter((row) => isAiUseCaseFilled(row));
   const cards = [
     {
       title: "Précisions / interdits",
@@ -1490,39 +1499,46 @@ function CompanyScreen({
           Registre des usages IA
         </p>
         {useCases.length > 0 ? (
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[28rem] text-left text-xs">
-              <thead className="text-slate-500">
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="py-2 pr-2 font-medium">Outil</th>
-                  <th className="py-2 pr-2 font-medium">Finalité</th>
-                  <th className="py-2 pr-2 font-medium">Responsable</th>
-                  <th className="py-2 font-medium">Statut</th>
-                </tr>
-              </thead>
-              <tbody>
-                {useCases.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="border-b border-slate-100 last:border-0 dark:border-slate-800"
-                  >
-                    <td className="py-2 pr-2 font-medium text-slate-900 dark:text-white">
-                      {row.tool || "—"}
-                    </td>
-                    <td className="py-2 pr-2 text-slate-600 dark:text-slate-300">
-                      {row.purpose || "—"}
-                    </td>
-                    <td className="py-2 pr-2 text-slate-600 dark:text-slate-300">
-                      {row.owner || "—"}
-                    </td>
-                    <td className="py-2 text-slate-700 dark:text-slate-200">
-                      {AI_USE_CASE_STATUS_LABELS[row.status]}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ul className="mt-3 space-y-3">
+            {useCases.map((row) => {
+              const details = [
+                ["Service", row.service],
+                ["Propriétaire", row.owner],
+                ["Population", row.population],
+                ["Fournisseur", row.vendor],
+                ["Finalité", row.purpose],
+                ["Données", row.data],
+                ["Base légale", row.legalBasis],
+                ["Art. 22", row.article22],
+                ["AI Act", row.aiAct],
+                ["Justification", row.aiActJustification],
+                ["AIPD", row.aipd],
+                ["DPA", row.dpa],
+                ["Transferts", row.transfers],
+                ["Réévaluation", row.reviewAt],
+              ].filter(([, value]) => value.trim());
+              return (
+                <li
+                  key={row.id}
+                  className="rounded-xl border border-slate-100 px-3 py-2.5 dark:border-slate-800"
+                >
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {row.tool || "Usage"} · {AI_USE_CASE_STATUS_LABELS[row.status]}
+                  </p>
+                  {details.length > 0 && (
+                    <dl className="mt-1.5 space-y-0.5 text-xs text-slate-600 dark:text-slate-300">
+                      {details.map(([label, value]) => (
+                        <div key={label}>
+                          <dt className="inline font-medium text-slate-500">{label} : </dt>
+                          <dd className="inline">{value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         ) : (
           <p className="mt-2 text-center text-xs italic text-slate-400">
             Votre RH n&apos;a pas encore renseigné le registre des outils IA.
@@ -1541,13 +1557,13 @@ function CompanyScreen({
               {card.body ? (
                 <PlainText text={card.body} compact />
               ) : (
-                <p className="text-left text-xs italic leading-relaxed text-slate-400">{card.fallback}</p>
+                <p className="text-justify text-xs italic leading-relaxed text-slate-400 hyphens-auto">{card.fallback}</p>
               )}
             </div>
           </div>
         ))}
       </div>
-      <p className="text-center text-xs text-slate-400">
+      <p className="text-justify text-xs text-slate-400 hyphens-auto">
         Ce module n&apos;entre pas dans le QCM : son contenu est renseigné par votre RH.
       </p>
       <button
@@ -1780,12 +1796,12 @@ function QuizScreen({
           <h1 className="mt-2 text-center text-2xl font-bold text-slate-900 dark:text-white">
             Avant de commencer
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mx-auto mt-3 max-w-md text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300">
             Ce QCM est noté. Dès la réussite, votre avancement passe à 100 %. L&apos;attestation
             demande ensuite le module entreprise et le parcours métier.
           </p>
 
-          <ul className="mx-auto mt-6 max-w-md space-y-3 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+          <ul className="mx-auto mt-6 max-w-md space-y-3 text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">
             <li className="flex gap-3">
               <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 text-[11px] font-bold text-slate-600 dark:border-slate-500 dark:text-slate-300">
                 1
@@ -1988,7 +2004,7 @@ function QuizScreen({
             className={
               isFinal
                 ? "mt-2 text-sm leading-relaxed text-slate-800 dark:text-slate-100"
-                : "mt-3 text-center text-base font-semibold leading-relaxed text-slate-900 dark:text-white"
+                : "mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto dark:text-white"
             }
           >
             {current.q.explanation}
@@ -2217,6 +2233,11 @@ function CareerScreen({
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
+          )}
+          {finished && (
+            <p className="text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
+              On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
+            </p>
           )}
           {finished && selected === path.id && (
             <p className="text-center text-sm font-medium text-emerald-700 dark:text-emerald-300">

@@ -40,7 +40,7 @@ export default function Hero() {
             {/* Top pill */}
             <motion.div {...fadeUp(0)}>
               <Badge variant="pill">
-                Conformité EU AI Act &amp; RGPD · Article 4 obligatoire
+                EU AI Act &amp; RGPD · Article 4 obligatoire
               </Badge>
             </motion.div>
 
@@ -61,8 +61,7 @@ export default function Hero() {
               className="text-base sm:text-[1.0625rem] text-slate-700 dark:text-slate-200 leading-relaxed text-justify hyphens-auto"
             >
               Mettez votre entreprise en mesure de répondre à l&apos;AI Act
-              (Article 4) et suivez l&apos;avancement RH sans effort grâce à notre
-              solution entièrement automatisée.
+              (article 4) et suivez l&apos;avancement RH sans effort.
             </motion.p>
 
             {/* CTAs */}

@@ -53,7 +53,7 @@ export default function ProblemSection() {
             </span>{" "}
             fait risquer à votre entreprise
           </h2>
-          <p className="text-center text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg">
+          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-auto">
             L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA.
             Les attestations et le registre les rendent visibles.
           </p>
@@ -74,7 +74,7 @@ export default function ProblemSection() {
                     {problem.tag}
                   </p>
                   <h3 className="text-center text-base font-bold text-slate-900 dark:text-white">{problem.title}</h3>
-                  <p className="text-center text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
+                  <p className="text-justify text-sm text-slate-900 dark:text-slate-100 leading-relaxed hyphens-auto">
                     {problem.description}
                   </p>
                 </div>

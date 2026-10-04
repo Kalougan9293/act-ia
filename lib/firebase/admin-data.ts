@@ -8,8 +8,8 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import type { AiUseCaseEntry, PlatformUser, Structure } from "@/lib/admin/types";
-import { emptyCompanyModule } from "@/lib/admin/types";
+import type { ModuleRevision, PlatformUser, Structure } from "@/lib/admin/types";
+import { emptyCompanyModule, normalizeAiUseCase } from "@/lib/admin/types";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -30,20 +30,14 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
   const billing = (data.billing ?? {}) as Record<string, unknown>;
   const company = (data.companyModule ?? {}) as Record<string, unknown>;
   const rawCases = Array.isArray(company.useCases) ? company.useCases : [];
-  const useCases: AiUseCaseEntry[] = rawCases.map((row, index) => {
-    const item = (row ?? {}) as Record<string, unknown>;
-    const status = item.status;
-    return {
-      id: String(item.id ?? `uc_${index}`),
-      tool: String(item.tool ?? ""),
-      purpose: String(item.purpose ?? ""),
-      owner: String(item.owner ?? ""),
-      status:
-        status === "review" || status === "forbidden" || status === "authorized"
-          ? status
-          : "authorized",
-    };
-  });
+  const useCases = rawCases.map((row, index) => normalizeAiUseCase(row, index));
+  const rawRevisions = Array.isArray(company.revisions) ? company.revisions : [];
+  const revisions: ModuleRevision[] = rawRevisions
+    .map((row) => {
+      const item = (row ?? {}) as Record<string, unknown>;
+      return { at: String(item.at ?? ""), summary: String(item.summary ?? "") };
+    })
+    .filter((row) => row.at && row.summary);
   return {
     id,
     name: String(data.name ?? ""),
@@ -58,6 +52,7 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
       contacts: String(company.contacts ?? ""),
       declaration: String(company.declaration ?? ""),
       useCases,
+      revisions,
     },
     billing: {
       companyName: String(billing.companyName ?? data.name ?? ""),

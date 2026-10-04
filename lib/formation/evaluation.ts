@@ -2,7 +2,7 @@
 
 export type QuizQuestion = {
   id: string;
-  /** Bloc pédagogique, pour le tirage « au moins 2 questions par bloc ». */
+  /** Bloc pédagogique, pour le tirage « au moins 3 questions par bloc ». */
   blockId: string;
   prompt: string;
   choices: [string, string, string];
@@ -14,10 +14,11 @@ export const QUIZ_DRAW_SIZE = 20;
 export const QUIZ_PASS_PERCENT = 80;
 /** Chrono indicatif (ne coupe pas l'examen). ~45 s par question. */
 export const QUIZ_TIMER_SECONDS = 15 * 60;
-export const POSITIONING_SIZE = 10;
+export const POSITIONING_MIN = 6;
+export const POSITIONING_MAX = 8;
 
 /**
- * Banque du socle (30 questions).
+ * Banque du socle (40 questions).
  * Les anciennes questions 3 et 5 du QCM V2.4 sont rattachées aux parcours
  * Direction et Tech : elles ne font pas partie de ce tirage.
  * Les trois choix d'une question ont une longueur comparable (anti-biais « la plus longue »).
@@ -399,6 +400,126 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     correctIndex: 1,
     explanation: "Aucun document externe ne part sans relecture humaine.",
   },
+  {
+    id: "q33",
+    blockId: "bloc-1",
+    prompt: "Un prompt très clair et très précis garantit-il que la réponse de l'IA est vraie ?",
+    choices: [
+      "Oui : plus la consigne est précise, plus le modèle consulte une source vérifiée et fiable.",
+      "Non : un bon prompt aide, mais le modèle calcule ce qui est plausible et peut encore se tromper.",
+      "Oui, dès que le prompt demande explicitement à l'IA de ne citer que des faits déjà contrôlés.",
+    ],
+    correctIndex: 1,
+    explanation: "Un bon prompt aide, mais ne remplace jamais la vérification.",
+  },
+  {
+    id: "q34",
+    blockId: "bloc-1",
+    prompt: "Quelle différence retient-on entre une IA « classique » et une IA générative ?",
+    choices: [
+      "L'IA classique produit un texte nouveau ; l'IA générative se contente de classer des cas déjà connus.",
+      "L'IA classique classe ou prédit ; l'IA générative produit un contenu nouveau (texte, image, son, code).",
+      "Il n'y en a aucune : les deux vont chercher une réponse exacte dans une base de vérités officielles.",
+    ],
+    correctIndex: 1,
+    explanation: "Le filtre anti-spam classe. ChatGPT, lui, produit un contenu qui n'existait pas.",
+  },
+  {
+    id: "q35",
+    blockId: "bloc-1",
+    prompt: "Une réponse d'IA cite un chiffre daté de plusieurs années. Que faire avant de le réutiliser ?",
+    choices: [
+      "Le reprendre tel quel : si l'IA le formule avec assurance, le chiffre est encore d'actualité.",
+      "Vérifier la date et la source : les connaissances du modèle peuvent être anciennes ou inventées.",
+      "Demander à l'IA de confirmer la date ; si elle répète le même chiffre, il devient fiable.",
+    ],
+    correctIndex: 1,
+    explanation: "Une réponse plausible peut s'appuyer sur une info datée, ou sur un chiffre inventé.",
+  },
+  {
+    id: "q36",
+    blockId: "bloc-4",
+    prompt: "Un texte destiné au public a été rédigé par une IA et personne ne l'a relu. Que faites-vous ?",
+    choices: [
+      "Je le publie : un texte grand public n'a pas besoin de relecture dès lors qu'il est bien écrit.",
+      "Je ne le publie pas en l'état : un contenu destiné au public part seulement après relecture humaine.",
+      "Je le publie si l'IA ajoute elle-même une mention « généré par IA » en bas de page.",
+    ],
+    correctIndex: 1,
+    explanation: "Un contenu destiné au public sans relecture fait partie des cas où l'on s'arrête.",
+  },
+  {
+    id: "q37",
+    blockId: "bloc-4",
+    prompt: "Une image générée pour une campagne ressemble au logo d'une marque connue. Que retenir ?",
+    choices: [
+      "C'est libre de droits : une image générée n'appartient jamais à une marque existante.",
+      "Il faut vérifier l'outil, les licences et l'absence de ressemblance avec une œuvre, une marque ou une personne.",
+      "C'est interdit uniquement si l'image est une photo ; un logo généré peut toujours être utilisé.",
+    ],
+    correctIndex: 1,
+    explanation: "Un contenu généré peut reproduire une œuvre, une marque ou une personne existante.",
+  },
+  {
+    id: "q38",
+    blockId: "bloc-5",
+    prompt: "On vous propose de laisser un agent IA valider seul des paiements fournisseurs. Que faites-vous ?",
+    choices: [
+      "J'accepte : un paiement est une action réversible, l'IA peut donc décider sans humain.",
+      "Je refuse l'automatisation seule : un paiement est une action importante, un humain doit pouvoir l'arrêter.",
+      "J'accepte si l'agent est hébergé en Europe, ce qui suffit à couvrir la responsabilité.",
+    ],
+    correctIndex: 1,
+    explanation: "Une action irréversible (envoi, suppression, paiement) ne part pas sans validation humaine.",
+  },
+  {
+    id: "q39",
+    blockId: "bloc-5",
+    prompt: "Un contrat client a été généré par IA et doit partir ce soir, sans relecture juridique. Que faites-vous ?",
+    choices: [
+      "Je l'envoie : un contrat généré est fiable dès que les noms des parties sont corrects.",
+      "Je ne l'envoie pas ainsi : un document juridique ou contractuel non vérifié ne part pas.",
+      "Je l'envoie après avoir demandé à l'IA si le contrat est « juridiquement sûr ».",
+    ],
+    correctIndex: 1,
+    explanation: "Savoir utiliser l'IA, c'est aussi savoir s'arrêter quand le document ne sera pas vérifié.",
+  },
+  {
+    id: "q40",
+    blockId: "bloc-6",
+    prompt: "Avant de coller un extrait dans une IA, lequel de ces réflexes vient en premier ?",
+    choices: [
+      "Est-ce confidentiel, personnel ou sensible, et ai-je le droit de le transmettre à cet outil ?",
+      "L'outil est-il le plus rapide du marché, même s'il n'est pas sur la liste de l'entreprise ?",
+      "Puis-je supprimer la conversation ensuite pour effacer toute trace de ce que j'ai collé ?",
+    ],
+    correctIndex: 0,
+    explanation: "Les premiers réflexes portent sur la nature de l'information et le droit de la transmettre.",
+  },
+  {
+    id: "q41",
+    blockId: "bloc-6",
+    prompt: "Un usage d'IA devient régulier dans votre équipe, mais il n'est pas déclaré. Que faites-vous ?",
+    choices: [
+      "Rien : un usage déjà en place n'a plus à être déclaré au registre ni au référent.",
+      "Je le déclare (registre, manager ou référent) au lieu de le laisser hors du cadre de l'entreprise.",
+      "Je le déclare seulement s'il traite des données de santé ; le reste peut rester informel.",
+    ],
+    correctIndex: 1,
+    explanation: "Le réflexe n° 7 : un usage qui dure se déclare, il ne reste pas dans l'ombre.",
+  },
+  {
+    id: "q42",
+    blockId: "bloc-6",
+    prompt: "Vous hésitez : l'information est-elle trop sensible pour cet outil ? Que faites-vous ?",
+    choices: [
+      "Je tente quand même, puis j'en parle seulement si quelqu'un s'en plaint ensuite.",
+      "Je ne devine pas : je demande à mon manager ou au référent IA avant d'utiliser l'outil.",
+      "Je retire le nom et je colle le reste dans un outil personnel, ce qui règle la question.",
+    ],
+    correctIndex: 1,
+    explanation: "En cas de doute, on demande avant. On ne teste pas avec une information sensible.",
+  },
 ];
 
 function shuffle<T>(items: readonly T[]): T[] {
@@ -410,7 +531,9 @@ function shuffle<T>(items: readonly T[]): T[] {
   return copy;
 }
 
-/** Tirage du QCM final : 20 questions, au moins 2 par bloc, ordre mélangé. */
+const QUIZ_MIN_PER_BLOCK = 3;
+
+/** Tirage du QCM final : 20 questions, au moins 3 par bloc, ordre mélangé. */
 export function drawSocleQuiz(size = QUIZ_DRAW_SIZE): QuizQuestion[] {
   const byBlock = new Map<string, QuizQuestion[]>();
   for (const question of SOCLE_QUESTION_BANK) {
@@ -423,8 +546,8 @@ export function drawSocleQuiz(size = QUIZ_DRAW_SIZE): QuizQuestion[] {
   const leftovers: QuizQuestion[] = [];
   for (const pool of byBlock.values()) {
     const mixed = shuffle(pool);
-    picked.push(...mixed.slice(0, Math.min(2, mixed.length)));
-    leftovers.push(...mixed.slice(2));
+    picked.push(...mixed.slice(0, Math.min(QUIZ_MIN_PER_BLOCK, mixed.length)));
+    leftovers.push(...mixed.slice(QUIZ_MIN_PER_BLOCK));
   }
 
   const rest = shuffle(leftovers);
@@ -434,77 +557,9 @@ export function drawSocleQuiz(size = QUIZ_DRAW_SIZE): QuizQuestion[] {
   return shuffle(picked).slice(0, size);
 }
 
-/** Questions simples du positionnement. Elles n'entrent pas dans le QCM noté. */
-export const POSITIONING_WARMUP: QuizQuestion[] = [
-  {
-    id: "w1",
-    blockId: "positioning",
-    prompt: "ChatGPT, Gemini et Copilot sont :",
-    choices: [
-      "Des outils d'IA qui produisent du texte à partir de ce qu'on leur demande.",
-      "Des logiciels de comptabilité.",
-      "Des antivirus.",
-    ],
-    correctIndex: 0,
-    explanation:
-      "ChatGPT, Gemini et Copilot sont des assistants d'IA générative. On leur écrit une demande, ils proposent une réponse.",
-  },
-  {
-    id: "w2",
-    blockId: "positioning",
-    prompt: "Une réponse d'IA peut être fausse même si elle a l'air sûre d'elle.",
-    choices: ["Vrai", "Faux", "Seulement le week-end"],
-    correctIndex: 0,
-    explanation: "L'IA peut inventer avec un ton très convaincant. On vérifie toujours ce qui compte.",
-  },
-  {
-    id: "w3",
-    blockId: "positioning",
-    prompt: "Coller un contrat client dans un outil d'IA personnel gratuit :",
-    choices: [
-      "Est sans risque si on efface ensuite.",
-      "Peut faire sortir des informations hors de l'entreprise.",
-      "Est obligatoire depuis 2025.",
-    ],
-    correctIndex: 1,
-    explanation: "Sans outil autorisé, les données peuvent être lues ou réutilisées hors de votre cadre.",
-  },
-  {
-    id: "w4",
-    blockId: "positioning",
-    prompt: "Qui est responsable d'un e-mail erroné envoyé à un client après usage d'une IA ?",
-    choices: ["L'IA", "La personne / l'entreprise qui a envoyé", "Personne"],
-    correctIndex: 1,
-    explanation: "L'outil aide. La responsabilité reste humaine.",
-  },
-  {
-    id: "w5",
-    blockId: "positioning",
-    prompt: "Avant d'utiliser un nouvel outil d'IA au travail, le bon réflexe est :",
-    choices: [
-      "De l'essayer tout de suite.",
-      "De vérifier s'il est autorisé ou de demander.",
-      "De créer un compte personnel.",
-    ],
-    correctIndex: 1,
-    explanation: "La liste des outils autorisés et le référent existent pour ça.",
-  },
-  {
-    id: "w6",
-    blockId: "positioning",
-    prompt: "Un deepfake, c'est :",
-    choices: [
-      "Un antivirus.",
-      "Une imitation réaliste de voix ou de visage créée par IA.",
-      "Un type de contrat.",
-    ],
-    correctIndex: 1,
-    explanation: "D'où l'importance de vérifier les demandes urgentes par un autre canal.",
-  },
-];
-
-export function drawPositioningQuiz(size = POSITIONING_SIZE): QuizQuestion[] {
-  const warmup = shuffle(POSITIONING_WARMUP);
-  const rest = shuffle(SOCLE_QUESTION_BANK).slice(0, Math.max(0, size - warmup.length));
-  return shuffle([...warmup, ...rest]).slice(0, size);
+/** 6 à 8 questions tirées de la banque du socle. Non éliminatoire. */
+export function drawPositioningQuiz(): QuizQuestion[] {
+  const span = POSITIONING_MAX - POSITIONING_MIN + 1;
+  const size = POSITIONING_MIN + Math.floor(Math.random() * span);
+  return shuffle(SOCLE_QUESTION_BANK).slice(0, size);
 }

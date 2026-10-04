@@ -6,6 +6,7 @@ import { GraduationCap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import HrView from "./HrView";
 import UserView from "./UserView";
+import { employees } from "./data";
 
 type View = "rh" | "user";
 
@@ -52,7 +53,7 @@ export default function DemoApp() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {view === "rh" ? <HrView /> : <UserView />}
+        {view === "rh" ? <HrView demo initialEmployees={employees.slice(0, 4)} /> : <UserView />}
       </main>
     </div>
   );

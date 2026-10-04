@@ -26,11 +26,11 @@ export default function LegalShell({
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-        <div className="mt-6 space-y-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <h1 className="text-justify text-2xl font-bold text-slate-900 hyphens-auto dark:text-white">{title}</h1>
+        <div className="mt-6 space-y-4 text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300 [&_li]:text-justify [&_p]:text-justify">
           {children}
         </div>
-        <p className="mt-10 text-xs text-slate-400">Dernière mise à jour : octobre 2026</p>
+        <p className="mt-10 text-justify text-xs text-slate-400">Dernière mise à jour : octobre 2026</p>
       </main>
     </div>
   );

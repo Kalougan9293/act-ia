@@ -14,7 +14,7 @@ export default function AiActPage() {
         applicable depuis le 2 février 2025.
       </p>
       <p>
-        La plateforme propose une formation courte, des attestations de suivi et un suivi RH. Elle
+        La plateforme propose une formation, des attestations de suivi et un suivi RH. Elle
         ne remplace pas un accompagnement juridique.
       </p>
     </LegalShell>

@@ -146,7 +146,8 @@ service cloud.firestore {
       allow update: if isSuperAdmin()
         || (isRh()
             && sameStructure(structureId)
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["inviteToken"]));
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["inviteToken", "companyModule"]));
       allow delete: if isSuperAdmin();
     }
 
