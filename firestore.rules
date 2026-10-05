@@ -52,29 +52,35 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/structureInvites/$(token)).data;
     }
 
-    function structureBillingSeats(structureId) {
-      return get(/databases/$(database)/documents/structures/$(structureId)).data.billing.seats;
+    function isNumber(value) {
+      return value is int || value is float;
+    }
+
+    // Plafond = billing.seats si présent, sinon seatsMax du lien (évite crash si structure absente)
+    function seatCap(structureId, inviteToken) {
+      let billingSeats = exists(/databases/$(database)/documents/structures/$(structureId))
+        ? get(/databases/$(database)/documents/structures/$(structureId)).data
+            .get('billing', {}).get('seats', null)
+        : null;
+      let inviteSeats = exists(/databases/$(database)/documents/structureInvites/$(inviteToken))
+        ? get(/databases/$(database)/documents/structureInvites/$(inviteToken)).data
+            .get('seatsMax', null)
+        : null;
+      return isNumber(billingSeats)
+        ? billingSeats
+        : (isNumber(inviteSeats) ? inviteSeats : 1);
+    }
+
+    function seatsUsedOf(token) {
+      return structureInviteDoc(token).get('seatsUsed', 0);
     }
 
     function structureHasOpenSeat(structureId) {
       let token = get(/databases/$(database)/documents/structures/$(structureId)).data.inviteToken;
       return token is string
         && exists(/databases/$(database)/documents/structureInvites/$(token))
-        && structureInviteDoc(token).seatsUsed is int
-        && structureInviteDoc(token).seatsMax is int
-        && structureInviteDoc(token).seatsUsed < structureInviteDoc(token).seatsMax;
-    }
-
-    function validStructureInviteClaim() {
-      return request.resource.data.structureInviteToken is string
-        && exists(/databases/$(database)/documents/structureInvites/$(request.resource.data.structureInviteToken))
-        && structureInviteDoc(request.resource.data.structureInviteToken).structureId == request.resource.data.structureId
-        && structureInviteDoc(request.resource.data.structureInviteToken).seatsUsed is int
-        && structureInviteDoc(request.resource.data.structureInviteToken).seatsMax is int
-        && structureInviteDoc(request.resource.data.structureInviteToken).seatsUsed
-            < structureInviteDoc(request.resource.data.structureInviteToken).seatsMax
-        && request.resource.data.role == "employee"
-        && request.resource.data.email == request.auth.token.email;
+        && isNumber(seatsUsedOf(token))
+        && seatsUsedOf(token) < seatCap(structureId, token);
     }
 
     function validInviteClaim() {
@@ -100,10 +106,17 @@ service cloud.firestore {
     }
 
     match /firstLogin/{email} {
-      allow get: if signedIn() && request.auth.token.email == email;
-      allow create, update: if isSuperAdmin();
+      // Lu avant toute connexion : sinon « Première connexion » échoue tout de suite.
+      allow get: if true;
+      allow create, update: if isSuperAdmin()
+        || (isRh()
+            && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role == "employee"
+            && request.resource.data.status == "pending"
+            && request.resource.data.email == email);
       allow delete: if isSuperAdmin()
-        || (signedIn() && request.auth.token.email == email);
+        || (signedIn() && request.auth.token.email == email)
+        || (isRh() && resource.data.structureId == myStructureId());
     }
 
     match /structureInvites/{token} {
@@ -111,8 +124,9 @@ service cloud.firestore {
       allow create: if isSuperAdmin()
         || (isRh()
             && request.resource.data.structureId == myStructureId()
-            && request.resource.data.seatsMax == structureBillingSeats(myStructureId())
-            && request.resource.data.seatsUsed is int
+            && isNumber(request.resource.data.seatsMax)
+            && request.resource.data.seatsMax == seatCap(myStructureId(), token)
+            && isNumber(request.resource.data.seatsUsed)
             && request.resource.data.seatsUsed >= 0
             && request.resource.data.seatsUsed <= request.resource.data.seatsMax);
       allow update: if isSuperAdmin()
@@ -120,21 +134,22 @@ service cloud.firestore {
         || (isRh()
             && resource.data.structureId == myStructureId()
             && request.resource.data.structureId == resource.data.structureId
-            && request.resource.data.seatsMax == structureBillingSeats(myStructureId())
+            && isNumber(request.resource.data.seatsMax)
+            && request.resource.data.seatsMax == seatCap(myStructureId(), token)
             && request.resource.data.seatsUsed == resource.data.seatsUsed)
-        // Inscription collaborateur : +1 siège
+        // Inscription collaborateur / RH via lien : +1 siège
         || (signedIn()
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
-            && request.resource.data.seatsUsed is int
-            && resource.data.seatsUsed is int
+            && isNumber(request.resource.data.seatsUsed)
+            && isNumber(resource.data.seatsUsed)
             && request.resource.data.seatsUsed == resource.data.seatsUsed + 1
-            && request.resource.data.seatsUsed <= resource.data.seatsMax)
+            && request.resource.data.seatsUsed <= seatCap(resource.data.structureId, token))
         // RH : -1 siège uniquement après départ d'un collaborateur
         || (isRh()
             && resource.data.structureId == myStructureId()
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
-            && request.resource.data.seatsUsed is int
-            && resource.data.seatsUsed is int
+            && isNumber(request.resource.data.seatsUsed)
+            && isNumber(resource.data.seatsUsed)
             && request.resource.data.seatsUsed == resource.data.seatsUsed - 1
             && request.resource.data.seatsUsed >= 0);
       allow delete: if isSuperAdmin();
@@ -153,16 +168,13 @@ service cloud.firestore {
 
     match /invites/{token} {
       // Le token est le secret (lien d'invitation)
+      // Collaborateurs : uniquement le lien permanent structure (/rejoindre) — pas d'invite perso RH
       allow get: if true;
       allow list: if isSuperAdmin() || isRh();
       allow create: if isSuperAdmin()
         || (isRh()
             && request.resource.data.structureId == myStructureId()
-            && request.resource.data.role == "rh")
-        || (isRh()
-            && request.resource.data.structureId == myStructureId()
-            && request.resource.data.role == "employee"
-            && structureHasOpenSeat(myStructureId()));
+            && request.resource.data.role == "rh");
       allow update, delete: if isSuperAdmin()
         || (isRh() && resource.data.structureId == myStructureId())
         || (signedIn()
@@ -183,9 +195,7 @@ service cloud.firestore {
             && request.resource.data.email == request.auth.token.email
             && request.resource.data.role in ["rh", "employee"]
             && validInviteClaim())
-        || (request.auth.uid == userId
-            && request.resource.data.email == request.auth.token.email
-            && validStructureInviteClaim())
+        // Plus d'auto-inscription libre via /rejoindre : seul le RH crée les accès (firstLogin)
         || (isSuperAdmin()
             && request.resource.data.role in ["rh", "employee"]
             && request.resource.data.email is string)
@@ -223,7 +233,7 @@ service cloud.firestore {
             && request.resource.data.role in ["employee", "rh"]);
 
       allow delete: if isSuperAdmin()
-        || (isRh() && resource.data.structureId == myStructureId() && userId != request.auth.uid)
+        || (isRh() && resource.data.structureId == myStructureId())
         || (signedIn()
             && userId != request.auth.uid
             && resource.data.email == request.auth.token.email
@@ -234,8 +244,12 @@ service cloud.firestore {
           || (signedIn() && request.auth.uid == userId)
           || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
 
-        allow write: if isSuperAdmin()
+        allow create, update: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId);
+
+        allow delete: if isSuperAdmin()
+          || (isRh()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
       }
 
       match /certificates/{certId} {
@@ -246,7 +260,9 @@ service cloud.firestore {
         allow create: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId);
 
-        allow update, delete: if isSuperAdmin();
+        allow update, delete: if isSuperAdmin()
+          || (isRh()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
       }
     }
   }

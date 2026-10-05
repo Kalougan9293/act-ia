@@ -208,8 +208,12 @@ export default function AdminDashboard() {
   const [modalMode, setModalMode] = useState<ModalMode>("create");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<StructureFormValues>(emptyForm());
-  const [view, setView] = useState<"active" | "archived">("active");
+  const [view, setView] = useState<"active" | "archived" | "users">("active");
   const [graduatesStructureId, setGraduatesStructureId] = useState<string | null>(null);
+  const [userSort, setUserSort] = useState<{
+    key: "name" | "company" | "progress" | "lastLogin";
+    dir: "asc" | "desc";
+  }>({ key: "name", dir: "asc" });
 
   useEffect(() => {
     let cancelled = false;
@@ -224,7 +228,11 @@ export default function AdminDashboard() {
         ]);
         if (!cancelled) {
           setStructures(nextStructures);
-          const inviteUsers = pendingInvites.map(inviteToPlatformUser);
+          // Invitations perso collaborateur abandonnées — on ne les compte plus.
+          // Seules les invitations RH pending restent visibles si besoin.
+          const inviteUsers = pendingInvites
+            .filter((invite) => invite.role === "rh")
+            .map(inviteToPlatformUser);
           const emailsWithAuth = new Set(
             nextUsers.map((u) => u.email.trim().toLowerCase()),
           );
@@ -261,12 +269,18 @@ export default function AdminDashboard() {
     [activeStructures],
   );
 
+  /** Utilisateurs formation : collaborateurs + RH inscrits via le lien. */
+  const isFormationUser = (u: PlatformUser) =>
+    u.role === "employee" || (u.role === "rh" && Boolean(u.formationEnrolled));
+
   const totalUsers = users.filter(
-    (u) => u.role !== "super_admin" && (!u.structureId || activeStructureIds.has(u.structureId)),
+    (u) =>
+      isFormationUser(u) &&
+      (!u.structureId || activeStructureIds.has(u.structureId)),
   ).length;
   const graduatedUsers = users.filter(
     (u) =>
-      u.role !== "super_admin" &&
+      isFormationUser(u) &&
       u.progressPercent === 100 &&
       (!u.structureId || activeStructureIds.has(u.structureId)),
   ).length;
@@ -276,13 +290,23 @@ export default function AdminDashboard() {
   const graduatesMembers = useMemo(() => {
     if (!graduatesStructureId) return [];
     return users
-      .filter((u) => u.structureId === graduatesStructureId)
+      .filter(
+        (u) =>
+          u.structureId === graduatesStructureId &&
+          (u.role === "employee" || (u.role === "rh" && u.formationEnrolled)),
+      )
       .sort((a, b) => {
         const aDone = a.progressPercent === 100 ? 0 : 1;
         const bDone = b.progressPercent === 100 ? 0 : 1;
         return aDone - bDone || a.name.localeCompare(b.name, "fr");
       });
   }, [graduatesStructureId, users]);
+
+  const structureNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of structures) map.set(s.id, s.name);
+    return map;
+  }, [structures]);
 
   const filtered = useMemo(() => {
     const source = view === "archived" ? archivedStructures : activeStructures;
@@ -305,6 +329,39 @@ export default function AdminDashboard() {
     });
   }, [activeStructures, archivedStructures, users, sort, view]);
 
+  const allPlatformUsers = useMemo(() => {
+    const list = users.filter(
+      (u) =>
+        (u.role === "employee" || (u.role === "rh" && u.formationEnrolled)) &&
+        (!u.structureId || activeStructureIds.has(u.structureId)),
+    );
+    return [...list].sort((a, b) => {
+      const companyA = a.structureId
+        ? structureNameById.get(a.structureId) ?? "—"
+        : "—";
+      const companyB = b.structureId
+        ? structureNameById.get(b.structureId) ?? "—"
+        : "—";
+      let result = 0;
+      if (userSort.key === "name") result = a.name.localeCompare(b.name, "fr");
+      else if (userSort.key === "company") result = companyA.localeCompare(companyB, "fr");
+      else if (userSort.key === "progress") {
+        result = (a.progressPercent ?? -1) - (b.progressPercent ?? -1);
+      } else {
+        result = isoDateValue(a.lastLoginAt ?? "") - isoDateValue(b.lastLoginAt ?? "");
+      }
+      return userSort.dir === "asc" ? result : -result;
+    });
+  }, [users, activeStructureIds, structureNameById, userSort]);
+
+  function toggleUserSort(key: "name" | "company" | "progress" | "lastLogin") {
+    setUserSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" },
+    );
+  }
+
   function toggleSort(key: SortKey) {
     setSort((current) =>
       current.key === key
@@ -322,7 +379,6 @@ export default function AdminDashboard() {
 
   function openEdit(structure: Structure) {
     const rh = users.find((u) => u.structureId === structure.id && u.role === "rh");
-    const members = structureGraduates(structure.id, users).total;
     setModalMode("edit");
     setEditingId(structure.id);
     setForm({
@@ -331,7 +387,7 @@ export default function AdminDashboard() {
       billingEmail: structure.billing.billingEmail,
       address: structure.billing.address,
       plan: structure.billing.plan,
-      seats: members || 1,
+      seats: Math.max(1, Number(structure.billing.seats) || PLAN_SEATS[structure.billing.plan]),
       rhName: rh?.name ?? "",
       rhEmail: rh?.email ?? structure.billing.billingEmail,
       phone: structure.billing.phone,
@@ -553,7 +609,7 @@ export default function AdminDashboard() {
               type="button"
               onClick={async () => {
                 await signOutUser();
-                router.replace("/connexion");
+                router.replace("/connexion?next=/admin");
               }}
               className="text-xs font-semibold text-slate-500 hover:text-blue-600"
             >
@@ -603,13 +659,21 @@ export default function AdminDashboard() {
             </div>
             <div className="mt-0.5 text-2xl font-bold tabular-nums">{activeStructures.length}</div>
           </button>
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setView("users")}
+            className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
+              view === "users"
+                ? "border-blue-300 bg-blue-50 dark:border-blue-500/40 dark:bg-blue-500/10"
+                : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+            }`}
+          >
             <div className="flex items-center justify-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
               <Users className="h-3.5 w-3.5" />
               Utilisateurs
             </div>
             <div className="mt-0.5 text-2xl font-bold tabular-nums">{totalUsers}</div>
-          </div>
+          </button>
           <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 shadow-sm">
             <div className="flex items-center justify-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
               <Award className="h-3.5 w-3.5" />
@@ -638,6 +702,96 @@ export default function AdminDashboard() {
         </div>
 
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+          {view === "users" ? (
+          <div className="overflow-x-auto">
+            <table className="w-full table-fixed text-sm text-center">
+              <colgroup>
+                <col className="w-[22%]" />
+                <col className="w-[24%]" />
+                <col className="w-[22%]" />
+                <col className="w-[16%]" />
+                <col className="w-[16%]" />
+              </colgroup>
+              <thead className="text-slate-500 dark:text-slate-400">
+                <tr>
+                  <SortHeader
+                    label="Utilisateur"
+                    active={userSort.key === "name"}
+                    dir={userSort.dir}
+                    onClick={() => toggleUserSort("name")}
+                  />
+                  <th className="px-2 py-1.5 font-medium text-xs">E-mail</th>
+                  <SortHeader
+                    label="Entreprise"
+                    active={userSort.key === "company"}
+                    dir={userSort.dir}
+                    onClick={() => toggleUserSort("company")}
+                  />
+                  <SortHeader
+                    label="Avancement"
+                    active={userSort.key === "progress"}
+                    dir={userSort.dir}
+                    onClick={() => toggleUserSort("progress")}
+                  />
+                  <SortHeader
+                    label="Dernière connexion"
+                    active={userSort.key === "lastLogin"}
+                    dir={userSort.dir}
+                    onClick={() => toggleUserSort("lastLogin")}
+                  />
+                </tr>
+              </thead>
+              <tbody>
+                {allPlatformUsers.map((user) => {
+                  const company = user.structureId
+                    ? structureNameById.get(user.structureId) ?? "—"
+                    : "—";
+                  return (
+                    <tr
+                      key={user.id}
+                      className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                    >
+                      <td className="px-2 py-1.5 font-medium truncate" title={user.name}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!user.id.startsWith("invite:")) {
+                              router.push(`/admin/candidats/${user.id}`);
+                            }
+                          }}
+                          className="hover:text-blue-600 dark:hover:text-blue-400"
+                        >
+                          {user.name}
+                        </button>
+                      </td>
+                      <td className="px-2 py-1.5 truncate text-xs sm:text-sm" title={user.email}>
+                        {user.email}
+                      </td>
+                      <td className="px-2 py-1.5 truncate text-xs sm:text-sm" title={company}>
+                        {company}
+                      </td>
+                      <td className="px-2 py-1.5 tabular-nums">
+                        {user.role === "employee" || user.formationEnrolled
+                          ? `${user.progressPercent ?? 0} %`
+                          : "—"}
+                      </td>
+                      <td className="px-2 py-1.5 whitespace-nowrap text-xs">
+                        {user.lastLoginAt ? formatDate(user.lastLoginAt) : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {allPlatformUsers.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-sm text-slate-500">
+                      Aucun utilisateur
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
@@ -705,7 +859,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setGraduatesStructureId(structure.id)}
                         className="rounded-md px-1.5 py-0.5 font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                        title="Formés / inscrits / accès offre"
+                        title="Formés / utilisateurs (collaborateurs) / capacité offre"
                       >
                         {grads.graduated}
                         <span className="font-normal text-emerald-600 dark:text-emerald-400">
@@ -794,6 +948,7 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           </div>
+          )}
         </section>
       </main>
 
@@ -881,8 +1036,8 @@ export default function AdminDashboard() {
             </div>
 
             <form onSubmit={handleSubmit} className="px-4 py-4 space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <label className="block space-y-1 sm:col-span-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <label className="block space-y-1">
                   <span className="text-xs font-medium text-slate-500">Structure</span>
                   <input
                     required
@@ -903,11 +1058,31 @@ export default function AdminDashboard() {
                     placeholder="rh@entreprise.fr"
                   />
                 </label>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
                 <label className="block space-y-1">
-                  <span className="text-xs font-medium text-slate-500">
-                    Accès max
-                    {form.plan !== "enterprise" ? ` (plan : ${PLAN_SEATS[form.plan]})` : ""}
-                  </span>
+                  <span className="text-xs font-medium text-slate-500">Plan</span>
+                  <select
+                    value={form.plan}
+                    onChange={(e) => {
+                      const plan = e.target.value as PlanId;
+                      setForm((f) => ({
+                        ...f,
+                        plan,
+                        seats: PLAN_SEATS[plan],
+                      }));
+                    }}
+                    className={inputClass}
+                  >
+                    <option value="starter">Micro — 290 € / an</option>
+                    <option value="pro">TPE — 590 € / an</option>
+                    <option value="pme">PME — 990 € / an</option>
+                    <option value="enterprise">ETI — Sur devis</option>
+                  </select>
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-xs font-medium text-slate-500">Accès max</span>
                   <input
                     type="number"
                     min={1}
@@ -926,7 +1101,7 @@ export default function AdminDashboard() {
                 </label>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 <CenteredDateField
                   label="Création"
                   required
@@ -947,7 +1122,7 @@ export default function AdminDashboard() {
                     setForm((f) => ({ ...f, nextInvoiceAt }))
                   }
                 />
-                <label className="block space-y-1">
+                <label className="col-span-2 block space-y-1 sm:col-span-1">
                   <span className="text-xs font-medium text-slate-500">Téléphone</span>
                   <input
                     type="tel"
@@ -956,26 +1131,6 @@ export default function AdminDashboard() {
                     className={inputClass}
                     placeholder="06 12 34 56 78"
                   />
-                </label>
-                <label className="block space-y-1">
-                  <span className="text-xs font-medium text-slate-500">Plan</span>
-                  <select
-                    value={form.plan}
-                    onChange={(e) => {
-                      const plan = e.target.value as PlanId;
-                      setForm((f) => ({
-                        ...f,
-                        plan,
-                        seats: PLAN_SEATS[plan],
-                      }));
-                    }}
-                    className={inputClass}
-                  >
-                    <option value="starter">Micro — 290 € / an</option>
-                    <option value="pro">TPE — 590 € / an</option>
-                    <option value="pme">PME — 990 € / an</option>
-                    <option value="enterprise">ETI — Sur devis</option>
-                  </select>
                 </label>
               </div>
 

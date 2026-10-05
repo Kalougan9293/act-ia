@@ -18,20 +18,33 @@ function requireDb() {
   return db;
 }
 
-/** Seuls les collaborateurs consomment un accès. Le RH n'en consomme jamais. */
+/** Collaborateur, ou RH inscrit à la formation via le lien. */
+export function userConsumesSeat(data: {
+  role?: string | null;
+  formationEnrolled?: boolean | null;
+}): boolean {
+  if (data.role === "employee") return true;
+  return data.role === "rh" && Boolean(data.formationEnrolled);
+}
+
+/** @deprecated préférer userConsumesSeat */
 export function roleConsumesSeat(role: string | null | undefined): boolean {
   return role === "employee";
 }
 
-/** Compte les collaborateurs (hors RH) d'une structure. */
+/** Compte les accès formation consommés dans une structure. */
 export async function countEmployeeSeats(structureId: string): Promise<number> {
   const db = requireDb();
   const snap = await getDocs(
     query(collection(db, "users"), where("structureId", "==", structureId)),
   );
-  return snap.docs.filter((d) =>
-    roleConsumesSeat(String(d.data().role ?? "")),
-  ).length;
+  return snap.docs.filter((d) => {
+    const data = d.data();
+    return userConsumesSeat({
+      role: String(data.role ?? ""),
+      formationEnrolled: Boolean(data.formationEnrolled),
+    });
+  }).length;
 }
 
 /**
@@ -66,13 +79,14 @@ export async function syncStructureInviteSeats(
   return { seatsMax, seatsUsed };
 }
 
-/** Libère un siège après suppression d'un collaborateur (pas pour un RH). */
+/** Libère un siège après départ d'un utilisateur formation. */
 export async function releaseSeatIfEmployee(
   structure: Structure | null | undefined,
   removedRole?: UserRole | string | null,
+  formationEnrolled?: boolean | null,
 ): Promise<void> {
   if (!structure?.inviteToken) return;
-  if (!roleConsumesSeat(removedRole)) return;
+  if (!userConsumesSeat({ role: removedRole, formationEnrolled })) return;
   const db = requireDb();
   const ref = doc(db, "structureInvites", structure.inviteToken);
   const snap = await getDoc(ref);
@@ -91,7 +105,43 @@ export async function getInviteSeatInfo(token: string): Promise<{
   const snap = await getDoc(doc(db, "structureInvites", token));
   if (!snap.exists()) return null;
   const data = snap.data();
-  const seatsMax = Math.max(1, Number(data.seatsMax ?? 1));
+  const structureId = String(data.structureId ?? "");
+  let seatsMax = Math.max(1, Number(data.seatsMax ?? 1));
+  if (structureId) {
+    const structureSnap = await getDoc(doc(db, "structures", structureId));
+    const billing = structureSnap.data()?.billing as { seats?: number } | undefined;
+    if (billing?.seats != null) {
+      seatsMax = Math.max(1, Number(billing.seats) || 1);
+    }
+  }
   const seatsUsed = Math.max(0, Number(data.seatsUsed ?? 0));
   return { seatsMax, seatsUsed, full: seatsUsed >= seatsMax };
+}
+
+/** Capacité offre (billing) + sièges utilisés — source de vérité pour le plafond. */
+export async function getStructureSeatStatus(structureId: string): Promise<{
+  seatsMax: number;
+  seatsUsed: number;
+  full: boolean;
+  inviteToken: string | null;
+}> {
+  const db = requireDb();
+  const structureSnap = await getDoc(doc(db, "structures", structureId));
+  if (!structureSnap.exists()) {
+    throw new Error("Structure introuvable");
+  }
+  const data = structureSnap.data();
+  const billing = data.billing as { seats?: number } | undefined;
+  const seatsMax = Math.max(1, Number(billing?.seats ?? 1) || 1);
+  const inviteToken = data.inviteToken ? String(data.inviteToken) : null;
+
+  let seatsUsed = 0;
+  if (inviteToken) {
+    const seatSnap = await getDoc(doc(db, "structureInvites", inviteToken));
+    seatsUsed = Math.max(0, Number(seatSnap.data()?.seatsUsed ?? 0));
+  } else {
+    seatsUsed = await countEmployeeSeats(structureId);
+  }
+
+  return { seatsMax, seatsUsed, full: seatsUsed >= seatsMax, inviteToken };
 }

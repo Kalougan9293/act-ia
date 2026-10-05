@@ -76,18 +76,21 @@ export async function createInvite(params: {
 
   if (params.role === "employee") {
     const structureSnap = await getDoc(doc(db, "structures", params.structureId));
-    const inviteToken = structureSnap.data()?.inviteToken
-      ? String(structureSnap.data()?.inviteToken)
+    if (!structureSnap.exists()) throw new Error("Structure introuvable");
+    const billing = structureSnap.data().billing as { seats?: number } | undefined;
+    const seatsMax = Math.max(1, Number(billing?.seats ?? 1) || 1);
+    const inviteToken = structureSnap.data().inviteToken
+      ? String(structureSnap.data().inviteToken)
       : null;
+    let seatsUsed = 0;
     if (inviteToken) {
       const seatSnap = await getDoc(doc(db, "structureInvites", inviteToken));
-      const seatsMax = Math.max(1, Number(seatSnap.data()?.seatsMax ?? 1));
-      const seatsUsed = Math.max(0, Number(seatSnap.data()?.seatsUsed ?? 0));
-      if (seatsUsed >= seatsMax) {
-        throw new Error(
-          `Nombre d'accès atteint (${seatsMax}). Impossible d'inviter plus de collaborateurs.`,
-        );
-      }
+      seatsUsed = Math.max(0, Number(seatSnap.data()?.seatsUsed ?? 0));
+    }
+    if (seatsUsed >= seatsMax) {
+      throw new Error(
+        `Nombre d'accès atteint (${seatsMax}). Impossible d'inviter plus de collaborateurs.`,
+      );
     }
   }
 
@@ -195,22 +198,24 @@ export async function acceptInvite(params: {
   const db = getFirebaseDb();
   if (!auth || !db) throw new Error("Firebase non configuré");
 
-  // Collaborateurs : même plafond que le lien permanent structure
+  // Collaborateurs : plafond = capacité facturée (billing.seats)
   if (invite.role === "employee") {
     const structureSnap = await getDoc(doc(db, "structures", invite.structureId));
     if (!structureSnap.exists()) throw new Error("Structure introuvable");
+    const billing = structureSnap.data().billing as { seats?: number } | undefined;
+    const seatsMax = Math.max(1, Number(billing?.seats ?? 1) || 1);
     const inviteToken = structureSnap.data().inviteToken
       ? String(structureSnap.data().inviteToken)
       : null;
+    let seatsUsed = 0;
     if (inviteToken) {
       const seatSnap = await getDoc(doc(db, "structureInvites", inviteToken));
-      const seatsMax = Math.max(1, Number(seatSnap.data()?.seatsMax ?? 1));
-      const seatsUsed = Math.max(0, Number(seatSnap.data()?.seatsUsed ?? 0));
-      if (seatsUsed >= seatsMax) {
-        throw new Error(
-          `Nombre d'accès atteint (${seatsMax}). Contactez votre RH pour élargir l'offre.`,
-        );
-      }
+      seatsUsed = Math.max(0, Number(seatSnap.data()?.seatsUsed ?? 0));
+    }
+    if (seatsUsed >= seatsMax) {
+      throw new Error(
+        `Nombre d'accès atteint (${seatsMax}). Contactez votre RH pour élargir l'offre.`,
+      );
     }
   }
 

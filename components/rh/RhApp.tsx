@@ -14,10 +14,7 @@ import {
   ensureStructureInviteToken,
   structureInviteLink,
 } from "@/lib/firebase/structure-invite";
-import {
-  listPendingInvitesByStructure,
-  type InviteRecord,
-} from "@/lib/firebase/invites";
+import { getStructureSeatStatus } from "@/lib/firebase/seats";
 
 function toStatus(percent: number | null): EmployeeStatus {
   if (percent == null || percent <= 0) return "todo";
@@ -32,43 +29,32 @@ function formatLastSeen(iso: string | null): string {
   return `${d}/${m}/${y}`;
 }
 
-function toEmployees(
-  users: PlatformUser[],
-  invites: InviteRecord[],
-  companyName: string,
-): Employee[] {
-  const members = users
-    .filter((u) => u.role === "employee" || u.role === "rh")
+function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
+  return users
+    .filter(
+      (u) =>
+        u.role === "employee" || (u.role === "rh" && Boolean(u.formationEnrolled)),
+    )
     .map((u) => ({
       id: u.id,
       name: u.name,
       email: u.email,
-      role: u.role === "rh" ? "RH" : u.jobTitle?.trim() || "Collaborateur",
+      role:
+        u.role === "rh"
+          ? "RH"
+          : u.jobTitle?.trim() || "Collaborateur",
       path: "IA + RGPD",
       status: toStatus(u.progressPercent),
       percent: u.progressPercent ?? 0,
-      lastSeen: formatLastSeen(u.lastLoginAt ?? u.certifiedAt),
+      lastSeen:
+        u.status === "invited" || u.id.startsWith("pending_")
+          ? "En attente"
+          : formatLastSeen(u.lastLoginAt ?? u.certifiedAt),
       certificateId: u.certificateId,
       certifiedAt: u.certifiedAt,
       quizScore: u.quizScore,
       companyName,
     }));
-  const memberEmails = new Set(members.map((m) => m.email.toLowerCase()));
-  const pending = invites
-    .filter((invite) => invite.role === "employee" && !memberEmails.has(invite.email.toLowerCase()))
-    .map((invite) => ({
-      id: `invite:${invite.token}`,
-      name: invite.name,
-      email: invite.email,
-      role: invite.jobTitle?.trim() || "Collaborateur",
-      path: "IA + RGPD" as const,
-      status: "todo" as const,
-      percent: 0,
-      lastSeen: "Invité",
-      inviteToken: invite.token,
-      companyName,
-    }));
-  return [...members, ...pending];
 }
 
 export default function RhApp() {
@@ -77,8 +63,11 @@ export default function RhApp() {
   const [structure, setStructure] = useState<Structure | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [seatsMax, setSeatsMax] = useState(5);
+  const [seatsUsed, setSeatsUsed] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!session?.structureId || session.role !== "rh") {
@@ -90,10 +79,9 @@ export default function RhApp() {
       setLoading(true);
       setError(null);
       try {
-        const [nextStructure, members, pendingInvites] = await Promise.all([
+        const [nextStructure, members] = await Promise.all([
           getStructure(session.structureId!),
           listUsersByStructure(session.structureId!),
-          listPendingInvitesByStructure(session.structureId!),
         ]);
         if (cancelled) return;
         let structureReady = nextStructure;
@@ -101,15 +89,17 @@ export default function RhApp() {
           structureReady = await ensureStructureInviteToken(structureReady);
         }
         if (cancelled) return;
+        const seats = await getStructureSeatStatus(session.structureId!);
+        if (cancelled) return;
         setStructure(structureReady);
+        setSeatsMax(seats.seatsMax);
+        setSeatsUsed(seats.seatsUsed);
         setInviteLink(
           structureReady?.inviteToken
             ? structureInviteLink(structureReady.inviteToken)
             : null,
         );
-        setEmployees(
-          toEmployees(members, pendingInvites, structureReady?.name ?? "Entreprise"),
-        );
+        setEmployees(toEmployees(members, structureReady?.name ?? "Entreprise"));
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Chargement impossible");
@@ -121,7 +111,7 @@ export default function RhApp() {
     return () => {
       cancelled = true;
     };
-  }, [session]);
+  }, [session, reloadKey]);
 
   if (!session || session.role !== "rh" || !session.structureId) {
     return (
@@ -198,7 +188,10 @@ export default function RhApp() {
             companyName={structure?.name ?? "Entreprise"}
             structureId={session.structureId}
             structureInviteLink={inviteLink}
+            seatsMax={seatsMax}
+            seatsUsed={seatsUsed}
             companyModule={structure?.companyModule}
+            onRosterChange={() => setReloadKey((k) => k + 1)}
             onSaveCompanyModule={async (module: CompanyModuleContent) => {
               await saveCompanyModule(session.structureId!, module);
               setStructure((current) => (current ? { ...current, companyModule: module } : current));

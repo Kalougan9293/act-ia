@@ -182,6 +182,11 @@ export interface PlatformUser {
   certifiedAt: string | null;
   /** Score quiz final — null si le parcours n'est pas validé */
   quizScore: number | null;
+  /**
+   * RH inscrit à la formation via le lien structure (consomme un accès).
+   * Les collaborateurs sont toujours considérés inscrits.
+   */
+  formationEnrolled?: boolean;
 }
 
 export interface StructureFormValues {

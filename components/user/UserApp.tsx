@@ -30,6 +30,14 @@ export default function UserApp() {
     };
   }, [session?.structureId]);
 
+  // RH non inscrit via Ajouter → pas de formation
+  useEffect(() => {
+    if (!ready || !session) return;
+    if (session.role === "rh" && !session.formationEnrolled) {
+      router.replace("/rh");
+    }
+  }, [ready, session, router]);
+
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center text-sm text-slate-500">
@@ -47,6 +55,14 @@ export default function UserApp() {
             Se connecter
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  if (session.role === "rh" && !session.formationEnrolled) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm text-slate-500">
+        Redirection…
       </div>
     );
   }
@@ -112,7 +128,7 @@ export default function UserApp() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         <FormationExperience
           key={session.uid}
           uid={session.uid}

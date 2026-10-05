@@ -7,10 +7,11 @@ import { Check, Eye, EyeOff, GraduationCap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { validatePassword } from "@/lib/auth/password";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import {
-  getStructureInvite,
-  joinStructureWithInvite,
-} from "@/lib/firebase/structure-invite";
+import { completeFirstConnection } from "@/lib/firebase/first-connection";
+import { getStructureInvite } from "@/lib/firebase/structure-invite";
+import { doc, getDoc } from "firebase/firestore";
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
+import { logOut } from "@/lib/firebase/auth";
 
 function passwordRules(password: string) {
   return [
@@ -27,7 +28,7 @@ export default function RejoindrePage() {
   const { signInWithPassword, refreshProfile } = useAuth();
 
   const [company, setCompany] = useState<string | null>(null);
-  const [seatsFull, setSeatsFull] = useState(false);
+  const [structureId, setStructureId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<"first" | "login">("login");
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ export default function RejoindrePage() {
         const invite = await getStructureInvite(token);
         if (!cancelled) {
           setCompany(invite?.name ?? null);
-          setSeatsFull(!!invite && invite.seatsUsed >= invite.seatsMax);
+          setStructureId(invite?.structureId ?? null);
         }
       } catch (e) {
         if (!cancelled) {
@@ -62,11 +63,7 @@ export default function RejoindrePage() {
 
   function showFirst() {
     setMode("first");
-    setError(
-      seatsFull
-        ? "Nombre d'accès atteint. Contactez votre RH."
-        : null,
-    );
+    setError(null);
     setPassword("");
     setConfirm("");
     setShowPassword(false);
@@ -94,9 +91,14 @@ export default function RejoindrePage() {
       setError("Les mots de passe ne correspondent pas");
       return;
     }
+    if (!structureId) {
+      setError("Lien invalide");
+      return;
+    }
     setBusy(true);
     try {
-      await joinStructureWithInvite({ token, email, password });
+      // Uniquement si le RH a créé l'accès (firstLogin) pour cet e-mail
+      await completeFirstConnection(email, password, { structureId });
       await refreshProfile();
       router.replace("/utilisateur");
     } catch (e) {
@@ -113,7 +115,36 @@ export default function RejoindrePage() {
     try {
       await signInWithPassword(email, password);
       await refreshProfile();
-      router.replace("/utilisateur");
+
+      const auth = getFirebaseAuth();
+      const db = getFirebaseDb();
+      const uid = auth?.currentUser?.uid;
+      if (!uid || !db || !structureId) {
+        throw new Error("Connexion impossible");
+      }
+
+      const snap = await getDoc(doc(db, "users", uid));
+      const data = snap.data();
+      const userStructure = String(data?.structureId ?? "");
+      const role = String(data?.role ?? "");
+
+      if (userStructure !== structureId) {
+        await logOut();
+        throw new Error(
+          "Ce compte n'appartient pas à cette entreprise. Vérifiez le lien ou contactez votre RH.",
+        );
+      }
+
+      // RH sans inscription formation → espace RH ; sinon formation
+      if (role === "rh" && !data?.formationEnrolled) {
+        router.replace("/rh");
+        return;
+      }
+      if (role === "rh" || role === "employee") {
+        router.replace("/utilisateur");
+        return;
+      }
+      router.replace("/rh");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Connexion impossible");
     } finally {
@@ -141,10 +172,10 @@ export default function RejoindrePage() {
           <p className="mt-2 text-center text-sm text-slate-500">
             {company
               ? mode === "first"
-                ? `Espace formation · ${company}`
-                : `E-mail et mot de passe · ${company}`
+                ? `${company} · accès créé par votre RH`
+                : `${company} · e-mail et mot de passe`
               : mode === "first"
-                ? "Indiquez votre e-mail et le mot de passe que vous choisissez."
+                ? "Uniquement si votre RH a créé votre accès."
                 : "E-mail et mot de passe"}
           </p>
         </div>
@@ -257,7 +288,7 @@ export default function RejoindrePage() {
 
             <button
               type="submit"
-              disabled={busy || (mode === "first" && seatsFull)}
+              disabled={busy}
               className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             >
               {busy ? "…" : mode === "first" ? "Activer mon compte" : "Se connecter"}

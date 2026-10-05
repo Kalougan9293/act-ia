@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Lock,
   Play,
+  Smartphone,
   Timer,
   Trophy,
 } from "lucide-react";
@@ -578,7 +579,7 @@ function IntroScreen({
         <h1 className="text-center text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
           Bienvenue{firstName ? `, ${firstName}` : ""}
         </h1>
-        <p className="mx-auto max-w-3xl text-justify text-base leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300">
           {FORMATION_PROMISE}
         </p>
         <p className="text-center text-sm text-slate-500">
@@ -793,16 +794,20 @@ function IntroScreen({
         </div>
       </div>
 
-      <p className="mx-auto w-full max-w-3xl pt-6 text-justify text-sm font-normal leading-relaxed text-slate-500 hyphens-auto dark:text-slate-400">
-        L&apos;avancement passe à 100 % dès la réussite de l&apos;examen (≥ {QUIZ_PASS_PERCENT} %).
-        L&apos;attestation est délivrée après le module entreprise et le parcours métier.
-      </p>
-
-      <p className="text-justify text-xs text-slate-400 hyphens-auto">
-        Parcours complet : 1h00. Peut être suivi en plusieurs sessions.
-      </p>
+      <div className="mx-auto w-full max-w-xl space-y-2.5 pt-6 text-center">
+        <p className="text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+          L&apos;attestation est délivrée à partir de {QUIZ_PASS_PERCENT} % sur le quiz final.
+        </p>
+        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-slate-400">
+          <span>Parcours complet : environ 1 h, en plusieurs sessions si besoin.</span>
+          <span className="inline-flex items-center gap-1">
+            <Smartphone className="h-4 w-4 shrink-0" aria-hidden />
+            Aussi sur téléphone
+          </span>
+        </p>
+      </div>
       {careerPathId && (
-        <p className="text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
+        <p className="text-center text-sm text-slate-600 dark:text-slate-300">
           On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
         </p>
       )}
@@ -1190,39 +1195,40 @@ function BlockScreen({
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-5 text-center md:max-w-2xl">
+    <div className="mx-auto max-w-lg space-y-4 text-center">
       <button
         type="button"
         onClick={onBack}
-        className="mx-auto inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
+        className="mx-auto inline-flex items-center gap-1 text-xs text-slate-500 transition-colors duration-200 hover:text-blue-600"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-3.5 w-3.5" />
         Retour au parcours
       </button>
       <div>
-        <p className="text-center text-xs font-semibold text-blue-600 dark:text-blue-400">
+        <p className="text-center text-[11px] font-semibold text-blue-600 dark:text-blue-400">
           Bloc {block.number} · {block.duration}
         </p>
-        <h1 className="mt-1 text-center text-2xl font-bold text-slate-900 dark:text-white">{block.title}</h1>
-        <p className="mx-auto mt-2 max-w-sm text-justify text-sm text-slate-500 hyphens-auto">{block.goal}</p>
+        <h1 className="mt-0.5 text-center text-xl font-bold text-slate-900 dark:text-white">
+          {block.title}
+        </h1>
+        <p className="mx-auto mt-1.5 max-w-sm text-center text-xs leading-relaxed text-slate-500">
+          {block.goal}
+        </p>
       </div>
-      <ul className="mx-auto grid max-w-2xl grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4">
+      <ul className="mx-auto grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-2.5">
         {block.chapters.map((chapter, index) => {
           const done = completed.includes(chapter.id);
           const previous = block.chapters[index - 1];
           const locked = !done && !!previous && !completed.includes(previous.id);
           const denied = deniedId === chapter.id;
           const tone = activityTone(chapter.format);
-          const centered = index === block.chapters.length - 1 && block.chapters.length % 2 === 1;
           const teaser = chapterTeaser(chapter);
           return (
-            <li key={chapter.id} className={centered ? "sm:col-span-2 sm:flex sm:justify-center" : undefined}>
+            <li key={chapter.id} className="min-h-0">
               <button
                 type="button"
                 onClick={() => openOrDeny(chapter.id, locked)}
-                className={`group relative flex min-h-[5.5rem] w-full flex-col items-center justify-center gap-1.5 rounded-2xl border px-5 py-4 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
-                  centered ? "sm:w-[calc(50%-0.5rem)]" : ""
-                } ${
+                className={`group relative flex h-full min-h-[4.25rem] w-full flex-col items-center justify-center gap-0.5 rounded-xl border px-3 py-2.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
                   denied
                     ? "block-deny border-red-500 bg-red-50 dark:bg-red-950/40"
                     : done
@@ -1231,20 +1237,20 @@ function BlockScreen({
                 }`}
               >
                 {locked && (
-                  <Lock className="absolute top-3 right-3 h-3.5 w-3.5 text-slate-400" aria-hidden />
+                  <Lock className="absolute top-2 right-2 h-3 w-3 text-slate-400" aria-hidden />
                 )}
-                <span className="flex items-center justify-center gap-2">
+                <span className="flex items-center justify-center gap-1.5 px-3">
                   {done ? (
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-white transition-transform duration-300 group-hover:scale-110" />
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-white transition-transform duration-300 group-hover:scale-110" />
                   ) : (
                     <Play
-                      className={`h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${
+                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${
                         locked ? "text-slate-300" : tone.icon
                       }`}
                     />
                   )}
                   <span
-                    className={`text-center text-base font-semibold leading-snug ${
+                    className={`line-clamp-2 text-center text-sm font-semibold leading-snug ${
                       done ? "text-white" : "text-slate-900 dark:text-white"
                     }`}
                   >
@@ -1252,7 +1258,7 @@ function BlockScreen({
                   </span>
                 </span>
                 <span
-                  className={`text-center text-xs leading-snug ${
+                  className={`line-clamp-2 px-2 text-center text-[11px] leading-snug ${
                     locked ? "text-slate-400" : done ? "text-emerald-50/90" : tone.meta
                   }`}
                 >
@@ -1797,8 +1803,8 @@ function QuizScreen({
             Avant de commencer
           </h1>
           <p className="mx-auto mt-3 max-w-md text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300">
-            Ce QCM est noté. Dès la réussite, votre avancement passe à 100 %. L&apos;attestation
-            demande ensuite le module entreprise et le parcours métier.
+            Ce QCM est noté. L&apos;attestation est délivrée à partir de {QUIZ_PASS_PERCENT} % :
+            après réussite, consultez le module entreprise puis le parcours métier.
           </p>
 
           <ul className="mx-auto mt-6 max-w-md space-y-3 text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">
@@ -1863,7 +1869,7 @@ function QuizScreen({
   const isFinal = variant === "final";
 
   return (
-    <div className={`mx-auto space-y-6 ${isFinal ? "max-w-xl" : "max-w-2xl"}`}>
+    <div className="mx-auto w-full max-w-3xl space-y-6">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
@@ -1878,7 +1884,7 @@ function QuizScreen({
 
       <div className="text-center">
         <p
-          className={`text-xs font-semibold tracking-wide uppercase ${
+          className={`text-xs font-semibold tracking-wide uppercase sm:text-sm ${
             isFinal ? "text-slate-500" : "text-blue-600 dark:text-blue-400"
           }`}
         >
@@ -1887,17 +1893,17 @@ function QuizScreen({
             : `Examen final · Tentative n°${attempts + 1} · `}
           Question {index + 1} / {shuffled.length}
         </p>
-        <h1 className="mt-3 text-center text-lg font-bold leading-snug text-slate-900 dark:text-white sm:text-xl">
+        <h1 className="mx-auto mt-3 max-w-3xl text-center text-xl font-bold leading-snug text-slate-900 dark:text-white sm:text-2xl">
           {current.q.prompt}
         </h1>
         {variant === "positioning" && index === 0 && !reveal && (
-          <p className="mx-auto mt-3 max-w-md text-center text-sm text-slate-500">
+          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-500 sm:text-base">
             Ce n&apos;est pas un examen de droit : on apprend des réflexes pour utiliser l&apos;IA sans risque.
           </p>
         )}
       </div>
 
-      <ul className="space-y-2">
+      <ul className="mx-auto max-w-3xl space-y-3">
         {current.options.map((opt) => {
           const isSelected = selected === opt.index;
           const isCorrect = opt.index === current.q.correctIndex;
@@ -1926,15 +1932,15 @@ function QuizScreen({
                   type="button"
                   disabled={reveal}
                   onClick={() => onSelect(opt.index)}
-                  className={`flex w-full items-start gap-3 rounded-lg border px-3.5 py-3.5 text-left transition enabled:hover:border-slate-500 disabled:cursor-default sm:px-4 ${row}`}
+                  className={`flex w-full items-start gap-3.5 rounded-xl border px-4 py-4 text-left transition enabled:hover:border-slate-500 disabled:cursor-default sm:gap-4 sm:px-5 sm:py-5 ${row}`}
                 >
                   <span
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${radio}`}
+                    className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${radio}`}
                     aria-hidden
                   >
                     {(isSelected || (reveal && isCorrect)) && (
                       <span
-                        className={`h-2 w-2 rounded-full ${
+                        className={`h-2.5 w-2.5 rounded-full ${
                           reveal && isCorrect
                             ? "bg-white"
                             : reveal && isSelected && !isCorrect
@@ -1944,7 +1950,7 @@ function QuizScreen({
                       />
                     )}
                   </span>
-                  <span className={`text-sm leading-snug ${label}`}>{opt.text}</span>
+                  <span className={`text-base leading-relaxed sm:text-[1.05rem] ${label}`}>{opt.text}</span>
                 </button>
               </li>
             );
@@ -1961,7 +1967,7 @@ function QuizScreen({
                 type="button"
                 disabled={reveal}
                 onClick={() => onSelect(opt.index)}
-                className={`w-full rounded-xl border px-4 py-3 text-center text-sm transition duration-300 ease-out enabled:hover:-translate-y-1 enabled:hover:border-blue-400 enabled:hover:bg-blue-50 enabled:hover:shadow-lg enabled:hover:shadow-blue-500/25 disabled:cursor-default dark:enabled:hover:border-blue-500 dark:enabled:hover:bg-blue-950/40 ${style}`}
+                className={`w-full rounded-xl border px-4 py-4 text-center text-base leading-relaxed transition duration-300 ease-out enabled:hover:-translate-y-1 enabled:hover:border-blue-400 enabled:hover:bg-blue-50 enabled:hover:shadow-lg enabled:hover:shadow-blue-500/25 disabled:cursor-default sm:px-5 sm:text-[1.05rem] dark:enabled:hover:border-blue-500 dark:enabled:hover:bg-blue-950/40 ${style}`}
               >
                 {opt.text}
               </button>
@@ -2003,8 +2009,8 @@ function QuizScreen({
           <p
             className={
               isFinal
-                ? "mt-2 text-sm leading-relaxed text-slate-800 dark:text-slate-100"
-                : "mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto dark:text-white"
+                ? "mt-2 text-base leading-relaxed text-slate-800 dark:text-slate-100"
+                : "mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto sm:text-lg dark:text-white"
             }
           >
             {current.q.explanation}
@@ -2175,8 +2181,10 @@ function CareerScreen({
           <p className="text-center text-xs font-semibold text-blue-600 dark:text-blue-400">
             Question {quizIndex + 1} / {path.questions.length}
           </p>
-          <h2 className="text-center text-base font-bold text-slate-900 dark:text-white">{question.prompt}</h2>
-          <ul className="space-y-2">
+          <h2 className="text-center text-xl font-bold leading-snug text-slate-900 dark:text-white sm:text-2xl">
+            {question.prompt}
+          </h2>
+          <ul className="space-y-3">
             {options.map((opt) => {
               const isSelected = picked === opt.index;
               const isCorrect = opt.index === question.correctIndex;
@@ -2193,7 +2201,7 @@ function CareerScreen({
                       setPicked(opt.index);
                       setQuizReveal(true);
                     }}
-                    className={`w-full rounded-xl border px-4 py-3 text-center text-sm ${style}`}
+                    className={`w-full rounded-xl border px-4 py-4 text-center text-base leading-relaxed sm:px-5 sm:text-[1.05rem] ${style}`}
                   >
                     {opt.text}
                   </button>
@@ -2202,7 +2210,7 @@ function CareerScreen({
             })}
           </ul>
           {quizReveal && (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-justify text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-justify text-base leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
               {question.explanation}
             </p>
           )}

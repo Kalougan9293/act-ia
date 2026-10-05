@@ -8,6 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { validatePassword } from "@/lib/auth/password";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { UserRole } from "@/lib/admin/types";
+import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
 import { completeFirstConnection } from "@/lib/firebase/first-connection";
 
 function passwordRules(password: string) {
@@ -24,10 +25,19 @@ function defaultPathForRole(role: UserRole) {
   return "/utilisateur";
 }
 
-function pathAllowedForRole(path: string, role: UserRole) {
+function pathAllowedForRole(
+  path: string,
+  role: UserRole,
+  formationEnrolled?: boolean,
+) {
   if (path.startsWith("/admin")) return role === "super_admin";
   if (path.startsWith("/rh")) return role === "rh";
-  if (path.startsWith("/utilisateur")) return role === "employee" || role === "rh";
+  // Formation : collaborateurs, ou RH seulement s'il est inscrit dans la liste
+  if (path.startsWith("/utilisateur")) {
+    if (role === "employee") return true;
+    if (role === "rh") return Boolean(formationEnrolled);
+    return false;
+  }
   return true;
 }
 
@@ -35,13 +45,13 @@ export default function ConnexionClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextParam = searchParams.get("next");
+  const superAdminLogin = nextParam?.startsWith("/admin") ?? false;
   const {
     ready,
     configured,
     user,
     profile,
     signInWithPassword,
-    signOutUser,
     refreshProfile,
     error,
   } = useAuth();
@@ -64,17 +74,13 @@ export default function ConnexionClient() {
         ? nextParam
         : null;
 
-    // Compte connecté incompatible avec la destination (ex. RH → /admin) :
-    // on déconnecte pour laisser choisir le bon compte.
-    if (next && !pathAllowedForRole(next, profile.role)) {
-      void signOutUser();
-      setLocalError("Ce compte n'a pas accès à cet espace. Connectez-vous avec le compte adapté.");
-      return;
-    }
-
-    const dest = next ?? defaultPathForRole(profile.role);
+    // Mauvais espace demandé (ex. collaborateur sur /rh) → son espace, sans déconnecter
+    const dest =
+      next && pathAllowedForRole(next, profile.role, profile.formationEnrolled)
+        ? next
+        : defaultPathForRole(profile.role);
     router.replace(dest);
-  }, [holdRedirect, ready, user, profile, nextParam, router, signOutUser]);
+  }, [holdRedirect, ready, user, profile, nextParam, router]);
 
   function showLogin() {
     setMode("login");
@@ -118,6 +124,10 @@ export default function ConnexionClient() {
     }
     if (password !== confirm) {
       setLocalError("Les mots de passe ne correspondent pas");
+      return;
+    }
+    if (isAllowedSuperAdminEmail(email) || superAdminLogin) {
+      setLocalError("Le super admin se connecte avec son mot de passe, sans première connexion.");
       return;
     }
     setHoldRedirect(true);
@@ -277,6 +287,7 @@ export default function ConnexionClient() {
             </button>
 
             {mode === "login" ? (
+              superAdminLogin ? null : (
               <button
                 type="button"
                 onClick={showFirst}
@@ -284,6 +295,7 @@ export default function ConnexionClient() {
               >
                 Première connexion ?
               </button>
+              )
             ) : (
               <button
                 type="button"

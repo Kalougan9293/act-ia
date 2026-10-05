@@ -24,6 +24,7 @@ export type AuthProfile = {
   role: UserRole;
   structureId: string | null;
   status: string;
+  formationEnrolled: boolean;
 };
 
 type AuthContextValue = {
@@ -59,6 +60,7 @@ async function loadProfile(uid: string): Promise<AuthProfile | null> {
     role: data.role as UserRole,
     structureId: (data.structureId as string | null) ?? null,
     status: String(data.status ?? "active"),
+    formationEnrolled: Boolean(data.formationEnrolled),
   };
 }
 
@@ -204,6 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: profile.name,
       role: profile.role,
       structureId: profile.structureId,
+      formationEnrolled: profile.formationEnrolled,
     };
   }, [user, profile]);
 

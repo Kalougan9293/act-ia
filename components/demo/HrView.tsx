@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  Award,
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
@@ -29,8 +28,13 @@ import {
   type CompanyModuleContent,
 } from "@/lib/admin/types";
 import { downloadProofZip } from "@/lib/export/proof-zip";
+import { provisionTenantUser } from "@/lib/firebase/provision-user";
+import type { FormEvent } from "react";
 import { PlainText } from "@/lib/format/plain-text";
-import { createInvite, inviteLink } from "@/lib/firebase/invites";
+import {
+  deleteEmployeeAsRh,
+  deletePendingInviteAsRh,
+} from "@/lib/firebase/delete-employee";
 
 const QUICK_USE_CASE_KEYS = new Set<keyof AiUseCaseEntry>(["tool", "purpose", "data"]);
 
@@ -173,8 +177,11 @@ export default function HrView({
   companyName = "Atelier Lumière",
   structureId,
   structureInviteLink,
+  seatsMax = 5,
+  seatsUsed = 0,
   companyModule: companyModuleProp,
   onSaveCompanyModule,
+  onRosterChange,
   demo = false,
 }: {
   initialEmployees?: Employee[];
@@ -182,32 +189,28 @@ export default function HrView({
   structureId?: string;
   structureInviteLink?: string | null;
   seatsMax?: number;
+  seatsUsed?: number;
   companyModule?: CompanyModuleContent;
   onSaveCompanyModule?: (module: CompanyModuleContent) => Promise<void>;
+  onRosterChange?: () => void;
   /** Démo publique : lien fictif, export bloqué. */
   demo?: boolean;
 }) {
   const [roster, setRoster] = useState<Employee[]>(initialEmployees);
   const [preview, setPreview] = useState<string | null>(null);
-  const [archivedIds, setArchivedIds] = useState<string[]>([]);
   const [copiedPermanent, setCopiedPermanent] = useState(false);
   const [query, setQuery] = useState("");
   const [showCompany, setShowCompany] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
-  const [draftFirst, setDraftFirst] = useState("");
-  const [draftLast, setDraftLast] = useState("");
-  const [draftEmail, setDraftEmail] = useState("");
-  const [draftRole, setDraftRole] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [addFirstName, setAddFirstName] = useState("");
+  const [addLastName, setAddLastName] = useState("");
+  const [addEmail, setAddEmail] = useState("");
+  const [addBusy, setAddBusy] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
-  const [inviteShare, setInviteShare] = useState<{
-    name: string;
-    email: string;
-    link: string;
-  } | null>(null);
-  const [copiedInvite, setCopiedInvite] = useState(false);
+  const [addDone, setAddDone] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showModuleEditor, setShowModuleEditor] = useState(false);
-  const [quickRegister, setQuickRegister] = useState(true);
   const [moduleDraft, setModuleDraft] = useState<CompanyModuleContent>(
     () => normalizeModule(companyModuleProp),
   );
@@ -228,8 +231,7 @@ export default function HrView({
     if (!showModuleEditor) setModuleDraft(next);
   }, [companyModuleProp, showModuleEditor]);
 
-  const active = roster.filter((employee) => !archivedIds.includes(employee.id));
-  const archived = roster.filter((employee) => archivedIds.includes(employee.id));
+  const active = roster;
   const needle = query.trim().toLowerCase();
   const visible = active.filter((employee) => {
     if (!needle) return true;
@@ -252,6 +254,7 @@ export default function HrView({
   /** Dossier de preuve : tout le monde a une attestation (après entreprise + métier) */
   const companyReady = active.length > 0 && certified === active.length;
   const selected = roster.find((employee) => employee.id === preview) ?? null;
+  const seatsFull = seatsUsed >= seatsMax;
 
   function toggleSort(key: SortKey) {
     setSort((current) =>
@@ -275,86 +278,101 @@ export default function HrView({
   }
 
   function openAddForm() {
-    setDraftFirst("");
-    setDraftLast("");
-    setDraftEmail("");
-    setDraftRole("");
+    setAddFirstName("");
+    setAddLastName("");
+    setAddEmail("");
     setAddError(null);
+    setAddDone(false);
     setShowAdd(true);
   }
 
-  async function addCollaborator() {
-    const first = draftFirst.trim();
-    const last = draftLast.trim();
-    const email = draftEmail.trim().toLowerCase();
-    const jobTitle = draftRole.trim();
-    if (!first || !last || !email || adding) return;
-
-    setAdding(true);
+  async function submitAddCollaborator(event: FormEvent) {
+    event.preventDefault();
+    if (demo) {
+      setAddDone(true);
+      return;
+    }
+    if (!structureId) {
+      setAddError("Structure introuvable");
+      return;
+    }
+    if (seatsFull) {
+      setAddError(`Offre pleine (${seatsMax}). Supprimez un compte pour en ajouter un.`);
+      return;
+    }
+    const name = `${addFirstName.trim()} ${addLastName.trim()}`.trim();
+    if (!name) {
+      setAddError("Prénom et nom requis");
+      return;
+    }
+    setAddBusy(true);
     setAddError(null);
     try {
-      if (structureId) {
-        const { invite, link } = await createInvite({
-          email,
-          name: `${first} ${last}`,
-          role: "employee",
-          structureId,
-          jobTitle,
-        });
-        setRoster((current) => [
-          ...current.filter((e) => e.email.toLowerCase() !== email),
-          {
-            id: `invite:${invite.token}`,
-            name: invite.name,
-            email: invite.email,
-            role: jobTitle || "Collaborateur",
-            path: "IA + RGPD",
-            status: "todo",
-            percent: 0,
-            lastSeen: "Invité",
-            inviteToken: invite.token,
-          },
-        ]);
-        setInviteShare({ name: invite.name, email: invite.email, link });
-      } else {
-        const token = crypto.randomUUID().replace(/-/g, "");
-        const link = inviteLink(token);
-        setRoster((current) => [
-          ...current,
-          {
-            id: `invite:${token}`,
-            name: `${first} ${last}`,
-            email,
-            role: jobTitle || "Collaborateur",
-            path: "IA + RGPD",
-            status: "todo",
-            percent: 0,
-            lastSeen: "Invité",
-            inviteToken: token,
-          },
-        ]);
-        setInviteShare({ name: `${first} ${last}`, email, link });
-      }
-      setShowAdd(false);
-      setDraftFirst("");
-      setDraftLast("");
-      setDraftEmail("");
-      setDraftRole("");
+      const created = await provisionTenantUser({
+        email: addEmail,
+        name,
+        role: "employee",
+        structureId,
+      });
+      setRoster((current) => {
+        const row = {
+          id: created.id,
+          name: created.name,
+          email: created.email,
+          role: created.role === "rh" ? "RH" : "Collaborateur",
+          path: "IA + RGPD",
+          status: "todo" as const,
+          percent: created.progressPercent ?? 0,
+          lastSeen:
+            created.status === "invited" || created.id.startsWith("pending_")
+              ? "En attente"
+              : "—",
+          companyName,
+        };
+        const without = current.filter((e) => e.id !== created.id);
+        return [row, ...without];
+      });
+      setAddDone(true);
+      onRosterChange?.();
     } catch (e) {
-      setAddError(e instanceof Error ? e.message : "Invitation impossible");
+      setAddError(e instanceof Error ? e.message : "Ajout impossible");
     } finally {
-      setAdding(false);
+      setAddBusy(false);
     }
   }
 
-  async function copyInviteShare() {
-    if (!inviteShare) return;
+  async function removeCollaborator(employee: Employee) {
+    if (demo || deletingId) return;
+    const ok = window.confirm(
+      `Attention ! Vous allez perdre tout le suivi !\n\n` +
+        `Supprimer ${employee.name} efface définitivement sa progression et son attestation.\n` +
+        `S’il est réinscrit, il devra tout recommencer depuis zéro.\n\n` +
+        `Continuer ?`,
+    );
+    if (!ok) return;
+
+    setDeletingId(employee.id);
+    setDeleteError(null);
     try {
-      await navigator.clipboard.writeText(inviteShare.link);
-      setCopiedInvite(true);
-      window.setTimeout(() => setCopiedInvite(false), 1800);
-    } catch {
-      /* ignore */
+      if (employee.id.startsWith("invite:") && employee.inviteToken) {
+        if (structureId) {
+          await deletePendingInviteAsRh({
+            token: employee.inviteToken,
+            structureId,
+          });
+        }
+        setRoster((current) => current.filter((e) => e.id !== employee.id));
+      } else if (structureId) {
+        await deleteEmployeeAsRh({ userId: employee.id, structureId });
+        setRoster((current) => current.filter((e) => e.id !== employee.id));
+        onRosterChange?.();
+      } else {
+        setRoster((current) => current.filter((e) => e.id !== employee.id));
+      }
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : "Suppression impossible");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -405,63 +423,28 @@ export default function HrView({
       </div>
 
       {companyReady && (
-        <div className="space-y-3">
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-            Registre à jour : chaque collaborateur actif a une attestation de suivi. Ce document trace vos mesures ; il ne certifie pas l&apos;entreprise.
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => setShowCompany(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-700"
-            >
-              <Award className="h-4 w-4" />
-              Dossier de preuve Article 4
-            </button>
-            <button
-              type="button"
-              onClick={openModuleEditor}
-              className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200"
-            >
-              <Building2 className="h-4 w-4" />
-              Module entreprise
-            </button>
-            <button
-              type="button"
-              disabled={demo}
-              onClick={() => downloadProofZip(companyName, active, moduleSaved)}
-              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-            >
-              <Download className="h-4 w-4" />
-              Exporter le dossier (ZIP)
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowCompany(true)}
+          className="mx-auto block w-full max-w-2xl rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100 dark:hover:bg-emerald-950/50"
+        >
+          Registre à jour : chaque collaborateur actif a une attestation de suivi. Cliquez pour voir le dossier de preuve Article 4.
+        </button>
       )}
 
-      {!companyReady && (
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={openModuleEditor}
-            className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-2.5 text-sm font-semibold text-blue-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200"
-          >
-            <Building2 className="h-4 w-4" />
-            Module entreprise
-          </button>
-          <button
-            type="button"
-            disabled={demo}
-            onClick={() => downloadProofZip(companyName, active, moduleSaved)}
-            className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-          >
-            <Download className="h-4 w-4" />
-            Exporter le dossier (ZIP)
-          </button>
-        </div>
-      )}
+      <div className="flex justify-center">
+        <button
+          type="button"
+          disabled={demo}
+          onClick={() => downloadProofZip(companyName, active, moduleSaved)}
+          className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        >
+          <Download className="h-4 w-4" />
+          Exporter le dossier (ZIP)
+        </button>
+      </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
           <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{done}/{active.length}</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Salariés formés</div>
@@ -474,54 +457,40 @@ export default function HrView({
           <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
         </div>
+        <button
+          type="button"
+          onClick={openModuleEditor}
+          className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-800 dark:hover:border-blue-800"
+        >
+          <div className="flex justify-center text-blue-700 dark:text-blue-300">
+            <Building2 className="h-7 w-7" strokeWidth={2} />
+          </div>
+          <div className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            Module entreprise
+          </div>
+        </button>
       </div>
 
-      <div className="mx-auto max-w-xl space-y-2 rounded-2xl border border-blue-100 bg-white/70 px-4 py-4 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/70">
-        <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
-          Lien d&apos;invitation (tous les collaborateurs)
-        </p>
-        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-          Un seul lien à partager : chacun s&apos;inscrit avec son e-mail et mot de passe.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 pt-0.5">
-          <span className="break-all text-center text-sm font-medium text-blue-600 dark:text-blue-400">
-            {permanentLink}
-          </span>
-          <button
-            type="button"
-            onClick={() => void copyPermanentLink()}
-            className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copiedPermanent ? "Copié" : "Copier"}
-          </button>
-        </div>
-      </div>
+      {deleteError && (
+        <p className="text-center text-sm text-red-600 dark:text-red-400">{deleteError}</p>
+      )}
 
-      {inviteShare && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-3 text-center dark:border-blue-800 dark:bg-blue-950/30">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">
-            Lien à envoyer à {inviteShare.name}
-          </p>
-          <p className="mt-0.5 text-xs text-slate-500">{inviteShare.email}</p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-            <span className="break-all text-sm font-medium text-blue-600 dark:text-blue-400">
-              {inviteShare.link}
-            </span>
+      {(demo || structureInviteLink) && (
+        <div className="flex justify-center px-2">
+          <div className="flex w-full max-w-lg flex-col items-center gap-2.5 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/60 to-white px-5 py-4 text-center shadow-sm dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-900">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
+              Lien de connexion
+            </p>
+            <p className="w-full break-all text-sm font-medium leading-relaxed text-blue-600 dark:text-blue-400">
+              {permanentLink}
+            </p>
             <button
               type="button"
-              onClick={() => void copyInviteShare()}
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600"
+              onClick={() => void copyPermanentLink()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
             >
-              {copiedInvite ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              {copiedInvite ? "Copié" : "Copier"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setInviteShare(null)}
-              className="text-xs font-medium text-slate-400 hover:text-slate-600"
-            >
-              Fermer
+              {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copiedPermanent ? "Copié" : "Copier"}
             </button>
           </div>
         </div>
@@ -585,9 +554,11 @@ export default function HrView({
                     {employee.lastSeen}
                     <button
                       type="button"
-                      onClick={() => setArchivedIds((current) => [...current, employee.id])}
-                      aria-label={`Archiver ${employee.name}`}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100 dark:hover:text-red-400"
+                      disabled={Boolean(deletingId) || demo}
+                      onClick={() => void removeCollaborator(employee)}
+                      aria-label={`Effacer ${employee.name}`}
+                      title="Effacer — perte définitive du suivi"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -601,23 +572,12 @@ export default function HrView({
 
       <div className="flex items-start justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
         <Info className="w-4 h-4 shrink-0 mt-0.5" />
-        <p className="text-center">
-          Veille automatique AI Act &amp; RGPD : en cas d&apos;évolution légale, l&apos;équipe RH et les salariés sont automatiquement notifiés des nouveaux modules.
+        <p className="text-center max-w-2xl">
+          Supprimer un collaborateur est définitif : progression et attestation sont effacées, et l&apos;accès est
+          libéré pour un autre salarié. Cela permet de rester dans la capacité de votre offre et de garder le
+          registre à jour.
         </p>
       </div>
-
-      {archived.length > 0 && (
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-4 text-center">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Archivés</h2>
-          <ul className="mt-2 space-y-1">
-            {archived.map((employee) => (
-              <li key={employee.id} className="text-sm text-slate-600 dark:text-slate-300">
-                {employee.name} · conservé, retiré du suivi
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {selected && (
         <CertificatePreview
@@ -648,14 +608,8 @@ export default function HrView({
 
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              void addCollaborator();
-            }}
-            className="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-xl dark:border-slate-700 dark:bg-slate-900"
-          >
-            <div className="flex items-start justify-between gap-3">
+          <div className="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-xl dark:border-slate-700 dark:bg-slate-900">
+            <div className="flex items-start justify-between gap-3 text-left">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 Ajouter un collaborateur
               </h2>
@@ -668,71 +622,94 @@ export default function HrView({
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-xs text-slate-500">
-              Un lien d&apos;invitation personnel sera généré. Vous pourrez aussi utiliser le lien permanent de la structure.
-            </p>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              Prénom
-              <input
-                value={draftFirst}
-                onChange={(event) => setDraftFirst(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
-                required
-                autoComplete="given-name"
-              />
-            </label>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              Nom
-              <input
-                value={draftLast}
-                onChange={(event) => setDraftLast(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
-                required
-                autoComplete="family-name"
-              />
-            </label>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              E-mail
-              <input
-                type="email"
-                value={draftEmail}
-                onChange={(event) => setDraftEmail(event.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
-                required
-                autoComplete="email"
-              />
-            </label>
-            <label className="block text-sm text-slate-700 dark:text-slate-200">
-              Fonction <span className="text-xs text-slate-400">facultatif</span>
-              <input
-                value={draftRole}
-                onChange={(event) => setDraftRole(event.target.value)}
-                placeholder="Commerce, RH, Support…"
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-950"
-                autoComplete="organization-title"
-              />
-            </label>
-            {addError && (
-              <p className="text-center text-sm text-red-600 dark:text-red-400">{addError}</p>
+
+            {addDone ? (
+              <>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Accès créé. Si c&apos;est un nouveau collaborateur :{" "}
+                  <span className="font-semibold">/connexion</span> → « Première connexion ? ».
+                  Si c&apos;est votre compte RH : vous pouvez ouvrir la formation.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(false)}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                  Fermer
+                </button>
+              </>
+            ) : (
+              <form onSubmit={(e) => void submitAddCollaborator(e)} className="space-y-3 text-left">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Sans cet ajout, la personne ne peut pas se connecter. Elle active ensuite son
+                  accès via le lien (Première connexion).
+                </p>
+                {seatsFull ? (
+                  <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
+                    Offre pleine ({seatsMax} collaborateurs). Supprimez un compte pour en ajouter un.
+                  </p>
+                ) : null}
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="block space-y-1">
+                    <span className="text-xs font-medium text-slate-500">Prénom</span>
+                    <input
+                      required
+                      value={addFirstName}
+                      onChange={(e) => setAddFirstName(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-900"
+                      placeholder="Camille"
+                      disabled={addBusy || seatsFull}
+                      autoComplete="given-name"
+                    />
+                  </label>
+                  <label className="block space-y-1">
+                    <span className="text-xs font-medium text-slate-500">Nom</span>
+                    <input
+                      required
+                      value={addLastName}
+                      onChange={(e) => setAddLastName(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-900"
+                      placeholder="Bernard"
+                      disabled={addBusy || seatsFull}
+                      autoComplete="family-name"
+                    />
+                  </label>
+                </div>
+                <label className="block space-y-1">
+                  <span className="text-xs font-medium text-slate-500">E-mail</span>
+                  <input
+                    required
+                    type="email"
+                    value={addEmail}
+                    onChange={(e) => setAddEmail(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm dark:border-slate-600 dark:bg-slate-900"
+                    placeholder="prenom.nom@entreprise.fr"
+                    disabled={addBusy || seatsFull}
+                    autoComplete="email"
+                  />
+                </label>
+                {addError && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{addError}</p>
+                )}
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdd(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addBusy || seatsFull}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {addBusy ? "…" : "Créer l'accès"}
+                  </button>
+                </div>
+              </form>
             )}
-            <div className="flex justify-end gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => setShowAdd(false)}
-                disabled={adding}
-                className="px-3 py-2 text-sm font-semibold text-slate-600 disabled:opacity-50 dark:text-slate-300"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                disabled={adding}
-                className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-              >
-                {adding ? "…" : "Ajouter"}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       )}
 
@@ -779,28 +756,9 @@ export default function HrView({
                       Registre des usages IA
                     </p>
                     <p className="mt-0.5 text-justify text-xs text-slate-500 hyphens-auto">
-                      {quickRegister
-                        ? "Mode rapide : l'outil, l'usage et les données. Le reste de la fiche se complète ensuite, avec le DPO ou le référent."
-                        : "Fiche complète : outil, finalité, données, base légale, AI Act, DPA, statut. Aide à la cartographie, pas un conseil juridique."}
+                      L&apos;outil, l&apos;usage et les données. Le reste de la fiche se complète ensuite, avec le DPO ou le référent.
                     </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="inline-flex rounded-lg border border-slate-200 p-0.5 text-xs font-semibold dark:border-slate-600">
-                      <button
-                        type="button"
-                        onClick={() => setQuickRegister(true)}
-                        className={`rounded-md px-2.5 py-1.5 ${quickRegister ? "bg-blue-600 text-white" : "text-slate-600 dark:text-slate-300"}`}
-                      >
-                        Rapide
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setQuickRegister(false)}
-                        className={`rounded-md px-2.5 py-1.5 ${quickRegister ? "text-slate-600 dark:text-slate-300" : "bg-blue-600 text-white"}`}
-                      >
-                        Complet
-                      </button>
-                    </div>
                   <button
                     type="button"
                     onClick={() =>
@@ -814,7 +772,6 @@ export default function HrView({
                     <Plus className="h-3.5 w-3.5" />
                     Ajouter un usage
                   </button>
-                  </div>
                 </div>
                 {(moduleDraft.useCases ?? []).length === 0 ? (
                   <p className="rounded-xl border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-500 dark:border-slate-700">
@@ -844,10 +801,8 @@ export default function HrView({
                           </button>
                         </div>
                         <div className="grid gap-2 sm:grid-cols-2">
-                          {(quickRegister
-                            ? USE_CASE_FIELDS.filter((field) => QUICK_USE_CASE_KEYS.has(field.key))
-                            : USE_CASE_FIELDS
-                          ).map((field) => (
+                          {USE_CASE_FIELDS.filter((field) => QUICK_USE_CASE_KEYS.has(field.key)).map(
+                            (field) => (
                             <label key={field.key} className="block text-left">
                               <span className="mb-1 block text-[11px] font-medium text-slate-500">
                                 {field.label}
@@ -868,26 +823,7 @@ export default function HrView({
                                 className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
                               />
                             </label>
-                          ))}
-                          {!quickRegister && (
-                          <label className="block text-left">
-                            <span className="mb-1 block text-[11px] font-medium text-slate-500">
-                              Prochaine réévaluation
-                            </span>
-                            <input
-                              type="date"
-                              value={row.reviewAt}
-                              onChange={(event) =>
-                                setModuleDraft((current) => ({
-                                  ...current,
-                                  useCases: current.useCases.map((item) =>
-                                    item.id === row.id ? { ...item, reviewAt: event.target.value } : item,
-                                  ),
-                                }))
-                              }
-                              className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
-                            />
-                          </label>
+                            ),
                           )}
                           <label className="block text-left">
                             <span className="mb-1 block text-[11px] font-medium text-slate-500">

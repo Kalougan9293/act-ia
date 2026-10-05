@@ -89,6 +89,7 @@ export function mapUser(id: string, data: Record<string, unknown>): PlatformUser
       data.quizScore === null || data.quizScore === undefined
         ? null
         : Number(data.quizScore),
+    formationEnrolled: Boolean(data.formationEnrolled),
   };
 }
 
@@ -152,6 +153,9 @@ export async function saveUser(user: PlatformUser): Promise<void> {
       certificateId: user.certificateId,
       certifiedAt: user.certifiedAt,
       quizScore: user.quizScore,
+      ...(user.formationEnrolled !== undefined
+        ? { formationEnrolled: user.formationEnrolled }
+        : {}),
     },
     { merge: true },
   );

@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { validatePassword } from "@/lib/auth/password";
+import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
 import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
 import { logOut } from "@/lib/firebase/auth";
 
@@ -11,14 +12,21 @@ function authCode(error: unknown) {
 }
 
 /**
- * Première connexion : le super admin a préparé l'accès (firstLogin).
- * L'utilisateur choisit son mot de passe — aucun mot de passe temporaire.
+ * Première connexion : le RH (ou super admin) a préparé l'accès (firstLogin).
+ * Sans création préalable → impossible. L'utilisateur choisit son mot de passe.
  */
-export async function completeFirstConnection(emailRaw: string, password: string) {
+export async function completeFirstConnection(
+  emailRaw: string,
+  password: string,
+  options?: { structureId?: string },
+) {
   const check = validatePassword(password);
   if (!check.ok) throw new Error(check.message ?? "Mot de passe invalide");
 
   const email = emailRaw.trim().toLowerCase();
+  if (isAllowedSuperAdminEmail(email)) {
+    throw new Error("Le super admin se connecte avec son mot de passe, sans première connexion.");
+  }
   const auth = getFirebaseAuth();
   const db = getFirebaseDb();
   if (!auth || !db) throw new Error("Firebase non configuré");
@@ -27,8 +35,14 @@ export async function completeFirstConnection(emailRaw: string, password: string
   const pending = pendingSnap.data();
   if (!pendingSnap.exists() || pending?.status !== "pending") {
     throw new Error(
-      "Aucun compte en attente pour cet e-mail. Demandez à votre administrateur de créer l'accès.",
+      "Aucun accès créé pour cet e-mail. Demandez à votre RH de vous ajouter.",
     );
+  }
+  if (
+    options?.structureId &&
+    String(pending.structureId ?? "") !== options.structureId
+  ) {
+    throw new Error("Cet e-mail n'est pas rattaché à cette entreprise.");
   }
 
   let created;
@@ -54,6 +68,8 @@ export async function completeFirstConnection(emailRaw: string, password: string
       certificateId: null,
       certifiedAt: null,
       quizScore: null,
+      // Siège déjà réservé à la création RH ; pas de +1 ici
+      formationEnrolled: pending.role === "employee",
     });
 
     const legacyId = pending.legacyUserId ? String(pending.legacyUserId) : "";

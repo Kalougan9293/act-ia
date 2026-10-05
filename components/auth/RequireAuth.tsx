@@ -5,6 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { UserRole } from "@/lib/admin/types";
 
+function homeForRole(role: UserRole) {
+  if (role === "super_admin") return "/admin";
+  if (role === "rh") return "/rh";
+  return "/utilisateur";
+}
+
 export default function RequireAuth({
   roles,
   children,
@@ -21,11 +27,20 @@ export default function RequireAuth({
 
   useEffect(() => {
     if (waiting) return;
-    if (!configured || !user || !allowed) {
+    if (!configured) {
+      router.replace("/connexion");
+      return;
+    }
+    // Connecté mais mauvais espace → envoyer vers le sien (pas de déconnexion)
+    if (user && profile && !allowed) {
+      router.replace(homeForRole(profile.role));
+      return;
+    }
+    if (!user || !allowed) {
       const next = pathname && pathname !== "/connexion" ? `?next=${encodeURIComponent(pathname)}` : "";
       router.replace(`/connexion${next}`);
     }
-  }, [waiting, configured, user, allowed, rolesKey, router, pathname]);
+  }, [waiting, configured, user, profile, allowed, rolesKey, router, pathname]);
 
   if (waiting || !user || !allowed) {
     return (

@@ -23,7 +23,7 @@ function Feedback({ text }: { text: string }) {
       <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
         À retenir
       </p>
-      <p className="mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto dark:text-white">
+      <p className="mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto sm:text-lg dark:text-white">
         {text}
       </p>
     </div>
@@ -81,7 +81,7 @@ function ChoiceList({
   const reveal = picked !== null;
   return (
     <div className="space-y-2.5">
-      <ul className="mx-auto grid max-w-lg gap-2.5">
+      <ul className="mx-auto grid w-full max-w-2xl gap-3">
         {choices.map((choice, index) => (
           <li key={choice.label}>
             <button
@@ -91,14 +91,14 @@ function ChoiceList({
                 setPicked(index);
                 onPick(choice);
               }}
-              className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left text-sm transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default ${choiceStyle(
+              className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left text-base transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:gap-4 sm:px-5 sm:text-[1.05rem] ${choiceStyle(
                 reveal,
                 choice.correct,
                 picked === index,
               )}`}
             >
               <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                   reveal && (choice.correct || picked === index)
                     ? "bg-white/20 text-white"
                     : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
@@ -106,7 +106,7 @@ function ChoiceList({
               >
                 {reveal && choice.correct ? <Check className="h-4 w-4" /> : String.fromCharCode(65 + index)}
               </span>
-              <span className="font-medium leading-snug">{choice.label}</span>
+              <span className="font-medium leading-relaxed">{choice.label}</span>
             </button>
           </li>
         ))}
@@ -198,7 +198,7 @@ function QuizActivity({
           ))}
         </div>
       )}
-      <p className="mx-auto max-w-lg text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+      <p className="mx-auto max-w-2xl text-center text-lg font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
         {current.prompt}
       </p>
       <ChoiceList key={index} choices={current.choices} onPick={() => setAnswered(true)} />
@@ -601,12 +601,12 @@ function ScenarioActivity({
         iconTone={skin.iconTone}
         shell={skin.shell}
       >
-        <p className="mx-auto max-w-md text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+        <p className="mx-auto max-w-2xl text-center text-lg font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
           {current.prompt}
         </p>
       </SceneFrame>
 
-      <ul className="mx-auto grid max-w-lg gap-2.5">
+      <ul className="mx-auto grid w-full max-w-2xl gap-3">
         {current.choices.map((choice, choiceIndex) => {
           const selected = picked === choiceIndex;
           const reveal = answered;
@@ -617,10 +617,10 @@ function ScenarioActivity({
                 type="button"
                 disabled={answered}
                 onClick={() => setPicked(choiceIndex)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left text-sm transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default ${tone}`}
+                className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left text-base transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:gap-4 sm:px-5 sm:text-[1.05rem] ${tone}`}
               >
                 <span
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                     reveal && choice.correct
                       ? "bg-white/20 text-white"
                       : reveal && selected
@@ -676,10 +676,10 @@ function ChecklistActivity({
   }, [centered, checked.length, items.length, onReady]);
   return (
     <div className="space-y-5">
-      <p className="mx-auto max-w-lg text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+      <p className="mx-auto max-w-2xl text-center text-lg font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
         {intro}
       </p>
-      <ul className={`space-y-2.5 ${centered ? "mx-auto max-w-lg" : ""}`}>
+      <ul className="mx-auto max-w-2xl space-y-3">
         {items.map((item) => {
           const on = centered ? validated || checked.includes(item) : checked.includes(item);
           const allGood = centered && (validated || checked.length === items.length);
@@ -693,7 +693,7 @@ function ChecklistActivity({
                     current.includes(item) ? current.filter((value) => value !== item) : [...current, item],
                   )
                 }
-                className={`flex w-full gap-2 rounded-2xl border-2 px-4 py-3.5 text-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default ${
+                className={`flex w-full gap-3 rounded-2xl border-2 px-4 py-4 text-base transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:px-5 sm:text-[1.05rem] ${
                   centered ? "items-center justify-center text-center" : "items-start text-left"
                 } ${
                   allGood && on
@@ -704,11 +704,11 @@ function ChecklistActivity({
                 }`}
               >
                 <Check
-                  className={`h-4 w-4 shrink-0 ${
+                  className={`h-5 w-5 shrink-0 ${
                     allGood && on ? "text-white" : on ? "text-emerald-600" : "text-slate-300"
                   } ${centered ? "" : "mt-0.5"}`}
                 />
-                <span className="font-medium">{item}</span>
+                <span className="font-medium leading-relaxed">{item}</span>
               </button>
             </li>
           );
@@ -746,9 +746,9 @@ function PredictActivity({
     <div className="space-y-5">
       <div className="mx-auto max-w-lg space-y-2 text-center">
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{activity.hint}</p>
-        <p className="text-lg font-bold leading-snug text-slate-900 dark:text-white">{activity.lead}</p>
+        <p className="text-lg font-bold leading-snug text-slate-900 dark:text-white sm:text-xl">{activity.lead}</p>
       </div>
-      <ul className="mx-auto grid max-w-lg gap-2.5">
+      <ul className="mx-auto grid w-full max-w-2xl gap-3">
         {activity.options.map((option, index) => {
           const correct = option.percent === top;
           const mine = option.label === picked;
@@ -765,10 +765,10 @@ function PredictActivity({
                 type="button"
                 disabled={open}
                 onClick={() => setPicked(option.label)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left text-sm font-semibold transition disabled:cursor-default ${tone}`}
+                className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left text-base font-semibold transition disabled:cursor-default sm:gap-4 sm:px-5 sm:text-[1.05rem] ${tone}`}
               >
                 <span
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                     open && (correct || mine)
                       ? "bg-white/20 text-white"
                       : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
@@ -776,9 +776,9 @@ function PredictActivity({
                 >
                   {open && correct ? <Check className="h-4 w-4" /> : String.fromCharCode(65 + index)}
                 </span>
-                <span className="flex-1 leading-snug">{option.label}</span>
+                <span className="flex-1 leading-relaxed">{option.label}</span>
                 {open && (
-                  <span className={`text-xs font-semibold ${correct || mine ? "text-white/90" : "text-slate-400"}`}>
+                  <span className={`text-sm font-semibold ${correct || mine ? "text-white/90" : "text-slate-400"}`}>
                     {option.percent} %
                   </span>
                 )}
