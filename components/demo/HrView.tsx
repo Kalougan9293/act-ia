@@ -27,6 +27,7 @@ import {
   type AiUseCaseEntry,
   type CompanyModuleContent,
 } from "@/lib/admin/types";
+import { downloadCompanyReport } from "@/lib/export/attestations";
 import { downloadProofZip } from "@/lib/export/proof-zip";
 import { provisionTenantUser } from "@/lib/firebase/provision-user";
 import type { FormEvent } from "react";
@@ -432,7 +433,23 @@ export default function HrView({
         </button>
       )}
 
-      <div className="flex justify-center">
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => setShowCompany(true)}
+          className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
+        >
+          Rapport Article 4
+        </button>
+        <button
+          type="button"
+          disabled={demo}
+          onClick={() => downloadCompanyReport(companyName, active)}
+          className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-emerald-200"
+        >
+          <Download className="h-4 w-4" />
+          Télécharger le rapport (PDF)
+        </button>
         <button
           type="button"
           disabled={demo}
@@ -588,6 +605,7 @@ export default function HrView({
               ? {
                   score: selected.quizScore ?? 80,
                   ...formatProofDate(selected.certifiedAt ?? new Date().toISOString()),
+                  issuedAt: selected.certifiedAt ?? null,
                   serial: selected.certificateId.replace(/^CONF-\d+-/, ""),
                   certificateId: selected.certificateId,
                   specimen: false,
@@ -602,6 +620,8 @@ export default function HrView({
           company={companyName}
           done={done}
           total={active.length}
+          employees={active}
+          canDownload={!demo}
           onClose={() => setShowCompany(false)}
         />
       )}

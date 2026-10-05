@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Award, Copy, ShieldCheck, X } from "lucide-react";
+import { Award, Copy, Download, ShieldCheck, X } from "lucide-react";
+import type { Employee } from "./data";
+import {
+  companyTrainingStats,
+  downloadCompanyReport,
+  registryIdForCompany,
+  TRAINING_HOURS_EACH,
+} from "@/lib/export/attestations";
+import { certificateFingerprint, formatProofDateUtc } from "@/lib/formation/proof";
 
 function Seal() {
   return (
@@ -15,19 +23,30 @@ export default function CompanyCertificate({
   company,
   done,
   total,
+  employees = [],
+  canDownload = true,
   onClose,
 }: {
   company: string;
   done: number;
   total: number;
+  employees?: Employee[];
+  canDownload?: boolean;
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
   const unlocked = total > 0 && done === total;
   const issued = new Date();
+  const issuedIso = issued.toISOString();
   const date = issued.toLocaleDateString("fr-FR");
   const time = issued.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  const badgeText = `${company} — attestations de suivi à jour pour l'article 4 et le RGPD. Registre ConformAI REG-CONF-2026-89A4.`;
+  const utc = formatProofDateUtc(issuedIso);
+  const registryId = registryIdForCompany(company);
+  const fingerprint = certificateFingerprint(registryId.replace(/^REG-CONF-\d+-/, ""));
+  const stats = companyTrainingStats(employees.length ? employees : []);
+  const hours = employees.length ? stats.hours : done * TRAINING_HOURS_EACH;
+  const certified = employees.length ? stats.certified : unlocked ? total : 0;
+  const badgeText = `${company} — attestations de suivi à jour pour l'article 4 et le RGPD. Registre ConformAI ${registryId}.`;
 
   async function copyBadge() {
     try {
@@ -63,7 +82,7 @@ export default function CompanyCertificate({
               )}
               <Seal />
               <h2 className="mt-5 text-xl font-bold tracking-tight sm:text-2xl">
-                Dossier de preuve employeur — article 4
+                Rapport d&apos;engagement — Article 4
               </h2>
               <p className="mt-2 text-sm text-slate-600">Attestations de suivi · AI Act (article 4) &amp; RGPD</p>
 
@@ -74,32 +93,56 @@ export default function CompanyCertificate({
                 <ShieldCheck className="h-4 w-4" />
                 {done}/{total} collaborateurs formés · {total === 0 ? 0 : Math.round((done / total) * 100)} %
               </div>
+              <p className="mt-3 text-sm text-slate-700">
+                {hours} h de formation · {certified} attestation{certified > 1 ? "s" : ""} émise{certified > 1 ? "s" : ""}
+              </p>
 
               <dl className="mx-auto mt-8 max-w-md space-y-3 text-left text-sm">
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Identifiant registre</dt>
-                  <dd className="font-mono text-sm">REG-CONF-2026-89A4</dd>
+                  <dd className="font-mono text-sm">{registryId}</dd>
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Empreinte</dt>
-                  <dd className="font-mono text-xs">c4e9a1b27890f3d6</dd>
+                  <dd className="font-mono text-xs">{fingerprint}</dd>
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Périmètre validé</dt>
                   <dd>Usage des IA génératives, protection des données et cadre EU AI Act &amp; RGPD.</dd>
                 </div>
                 <div>
+                  <dt className="text-xs uppercase tracking-wider text-slate-500">Volume d&apos;heures</dt>
+                  <dd>{hours} h — {TRAINING_HOURS_EACH} h par collaborateur au parcours validé (100 %).</dd>
+                </div>
+                <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Émis le</dt>
-                  <dd>{date} à {time} (Europe/Paris)</dd>
+                  <dd>
+                    {date} à {time} (Europe/Paris)
+                    <span className="mt-0.5 block text-xs text-slate-500">
+                      {utc.date} à {utc.time} UTC
+                    </span>
+                  </dd>
                 </div>
               </dl>
 
               <p className="mx-auto mt-8 max-w-md text-xs leading-relaxed text-slate-500">
-                Document émis par ConformAI et conservé dans le registre de suivi. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique.
+                Document émis par ConformAI et conservé dans le registre de suivi. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique. Le récapitulatif nominatif horodaté est dans le PDF.
               </p>
             </div>
           </div>
         </article>
+
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            disabled={!canDownload}
+            onClick={() => downloadCompanyReport(company, employees)}
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" />
+            Télécharger le rapport Article 4 (PDF)
+          </button>
+        </div>
 
         <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-lg dark:border-slate-700 dark:bg-slate-800">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Badge pour le site web</p>

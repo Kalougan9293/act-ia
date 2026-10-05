@@ -84,21 +84,33 @@ export function createCertificateId(seed?: string): string {
   return `CONF-${year}-${serial}`;
 }
 
-export function formatProofDate(iso: string): { date: string; time: string } {
+function formatInZone(iso: string, timeZone: string): { date: string; time: string } | null {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) {
-    return { date: iso.slice(0, 10), time: "—" };
-  }
-  const date = d.toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "Europe/Paris",
-  });
-  const time = d.toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Paris",
-  });
-  return { date, time };
+  if (Number.isNaN(d.getTime())) return null;
+  return {
+    date: d.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone,
+    }),
+    time: d.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone,
+    }),
+  };
+}
+
+export function formatProofDate(iso: string): { date: string; time: string } {
+  return formatInZone(iso, "Europe/Paris") ?? { date: iso.slice(0, 10), time: "—" };
+}
+
+export function formatProofDateUtc(iso: string): { date: string; time: string } {
+  return formatInZone(iso, "UTC") ?? { date: iso.slice(0, 10), time: "—" };
+}
+
+/** Empreinte affichée sur l'attestation — même formule que l'aperçu RH. */
+export function certificateFingerprint(serial: string): string {
+  return `a9f3c1${serial.toLowerCase()}8e42b7d0`;
 }

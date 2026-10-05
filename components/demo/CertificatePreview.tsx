@@ -1,8 +1,9 @@
 "use client";
 
-import { X } from "lucide-react";
+import { Download, X } from "lucide-react";
 import type { Employee } from "./data";
-import { CURRICULUM_LABEL } from "@/lib/formation/proof";
+import { downloadLearnerAttestation } from "@/lib/export/attestations";
+import { certificateFingerprint, CURRICULUM_LABEL, formatProofDateUtc } from "@/lib/formation/proof";
 
 const demoProofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
   "2": { score: 94, date: "28/09/2026", time: "16:42", serial: "M4K2L" },
@@ -17,6 +18,8 @@ export type CertificateProof = {
   serial: string;
   certificateId?: string;
   specimen?: boolean;
+  /** ISO, pour le horodatage UTC du PDF. */
+  issuedAt?: string | null;
 };
 
 function FakeQr() {
@@ -68,16 +71,29 @@ export default function CertificatePreview({
     specimen: !employee.certificateId,
   };
   const certificateId = proof.certificateId ?? `CONF-2026-${proof.serial}`;
-  const hash = `a9f3c1${proof.serial.toLowerCase()}8e42b7d0`;
+  const hash = certificateFingerprint(proof.serial);
   const issuedAt = `${proof.date} à ${proof.time} (Europe/Paris)`;
+  const utc = proof.issuedAt ? formatProofDateUtc(proof.issuedAt) : null;
   const specimen = proof.specimen ?? !Boolean(employee.certificateId);
+
+  function download() {
+    downloadLearnerAttestation({
+      fullName: employee.name,
+      role: employee.role,
+      companyName: employee.companyName ?? companyName,
+      certificateId,
+      quizScore: proof.score,
+      issuedAt: proof.issuedAt,
+      dateLabel: proof.date,
+      timeLabel: proof.time,
+      specimen,
+    });
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/60 px-4 py-8" onClick={onClose}>
-      <div
-        className="relative w-full max-w-3xl bg-white text-slate-900 shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="w-full max-w-3xl" onClick={(event) => event.stopPropagation()}>
+      <div className="relative bg-white text-slate-900 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
@@ -155,6 +171,7 @@ export default function CertificatePreview({
                   ["Statut", "Validé"],
                   ["Date de finalisation", proof.date],
                   ["Heure de finalisation", `${proof.time} Europe/Paris`],
+                  ...(utc ? [["Horodatage UTC", `${utc.date} à ${utc.time} UTC`] as [string, string]] : []),
                 ].map(([label, value]) => (
                   <tr key={label} className="border-t border-slate-200 first:border-t-0">
                     <th className="px-3 py-2 font-medium text-slate-600 w-1/2">{label}</th>
@@ -209,6 +226,17 @@ export default function CertificatePreview({
             </div>
           </footer>
         </div>
+      </div>
+      <div className="mt-4 flex justify-center">
+        <button
+          type="button"
+          onClick={download}
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
+        >
+          <Download className="h-4 w-4" />
+          Télécharger l&apos;attestation (PDF)
+        </button>
+      </div>
       </div>
     </div>
   );

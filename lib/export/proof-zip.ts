@@ -252,7 +252,7 @@ function wrapLine(text: string, width = 88): string[] {
   return lines;
 }
 
-function buildSimplePdf(lines: string[]): Uint8Array {
+export function buildSimplePdf(lines: string[]): Uint8Array {
   const pageHeight = 842;
   const pageWidth = 595;
   const pages: string[][] = [[]];
@@ -310,7 +310,7 @@ function buildSimplePdf(lines: string[]): Uint8Array {
   return new TextEncoder().encode(`%PDF-1.4\n${body}${xref}${trailer}`);
 }
 
-function slug(value: string) {
+export function slug(value: string) {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -390,13 +390,17 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
     { name: "dossier.pdf", data: buildSimplePdf(pdfLines) },
   ]);
 
-  const copy = new ArrayBuffer(zip.byteLength);
-  new Uint8Array(copy).set(zip);
-  const blob = new Blob([copy], { type: "application/zip" });
+  downloadBytes(`dossier-preuve-${slug(companyName)}.zip`, zip, "application/zip");
+}
+
+export function downloadBytes(filename: string, data: Uint8Array, mime: string) {
+  const copy = new ArrayBuffer(data.byteLength);
+  new Uint8Array(copy).set(data);
+  const blob = new Blob([copy], { type: mime });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `dossier-preuve-${slug(companyName)}.zip`;
+  link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
 }

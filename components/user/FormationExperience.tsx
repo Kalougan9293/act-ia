@@ -8,6 +8,7 @@ import {
   Check,
   CheckCircle2,
   ClipboardList,
+  Download,
   GraduationCap,
   Lock,
   Play,
@@ -19,6 +20,7 @@ import VideoScript from "@/components/user/VideoScript";
 import ActivityPlayer from "@/components/user/ActivityPlayer";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
+import { downloadLearnerAttestation } from "@/lib/export/attestations";
 import type { IssuedCertificate } from "@/lib/firebase/formation-progress";
 import { formatProofDate } from "@/lib/formation/proof";
 import { CAREER_PATHS } from "@/lib/formation/careers";
@@ -160,7 +162,10 @@ export default function FormationExperience({
     return (
       <IntroScreen
         firstName={firstName}
+        fullName={fullName}
         companyName={companyName}
+        certificate={certificate}
+        quizScore={progress.quizScore}
         completedChapters={progress.completedChapters}
         positioningDone={progress.positioningDone}
         quizPassed={progress.quizPassed}
@@ -506,7 +511,10 @@ function PathCard({
 
 function IntroScreen({
   firstName,
+  fullName,
   companyName,
+  certificate,
+  quizScore,
   completedChapters,
   positioningDone,
   quizPassed,
@@ -520,7 +528,10 @@ function IntroScreen({
   onOpenCareer,
 }: {
   firstName: string;
+  fullName: string;
   companyName: string;
+  certificate: IssuedCertificate | null;
+  quizScore: number | null;
   completedChapters: string[];
   positioningDone: boolean;
   quizPassed: boolean;
@@ -623,6 +634,16 @@ function IntroScreen({
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
+      )}
+
+      {certificate && (
+        <LearnerAttestation
+          fullName={fullName}
+          companyName={companyName}
+          careerPathId={careerPathId}
+          quizScore={quizScore}
+          certificate={certificate}
+        />
       )}
 
       <div className="mx-auto w-full max-w-3xl">
@@ -815,6 +836,98 @@ function IntroScreen({
   );
 }
 
+function LearnerAttestation({
+  fullName,
+  companyName,
+  careerPathId,
+  quizScore,
+  certificate,
+}: {
+  fullName: string;
+  companyName: string;
+  careerPathId: string | null;
+  quizScore: number | null;
+  certificate: IssuedCertificate;
+}) {
+  const [open, setOpen] = useState(false);
+  const { date, time } = formatProofDate(certificate.issuedAt);
+  const proof = {
+    score: certificate.quizScore ?? quizScore ?? 80,
+    date,
+    time,
+    serial: certificate.id.replace(/^CONF-\d+-/, ""),
+    certificateId: certificate.id,
+    specimen: false as const,
+    issuedAt: certificate.issuedAt,
+  };
+  const role = CAREER_PATHS.find((path) => path.id === careerPathId)?.title ?? "Collaborateur";
+
+  function download() {
+    downloadLearnerAttestation({
+      fullName,
+      role,
+      companyName,
+      certificateId: certificate.id,
+      quizScore: proof.score,
+      issuedAt: certificate.issuedAt,
+      dateLabel: date,
+      timeLabel: time,
+    });
+  }
+
+  return (
+    <>
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-800 dark:bg-emerald-950/30">
+        <p className="text-center text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+          Attestation de suivi · {certificate.id}
+        </p>
+        <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
+          Examen validé. Vous pouvez la consulter ou la télécharger.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+          >
+            <GraduationCap className="h-4 w-4" />
+            Voir mon attestation
+          </button>
+          <button
+            type="button"
+            onClick={download}
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
+          >
+            <Download className="h-4 w-4" />
+            Télécharger
+          </button>
+        </div>
+      </div>
+      {open && (
+        <CertificatePreview
+          employee={{
+            id: "self",
+            name: fullName,
+            email: "",
+            role,
+            path: "IA + RGPD",
+            status: "done",
+            percent: 100,
+            lastSeen: proof.date,
+            certificateId: proof.certificateId,
+            certifiedAt: certificate.issuedAt,
+            quizScore: proof.score,
+            companyName,
+          }}
+          companyName={companyName}
+          proof={proof}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 function HubScreen({
   firstName,
   fullName,
@@ -843,20 +956,6 @@ function HubScreen({
   onOpenCareer: () => void;
 }) {
   const blocksReady = doneChapters >= totalChapters;
-  const [showAttestation, setShowAttestation] = useState(false);
-  const proof = certificate
-    ? (() => {
-        const { date, time } = formatProofDate(certificate.issuedAt);
-        return {
-          score: certificate.quizScore ?? progress.quizScore ?? 80,
-          date,
-          time,
-          serial: certificate.id.replace(/^CONF-\d+-/, ""),
-          certificateId: certificate.id,
-          specimen: false as const,
-        };
-      })()
-    : null;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 text-center">
@@ -913,26 +1012,14 @@ function HubScreen({
         </div>
       )}
 
-      {certificate && proof && (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-800 dark:bg-emerald-950/30">
-          <p className="text-center text-sm font-semibold text-emerald-900 dark:text-emerald-100">
-            Attestation de suivi émise · {certificate.id}
-          </p>
-          <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
-            Conservée dans le dossier de preuve de votre entreprise (Art. 4).
-          </p>
-          <p className="mt-2 text-justify text-sm text-slate-600 hyphens-auto dark:text-emerald-100/90">
-            On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowAttestation(true)}
-            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-700"
-          >
-            <GraduationCap className="h-4 w-4" />
-            Voir mon attestation
-          </button>
-        </div>
+      {certificate && (
+        <LearnerAttestation
+          fullName={fullName}
+          companyName={companyName}
+          careerPathId={progress.careerPathId}
+          quizScore={progress.quizScore}
+          certificate={certificate}
+        />
       )}
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -1020,27 +1107,6 @@ function HubScreen({
         />
       </div>
 
-      {showAttestation && proof && (
-        <CertificatePreview
-          employee={{
-            id: "self",
-            name: fullName,
-            email: "",
-            role: CAREER_PATHS.find((p) => p.id === progress.careerPathId)?.title ?? "Collaborateur",
-            path: "IA + RGPD",
-            status: "done",
-            percent: 100,
-            lastSeen: proof.date,
-            certificateId: proof.certificateId,
-            certifiedAt: certificate?.issuedAt ?? null,
-            quizScore: proof.score,
-            companyName,
-          }}
-          companyName={companyName}
-          proof={proof}
-          onClose={() => setShowAttestation(false)}
-        />
-      )}
     </div>
   );
 }
@@ -2204,9 +2270,9 @@ function CareerScreen({
         <p className="mt-2 text-sm text-slate-500">{path.focus}</p>
       </div>
       <VideoScript format="vidéo métier" duration={path.duration} script={path.script} />
-      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Cas pratique</p>
-        <p className="mt-2 text-justify text-sm text-slate-800 dark:text-slate-100">{path.casePrompt}</p>
+      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center dark:border-slate-700 dark:bg-slate-900">
+        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Cas pratique</p>
+        <p className="mt-2 text-center text-sm text-slate-800 dark:text-slate-100">{path.casePrompt}</p>
         {!caseRevealed ? (
           <button
             type="button"
@@ -2216,7 +2282,7 @@ function CareerScreen({
             Voir la correction expliquée
           </button>
         ) : (
-          <p className="mt-4 text-justify text-sm text-emerald-900 dark:text-emerald-100">{path.caseCorrection}</p>
+          <p className="mt-4 text-center text-sm leading-relaxed text-emerald-900 dark:text-emerald-100">{path.caseCorrection}</p>
         )}
       </div>
       {caseRevealed && (
@@ -2253,7 +2319,7 @@ function CareerScreen({
             })}
           </ul>
           {quizReveal && (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-justify text-base leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-center text-base leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
               {question.explanation}
             </p>
           )}
@@ -2286,7 +2352,7 @@ function CareerScreen({
             </div>
           )}
           {finished && (
-            <p className="text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
+            <p className="text-center text-sm text-slate-600 dark:text-slate-300">
               On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
             </p>
           )}
