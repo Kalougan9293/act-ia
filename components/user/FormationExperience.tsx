@@ -1376,8 +1376,8 @@ function ChapterScreen({
     !done;
   const showAck =
     !done && ackRequired && activityComplete && mountReady && holdReady && !acked;
-  const continueLabel =
-    !canContinue && cooldownSec > 0 ? `Continuer (${cooldownSec}sec)` : "Continuer";
+  const waitingTimer = !canContinue && cooldownSec > 0;
+  const continueLabel = waitingTimer ? `Continuer (${cooldownSec} s)` : "Continuer";
   const stepIndex = Math.max(0, block.chapters.findIndex((item) => item.id === chapter.id));
   const stepCount = block.chapters.length;
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
@@ -1470,7 +1470,11 @@ function ChapterScreen({
             type="button"
             disabled={!canContinue}
             onClick={onComplete}
-            className="inline-flex min-w-[10.5rem] items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+            className={`inline-flex min-w-[12rem] items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold shadow-md transition duration-300 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
+              waitingTimer
+                ? "bg-blue-600/80 text-white shadow-blue-600/10"
+                : "bg-blue-600 text-white shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 disabled:opacity-40"
+            }`}
           >
             {continueLabel}
             {canContinue ? <ArrowRight className="h-4 w-4" /> : null}

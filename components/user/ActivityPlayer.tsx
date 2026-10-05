@@ -1429,11 +1429,11 @@ function TimelineActivity({
   );
 }
 
-const TETRIS_COLS = 10;
-const TETRIS_ROWS = 16;
-const TETRIS_FALL_MS = 1500;
-const TETRIS_CELL_MAX = 34;
-const TETRIS_CELL_MIN = 26;
+const TETRIS_COLS = 8;
+const TETRIS_ROWS = 12;
+const TETRIS_FALL_MS = 1100;
+const TETRIS_CELL_MAX = 28;
+const TETRIS_CELL_MIN = 22;
 
 /** Les 7 tétrominos classiques, un par réflexe */
 const TETRIS_SHAPES: number[][][] = [
@@ -1546,7 +1546,7 @@ function useTetrisCellSize() {
   const [cell, setCell] = useState(TETRIS_CELL_MAX);
   useEffect(() => {
     function measure() {
-      const available = Math.min(window.innerWidth - 40, 360);
+      const available = Math.min(window.innerWidth - 48, 240);
       setCell(Math.max(TETRIS_CELL_MIN, Math.min(TETRIS_CELL_MAX, Math.floor(available / TETRIS_COLS))));
     }
     measure();
@@ -1757,8 +1757,15 @@ function TetrisActivity({
           ),
         )}
         {!ghostMode && (
-          <div
-            className="pointer-events-none absolute z-10 flex items-center justify-center px-0.5"
+          <button
+            type="button"
+            aria-label="Tourner la pièce"
+            onPointerDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              tryRotate();
+            }}
+            className="absolute z-10 flex touch-manipulation items-center justify-center px-0.5"
             style={{
               left: bounds.left * cell,
               top: bounds.top * cell,
@@ -1766,10 +1773,10 @@ function TetrisActivity({
               height: (bounds.bottom - bounds.top) * cell,
             }}
           >
-            <span className="line-clamp-3 rounded bg-white/90 px-1 py-0.5 text-center text-[9px] font-bold leading-tight text-slate-900 shadow-sm sm:px-1.5 sm:text-[11px]">
+            <span className="pointer-events-none line-clamp-3 rounded bg-white/90 px-1 py-0.5 text-center text-[9px] font-bold leading-tight text-slate-900 shadow-sm sm:px-1.5 sm:text-[11px]">
               {piece.label}
             </span>
-          </div>
+          </button>
         )}
       </Fragment>
     );
@@ -1793,8 +1800,8 @@ function TetrisActivity({
               <span className="font-semibold text-slate-900 dark:text-white">← →</span> déplacer
             </li>
             <li>
-              <span className="font-semibold text-slate-900 dark:text-white">Tourner</span> : bouton, Espace
-              ou Entrée
+              <span className="font-semibold text-slate-900 dark:text-white">Tourner</span> : touchez la
+              pièce (téléphone), bouton, Espace ou Entrée
             </li>
             <li>
               <span className="font-semibold text-slate-900 dark:text-white">↓</span> accélérer ·{" "}
@@ -1848,7 +1855,7 @@ function TetrisActivity({
 
       <div className="mx-auto w-fit max-w-full overflow-hidden rounded-2xl border-2 border-slate-400 bg-slate-200 p-1.5 shadow-inner sm:rounded-3xl sm:p-2 dark:border-slate-600 dark:bg-slate-950">
         <div
-          className="relative touch-none bg-slate-800"
+          className="relative touch-manipulation bg-slate-800"
           style={{ width: TETRIS_COLS * cell, height: TETRIS_ROWS * cell }}
         >
           <div
