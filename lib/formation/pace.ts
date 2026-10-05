@@ -2,12 +2,18 @@ import type { Activity } from "@/lib/formation/activity";
 
 export function parseDurationMs(duration: string): number {
   const min = duration.match(/(\d+)\s*min/);
-  const sec = duration.match(/(\d+)\s*s/);
+  // "1 min 30" ou "45 s" / "45s"
+  const secExplicit = duration.match(/(\d+)\s*s\b/);
+  const secAfterMin =
+    !secExplicit && min
+      ? duration.match(/min(?:ute)?s?\s+(\d+)\b/)
+      : null;
+  const sec = secExplicit ?? secAfterMin;
   return (min ? Number(min[1]) * 60_000 : 0) + (sec ? Number(sec[1]) * 1000 : 0);
 }
 
 export function isPassiveKind(kind: Activity["kind"]): boolean {
-  return kind === "text" || kind === "fiche";
+  return kind === "text" || kind === "fiche" || kind === "video";
 }
 
 export function isGameKind(kind: Activity["kind"]): boolean {
@@ -24,10 +30,14 @@ export function isGameKind(kind: Activity["kind"]): boolean {
   );
 }
 
-/** Délai depuis l'ouverture pour les contenus à lire. Pas de timer vidéo (géré plus tard avec la vraie vidéo). */
+/** Délai depuis l'ouverture pour les contenus à lire / script vidéo placeholder. */
 export function mountDwellMs(kind: Activity["kind"], duration: string): number {
   if (!isPassiveKind(kind)) return 0;
   const total = parseDurationMs(duration) || 60_000;
+  // Vidéo placeholder : court délai visible (le script se déroule), pas toute la durée.
+  if (kind === "video") {
+    return Math.min(6_000, Math.max(3_000, Math.round(total * 0.12)));
+  }
   // Alertes / textes très courts : juste un souffle, pas un examen.
   if (total <= 45_000) return Math.min(3_000, Math.max(1_500, Math.round(total * 0.4)));
   if (kind === "text") {
@@ -45,9 +55,10 @@ export function feedbackHoldMs(kind: Activity["kind"]): number {
   return 0;
 }
 
-/** Confirmation « J'ai compris » : textes/fiches un peu longs seulement. */
+/** Confirmation « J'ai compris » : textes/fiches un peu longs seulement (pas les vidéos). */
 export function needsAck(kind: Activity["kind"], _chapterId: string, duration = ""): boolean {
-  if (!isPassiveKind(kind)) return false;
+  if (kind === "video") return false;
+  if (kind !== "text" && kind !== "fiche") return false;
   const total = parseDurationMs(duration);
   if (total > 0 && total <= 45_000) return false;
   return true;

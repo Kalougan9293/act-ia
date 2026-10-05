@@ -1303,32 +1303,69 @@ function ChapterScreen({
 }) {
   const kind = chapter.activity.kind;
   const ackRequired = needsAck(kind, chapter.id, chapter.duration);
-  const [activityComplete, setActivityComplete] = useState(done);
-  const [mountReady, setMountReady] = useState(done || mountDwellMs(kind, chapter.duration) <= 0);
-  const [holdReady, setHoldReady] = useState(done);
+  const mountMs = mountDwellMs(kind, chapter.duration);
+  const holdMs = feedbackHoldMs(kind);
+  // Vidéo / texte / fiche : prêts dès l'ouverture (le dwell gère l'attente)
+  const instantActivity =
+    kind === "video" || kind === "text" || kind === "fiche";
+  const [activityComplete, setActivityComplete] = useState(done || instantActivity);
+  const [mountReady, setMountReady] = useState(done || mountMs <= 0);
+  const [holdReady, setHoldReady] = useState(done || holdMs <= 0);
   const [acked, setAcked] = useState(done || !ackRequired);
+  const [cooldownSec, setCooldownSec] = useState(() =>
+    done || mountMs <= 0 ? 0 : Math.ceil(mountMs / 1000),
+  );
 
+  // Dwell à l'ouverture (lecture / script vidéo)
   useEffect(() => {
-    const mountMs = mountDwellMs(kind, chapter.duration);
-    setActivityComplete(done);
-    setMountReady(done || mountMs <= 0);
-    setHoldReady(done);
+    const nextMount = mountDwellMs(kind, chapter.duration);
+    const nextHold = feedbackHoldMs(kind);
+    const nextInstant =
+      kind === "video" || kind === "text" || kind === "fiche";
+    setActivityComplete(done || nextInstant);
+    setHoldReady(done || nextHold <= 0);
     setAcked(done || !needsAck(kind, chapter.id, chapter.duration));
-    if (done || mountMs <= 0) return;
-    const timer = window.setTimeout(() => setMountReady(true), mountMs);
-    return () => window.clearTimeout(timer);
+    if (done || nextMount <= 0) {
+      setMountReady(true);
+      setCooldownSec(0);
+      return;
+    }
+    setMountReady(false);
+    const endsAt = Date.now() + nextMount;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+      setCooldownSec(left);
+      if (left <= 0) {
+        setMountReady(true);
+        setCooldownSec(0);
+      }
+    };
+    tick();
+    const timer = window.setInterval(tick, 200);
+    return () => window.clearInterval(timer);
   }, [chapter.id, chapter.duration, done, kind]);
 
+  // Hold après validation d'un jeu (correction)
   useEffect(() => {
     if (done || !activityComplete) return;
-    const holdMs = feedbackHoldMs(kind);
-    if (holdMs <= 0) {
+    const nextHold = feedbackHoldMs(kind);
+    if (nextHold <= 0) {
       setHoldReady(true);
       return;
     }
     setHoldReady(false);
-    const timer = window.setTimeout(() => setHoldReady(true), holdMs);
-    return () => window.clearTimeout(timer);
+    const endsAt = Date.now() + nextHold;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+      setCooldownSec(left);
+      if (left <= 0) {
+        setHoldReady(true);
+        setCooldownSec(0);
+      }
+    };
+    tick();
+    const timer = window.setInterval(tick, 200);
+    return () => window.clearInterval(timer);
   }, [activityComplete, chapter.id, done, kind]);
 
   const canContinue =
@@ -1339,6 +1376,8 @@ function ChapterScreen({
     !done;
   const showAck =
     !done && ackRequired && activityComplete && mountReady && holdReady && !acked;
+  const continueLabel =
+    !canContinue && cooldownSec > 0 ? `Continuer (${cooldownSec}sec)` : "Continuer";
   const stepIndex = Math.max(0, block.chapters.findIndex((item) => item.id === chapter.id));
   const stepCount = block.chapters.length;
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
@@ -1431,10 +1470,10 @@ function ChapterScreen({
             type="button"
             disabled={!canContinue}
             onClick={onComplete}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+            className="inline-flex min-w-[10.5rem] items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            Continuer
-            <ArrowRight className="h-4 w-4" />
+            {continueLabel}
+            {canContinue ? <ArrowRight className="h-4 w-4" /> : null}
           </button>
         </div>
       )}
