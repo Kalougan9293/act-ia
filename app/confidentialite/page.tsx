@@ -70,8 +70,9 @@ export default function ConfidentialitePage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Pendant le contrat : compte, progression, registre et attestations restent disponibles.</li>
           <li>
-            Après la fin du contrat : les preuves de formation sont conservées 12 mois, puis
-            supprimées, sauf obligation légale plus longue.
+            Après la fin du contrat : pour les offres PME et ETI, les preuves de formation sont
+            conservées 12 mois, puis supprimées, sauf obligation légale plus longue. Cette
+            conservation n&apos;est pas incluse dans les offres Micro et TPE.
           </li>
           <li>Factures : 10 ans, durée comptable.</li>
           <li>Journaux techniques : 12 mois, puis suppression.</li>

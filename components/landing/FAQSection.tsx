@@ -3,54 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
-
-const faqs = [
-  {
-    question: "L'article 4 de l'AI Act s'applique-t-il à mon entreprise ?",
-    answer:
-      "Oui, si vos équipes utilisent une IA pour le compte de l'entreprise. Depuis le 2 février 2025, vous devez prendre des mesures pour développer leur maîtrise. Aucun niveau individuel n'est exigé. Les contrôles commencent le 2 août 2026.",
-  },
-  {
-    question: "Que se passe-t-il si aucune mesure n'est documentée ?",
-    answer:
-      "L'article 4 demande des mesures, pas un score à atteindre. Ce site n'affiche aucun montant d'amende : cela se vérifie avec un avocat. Le registre et les attestations montrent ce que vous avez mis en place.",
-  },
-  {
-    question: "Serons-nous informés si la réglementation change ?",
-    answer:
-      "Oui. La veille signale les évolutions de l'AI Act et du RGPD, et le parcours est mis à jour. Votre démarche reste actuelle. La validation des usages reste celle de votre entreprise.",
-  },
-  {
-    question: "Combien de temps dure la formation pour mes salariés ?",
-    answer:
-      "Parcours complet : 1h00. Peut être suivi en plusieurs sessions.",
-  },
-  {
-    question: "L'attestation de suivi vaut-elle diplôme ou certification officielle ?",
-    answer:
-      "Non. C'est une attestation au nom du salarié, avec la date et un identifiant. Elle reste dans le dossier de l'entreprise pendant le contrat, puis 12 mois après. Ce n'est pas un diplôme.",
-  },
-  {
-    question: "Comment vous assurez-vous que les salariés ne trichent pas lors des évaluations ?",
-    answer:
-      "Le copier-coller est limité, les quiz sont chronométrés et l'inactivité est détectée. Cela rend le suivi plus fiable. Cela ne suffit pas, à soi seul, à lui donner une valeur juridique.",
-  },
-  {
-    question: "Faut-il former tous les salariés, même ceux qui n'utilisent pas l'IA ?",
-    answer:
-      "Non. Il vise les personnes qui utilisent l'IA pour l'entreprise. Formez-les en priorité, et notez-le dans le registre.",
-  },
-  {
-    question: "Puis-je gérer la formation en interne sans ConformAI ?",
-    answer:
-      "Oui. Il faut alors le contenu, les attestations et le registre. ConformAI réunit les trois.",
-  },
-  {
-    question: "Mes données et celles de mes salariés sont-elles sécurisées ?",
-    answer:
-      "Oui. Hébergement en France, données chiffrées, aucun transfert hors de l'Union européenne.",
-  },
-];
+import { faqs } from "@/lib/landing/faq";
 
 interface FAQItemProps {
   faq: { question: string; answer: string };
@@ -74,11 +27,11 @@ function FAQItem({ faq, isOpen, onToggle, index }: FAQItemProps) {
     >
       <button
         onClick={onToggle}
-        className="w-full flex items-start justify-between gap-4 px-6 py-5 text-left group"
+        className="relative w-full px-12 py-5 text-center group"
         aria-expanded={isOpen}
       >
         <span
-          className={`text-sm sm:text-base font-semibold leading-snug transition-colors duration-200 ${
+          className={`block text-center text-sm sm:text-base font-semibold leading-snug transition-colors duration-200 ${
             isOpen
               ? "text-blue-700 dark:text-blue-400"
               : "text-slate-900 dark:text-slate-100 group-hover:text-slate-900 dark:group-hover:text-white"
@@ -87,7 +40,7 @@ function FAQItem({ faq, isOpen, onToggle, index }: FAQItemProps) {
           {faq.question}
         </span>
         <span
-          className={`shrink-0 p-1.5 rounded-lg transition-colors duration-200 mt-0.5 ${
+          className={`absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors duration-200 ${
             isOpen
               ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
               : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-600"
@@ -106,7 +59,7 @@ function FAQItem({ faq, isOpen, onToggle, index }: FAQItemProps) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="px-6 pb-5 text-justify text-sm text-slate-900 dark:text-slate-100 leading-relaxed hyphens-auto">
+            <p className="px-6 pb-5 text-center text-sm text-slate-900 dark:text-slate-100 leading-relaxed">
               {faq.answer}
             </p>
           </motion.div>
@@ -121,21 +74,21 @@ export default function FAQSection() {
 
   return (
     <section id="faq" className="py-12 bg-white dark:bg-slate-900">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-fit max-w-full px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-14"
+          className="mb-14 text-center"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-balance text-3xl font-bold text-slate-900 sm:w-max sm:whitespace-nowrap sm:text-4xl dark:text-white">
             Tout ce que vous voulez{" "}
             <span className="text-blue-600 dark:text-blue-400">savoir</span>
           </h2>
         </motion.div>
 
-        <div className="space-y-2.5">
+        <div className="w-0 min-w-full space-y-2.5">
           {faqs.map((faq, i) => (
             <FAQItem
               key={i}

@@ -60,8 +60,8 @@ export default function CguPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Contenu & attestation</h2>
         <p>
           Les contenus pédagogiques sont indicatifs et évolutifs. L&apos;attestation de suivi prouve
-          le parcours suivi ; elle ne constitue ni diplôme ni certification officielle AI Act /
-          RGPD.
+          le parcours suivi et documente les mesures au titre de l&apos;article 4. Elle ne constitue
+          ni diplôme, ni certification officielle, ni certification de l&apos;entreprise.
         </p>
       </section>
 
@@ -103,9 +103,10 @@ export default function CguPage() {
         </p>
         <p>
           La suppression du compte se demande par e-mail au même contact. L&apos;entreprise demande
-          la fermeture de sa structure. Un salarié demande la suppression de son accès. Les preuves
-          de formation restent disponibles pour l&apos;employeur pendant douze mois après la fin du
-          contrat, et les factures pendant dix ans.
+          la fermeture de sa structure. Un salarié demande la suppression de son accès. Pour les
+          offres PME et ETI, les preuves de formation restent disponibles pour l&apos;employeur
+          pendant douze mois après la fin du contrat. Cette conservation n&apos;est pas incluse
+          dans les offres Micro et TPE. Les factures restent disponibles pendant dix ans.
         </p>
       </section>
 

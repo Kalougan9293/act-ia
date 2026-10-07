@@ -35,10 +35,10 @@ const features = [
     title: "Un registre pour le DPO",
     subtitle: "Gouvernance",
     description:
-      "Avancement, usages couverts et relances au même endroit. Y compris les outils utilisés hors charte.",
+      "Avancement et usages couverts au même endroit. Y compris les outils utilisés hors charte.",
     points: [
       "Suivi par équipe",
-      "Relances automatiques",
+      "Personnes en retard visibles",
       "Export ZIP / JSON et attestations",
     ],
     preview: "admin" as const,
@@ -222,7 +222,7 @@ export default function FeaturesSection() {
             Former, attester,{" "}
             <span className="text-blue-600 dark:text-blue-400">exporter</span>
           </h2>
-          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-auto">
+          <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
             Trois fonctions. Un seul dossier pour la direction et le DPO.
           </p>
         </motion.div>

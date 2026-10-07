@@ -7,19 +7,19 @@ const problems = [
     tag: "AI Act • Article 4",
     title: "Contraintes en cas de contrôle",
     description:
-      "L'article 4 demande des mesures pour les équipes qui utilisent l'IA. L'absence de preuve documentée ne laisse rien à montrer en cas de contrôle.",
+      "L'article 4 demande des mesures pour les équipes qui utilisent l'IA. Au contrôle, sans dossier, les équipes sont considérées comme non formées.",
     stat: "En vigueur depuis le 2 février 2025",
-    statLabel: "Contrôles dès le 2 août 2026",
+    statLabel: "Nouvelles interdictions le 2 décembre 2026",
     statClass: "text-base",
     card: "bg-blue-50/80 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900",
   },
   {
     tag: "RGPD & Sécurité",
-    title: "Fuites de données clients & PI",
+    title: "Fuites de données clients et de secrets",
     description:
-      "Sans directives claires, l'usage non encadré de ChatGPT ou Copilot par vos salariés peut faire sortir des données confidentielles ou à caractère personnel.",
-    stat: "Sans cadre",
-    statLabel: "un usage peut sortir du registre",
+      "Sans règles claires, un salarié qui utilise une IA peut faire sortir des données clients ou des secrets. C'est un risque de violation du RGPD.",
+    stat: "IA invisible",
+    statLabel: "les salariés l'utilisent, l'entreprise ne le sait pas",
     statClass: "text-xl",
     card: "bg-sky-50/90 border-sky-200 dark:bg-sky-950/30 dark:border-sky-900",
   },
@@ -53,8 +53,9 @@ export default function ProblemSection() {
             </span>{" "}
             fait risquer à votre entreprise
           </h2>
-          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-2xl mx-auto text-lg hyphens-auto">
+          <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
             L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA.
+            <br />
             Les attestations et le registre les rendent visibles.
           </p>
         </motion.div>
@@ -83,7 +84,7 @@ export default function ProblemSection() {
                   <p className={`text-center font-extrabold text-slate-900 dark:text-slate-100 ${problem.statClass}`}>
                     {problem.stat}
                   </p>
-                  <p className="text-center text-sm text-black dark:text-white mt-0.5">
+                  <p className="mt-0.5 text-center text-sm text-black dark:text-white">
                     {problem.statLabel}
                   </p>
                 </div>

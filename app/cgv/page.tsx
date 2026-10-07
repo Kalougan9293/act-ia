@@ -62,8 +62,10 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Fin de contrat</h2>
         <p>
-          À l&apos;échéance, les accès sont fermés. Les preuves de formation sont conservées douze
-          mois pour l&apos;entreprise cliente, puis supprimées. Les factures sont conservées dix
+          À l&apos;échéance, les accès sont fermés. Pour les offres PME et ETI, les preuves de
+          formation sont conservées douze mois pour l&apos;entreprise cliente, puis supprimées.
+          Cette conservation n&apos;est pas incluse dans les offres Micro et TPE. Les factures sont
+          conservées dix
           ans. La fermeture anticipée se demande par e-mail ; la période déjà payée n&apos;est pas
           remboursée.
         </p>

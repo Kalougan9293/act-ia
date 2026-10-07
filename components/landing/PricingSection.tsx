@@ -18,13 +18,15 @@ const plans: Plan[] = [
     name: "Micro",
     seats: "1 à 5 salariés",
     price: "290 €",
-    priceLabel: "/ an HT",
+    priceLabel: "/ an",
     highlight: false,
     features: [
       "Jusqu'à 5 accès utilisateurs",
-      "Socle commun + Parcours Métiers",
-      "Attestations nominatives horodatées",
-      "Tableau de bord RH, registre des usages et export ZIP / JSON",
+      "Abonnement annuel, sans frais cachés",
+      "Socle commun et parcours métiers",
+      "Attestations nominatives",
+      "Tableau de bord RH, registre et export",
+      "Veille incluse : le parcours suit l'actualité",
       "Support par email",
     ],
     cta: "Démarrer maintenant",
@@ -33,12 +35,12 @@ const plans: Plan[] = [
     name: "TPE",
     seats: "6 à 20 salariés",
     price: "590 €",
-    priceLabel: "/ an HT",
+    priceLabel: "/ an",
     highlight: false,
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Relances automatiques des apprenants",
+      "Module sur mesure, à la demande",
       "Support prioritaire",
     ],
     cta: "Démarrer maintenant",
@@ -47,14 +49,12 @@ const plans: Plan[] = [
     name: "PME",
     seats: "21 à 50 salariés",
     price: "990 €",
-    priceLabel: "/ an HT",
+    priceLabel: "/ an",
     highlight: true,
     features: [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
-      "Mise à jour du parcours et veille réglementaire",
-      "Dossier de preuve : attestations, registre, historique",
-      "Conservation des preuves 12 mois post-contrat",
+      "Preuves conservées 12 mois après le contrat",
     ],
     cta: "Constituer le dossier de preuve",
   },
@@ -62,14 +62,12 @@ const plans: Plan[] = [
     name: "ETI",
     seats: "+50 salariés",
     price: "Sur devis",
-    priceLabel: "à partir de 1 490 € / an HT",
     highlight: false,
     features: [
-      "Accès sur-mesure ou facturation au siège",
-      "Intégrations sur devis (vos outils RH / SI)",
-      "Option Marque Blanche",
-      "Module métier sur-mesure sur demande",
-      "Contrat SLA & support dédié",
+      "Plus de 50 accès",
+      "Tout le plan PME inclus",
+      "Intégrations sur devis",
+      "Contrat et support dédié",
     ],
     cta: "Contacter l'équipe",
   },
@@ -84,16 +82,19 @@ export default function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16 space-y-4"
+          className="mb-8 text-center space-y-4"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
             Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, un{" "}
             <span className="text-blue-600 dark:text-blue-400">registre</span> à jour
           </h2>
-          <p className="text-justify text-slate-900 dark:text-slate-100 max-w-xl mx-auto text-lg hyphens-auto">
-            Abonnement annuel sans frais cachés. Veille incluse : vous êtes informés des évolutions, le parcours suit l'actualité.
-          </p>
         </motion.div>
+
+        <p className="mx-auto mb-4 max-w-6xl text-center text-xl font-semibold tracking-tight text-slate-900 dark:text-white sm:whitespace-nowrap sm:text-2xl">
+          Prise en charge{" "}
+          <span className="text-blue-600 dark:text-blue-400">OPCO</span> possible
+          via un organisme de formation partenaire Qualiopi, selon éligibilité.
+        </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {plans.map((plan, i) => (
@@ -103,7 +104,7 @@ export default function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`relative flex flex-col hover:z-20 ${plan.highlight ? "lg:-translate-y-3 z-10" : ""}`}
+              className="relative flex flex-col hover:z-20"
             >
               <motion.div
                 whileHover={{ scale: 1.03, y: -8 }}
@@ -167,44 +168,13 @@ export default function PricingSection() {
           ))}
         </div>
 
-        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-white px-5 py-5 text-left shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Marque blanche</p>
-          <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
-            Pour les organismes de formation et les cabinets RH
-          </h3>
-          <p className="mt-2 text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300">
-            Vous accompagnez déjà des entreprises. ConformAI passe à vos couleurs : parcours,
-            QCM, attestations et registre, pour que vos clients documentent leurs mesures au titre
-            de l&apos;article 4. Licence annuelle de 2&nbsp;000 à 5&nbsp;000&nbsp;€ par partenaire,
-            plus un montant par apprenant.
+        <div className="mx-auto mt-4 flex max-w-3xl flex-col items-center gap-1 text-center text-base leading-relaxed text-slate-600 dark:text-slate-300">
+          <p>
+            Option{" "}
+            <span className="font-medium text-blue-600 dark:text-blue-400">marque blanche</span>{" "}
+            disponible.
           </p>
-          <a
-            href="mailto:contact@conformai.fr?subject=ConformAI%20marque%20blanche"
-            className="mt-3 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
-          >
-            En parler
-          </a>
         </div>
-
-        <p className="mx-auto mt-10 max-w-3xl text-justify text-sm text-slate-600 hyphens-auto dark:text-slate-300">
-          Besoin d&apos;un module spécifique à votre métier ? On l&apos;ajoute au parcours, sur devis.{" "}
-          <a
-            href="mailto:contact@conformai.fr?subject=ConformAI%20-%20module%20sur-mesure"
-            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
-          >
-            Demander du sur-mesure
-          </a>
-        </p>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mx-auto mt-4 max-w-3xl text-justify text-xs text-slate-500 hyphens-auto dark:text-slate-400"
-        >
-          Paiement annuel par carte ou virement • TVA non applicable, art. 293 B du CGI • Mises à jour légales incluses.
-        </motion.p>
       </div>
     </section>
   );
