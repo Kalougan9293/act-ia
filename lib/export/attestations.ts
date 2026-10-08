@@ -9,7 +9,7 @@ import {
 import { buildSimplePdf, downloadBytes, slug } from "@/lib/export/proof-zip";
 
 /** Durée pédagogique du socle, reprise sur l'attestation individuelle. */
-export const TRAINING_HOURS_EACH = 1;
+export const TRAINING_HOURS_EACH = 1.5;
 
 export type LearnerAttestationInput = {
   fullName: string;
@@ -70,7 +70,7 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
     "Référentiel : EU AI Act (AI literacy, article 4) et RGPD.",
     "",
     "03 — Validation",
-    "Durée pédagogique prévue : 1 h 00",
+    "Durée pédagogique prévue : max 1 h 30",
     "Parcours complété : 100 %",
     `Évaluation finale : ${input.quizScore} / 100`,
     "Seuil de réussite : 80 / 100",
@@ -145,7 +145,7 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
     `Parcours validés à 100 % : ${stats.trained}/${stats.total} (${stats.rate} %)`,
     `Attestations de suivi émises : ${stats.certified}`,
     `Volume d'heures : ${stats.hours} h`,
-    "Durée pédagogique comptée : 1 h 00 par collaborateur au parcours validé (100 %).",
+    "Durée pédagogique comptée : max 1 h 30 par collaborateur au parcours validé (100 %).",
     "",
     "Récapitulatif horodaté — archive audit",
     ...(people.length ? people : ["Aucun collaborateur."]),

@@ -9,6 +9,7 @@ import {
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { getStructure } from "@/lib/firebase/tenant-data";
 import { releaseSeatIfEmployee } from "@/lib/firebase/seats";
+import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -18,7 +19,7 @@ function requireDb() {
 
 /**
  * Retire un utilisateur formation.
- * - Collaborateur : suppression du compte Firestore + progression.
+ * - Collaborateur : suppression Auth + Firestore + progression.
  * - RH inscrit via le lien : désinscription formation uniquement (reste RH).
  */
 export async function deleteEmployeeAsRh(params: {
@@ -68,6 +69,9 @@ export async function deleteEmployeeAsRh(params: {
   }
 
   const email = String(data.email ?? "").trim().toLowerCase();
+  // Auth avant Firestore : sinon le compte Auth orphelin bloque une future 1ʳᵉ connexion
+  await deleteAuthAccount({ uid: params.userId, email });
+
   // firstLogin n'existe que pour les comptes encore « en attente »
   const firstLoginRef = email ? doc(db, "firstLogin", email) : null;
   const firstLoginSnap = firstLoginRef ? await getDoc(firstLoginRef) : null;

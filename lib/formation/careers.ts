@@ -20,7 +20,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "Réflexes quotidiens, vérification des faits, sécurité des données et Shadow AI.",
     script:
-      "En tant que collaborateur, vous êtes au cœur de l'usage au quotidien. Vos 3 réflexes indispensables :\n\nRéfléchissez avant de poster : réduisez au maximum les données personnelles ou confidentielles dans vos prompts.\n\nVérifiez systématiquement : l'IA est un outil d'assistance, pas un décideur. Elle peut halluciner ou inventer des faits. Vous restez responsable de la vérification de vos documents.\n\nDéclarez vos outils : n'utilisez pas d'outils d'IA personnels non approuvés pour traiter des documents internes de l'entreprise.",
+      "Vous, au quotidien, vous êtes au cœur de l'usage. Trois réflexes. C'est tout.\n\nAvant de coller quoi que ce soit, enlevez au maximum les infos perso ou confidentielles.\n\nEnsuite, vérifiez. L'IA aide mais elle ne décide pas. Elle peut inventer. Vous restez responsable de ce que vous envoyez.\n\nEt troisième point, déclarez vos outils. Pas d'IA perso non autorisée sur des docs internes. Sinon, c'est du Shadow AI.",
     casePrompt:
       "Vous devez résumer un compte rendu de réunion contenant des noms de clients. Que faites-vous avant d'utiliser l'IA ?",
     caseCorrection:
@@ -70,7 +70,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "Gouvernance, politique d'achat, responsabilité de l'employeur et arbitrage des risques.",
     script:
-      "En tant que dirigeant, votre rôle est de fixer le cadre de gouvernance et de sécuriser l'entreprise :\n\nMettre en place le registre : cartographiez les outils, leurs finalités et les propriétaires de cas d'usage pour éliminer le Shadow AI.\n\nEncadrer les achats : validez la finalité, la base légale et le DPA de chaque logiciel IA avant tout déploiement.\n\nAnticiper les changements de statut : si vos équipes développent ou intègrent des briques IA commercialisées sous votre marque, faites vérifier votre statut juridique (Fournisseur vs Déployeur).",
+      "Vous êtes dirigeant. Votre job, c'est le cadre. Protéger l'entreprise.\n\nD'abord, la liste des outils. Lesquels on utilise, pour quoi, et qui est responsable. Sinon, chacun prend une IA dans son coin. L'entreprise ne le voit même pas.\n\nEnsuite, avant d'acheter. À quoi sert l'outil. Ce que dit le contrat. Et est-ce que vos données sont protégées. Vous vérifiez ça avant de brancher. Pas après.\n\nDernière chose. Vos équipes fabriquent une IA, ou la vendent avec votre nom dessus ? Vous n'êtes plus seulement celui qui l'utilise. Vous devenez celui qui la fournit. Les règles sont plus lourdes. Faites vérifier. Avant.",
     casePrompt:
       "Un responsable d'équipe a souscrit seul un abonnement IA pour ses collaborateurs. Quelles questions posez-vous avant de le valider ?",
     caseCorrection:
@@ -122,7 +122,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "Recrutement, évaluation des candidats et salariés, Article 22 RGPD et dialogue social.",
     script:
-      "Les usages RH font partie des cas les plus réglementés :\n\nTri de CV et évaluation : ces cas d'usage relèvent de l'Annexe III (Haut Risque, échéance 2 décembre 2027). Ils nécessitent une supervision humaine effective.\n\nArticle 22 RGPD : une décision d'embauche ou de promotion ne doit pas être prise sur la base exclusive d'un algorithme. Assurez-vous qu'un évaluateur humain dispose du pouvoir réel de modifier ou de rejeter la suggestion de l'IA, et prévoyez une procédure permettant aux candidats d'exprimer leur point de vue.\n\nInformation : dans le cadre professionnel, informez les collaborateurs et leurs représentants (notamment le CSE en France selon les règles du Code du travail).",
+      "Côté RH, on est dans le dur. C'est très réglementé.\n\nTri de CV, évaluation… ça part en haut risque. Annexe III. Échéance fin 2027. Et là, un humain doit vraiment superviser. Pas juste cliquer OK.\n\nLe RGPD aussi. Pas d'embauche ou de promotion décidée uniquement par un algo. Un recruteur doit pouvoir dire non. Modifier. Et le candidat doit pouvoir s'exprimer.\n\nDernière chose, informez. Les équipes. Les représentants. En France, ça passe aussi par le CSE. Pas de surprise.",
     casePrompt:
       "Votre logiciel de recrutement propose un classement automatique des candidats. Qui valide, et comment un candidat peut-il contester ?",
     caseCorrection:
@@ -172,7 +172,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "Génération de contenu, chatbots clients (Art. 50), deepfakes, propriété intellectuelle et RGPD commercial.",
     script:
-      "Le marketing et les ventes manipulent de la donnée client et diffusent du contenu vers l'extérieur :\n\nChatbots et agents conversationnels : vous devez informer les utilisateurs de manière claire qu'ils échangent avec une IA, sauf si le contexte le rend évident.\n\nDeepfakes et textes d'information : si vous utilisez des vidéos, sons ou visuels générés simulant des personnes réelles, la mention explicite d'IA est obligatoire, et une relecture ne la remplace pas. Pour une œuvre manifestement artistique, satirique ou de fiction, la mention reste due mais peut être discrète. Pour des articles textuels d'information générale, l'obligation de divulgation ne s'applique pas si une relecture et une responsabilité éditoriale humaines sont exercées.\n\nFichiers CRM : ne collez jamais de bases prospects dans des IA publiques sans avoir vérifié la finalité, le DPA et l'absence de réentraînement.",
+      "Marketing, ventes… vous touchez à la donnée client. Et vous publiez vers l'extérieur. Donc prudence.\n\nUn chatbot ? Le client doit savoir qu'il parle à une IA. Sauf si c'est vraiment évident.\n\nUne vidéo, une voix, un visage généré qui imite quelqu'un ? Vous le dites clairement. Même si ça se voit, ça ne suffit pas.\n\nEt les fichiers CRM, jamais dans une IA publique tant que vous n'avez pas vérifié le contrat. S'il réutilise vos données pour s'entraîner, ou si vous ne le savez pas… vous ne collez pas.",
     casePrompt:
       "Vous voulez une vidéo promotionnelle avec un porte-parole généré par IA. Quelles mentions et quelles vérifications ?",
     caseCorrection:
@@ -222,7 +222,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "Encadrement des équipes, contrôle qualité des livrables et gestion du Shadow AI.",
     script:
-      "En tant que manager de proximité, vous faites le lien entre la gouvernance et l'exécution :\n\nDétection du Shadow AI : si un membre de votre équipe utilise un nouvel outil IA non répertorié, accompagnez-le pour soumettre le cas d'usage dans le registre de l'entreprise.\n\nValidation des livrables : sensibilisez votre équipe sur le fait qu'aucun document externe (devis, rapport, code) ne doit être transmis à un client sans relecture humaine préalable.",
+      "Vous êtes manager. Vous êtes le lien entre les règles… et le terrain.\n\nQuelqu'un dans l'équipe utilise une nouvelle IA pas dans le registre ? Vous l'accompagnez. Vous l'aidez à déclarer. Pas la chasse aux sorcières.\n\nEt les livrables, devis, rapport, code… rien ne part chez un client sans relecture humaine. L'IA peut aider. Elle n'envoie pas toute seule.",
     casePrompt:
       "Un collaborateur vous rend un rapport visiblement rédigé par IA, avec des chiffres non sourcés. Comment réagissez-vous ?",
     caseCorrection:
@@ -272,7 +272,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "10–15 min",
     focus: "API, agents autonomes, gestion des secrets, RAG et sécurité des flux no-code.",
     script:
-      "Les équipes techniques construisent l'architecture des systèmes :\n\nGestion des accès et permissions : pour les agents IA connectés à vos bases (via API, n8n, Make), dotez-les uniquement des autorisations strictement nécessaires en lecture et en écriture.\n\nSécurité RAG et secrets : protégez vos bases de connaissances contre les attaques de type injection de prompt et ne hardcodez aucune clé d'API.\n\nVigilance qualification (Art. 25 et Art. 3) : assurez-vous que l'assemblage de briques IA no-code ou code ne fasse pas de l'entreprise le Fournisseur d'un système à Haut Risque sans l'accord préalable de la direction juridique.",
+      "Vous êtes tech. Vous construisez le tuyau.\n\nUn agent IA branché sur vos bases ? Droits au strict minimum. Lecture, écriture… seulement ce qu'il faut. Pas plus.\n\nProtégez vos bases. Attention aux injections de prompt. Et jamais de clé d'API en dur dans le code.\n\nDernier point. Si vous assemblez des briques IA — no-code ou code — vous pouvez faire basculer l'entreprise en fournisseur d'un système à haut risque. Sans le vouloir. Donc feu vert du juridique avant. Pas après.",
     casePrompt:
       "On vous demande de connecter un agent IA à la boîte mail commerciale. Quelles permissions lui donnez-vous, et quelles actions restent validées par un humain ?",
     caseCorrection:

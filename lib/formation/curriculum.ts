@@ -1,18 +1,23 @@
 /** Contenu pédagogique Layer 1 — ConformAI. L'accueil lit les blocs ; les activités sont dans le socle. */
 
-import { BLOCKS as SOCLE_BLOCKS, SEVEN_REFLEXES } from "@/lib/formation/socle";
+import {
+  BLOCKS as SOCLE_BLOCKS,
+  REFLEXES_AFTER,
+  REFLEXES_BEFORE,
+  SEVEN_REFLEXES,
+} from "@/lib/formation/socle";
 
 export type { Activity, Chapter, Block } from "@/lib/formation/activity";
 
 export const BLOCKS = SOCLE_BLOCKS;
-export { SEVEN_REFLEXES };
+export { SEVEN_REFLEXES, REFLEXES_BEFORE, REFLEXES_AFTER };
 
 export const FORMATION_PROMISE =
-  "Une formation pour acquérir les réflexes essentiels d'utilisation responsable de l'IA au travail et contribuer à la démarche de maîtrise de l'IA (AI literacy) de votre entreprise.";
+  "Des réflexes concrets pour utiliser l'IA sans vous faire piéger — ni mettre l'entreprise en danger. La loi le demande aussi (AI Act, Art. 4). Une attestation de suivi à la fin.";
 
-/** Parcours complet ≈ 1 h 00 (plusieurs sessions possibles). */
-export const SOCLE_DURATION_LABEL = "1h00";
-export const FULL_PATH_DURATION_LABEL = "1h00";
+/** Parcours complet : max 1h30 (plusieurs sessions possibles). */
+export const SOCLE_DURATION_LABEL = "max 1h30";
+export const FULL_PATH_DURATION_LABEL = "max 1h30";
 
 export const AI_ACT_MILESTONES = [
   {

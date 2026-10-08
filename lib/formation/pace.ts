@@ -48,7 +48,7 @@ export function mountDwellMs(kind: Activity["kind"], duration: string): number {
 
 /** Après validation d'un jeu / quiz : forcer à voir la correction. */
 export function feedbackHoldMs(kind: Activity["kind"]): number {
-  if (kind === "stamp" || kind === "traffic") return 0;
+  if (kind === "stamp" || kind === "traffic" || kind === "predict") return 0;
   if (isGameKind(kind)) return 2_800;
   if (kind === "quiz") return 1_600;
   if (kind === "checklist") return 1_000;

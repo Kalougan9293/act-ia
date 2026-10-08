@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import FormationExperience from "@/components/user/FormationExperience";
+import { FloatingLexiconFab } from "@/components/user/LexiconTip";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { CompanyModuleContent } from "@/lib/admin/types";
 import { emptyCompanyModule } from "@/lib/admin/types";
@@ -90,7 +91,7 @@ export default function UserApp() {
             <ThemeToggle />
             <Link
               href="/"
-              className="flex shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
+              className="hidden shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 sm:flex dark:text-white"
             >
               Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
               <GraduationCap
@@ -104,7 +105,7 @@ export default function UserApp() {
             </span>
           </div>
 
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-28 sm:px-40">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-16 sm:px-40">
             <div className="min-w-0 max-w-full text-center leading-tight">
               <p className="truncate text-sm text-slate-700 dark:text-slate-200">{session.name}</p>
               <p className="truncate text-xs text-slate-400">
@@ -128,7 +129,7 @@ export default function UserApp() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <FormationExperience
           key={session.uid}
           uid={session.uid}
@@ -137,6 +138,7 @@ export default function UserApp() {
           companyName={companyName}
           companyModule={companyModule}
         />
+        <FloatingLexiconFab />
       </main>
     </div>
   );

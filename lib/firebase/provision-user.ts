@@ -1,8 +1,9 @@
-import { doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { saveUser } from "@/lib/firebase/admin-data";
 import { getStructureSeatStatus } from "@/lib/firebase/seats";
 import { listUsersByStructure } from "@/lib/firebase/tenant-data";
+import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
 import type { PlatformUser, UserRole } from "@/lib/admin/types";
 
 function todayIso() {
@@ -115,6 +116,15 @@ export async function provisionTenantUser(params: {
     legacyUserId: provisionalId,
     createdAt: user.createdAt,
   });
+
+  // Après firstLogin : autorise le nettoyage d'un Auth orphelin (ancien bug)
+  try {
+    await deleteAuthAccount({ email });
+  } catch (error) {
+    await deleteDoc(doc(db, "firstLogin", email)).catch(() => undefined);
+    await deleteDoc(doc(db, "users", provisionalId)).catch(() => undefined);
+    throw error;
+  }
 
   // Réserve 1 siège dès la création RH (libéré si suppression avant activation)
   if (params.role === "employee") {

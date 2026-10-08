@@ -9,7 +9,7 @@ const problems = [
     description:
       "L'article 4 demande des mesures pour les équipes qui utilisent l'IA. Au contrôle, sans dossier, les équipes sont considérées comme non formées.",
     stat: "En vigueur depuis le 2 février 2025",
-    statLabel: "Nouvelles interdictions le 2 décembre 2026",
+    statLabel: "Autres règles AI Act le 2 décembre 2026",
     statClass: "text-base",
     card: "bg-blue-50/80 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900",
   },
@@ -25,9 +25,9 @@ const problems = [
   },
   {
     tag: "Charge RH",
-    title: "Gestion manuelle & chronophage",
+    title: "Des heures perdues à collecter les preuves",
     description:
-      "Coordonner des formations externes et collecter manuellement les preuves de présence mobilise inutilement vos équipes RH.",
+      "Organiser des formations externes et récupérer les preuves à la main prend trop de temps aux équipes RH.",
     stat: "40h+ perdues",
     statLabel: "par an en gestion administrative",
     statClass: "text-xl",

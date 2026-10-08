@@ -25,6 +25,7 @@ const plans: Plan[] = [
       "Abonnement annuel, sans frais cachés",
       "Socle commun et parcours métiers",
       "Attestations nominatives",
+      "Preuves conservées 12 mois après le contrat",
       "Tableau de bord RH, registre et export",
       "Veille incluse : le parcours suit l'actualité",
       "Support par email",
@@ -54,7 +55,6 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
-      "Preuves conservées 12 mois après le contrat",
     ],
     cta: "Constituer le dossier de preuve",
   },

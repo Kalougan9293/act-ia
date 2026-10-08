@@ -8,6 +8,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
+import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
 import type { ModuleRevision, PlatformUser, Structure } from "@/lib/admin/types";
 import { emptyCompanyModule, normalizeAiUseCase } from "@/lib/admin/types";
 
@@ -166,6 +167,18 @@ export async function deleteStructureAndUsers(
   userIds: string[],
 ): Promise<void> {
   const db = requireDb();
+
+  // Auth d'abord (profils encore présents pour l'autorisation serveur)
+  for (const userId of userIds) {
+    const snap = await getDoc(doc(db, "users", userId));
+    const email = snap.exists()
+      ? String(snap.data()?.email ?? "")
+          .trim()
+          .toLowerCase()
+      : "";
+    await deleteAuthAccount({ uid: userId, email });
+  }
+
   const batch = writeBatch(db);
   batch.delete(doc(db, "structures", structureId));
   for (const userId of userIds) {
@@ -176,5 +189,12 @@ export async function deleteStructureAndUsers(
 
 export async function deleteUser(userId: string): Promise<void> {
   const db = requireDb();
+  const snap = await getDoc(doc(db, "users", userId));
+  const email = snap.exists()
+    ? String(snap.data()?.email ?? "")
+        .trim()
+        .toLowerCase()
+    : "";
+  await deleteAuthAccount({ uid: userId, email });
   await deleteDoc(doc(db, "users", userId));
 }

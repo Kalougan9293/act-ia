@@ -17,7 +17,7 @@ export const faqs = [
   {
     question: "Combien de temps dure la formation IA ?",
     answer:
-      "Environ une heure, en une fois ou en plusieurs fois. Elle se suit sur téléphone, tablette ou ordinateur, sans rien installer.",
+      "Max 1h30, en une fois ou en plusieurs fois. Elle se suit sur téléphone, tablette ou ordinateur, sans rien installer.",
   },
   {
     question: "ConformAI est-il un diplôme ou une certification ?",

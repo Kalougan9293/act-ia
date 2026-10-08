@@ -18,7 +18,7 @@ const stats = [
   },
   {
     value: "Registre pour le DPO",
-    label: "Traçabilité des mesures et des usages couverts",
+    label: "Qui a suivi quoi, et quelles IA sont utilisées",
   },
   {
     value: "Prise en main immédiate",

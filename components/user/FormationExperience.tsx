@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import VideoScript from "@/components/user/VideoScript";
 import ActivityPlayer from "@/components/user/ActivityPlayer";
+import LexiconBar from "@/components/user/LexiconTip";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
@@ -27,12 +28,14 @@ import { CAREER_PATHS } from "@/lib/formation/careers";
 import {
   BLOCKS,
   FORMATION_PROMISE,
-  SEVEN_REFLEXES,
+  REFLEXES_AFTER,
+  REFLEXES_BEFORE,
   findChapter,
   type Block,
 } from "@/lib/formation/curriculum";
 import {
   QUIZ_DRAW_SIZE,
+  QUIZ_PASS_COUNT,
   QUIZ_PASS_PERCENT,
   QUIZ_TIMER_SECONDS,
   drawPositioningQuiz,
@@ -215,11 +218,13 @@ export default function FormationExperience({
             setPositioningReveal(false);
             return;
           }
-          const score = positioningAnswers.reduce<number>((acc, answer, i) => {
-            return acc + (answer === positioningRound[i]!.q.correctIndex ? 1 : 0);
-          }, 0);
-          const pct = Math.round((score / positioningRound.length) * 100);
-          setPositioningCorrect(score);
+          // Profil = nombre de « Oui » (index 0), pas un score de bonnes réponses.
+          const yesCount = positioningAnswers.reduce<number>(
+            (acc, answer) => acc + (answer === 0 ? 1 : 0),
+            0,
+          );
+          const pct = Math.round((yesCount / positioningRound.length) * 100);
+          setPositioningCorrect(yesCount);
           setPositioningScore(pct);
           setPositioningFinished(true);
         }}
@@ -351,28 +356,10 @@ export default function FormationExperience({
           setQuizBriefed(false);
           setLastScore(null);
         }}
-        onContinueCareer={
-          !progress.companyModuleDone || !progress.careerPathId
-            ? () =>
-                setScreen({
-                  kind: !progress.companyModuleDone ? "company" : "career",
-                })
-            : undefined
-        }
-        continueCareerLabel={
-          !progress.companyModuleDone
-            ? "Continuer : Votre entreprise"
-            : !progress.careerPathId
-              ? "Continuer le parcours métier"
-              : undefined
-        }
-        continueCareerHint={
-          !progress.companyModuleDone
-            ? "Examen réussi — 100 % atteint. Pour l'attestation : module entreprise, puis parcours métier."
-            : !progress.careerPathId
-              ? "Plus qu'une étape pour l'attestation : le parcours métier (~10 min)."
-              : undefined
-        }
+        onContinueCareer={() => setScreen({ kind: "career" })}
+        continueCareerLabel="Bonus : l'IA dans mon métier"
+        continueCareerHint="Bravo ! Vous savez utiliser l'IA sans vous faire piéger. Attestation Art. 4 disponible. Les bonus restent facultatifs."
+        onOpenCompany={() => setScreen({ kind: "company" })}
         onFinish={() => setScreen({ kind: quizReturn })}
       />
     );
@@ -560,7 +547,7 @@ function IntroScreen({
       : "locked";
   const careerState: "done" | "current" | "locked" = careerPathId
     ? "done"
-    : quizPassed && companyDone
+    : quizPassed
       ? "current"
       : "locked";
   const careerTitle = careerPathId
@@ -578,63 +565,22 @@ function IntroScreen({
     }, 420);
   }
 
-  const needsCompanyAfterQuiz = quizPassed && !companyDone;
-  const needsCareer = quizPassed && companyDone && !careerPathId;
-
   return (
-    <div className="mx-auto max-w-3xl space-y-6 py-4 text-center">
-      <div className="space-y-4">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">
+    <div className="mx-auto max-w-3xl space-y-7 py-6 text-center sm:space-y-8">
+      <div className="space-y-4 sm:space-y-5">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 sm:text-sm">
           ConformAI Academy
         </p>
-        <h1 className="text-center text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Bienvenue{firstName ? `, ${firstName}` : ""}
         </h1>
-        <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
           {FORMATION_PROMISE}
         </p>
-        <p className="text-center text-sm text-slate-500">
+        <p className="text-center text-sm text-slate-500 sm:text-base">
           Parcours pour <span className="font-semibold text-slate-700 dark:text-slate-200">{companyName}</span>
         </p>
       </div>
-
-      {needsCompanyAfterQuiz && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 dark:border-amber-800 dark:bg-amber-950/40">
-          <p className="text-sm font-semibold text-amber-950 dark:text-amber-50">
-            Suite recommandée — attestation
-          </p>
-          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">
-            Examen réussi (100 %). Consultez « Votre entreprise », puis le parcours métier pour obtenir l&apos;attestation.
-          </p>
-          <button
-            type="button"
-            onClick={onOpenCompany}
-            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700"
-          >
-            Ouvrir Votre entreprise
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      {needsCareer && (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-4 dark:border-blue-800 dark:bg-blue-950/40">
-          <p className="text-sm font-semibold text-blue-950 dark:text-blue-50">
-            Dernière étape pour l&apos;attestation
-          </p>
-          <p className="mt-1 text-xs text-blue-800/80 dark:text-blue-200/80">
-            Choisissez votre parcours métier (~10 min) pour finaliser l&apos;attestation.
-          </p>
-          <button
-            type="button"
-            onClick={onOpenCareer}
-            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-          >
-            Continuer le parcours métier
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      )}
 
       {certificate && (
         <LearnerAttestation
@@ -671,12 +617,12 @@ function IntroScreen({
             )}
             <span>
               {positioningDone
-                ? "Niveau situé"
-                : `Avant de commencer, situez votre niveau · ${positioningCount} questions, sans enjeu`}
+                ? "Faisons connaissance — terminé"
+                : `Faisons connaissance · ${positioningCount} questions rapides · pas de mauvaise réponse`}
             </span>
           </span>
           <span className="sr-only">
-            {positioningDone ? "Test de positionnement terminé" : "Ouvrir le test de positionnement"}
+            {positioningDone ? "Positionnement terminé" : "Ouvrir le positionnement"}
           </span>
         </button>
 
@@ -774,7 +720,7 @@ function IntroScreen({
                     : "text-rose-700/80 dark:text-rose-200/80"
                 }`}
               >
-                {QUIZ_DRAW_SIZE} questions · {QUIZ_PASS_PERCENT} %
+                {QUIZ_DRAW_SIZE} questions
               </span>
             </span>
             <span className="sr-only">
@@ -789,27 +735,23 @@ function IntroScreen({
 
         <div className="mx-auto mt-4 grid w-full max-w-xl gap-2.5 sm:grid-cols-2">
           <PathCard
-            label="Entreprise"
+            label="Bonus"
             title="Votre entreprise"
-            meta={companyDone ? "Consulté" : "Après l'examen"}
+            meta={companyDone ? "Consulté" : "Optionnel"}
             state={companyState}
             denied={deniedId === "company"}
             onClick={() => openOrDeny("company", companyState === "locked", onOpenCompany)}
-            lockedHint="Disponible après la réussite de l'examen final"
+            lockedHint="Disponible après l'attestation"
             doneHint="Module consulté"
           />
           <PathCard
-            label="Spécialisation"
+            label="Bonus"
             title="Parcours métier"
-            meta={careerTitle ?? (companyDone ? "Pour l'attestation" : "Après Votre entreprise")}
+            meta={careerTitle ?? "Optionnel"}
             state={careerState}
             denied={deniedId === "career"}
             onClick={() => openOrDeny("career", careerState === "locked", onOpenCareer)}
-            lockedHint={
-              quizPassed
-                ? "Consultez d'abord le module Votre entreprise"
-                : "Disponible après la réussite de l'examen final"
-            }
+            lockedHint="Disponible après l'attestation"
             doneHint="Parcours métier validé"
           />
         </div>
@@ -817,13 +759,13 @@ function IntroScreen({
 
       <div className="mx-auto w-full max-w-xl space-y-2.5 pt-6 text-center">
         <p className="text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-          L&apos;attestation est délivrée à partir de {QUIZ_PASS_PERCENT} % sur le quiz final.
+          Examen final : {QUIZ_DRAW_SIZE} questions.
         </p>
         <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-slate-400">
-          <span>Parcours complet : environ 1 h, en plusieurs sessions si besoin.</span>
+          <span>Plusieurs sessions possibles</span>
           <span className="inline-flex items-center gap-1">
             <Smartphone className="h-4 w-4 shrink-0" aria-hidden />
-            Aussi sur téléphone
+            Mobile OK
           </span>
         </p>
       </div>
@@ -974,44 +916,6 @@ function HubScreen({
         </div>
       </div>
 
-      {progress.quizPassed && !progress.companyModuleDone && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-800 dark:bg-amber-950/40">
-          <p className="text-center text-sm font-semibold text-amber-950 dark:text-amber-50">
-            Suite pour l&apos;attestation
-          </p>
-          <p className="mt-1 text-center text-xs text-amber-900/80 dark:text-amber-200/80">
-            100 % atteints. Consultez « Votre entreprise », puis le parcours métier.
-          </p>
-          <button
-            type="button"
-            onClick={onOpenCompany}
-            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700"
-          >
-            Ouvrir Votre entreprise
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      {progress.quizPassed && progress.companyModuleDone && !progress.careerPathId && (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-800 dark:bg-blue-950/40">
-          <p className="text-center text-sm font-semibold text-blue-950 dark:text-blue-50">
-            Dernière étape pour l&apos;attestation
-          </p>
-          <p className="mt-1 text-center text-xs text-blue-800/80 dark:text-blue-200/80">
-            Validez votre parcours métier (~10 min).
-          </p>
-          <button
-            type="button"
-            onClick={onOpenCareer}
-            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-          >
-            Continuer le parcours métier
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
       {certificate && (
         <LearnerAttestation
           fullName={fullName}
@@ -1084,8 +988,8 @@ function HubScreen({
             progress.companyModuleDone
               ? "Consulté"
               : progress.quizPassed
-                ? "Pour l'attestation"
-                : "Après l'examen"
+                ? "Optionnel"
+                : "Après le quiz"
           }
           done={progress.companyModuleDone}
           disabled={!progress.quizPassed}
@@ -1097,12 +1001,12 @@ function HubScreen({
           subtitle={
             progress.careerPathId
               ? CAREER_PATHS.find((p) => p.id === progress.careerPathId)?.title ?? "Choisi"
-              : progress.companyModuleDone
-                ? "Pour l'attestation · ~10 min"
-                : "Après Votre entreprise"
+              : progress.quizPassed
+                ? "Optionnel"
+                : "Après le quiz"
           }
           done={!!progress.careerPathId}
-          disabled={!progress.quizPassed || !progress.companyModuleDone}
+          disabled={!progress.quizPassed}
           onClick={onOpenCareer}
         />
       </div>
@@ -1146,36 +1050,39 @@ function HubAction({
 
 function chapterTeaser(chapter: Block["chapters"][number]): string {
   const teasers: Record<string, string> = {
-    "1.1": "Ce que l'IA change déjà dans votre quotidien",
-    "1.2": "IA classique vs générative, en clair",
-    "1.3": "Classez les bons exemples",
-    "1.4": "Pourquoi le modèle peut inventer",
-    "1.5": "Un chiffre qui surprend",
-    "1.6": "Repérez les inventions dans un texte",
-    "1.7": "Les 4 contrôles avant d'utiliser une réponse",
-    "2.1": "Ce que vous croyez déjà savoir",
-    "2.2": "Pourquoi ce parcours existe",
-    "2.3": "Qui vend l'IA, qui l'utilise",
-    "2.4": "Interdit, haut risque, transparence…",
-    "2.5": "Les dates clés à retenir",
-    "2.6": "Chatbots, deepfakes : que dire ?",
-    "2.7": "Deux situations concrètes",
-    "3.1": "Personnelle, sensible ou confidentielle ?",
-    "3.2": "Ce qu'on peut mettre dans un prompt",
-    "3.3": "Masquez ce qui ne doit pas partir",
-    "3.4": "Trois questions avant d'utiliser un outil",
-    "3.5": "Enregistrer une réunion sans se tromper",
-    "3.6": "Que faire en cas d'erreur",
-    "4.1": "Trouvez ce que l'IA a inventé",
-    "4.2": "Quand l'outil reproduit des biais",
-    "4.3": "Droits, images et contenus générés",
-    "4.4": "Ne faites pas confiance aux apparences",
-    "4.5": "Un deepfake qui demande un virement",
-    "4.6": "Quand l'assistant obéit à un piège",
-    "5.1": "Pourquoi l'humain garde la main",
-    "5.2": "IA seule, humain aux commandes, ou stop ?",
-    "6.1": "Empilez les 7 réflexes",
-    "6.2": "La checklist à garder sous la main",
+    "1.1": "Pourquoi vous êtes ici",
+    "1.2": "4 mots à connaître",
+    "1.3": "L'IA qui crée",
+    "1.4": "Classez les exemples",
+    "1.5": "3 suites à deviner",
+    "1.6": "Repérez les inventions",
+    "1.7": "Checklist avant d'utiliser",
+    "2.1": "Le code de la route de l'IA",
+    "2.2": "Depuis quand c'est obligatoire ?",
+    "2.3": "J'utilise ou je vends ?",
+    "2.4": "Du vert à l'interdit",
+    "2.5": "Les dates utiles",
+    "2.6": "Chatbot et deepfake",
+    "2.7": "Deux cas concrets",
+    "3.1": "Feu vert / orange / rouge",
+    "3.2": "Classez dans le bon feu",
+    "3.3": "Les bons gestes",
+    "3.4": "Masquez ce qui ne doit pas partir",
+    "3.5": "Outil autorisé ?",
+    "3.6": "La réunion de 14 h",
+    "3.7": "En cas d'erreur",
+    "4.1": "Pourquoi vérifier",
+    "4.2": "Le rapport trop beau",
+    "4.3": "Les biais",
+    "4.4": "Droits et images",
+    "4.5": "Deepfake",
+    "4.6": "Le faux directeur",
+    "4.7": "L'ordre caché",
+    "4.8": "Esquivez les rouges. Attrapez les verts !",
+    "5.1": "Vous gardez la main",
+    "5.2": "Vert, orange, rouge",
+    "6.1": "Les 7 réflexes en jeu",
+    "6.2": "La fiche à garder",
   };
   return teasers[chapter.id] ?? chapter.format;
 }
@@ -1236,6 +1143,39 @@ function activityTone(format: string) {
   }
 }
 
+const BLOCK_RECAPS: Record<string, string[]> = {
+  "bloc-1": [
+    "L'IA qui crée devine : elle peut inventer.",
+    "Bien écrit ≠ vrai : je vérifie.",
+    "Je suis là pour l'Art. 4 (attestation).",
+  ],
+  "bloc-2": [
+    "L'AI Act = le code de la route de l'IA.",
+    "Émotions au travail : interdit.",
+    "La machine n'est jamais responsable : c'est nous.",
+  ],
+  "bloc-3": [
+    "Vert j'y vais · Orange prudence · Rouge stop.",
+    "Outil autorisé + le moins d'infos possible.",
+    "Erreur ? Je préviens tout de suite.",
+  ],
+  "bloc-4": [
+    "Chiffres, sources, noms : je vérifie.",
+    "Urgence bizarre : je rappelle sur un numéro connu.",
+    "Créé par l'IA ≠ libre de droits.",
+  ],
+  "bloc-5": [
+    "L'IA propose, un humain décide vraiment.",
+    "Valider sans lire ≠ décider.",
+    "Santé, décision, action définitive : je demande.",
+  ],
+  "bloc-6": [
+    "Avant : secret ? personne ? privé ? outil OK ?",
+    "Après : vérifié ? humain décide ? je préviens ?",
+    "Un doute ? Je demande.",
+  ],
+};
+
 function BlockScreen({
   block,
   completed,
@@ -1248,6 +1188,22 @@ function BlockScreen({
   onOpenChapter: (id: string) => void;
 }) {
   const [deniedId, setDeniedId] = useState<string | null>(null);
+  const blockDone = block.chapters.every((chapter) => completed.includes(chapter.id));
+  const recap = BLOCK_RECAPS[block.id] ?? [];
+  const lexiconIds =
+    block.id === "bloc-1"
+      ? ["ia-generative", "prompt", "hallucination", "deepfake", "llm", "ai-act", "art4"]
+      : block.id === "bloc-2"
+        ? ["ai-act", "art4", "art5", "art50", "haut-risque", "deployeur"]
+        : block.id === "bloc-3"
+          ? ["donnee-perso", "shadow-ai", "referent"]
+          : block.id === "bloc-4"
+            ? ["deepfake", "hallucination", "art50"]
+            : block.id === "bloc-5"
+              ? ["supervision-humaine", "referent"]
+              : block.id === "bloc-6"
+                ? ["referent", "shadow-ai"]
+                : undefined;
 
   function openOrDeny(id: string, locked: boolean) {
     if (!locked) {
@@ -1261,27 +1217,28 @@ function BlockScreen({
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-4 text-center">
+    <div className="mx-auto max-w-2xl space-y-7 text-center sm:space-y-8">
       <button
         type="button"
         onClick={onBack}
-        className="mx-auto inline-flex items-center gap-1 text-xs text-slate-500 transition-colors duration-200 hover:text-blue-600"
+        className="mx-auto inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
+        <ArrowLeft className="h-4 w-4" />
         Retour au parcours
       </button>
-      <div>
-        <p className="text-center text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+      <div className="space-y-3">
+        <p className="text-center text-sm font-semibold text-blue-600 dark:text-blue-400">
           Bloc {block.number} · {block.duration}
         </p>
-        <h1 className="mt-0.5 text-center text-xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-center text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
           {block.title}
         </h1>
-        <p className="mx-auto mt-1.5 max-w-sm text-center text-xs leading-relaxed text-slate-500">
+        <p className="mx-auto max-w-xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-[1.05rem] sm:leading-7">
           {block.goal}
         </p>
       </div>
-      <ul className="mx-auto grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 sm:gap-2.5">
+      {lexiconIds && <LexiconBar ids={lexiconIds} label="Mots à connaître" />}
+      <ul className="mx-auto grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-3.5">
         {block.chapters.map((chapter, index) => {
           const done = completed.includes(chapter.id);
           const previous = block.chapters[index - 1];
@@ -1289,12 +1246,22 @@ function BlockScreen({
           const denied = deniedId === chapter.id;
           const tone = activityTone(chapter.format);
           const teaser = chapterTeaser(chapter);
+          const lastOdd =
+            block.chapters.length % 2 === 1 &&
+            index === block.chapters.length - 1;
           return (
-            <li key={chapter.id} className="min-h-0">
+            <li
+              key={chapter.id}
+              className={
+                lastOdd
+                  ? "min-h-0 sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-[calc((100%-0.875rem)/2)]"
+                  : "min-h-0"
+              }
+            >
               <button
                 type="button"
                 onClick={() => openOrDeny(chapter.id, locked)}
-                className={`group relative flex h-full min-h-[4.25rem] w-full flex-col items-center justify-center gap-0.5 rounded-xl border px-3 py-2.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
+                className={`group relative flex h-full min-h-[5rem] w-full flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
                   denied
                     ? "block-deny border-red-500 bg-red-50 dark:bg-red-950/40"
                     : done
@@ -1303,20 +1270,20 @@ function BlockScreen({
                 }`}
               >
                 {locked && (
-                  <Lock className="absolute top-2 right-2 h-3 w-3 text-slate-400" aria-hidden />
+                  <Lock className="absolute top-2.5 right-2.5 h-3.5 w-3.5 text-slate-400" aria-hidden />
                 )}
-                <span className="flex items-center justify-center gap-1.5 px-3">
+                <span className="flex items-center justify-center gap-2 px-2">
                   {done ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-white transition-transform duration-300 group-hover:scale-110" />
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-white transition-transform duration-300 group-hover:scale-110" />
                   ) : (
                     <Play
-                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${
+                      className={`h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110 ${
                         locked ? "text-slate-300" : tone.icon
                       }`}
                     />
                   )}
                   <span
-                    className={`line-clamp-2 text-center text-sm font-semibold leading-snug ${
+                    className={`line-clamp-2 text-center text-[0.95rem] font-semibold leading-snug sm:text-base ${
                       done ? "text-white" : "text-slate-900 dark:text-white"
                     }`}
                   >
@@ -1324,7 +1291,7 @@ function BlockScreen({
                   </span>
                 </span>
                 <span
-                  className={`line-clamp-2 px-2 text-center text-[11px] leading-snug ${
+                  className={`line-clamp-2 px-2 text-center text-xs leading-relaxed sm:text-[0.8125rem] ${
                     locked ? "text-slate-400" : done ? "text-emerald-50/90" : tone.meta
                   }`}
                 >
@@ -1335,23 +1302,60 @@ function BlockScreen({
           );
         })}
       </ul>
+
+      {blockDone && recap.length > 0 && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5 text-center dark:border-emerald-800 dark:bg-emerald-950/40">
+          <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-emerald-800 dark:text-emerald-300 sm:text-sm">
+            Ce que je retiens
+          </p>
+          <ul className="mt-4 space-y-2.5">
+            {recap.map((line) => (
+              <li
+                key={line}
+                className="text-center text-sm font-medium leading-relaxed text-emerald-950 dark:text-emerald-50 sm:text-base"
+              >
+                {line}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
 
 function printReflexSheet() {
-  const items = SEVEN_REFLEXES.map(
-    (reflex, index) => `<li style="margin:0.7rem 0">${index + 1}. ${reflex}</li>`,
+  const before = REFLEXES_BEFORE.map(
+    (reflex, index) => `<li style="margin:0.55rem 0">${index + 1}. ${reflex}</li>`,
   ).join("");
-  const popup = window.open("", "_blank", "noopener,noreferrer,width=720,height=900");
-  if (!popup) return;
-  popup.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Les 7 réflexes IA</title>
-    <style>body{font-family:Georgia,serif;max-width:640px;margin:2.5rem auto;color:#0f172a;padding:0 1.5rem}h1{font-size:1.35rem}p{line-height:1.45}</style>
-    </head><body><p>ConformAI</p><h1>Checklist — Avant de mettre quelque chose dans une IA, je me demande…</h1><ol>${items}</ol>
-    <p><strong>En cas de doute :</strong> je ne devine pas, je demande à mon manager ou au référent IA avant d'utiliser l'outil.</p></body></html>`);
-  popup.document.close();
-  popup.focus();
-  popup.print();
+  const after = REFLEXES_AFTER.map(
+    (reflex, index) =>
+      `<li style="margin:0.55rem 0">${REFLEXES_BEFORE.length + index + 1}. ${reflex}</li>`,
+  ).join("");
+  const frame = document.createElement("iframe");
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText = "position:fixed;width:0;height:0;border:0;right:0;bottom:0";
+  document.body.appendChild(frame);
+  const doc = frame.contentDocument;
+  const win = frame.contentWindow;
+  if (!doc || !win) {
+    frame.remove();
+    return;
+  }
+  doc.open();
+  doc.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Les 7 réflexes IA</title>
+    <style>body{font-family:Georgia,serif;max-width:640px;margin:2.5rem auto;color:#0f172a;padding:0 1.5rem;text-align:center}h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:1.6rem}p,li{line-height:1.45}ol{list-style:none;padding:0;margin:0}</style>
+    </head><body><p>ConformAI · AI Act Art. 4</p><h1>Les 7 réflexes</h1>
+    <h2>Avant d'écrire à l'IA</h2><ol>${before}</ol>
+    <h2>Après la réponse de l'IA</h2><ol>${after}</ol>
+    <p><strong>Un doute ?</strong> Je ne devine pas. Je demande à mon manager ou au référent IA.</p></body></html>`);
+  doc.close();
+  const cleanup = () => frame.remove();
+  win.addEventListener("afterprint", cleanup);
+  window.setTimeout(() => {
+    win.focus();
+    win.print();
+  }, 150);
 }
 
 function ChapterScreen({
@@ -1436,10 +1440,8 @@ function ChapterScreen({
 
   const canContinue =
     done || (activityComplete && mountReady && holdReady && (!ackRequired || acked));
-  const waitForActivity =
-    (kind === "quiz" || (kind === "checklist" && chapter.activity.centered)) &&
-    !activityComplete &&
-    !done;
+  // Jeux / quiz / checklist : pas de Continuer tant que l'exo n'est pas fini
+  const waitForActivity = !instantActivity && !activityComplete && !done;
   const showAck =
     !done && ackRequired && activityComplete && mountReady && holdReady && !acked;
   const waitingTimer = !canContinue && cooldownSec > 0;
@@ -1449,16 +1451,16 @@ function ChapterScreen({
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-7 sm:space-y-8">
       <div className="px-1">
-        <ol className="flex justify-between">
+        <ol className="flex justify-between gap-1">
           {block.chapters.map((item, index) => {
             const current = item.id === chapter.id;
             const reached = index <= stepIndex;
             return (
               <li
                 key={item.id}
-                className={`text-center text-[11px] leading-none ${
+                className={`text-center text-xs leading-none sm:text-sm ${
                   current
                     ? "font-semibold text-slate-700 dark:text-slate-200"
                     : reached
@@ -1471,9 +1473,9 @@ function ChapterScreen({
             );
           })}
         </ol>
-        <div className="relative mt-2 h-px bg-slate-200 dark:bg-slate-700">
+        <div className="relative mt-2.5 h-0.5 rounded-full bg-slate-200 dark:bg-slate-700">
           <div
-            className="absolute inset-y-0 left-0 bg-slate-400/80 dark:bg-slate-500"
+            className="absolute inset-y-0 left-0 rounded-full bg-slate-400/80 dark:bg-slate-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -1487,9 +1489,9 @@ function ChapterScreen({
         Bloc {block.number}
       </button>
 
-      <div className="space-y-1 text-center">
+      <div className="space-y-2 text-center">
         <h1
-          className={`text-center text-2xl text-slate-900 dark:text-white ${
+          className={`text-center text-2xl text-slate-900 dark:text-white sm:text-[1.75rem] ${
             kind === "text"
               ? "font-semibold [font-family:var(--font-reading),Georgia,serif]"
               : "font-bold"
@@ -1702,16 +1704,25 @@ function formatExamTimer(secondsLeft: number) {
   return overdue ? `+${body}` : body;
 }
 
-function useExamCountdown(active: boolean) {
+function useExamCountdown(active: boolean, paused: boolean) {
   const [secondsLeft, setSecondsLeft] = useState(QUIZ_TIMER_SECONDS);
+  const started = useRef(false);
   useEffect(() => {
-    if (!active) return;
-    setSecondsLeft(QUIZ_TIMER_SECONDS);
+    if (!active) {
+      started.current = false;
+      setSecondsLeft(QUIZ_TIMER_SECONDS);
+      return;
+    }
+    if (!started.current) {
+      started.current = true;
+      setSecondsLeft(QUIZ_TIMER_SECONDS);
+    }
+    if (paused) return;
     const timer = window.setInterval(() => {
       setSecondsLeft((value) => value - 1);
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [active]);
+  }, [active, paused]);
   return secondsLeft;
 }
 
@@ -1752,6 +1763,7 @@ function QuizScreen({
   onContinueCareer,
   continueCareerLabel,
   continueCareerHint,
+  onOpenCompany,
   onFinish,
   score,
   correctCount,
@@ -1774,6 +1786,7 @@ function QuizScreen({
   onContinueCareer?: () => void;
   continueCareerLabel?: string;
   continueCareerHint?: string;
+  onOpenCompany?: () => void;
   onFinish: () => void;
   score: number | null;
   correctCount?: number | null;
@@ -1781,42 +1794,70 @@ function QuizScreen({
   attempts: number;
 }) {
   const timerActive = variant === "final" && briefed && !done;
-  const secondsLeft = useExamCountdown(timerActive);
-  const nextLabel = continueCareerLabel ?? "Continuer le parcours métier";
+  const secondsLeft = useExamCountdown(timerActive, reveal);
+  const nextLabel = continueCareerLabel ?? "Bonus : l'IA dans mon métier";
   const nextHint =
     continueCareerHint ??
-    "Seuil atteint. Il reste une dernière étape pour débloquer l'attestation : le parcours métier (~10 min).";
+    "Bravo ! Vous savez utiliser l'IA sans vous faire piéger. Attestation Art. 4 disponible.";
+
+  function positioningProfile(yes: number) {
+    if (yes <= 3) {
+      return {
+        title: "Explorateur",
+        text: "Vous découvrez l'IA. Parfait : cette formation est faite pour vous.",
+      };
+    }
+    if (yes <= 6) {
+      return {
+        title: "Utilisateur",
+        text: "Vous utilisez déjà l'IA. On va vous donner les bons réflexes.",
+      };
+    }
+    return {
+      title: "Avancé",
+      text: "Vous connaissez déjà bien. Les parcours métier et le module entreprise sont pour vous.",
+    };
+  }
 
   if (done && variant === "final" && shuffled.length === 0) {
-    const goNext = Boolean(onContinueCareer);
     return (
       <div className="mx-auto max-w-lg space-y-6 py-8 text-center">
-        <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Examen final</h1>
+        <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Examen validé</h1>
         <p className="text-center text-4xl font-extrabold text-emerald-700 dark:text-emerald-400">
           {score ?? "—"} %
         </p>
-        <p className="mx-auto max-w-md text-center text-sm text-slate-500">
-          {goNext ? nextHint : "Examen validé. Votre parcours est déjà complété."}
-        </p>
-        <div className="flex flex-col items-center gap-3">
-          {goNext ? (
+        <p className="mx-auto max-w-md text-center text-sm text-slate-500">{nextHint}</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {onOpenCompany && (
+            <button
+              type="button"
+              onClick={onOpenCompany}
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+            >
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                Bonus : règles de votre entreprise
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Facultatif</p>
+            </button>
+          )}
+          {onContinueCareer && (
             <button
               type="button"
               onClick={onContinueCareer}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
             >
-              {nextLabel}
-              <ArrowRight className="h-4 w-4" />
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">{nextLabel}</p>
+              <p className="mt-1 text-xs text-slate-500">Facultatif</p>
             </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={onFinish}
-            className="text-sm font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline dark:hover:text-slate-300"
-          >
-            Retour au menu
-          </button>
+          )}
         </div>
+        <button
+          type="button"
+          onClick={onFinish}
+          className="text-sm font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline dark:hover:text-slate-300"
+        >
+          Retour au menu
+        </button>
       </div>
     );
   }
@@ -1824,34 +1865,74 @@ function QuizScreen({
   if (done) {
     const passed = variant === "final" && (score ?? 0) >= QUIZ_PASS_PERCENT;
     const canRetry = variant === "final" && !passed && Boolean(onRetry);
-    const goNext = passed && Boolean(onContinueCareer);
+    const goNext = passed && Boolean(onContinueCareer || onOpenCompany);
+    const yes = correctCount ?? 0;
+    const total = questionCount ?? 8;
+    const profile = positioningProfile(yes);
+    const goodCount =
+      score != null && questionCount
+        ? Math.round((score / 100) * questionCount)
+        : null;
     return (
       <div className="mx-auto max-w-lg space-y-6 py-8 text-center">
         <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">
-          {variant === "positioning" ? "Votre profil de départ" : "Résultat de l'examen"}
+          {variant === "positioning" ? "Faisons connaissance !" : "Résultat de l'examen"}
         </h1>
         {variant === "positioning" ? (
-          <p className="text-center text-xl font-semibold text-slate-900 dark:text-white">
-            {correctCount ?? 0}/{questionCount ?? 0} réponses correctes
-          </p>
+          <div className="space-y-2">
+            <p className="text-center text-3xl font-extrabold text-blue-700 dark:text-blue-300">
+              {profile.title}
+            </p>
+            <p className="text-center text-sm text-slate-500">
+              {yes} « oui » sur {total}
+            </p>
+          </div>
         ) : (
           <p
             className={`text-center text-4xl font-extrabold ${
               passed ? "text-emerald-700 dark:text-emerald-400" : "text-slate-900 dark:text-white"
             }`}
           >
-            {score} %
+            {goodCount != null ? `${goodCount} / ${questionCount}` : `${score} %`}
           </p>
         )}
         <p className="mx-auto max-w-md text-center text-sm text-slate-500">
           {variant === "positioning"
-            ? "Ce résultat sert uniquement à mesurer votre progression pendant la formation."
+            ? profile.text
             : passed
-              ? goNext
-                ? nextHint
-                : "Examen validé. Votre parcours est déjà complété."
-              : `Vous avez fait ${attempts} tentative${attempts > 1 ? "s" : ""}. Retentez votre chance.`}
+              ? nextHint
+              : `Presque ! ${
+                  goodCount != null
+                    ? `Vous avez ${goodCount} bonnes réponses sur ${questionCount}.`
+                    : `Score : ${score} %.`
+                } Il en faut ${QUIZ_PASS_COUNT} sur ${QUIZ_DRAW_SIZE}. Revoyez un ou deux blocs, puis retentez : les questions seront différentes.`}
         </p>
+        {passed && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {onOpenCompany && (
+              <button
+                type="button"
+                onClick={onOpenCompany}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+              >
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Bonus : règles de votre entreprise
+                </p>
+                <p className="mt-1 text-xs text-slate-500">Facultatif</p>
+              </button>
+            )}
+            {onContinueCareer && (
+              <button
+                type="button"
+                onClick={onContinueCareer}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+              >
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{nextLabel}</p>
+                <p className="mt-1 text-xs text-slate-500">Facultatif</p>
+              </button>
+            )}
+          </div>
+        )}
         <div className="flex flex-col items-center gap-3">
           {canRetry && (
             <button
@@ -1859,19 +1940,9 @@ function QuizScreen({
               onClick={onRetry}
               className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
             >
-              Retenter
+              Retenter l&apos;examen
             </button>
           )}
-          {goNext ? (
-            <button
-              type="button"
-              onClick={onContinueCareer}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              {nextLabel}
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          ) : null}
           <button
             type="button"
             onClick={onFinish}
@@ -1882,7 +1953,7 @@ function QuizScreen({
             }
           >
             {variant === "positioning"
-              ? "Continuer le socle"
+              ? "C'est parti !"
               : goNext
                 ? "Plus tard"
                 : "Retour au parcours"}
@@ -1911,49 +1982,25 @@ function QuizScreen({
           <h1 className="mt-2 text-center text-2xl font-bold text-slate-900 dark:text-white">
             Avant de commencer
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-justify text-sm leading-relaxed text-slate-600 hyphens-auto dark:text-slate-300">
-            Ce QCM est noté. L&apos;attestation est délivrée à partir de {QUIZ_PASS_PERCENT} % :
-            après réussite, consultez le module entreprise puis le parcours métier.
+          <p className="mx-auto mt-3 max-w-md text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            Objectif : {QUIZ_PASS_COUNT}/{QUIZ_DRAW_SIZE} minimum pour votre
+            attestation AI Act (Art. 4).
           </p>
 
-          <ul className="mx-auto mt-6 max-w-md space-y-3 text-justify text-sm leading-relaxed text-slate-700 hyphens-auto dark:text-slate-200">
-            <li className="flex gap-3">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 text-[11px] font-bold text-slate-600 dark:border-slate-500 dark:text-slate-300">
-                1
-              </span>
-              <span>
-                <span className="block">
-                  <strong className="font-semibold text-slate-900 dark:text-white">
-                    {QUIZ_DRAW_SIZE} questions
-                  </strong>
-                  , tirées parmi l&apos;ensemble du socle.
-                </span>
-                <span className="mt-1 block">
-                  Seuil de réussite :{" "}
-                  <strong className="font-semibold text-slate-900 dark:text-white">
-                    {QUIZ_PASS_PERCENT} %
-                  </strong>
-                  .
-                </span>
-              </span>
+          <ul className="mx-auto mt-6 max-w-md space-y-3 text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+            <li>
+              <strong className="font-semibold text-slate-900 dark:text-white">
+                {QUIZ_DRAW_SIZE} questions
+              </strong>{" "}
+              tirées sur tout le parcours.
             </li>
-            <li className="flex gap-3">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 text-[11px] font-bold text-slate-600 dark:border-slate-500 dark:text-slate-300">
-                2
-              </span>
-              <span>
-                Sélectionnez une réponse via le{" "}
-                <strong className="font-semibold text-slate-900 dark:text-white">point à gauche</strong>,
-                puis validez. Vous pouvez changer d&apos;avis avant validation.
-              </span>
+            <li>
+              Choisissez une réponse, puis{" "}
+              <strong className="font-semibold text-slate-900 dark:text-white">Valider</strong>.
+              Le chrono se met en pause pendant l&apos;explication.
             </li>
-            <li className="flex gap-3">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-500 text-[11px] font-bold text-amber-700 dark:text-amber-400">
-                !
-              </span>
-              <span>
-                Lisez chaque question entièrement.
-              </span>
+            <li className="text-amber-800 dark:text-amber-300">
+              Lisez bien chaque question. Pas de piège tordu.
             </li>
           </ul>
         </div>
@@ -1993,21 +2040,20 @@ function QuizScreen({
 
       <div className="text-center">
         <p
-          className={`text-xs font-semibold tracking-wide uppercase sm:text-sm ${
+          className={`text-center text-xs font-semibold tracking-wide uppercase sm:text-sm ${
             isFinal ? "text-slate-500" : "text-blue-600 dark:text-blue-400"
           }`}
         >
           {variant === "positioning"
-            ? "Positionnement · "
-            : `Examen final · Tentative n°${attempts + 1} · `}
-          Question {index + 1} / {shuffled.length}
+            ? `Faisons connaissance · Question ${index + 1} / ${shuffled.length}`
+            : `Examen final · Tentative n°${attempts + 1} · Question ${index + 1} / ${shuffled.length}`}
         </p>
         <h1 className="mx-auto mt-3 max-w-3xl text-center text-xl font-bold leading-snug text-slate-900 dark:text-white sm:text-2xl">
           {current.q.prompt}
         </h1>
         {variant === "positioning" && index === 0 && !reveal && (
           <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-500 sm:text-base">
-            Ce n&apos;est pas un examen de droit : on apprend des réflexes pour utiliser l&apos;IA sans risque.
+            8 questions rapides. Il n&apos;y a pas de mauvaise réponse.
           </p>
         )}
       </div>
@@ -2065,11 +2111,16 @@ function QuizScreen({
             );
           }
 
+          // Positionnement : pas de « bonne / mauvaise » réponse (questions d'expérience).
           let style =
             "border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:border-blue-300 hover:bg-blue-50/50 dark:hover:border-blue-600 dark:hover:bg-blue-950/30";
-          if (reveal && isCorrect) style = "border-emerald-700 bg-emerald-600 font-semibold text-white";
-          else if (reveal && isSelected && !isCorrect) style = "border-red-900 bg-red-800 font-semibold text-white";
-          else if (isSelected) style = "border-blue-400 bg-blue-50 text-slate-800 dark:bg-blue-950/30 dark:text-slate-100";
+          if (reveal && isSelected) {
+            style =
+              "border-blue-500 bg-blue-600 font-semibold text-white dark:border-blue-400 dark:bg-blue-600";
+          } else if (isSelected) {
+            style =
+              "border-blue-400 bg-blue-50 text-slate-800 dark:bg-blue-950/30 dark:text-slate-100";
+          }
           return (
             <li key={opt.text}>
               <button
@@ -2118,8 +2169,8 @@ function QuizScreen({
           <p
             className={
               isFinal
-                ? "mt-2 text-base leading-relaxed text-slate-800 dark:text-slate-100"
-                : "mt-3 text-justify text-base font-semibold leading-relaxed text-slate-900 hyphens-auto sm:text-lg dark:text-white"
+                ? "mt-2 text-center text-base leading-relaxed text-slate-800 dark:text-slate-100"
+                : "mt-3 text-center text-base font-semibold leading-relaxed text-slate-900 sm:text-lg dark:text-white"
             }
           >
             {current.q.explanation}
@@ -2269,7 +2320,7 @@ function CareerScreen({
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{path.title}</h1>
         <p className="mt-2 text-sm text-slate-500">{path.focus}</p>
       </div>
-      <VideoScript format="vidéo métier" duration={path.duration} script={path.script} />
+      <VideoScript format="vidéo métier" script={path.script} />
       <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center dark:border-slate-700 dark:bg-slate-900">
         <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Cas pratique</p>
         <p className="mt-2 text-center text-sm text-slate-800 dark:text-slate-100">{path.casePrompt}</p>

@@ -52,17 +52,11 @@ export function computeFormationPercent(progress: FormationProgress): number {
   return Math.min(99, Math.round((doneSteps / totalSteps) * 100));
 }
 
-/** Attestation : socle + QCM ≥ 80 % + module entreprise + parcours métier */
+/** Attestation de suivi AI Act (Art. 4) : socle + QCM ≥ 80 %. Entreprise / métier optionnels. */
 export function isFormationComplete(progress: FormationProgress): boolean {
   const chapters = allChapterIds();
   const allChaptersDone = chapters.every((id) => progress.completedChapters.includes(id));
-  return (
-    progress.introDone &&
-    allChaptersDone &&
-    progress.companyModuleDone &&
-    progress.quizPassed &&
-    !!progress.careerPathId
-  );
+  return progress.introDone && allChaptersDone && progress.quizPassed;
 }
 
 /** Identifiant attestation : CONF-YYYY-XXXXX */

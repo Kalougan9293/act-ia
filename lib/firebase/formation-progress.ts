@@ -119,7 +119,7 @@ export async function saveFormationProgress(
   if (isFormationComplete(progress) && !existingCert) {
     const structureId =
       typeof userData.structureId === "string" ? userData.structureId : null;
-    const certId = createCertificateId(`${uid}-${progress.careerPathId}-${Date.now()}`);
+    const certId = createCertificateId(`${uid}-${Date.now()}`);
     const issuedAt = new Date().toISOString();
 
     await setDoc(doc(db, "users", uid, "certificates", certId), {

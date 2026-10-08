@@ -3,13 +3,30 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
 import { Check, Eye, EyeOff, GraduationCap } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { validatePassword } from "@/lib/auth/password";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { UserRole } from "@/lib/admin/types";
 import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
+import { getFirebaseDb } from "@/lib/firebase/client";
 import { completeFirstConnection } from "@/lib/firebase/first-connection";
+
+function authErrorCode(error: unknown) {
+  return error && typeof error === "object" && "code" in error
+    ? String((error as { code: string }).code)
+    : "";
+}
+
+async function hasPendingFirstLogin(emailRaw: string) {
+  const email = emailRaw.trim().toLowerCase();
+  if (!email) return false;
+  const db = getFirebaseDb();
+  if (!db) return false;
+  const snap = await getDoc(doc(db, "firstLogin", email));
+  return snap.exists() && snap.data()?.status === "pending";
+}
 
 function passwordRules(password: string) {
   return [
@@ -107,8 +124,26 @@ export default function ConnexionClient() {
     try {
       await signInWithPassword(email, password);
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Connexion impossible";
-      setLocalError(message);
+      const code = authErrorCode(e);
+      const invalidCred =
+        code === "auth/invalid-credential" ||
+        code === "auth/wrong-password" ||
+        code === "auth/user-not-found" ||
+        code === "auth/invalid-email";
+
+      if (invalidCred && (await hasPendingFirstLogin(email))) {
+        setLocalError(
+          "Vous n'avez pas encore activé votre compte. Utilisez « Première connexion ? ».",
+        );
+      } else if (invalidCred) {
+        setLocalError("E-mail ou mot de passe incorrect.");
+      } else if (code === "auth/too-many-requests") {
+        setLocalError("Trop de tentatives. Réessayez dans quelques minutes.");
+      } else {
+        setLocalError(
+          e instanceof Error ? e.message : "Connexion impossible",
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -273,9 +308,23 @@ export default function ConnexionClient() {
             )}
 
             {(localError || error) && (
-              <p className="text-sm text-red-600 dark:text-red-400 text-center">
-                {localError || error}
-              </p>
+              <div
+                role="alert"
+                className="mx-auto w-full rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-center dark:border-rose-900/60 dark:bg-rose-950/40"
+              >
+                <p className="text-sm font-medium text-rose-700 dark:text-rose-300">
+                  {localError || error}
+                </p>
+                {localError?.includes("activé votre compte") && (
+                  <button
+                    type="button"
+                    onClick={showFirst}
+                    className="mt-2 text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    Activer mon compte
+                  </button>
+                )}
+              </div>
             )}
 
             <button
