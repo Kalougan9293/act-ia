@@ -7,7 +7,7 @@ export type QuizQuestion = {
   /** Thème anti-doublon : au plus une question par thème dans un tirage. */
   theme?: string;
   prompt: string;
-  choices: [string, string, string];
+  choices: [string, string, string] | [string, string];
   correctIndex: 0 | 1 | 2;
   explanation: string;
 };
@@ -82,7 +82,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
   },
   {
     id: "q5",
-    blockId: "bloc-1",
+    blockId: "bloc-5",
     theme: "deepfake-def",
     prompt: "Un deepfake, c'est…",
     choices: [
@@ -91,7 +91,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Un type de contrat RH",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Ça imite une vraie personne. Ça peut tromper.",
+    explanation:
+      "C'est une vidéo, une photo ou une voix générée qui imite une vraie personne. Une image nette ne prouve plus que c'est vrai.",
   },
   {
     id: "q6",
@@ -147,7 +148,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
   },
   {
     id: "q10",
-    blockId: "bloc-2",
+    blockId: "bloc-5",
     theme: "deepfake-label",
     prompt: "Votre entreprise publie une fausse vidéo d'un vrai salarié. Elle doit…",
     choices: [
@@ -156,7 +157,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Interdire toute vidéo, même avec mention",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Art. 50 : deepfake = on le signale. Relire ne suffit pas.",
+    explanation:
+      "Même si le texte est exact, vous indiquez que la vidéo est générée. Relire ne suffit pas : la personne qui regarde doit le voir.",
   },
   {
     id: "q11",
@@ -195,7 +197,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Oui : c'est pour aider",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Info très privée. Jamais dans un outil grand public.",
+    explanation:
+      "Un arrêt parle de santé. L'outil n'est pas un carnet privé : le texte peut être enregistré. Vous ne le collez pas.",
   },
   {
     id: "q14",
@@ -234,7 +237,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "N'avez rien à dire",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? La voix est une donnée personnelle. Y compris pour les externes.",
+    explanation:
+      "Vous prévenez tout le monde avant d'enregistrer, y compris les personnes extérieures. Leur voix est une information personnelle, comme celle de vos collègues.",
   },
   {
     id: "q17",
@@ -260,7 +264,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Ajouter le plus de détails perso possible",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Le moins d'infos possible. « Client A » plutôt qu'un vrai nom.",
+    explanation:
+      "Vous ne donnez que ce qui sert à la tâche. Un prénom inutile ne part pas dans l'outil.",
   },
   {
     id: "q19",
@@ -277,7 +282,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
   },
   {
     id: "q20",
-    blockId: "bloc-4",
+    blockId: "bloc-5",
     theme: "deepfake-fraud",
     prompt: "Visio urgente : le « directeur » demande un virement. Vous…",
     choices: [
@@ -286,7 +291,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Demandez l'IBAN dans le chat de la visio",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Deepfake possible. L'urgence est le piège.",
+    explanation:
+      "Une voix et un visage justes ne prouvent plus rien. Vous vérifiez sur un numéro que vous connaissez déjà, pas depuis le message urgent.",
   },
   {
     id: "q21",
@@ -342,33 +348,35 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
   },
   {
     id: "q25",
-    blockId: "bloc-5",
+    blockId: "bloc-4",
     theme: "auto-decision",
-    prompt: "L'IA envoie seule les refus aux candidats. C'est…",
+    prompt: "L'IA veut envoyer seule les refus aux candidats. Vous…",
     choices: [
-      "Rouge : décision automatisée sur une personne",
-      "Vert : gain de temps",
-      "Orange : OK avec un bandeau IA",
+      "Vous lisez, et c'est vous qui validez l'envoi",
+      "Vous la laissez envoyer pour gagner du temps",
+      "Vous laissez faire si le ton est poli",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Un humain doit pouvoir comprendre, modifier, dire non.",
+    explanation:
+      "Un refus est une décision sur une personne. L'outil peut préparer le brouillon. C'est vous qui décidez de l'envoyer.",
   },
   {
     id: "q26",
-    blockId: "bloc-5",
+    blockId: "bloc-3",
     theme: "green-mail",
-    prompt: "Reformuler un mail d'équipe sans données perso ?",
+    prompt: "Reformuler un mail d'équipe, sans nom et sans secret. Vous pouvez ?",
     choices: [
-      "Vert : OK, en relu avant envoi",
-      "Rouge : interdit",
-      "Rouge : seulement le soir",
+      "Oui, puis je relis avant d'envoyer",
+      "Non, tout mail est interdit",
+      "Oui, sans relire",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Simple aide. On relit juste le ton.",
+    explanation:
+      "S'il n'y a ni personne identifiable ni secret, vous pouvez demander une reformulation. Vous relisez quand même avant d'envoyer.",
   },
   {
     id: "q27",
-    blockId: "bloc-5",
+    blockId: "bloc-4",
     theme: "human-decide",
     prompt: "Qui décide sur un paiement ou un envoi important ?",
     choices: [
@@ -381,20 +389,21 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
   },
   {
     id: "q28",
-    blockId: "bloc-5",
+    blockId: "bloc-3",
     theme: "health-stop",
-    prompt: "Coller un dossier médical dans un outil grand public ?",
+    prompt: "Effacer le prénom suffit-il pour coller un dossier médical ?",
     choices: [
-      "Rouge : on ne le fait pas",
-      "Vert : si c'est pour aider",
-      "Orange : si on efface le prénom",
+      "Non : la santé ne part pas dans un outil grand public",
+      "Oui, si c'est pour aider quelqu'un",
+      "Oui, dès que le prénom a disparu",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? La santé reste rouge, même sans le prénom.",
+    explanation:
+      "Enlever le prénom ne suffit pas. Un dossier médical reste une information de santé. Vous ne le collez pas.",
   },
   {
     id: "q29",
-    blockId: "bloc-5",
+    blockId: "bloc-4",
     theme: "human-oversight",
     prompt: "Cliquer « valider » sans lire la proposition de l'IA, c'est…",
     choices: [
@@ -481,7 +490,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "L'interdiction de ChatGPT en Europe",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Ligne rouge renforcée. La formation, elle, est déjà due depuis 2025.",
+    explanation:
+      "À cette date, l'IA qui fabrique une image ou une vidéo intime d'une personne sans son accord devient explicitement interdite. La formation, elle, est déjà obligatoire depuis 2025.",
   },
   {
     id: "q36",
@@ -571,80 +581,80 @@ export function drawSocleQuiz(size = QUIZ_DRAW_SIZE): QuizQuestion[] {
 
 /**
  * Positionnement : 8 questions oui/non. Pas de bonne ni mauvaise réponse.
- * Le profil (Explorateur / Utilisateur / Avancé) compte les « Oui » (index 0).
+ * Le message de fin compte les « Oui » (index 0). Pas de « Je ne sais pas ».
  */
 export const POSITIONING_BANK: QuizQuestion[] = [
   {
     id: "pos-1",
     blockId: "positioning",
     theme: "pos-used",
-    prompt: "J'ai déjà utilisé ChatGPT, Gemini, Copilot ou une autre IA.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Avez-vous déjà utilisé ChatGPT, Gemini, Copilot ou une autre IA ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Parfait. Que vous soyez débutant ou habitué, la suite est faite pour vous.",
+    explanation: "Que vous découvriez ou que vous pratiquiez déjà, la suite est faite pour vous.",
   },
   {
     id: "pos-2",
     blockId: "positioning",
     theme: "pos-phone",
-    prompt: "J'ai une application d'IA sur mon téléphone.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Avez-vous une application d'IA sur votre téléphone ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Beaucoup en ont une. Ici : comment s'en servir sans risque au travail.",
+    explanation: "Beaucoup de gens en ont une. Ici, on voit comment s'en servir sans risque au travail.",
   },
   {
     id: "pos-3",
     blockId: "positioning",
     theme: "pos-image",
-    prompt: "J'ai déjà créé une image avec l'IA.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Avez-vous déjà créé une image avec l'IA ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Courant. On verra juste les droits avant de publier.",
+    explanation: "C'est courant. On verra, le moment venu, ce que vous pouvez publier.",
   },
   {
     id: "pos-4",
     blockId: "positioning",
     theme: "pos-deepfake",
-    prompt: "Je sais ce qu'est un deepfake (fausse vidéo très réaliste).",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Savez-vous ce qu'est un deepfake ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Deepfake = fausse vidéo, voix ou image. On verra le réflexe anti-arnaque.",
+    explanation: "Si non, ce n'est pas un problème. On l'expliquera dans son propre bloc, avec des cas concrets.",
   },
   {
     id: "pos-5",
     blockId: "positioning",
     theme: "pos-work",
-    prompt: "J'utilise parfois l'IA pour mon travail.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Utilisez-vous parfois l'IA pour votre travail ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Si oui, cette formation vous protège encore plus. Si non, vous serez prêt.",
+    explanation: "Si oui, ces réflexes vous protègent tout de suite. Si non, vous saurez quoi faire le jour où vous vous en servirez.",
   },
   {
     id: "pos-6",
     blockId: "positioning",
     theme: "pos-auth",
-    prompt: "Je sais quelles IA mon entreprise autorise.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Savez-vous quelles IA votre entreprise autorise ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Si non : le réflexe sera « je demande avant ». Simple.",
+    explanation: "Si vous ne le savez pas, le réflexe est simple : vous demandez avant d'utiliser un outil.",
   },
   {
     id: "pos-7",
     blockId: "positioning",
     theme: "pos-verify",
-    prompt: "J'ai déjà vérifié si une réponse de l'IA était vraie.",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Avez-vous déjà vérifié si une réponse de l'IA était vraie ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Le bon réflexe. L'IA peut inventer avec un ton très sûr.",
+    explanation: "C'est le bon réflexe. L'outil peut écrire quelque chose de faux avec un ton très sûr.",
   },
   {
     id: "pos-8",
     blockId: "positioning",
     theme: "pos-personal",
-    prompt: "Je sais ce qu'est une « donnée personnelle ».",
-    choices: ["Oui", "Non", "Je ne sais pas"],
+    prompt: "Savez-vous ce qu'est une donnée personnelle ?",
+    choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Nom, mail, photo, téléphone… toute info qui permet de reconnaître quelqu'un.",
+    explanation: "C'est une information qui permet de reconnaître quelqu'un : un nom, un e-mail, une photo, un numéro.",
   },
 ];
 

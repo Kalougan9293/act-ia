@@ -24,7 +24,7 @@ function Feedback({ text }: { text: string }) {
       <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
         À retenir
       </p>
-      <p className="mt-3 text-center text-base font-semibold leading-relaxed text-slate-900 sm:text-lg dark:text-white">
+      <p className="mt-3 text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white">
         {text}
       </p>
     </div>
@@ -373,42 +373,57 @@ function SortActivity({
     return null;
   }
 
-  useEffect(() => {
-    if (!drag) return;
-    function move(event: PointerEvent) {
-      const id = dragId.current;
-      if (!id) return;
-      setDrag({ id, x: event.clientX, y: event.clientY });
-      setOverBin(hitBin(event.clientX, event.clientY));
+  function startDrag(event: React.PointerEvent, cardId: string) {
+    if (checked) return;
+    const pointerId = event.pointerId;
+    const startX = event.clientX;
+    const startY = event.clientY;
+    let dragging = false;
+
+    function move(moveEvent: PointerEvent) {
+      if (moveEvent.pointerId !== pointerId) return;
+      const dx = moveEvent.clientX - startX;
+      const dy = moveEvent.clientY - startY;
+      if (!dragging) {
+        if (Math.hypot(dx, dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) {
+          cleanup();
+          return;
+        }
+        dragging = true;
+        dragId.current = cardId;
+      }
+      moveEvent.preventDefault();
+      setDrag({ id: cardId, x: moveEvent.clientX, y: moveEvent.clientY });
+      setOverBin(hitBin(moveEvent.clientX, moveEvent.clientY));
     }
-    function up(event: PointerEvent) {
-      const id = dragId.current;
-      const bin = hitBin(event.clientX, event.clientY);
-      if (id) {
+
+    function up(upEvent: PointerEvent) {
+      if (upEvent.pointerId !== pointerId) return;
+      if (dragging && dragId.current) {
+        const bin = hitBin(upEvent.clientX, upEvent.clientY);
         setPlaced((current) => {
           const next = { ...current };
-          if (bin) next[id] = bin;
-          else delete next[id];
+          if (bin) next[cardId] = bin;
+          else delete next[cardId];
           return next;
         });
       }
       dragId.current = null;
       setDrag(null);
       setOverBin(null);
+      cleanup();
     }
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-    return () => {
+
+    function cleanup() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-    };
-  }, [drag !== null]);
+      window.removeEventListener("pointercancel", up);
+    }
 
-  function startDrag(event: React.PointerEvent, cardId: string) {
-    if (checked) return;
-    event.preventDefault();
-    dragId.current = cardId;
-    setDrag({ id: cardId, x: event.clientX, y: event.clientY });
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   }
 
   const guideCorrection = compact;
@@ -428,7 +443,7 @@ function SortActivity({
       : BUBBLE_COLORS[index % BUBBLE_COLORS.length];
     const feedbackMotion =
       checked && guideCorrection ? (right ? "sort-pop" : "sort-shake") : checked ? "sort-pop" : "";
-    return `touch-none select-none border-2 text-center font-semibold shadow-sm transition ${
+    return `touch-pan-y select-none border-2 text-center font-semibold shadow-sm transition ${
       compact
         ? "max-w-full rounded-xl px-1.5 py-1.5 text-[10px] leading-snug sm:px-2 sm:text-[11px]"
         : "rounded-full px-3.5 py-2 text-xs"
@@ -1082,6 +1097,9 @@ function PredictActivity({
       </ul>
       {open && (
         <>
+          <p className="mx-auto max-w-lg text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            Ce pourcentage n&apos;est pas un chiffre de votre entreprise. Il dit seulement quelle suite est la plus courante.
+          </p>
           <Feedback text={round.message} />
           {!finished && !last && (
             <div className="flex justify-center">
@@ -1229,6 +1247,7 @@ function RedactActivity({
             const good = checked && token.redact && on;
             const missed = checked && token.redact && !on;
             const extra = checked && !token.redact && on;
+            const replacement = token.replacement;
             return (
               <Fragment key={token.id}>
                 {index > 0 ? " " : null}
@@ -1245,18 +1264,25 @@ function RedactActivity({
                   className={`inline rounded px-0.5 py-0.5 font-medium transition ${
                     checked
                       ? good
-                        ? "bg-emerald-500 font-semibold text-white"
+                        ? "bg-emerald-100 font-semibold text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"
                         : missed
                           ? "bg-red-600 font-semibold text-white"
                           : extra
                             ? "bg-red-200 font-semibold text-red-900 line-through"
                             : "text-slate-700 dark:text-slate-200"
                       : on
-                        ? "bg-slate-900 text-slate-900 dark:bg-slate-100 dark:text-slate-100"
+                        ? "bg-amber-100 text-slate-700 dark:bg-amber-950/50 dark:text-amber-50"
                         : "text-slate-800 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800"
                   }`}
                 >
-                  {token.text}
+                  {on && token.redact ? (
+                    <>
+                      <span className="line-through opacity-60">{token.text}</span>
+                      {replacement ? <span className="ml-1 no-underline opacity-100">{replacement}</span> : null}
+                    </>
+                  ) : (
+                    token.text
+                  )}
                 </button>
               </Fragment>
             );
@@ -1481,6 +1507,10 @@ const STAMP_TONES: Record<string, { idle: string; active: string }> = {
     idle: "border-rose-400 bg-rose-100 text-rose-950 hover:bg-rose-200 dark:border-rose-500 dark:bg-rose-950/50 dark:text-rose-100 dark:hover:bg-rose-900 dark:hover:text-rose-50",
     active: "border-rose-600 bg-rose-500 text-white",
   },
+  ctx: {
+    idle: "border-emerald-400 bg-emerald-100 text-emerald-950 hover:bg-emerald-200 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-100 dark:hover:bg-emerald-900 dark:hover:text-emerald-50",
+    active: "border-emerald-600 bg-emerald-500 text-white",
+  },
   sens: {
     idle: "border-rose-400 bg-rose-100 text-rose-950 hover:bg-rose-200 dark:border-rose-500 dark:bg-rose-950/50 dark:text-rose-100 dark:hover:bg-rose-900 dark:hover:text-rose-50",
     active: "border-rose-600 bg-rose-500 text-white",
@@ -1552,9 +1582,9 @@ function StampActivity({
       </div>
 
       <p className="text-center text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
-        Clic sur la bonne case
+        Lisez la situation
         <br />
-        selon l&apos;info du milieu
+        puis choisissez le mot
       </p>
 
       <div className="flex justify-center">
@@ -1611,9 +1641,11 @@ function StampActivity({
                 {revealed && isAnswer ? <Check className="h-3.5 w-3.5 shrink-0" /> : null}
                 {stamp.label}
               </span>
-              <span className="mt-1 block text-[10px] font-medium leading-snug normal-case opacity-90 sm:text-xs">
-                {stamp.hint}
-              </span>
+              {stamp.hint ? (
+                <span className="mt-1 block text-[10px] font-medium leading-snug normal-case opacity-90 sm:text-xs">
+                  {stamp.hint}
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -1644,16 +1676,6 @@ function TimelineActivity({
   const [opened, setOpened] = useState<string[]>([]);
   const nextIndex = opened.length;
   const allOpen = opened.length === items.length;
-  const colClass =
-    items.length <= 2
-      ? "grid-cols-2"
-      : items.length === 3
-        ? "grid-cols-3"
-        : items.length === 4
-          ? "grid-cols-2 sm:grid-cols-4"
-          : items.length === 5
-            ? "grid-cols-3 sm:grid-cols-5"
-            : "grid-cols-3 sm:grid-cols-6";
 
   useEffect(() => {
     if (allOpen) onReady();
@@ -1668,33 +1690,27 @@ function TimelineActivity({
     if (isNext) setOpened((current) => [...current, item.id]);
   }
 
+  const activeId = opened[opened.length - 1];
+  const active = items.find((item) => item.id === activeId);
+  const activeTone = active
+    ? CUBE_TONES[items.findIndex((item) => item.id === active.id) % CUBE_TONES.length]!
+    : null;
+
   return (
-    <div className="relative px-1 pt-2">
-      <div className="absolute top-[2.35rem] right-6 left-6 h-1 rounded-full bg-slate-200 dark:bg-slate-700 sm:top-[2.75rem]" />
-      <div
-        className="absolute top-[2.35rem] left-6 h-1 rounded-full bg-gradient-to-r from-sky-400 via-amber-400 to-rose-400 transition-all duration-500 sm:top-[2.75rem]"
-        style={{
-          width:
-            items.length <= 1
-              ? "0%"
-              : `calc((100% - 3rem) * ${Math.max(0, opened.length - 1) / (items.length - 1)})`,
-        }}
-      />
-      <ul className={`relative grid gap-2 sm:gap-3 ${colClass}`}>
+    <div className="space-y-4 px-1 pt-2">
+      <ul className="grid grid-cols-5 items-start gap-1.5 sm:gap-2">
         {items.map((item, index) => {
           const tone = CUBE_TONES[index % CUBE_TONES.length]!;
           const already = opened.includes(item.id);
           const isNext = index === nextIndex;
           const locked = !already && !isNext;
           return (
-            <li key={item.id} className="flex flex-col items-center">
+            <li key={item.id} className="flex min-w-0 flex-col items-center">
               <button
                 type="button"
                 disabled={locked || already}
                 onClick={() => handleCube(index)}
-                className={`group relative w-full max-w-[5.5rem] disabled:cursor-default ${
-                  isNext ? "cube-nudge" : ""
-                }`}
+                className={`group relative w-full disabled:cursor-default ${isNext ? "cube-nudge" : ""}`}
                 aria-label={
                   locked
                     ? `${item.date}, verrouillé`
@@ -1715,38 +1731,42 @@ function TimelineActivity({
                   } ${tone.glow} ${locked ? "grayscale opacity-45" : isNext ? "hover:-translate-y-1" : ""}`}
                 >
                   {already ? (
-                    <Check className="mb-0.5 h-4 w-4 sm:h-5 sm:w-5" />
+                    <Check className="mb-0.5 h-3.5 w-3.5 sm:h-5 sm:w-5" />
                   ) : locked ? (
                     <Lock className="mb-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   ) : null}
                   <span className="text-center text-[10px] font-bold leading-tight sm:text-xs">{item.shortDate}</span>
                   {isNext && (
-                    <span className="mt-1 rounded-full bg-white/85 px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-slate-900 uppercase sm:text-[10px]">
+                    <span className="mt-1 rounded-full bg-white/85 px-1.5 py-0.5 text-[8px] font-extrabold tracking-wide text-slate-900 uppercase sm:text-[10px]">
                       Cliquez
                     </span>
                   )}
                 </span>
               </button>
-              <span className="mt-2 min-h-8 text-center text-[10px] font-semibold text-slate-700 dark:text-slate-200 sm:text-[11px]">
+              <span className="mt-2 flex h-8 items-start justify-center text-center text-[10px] font-semibold leading-tight text-slate-700 sm:text-[11px] dark:text-slate-200">
                 {already || isNext ? item.label : "···"}
               </span>
-              {already && (
-                <div className={`mt-2 w-full space-y-1.5 rounded-xl border px-2 py-2 sm:px-2.5 sm:py-2.5 ${tone.panel}`}>
-                  <p className={`text-center text-[10px] font-bold leading-snug sm:text-[11px] ${tone.accent}`}>
-                    {item.date}
-                  </p>
-                  <p className="text-center text-[10px] font-semibold leading-snug text-slate-900 dark:text-white sm:text-[11px]">
-                    {item.law}
-                  </p>
-                  <p className="text-center text-[10px] leading-relaxed text-slate-600 dark:text-slate-300 sm:text-[11px]">
-                    {item.detail}
-                  </p>
-                </div>
-              )}
             </li>
           );
         })}
       </ul>
+      <div
+        className={`flex min-h-40 flex-col justify-center rounded-xl border px-4 py-4 text-center sm:min-h-44 sm:px-5 ${
+          activeTone ? activeTone.panel : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900"
+        }`}
+      >
+        {active && activeTone ? (
+          <div className="space-y-2">
+            <p className={`text-sm font-bold sm:text-base ${activeTone.accent}`}>{active.date}</p>
+            <p className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">{active.law}</p>
+            <p className="text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">{active.detail}</p>
+          </div>
+        ) : (
+          <p className="text-sm leading-relaxed text-slate-500">
+            Ouvrez les dates dans l&apos;ordre. L&apos;explication s&apos;affiche ici, toujours au même endroit.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -2613,6 +2633,45 @@ function DodgeActivity({
   );
 }
 
+function GameBriefing({ text, children }: { text?: string; children: ReactNode }) {
+  const [ready, setReady] = useState(!text);
+  if (!text || ready) return <>{children}</>;
+  return (
+    <div className="mx-auto max-w-lg space-y-5 px-1 text-center">
+      <p className="text-center text-xs font-bold tracking-[0.16em] text-blue-700 uppercase dark:text-blue-300">
+        Avant de jouer
+      </p>
+      <p className="text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white">
+        {text}
+      </p>
+      <button
+        type="button"
+        onClick={() => setReady(true)}
+        className="rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+      >
+        C&apos;est parti
+      </button>
+    </div>
+  );
+}
+
+function activityBriefing(activity: Activity): string | undefined {
+  switch (activity.kind) {
+    case "quiz":
+    case "sort":
+    case "stamp":
+    case "scenario":
+    case "predict":
+    case "spot":
+    case "redact":
+    case "timeline":
+    case "tetris":
+      return activity.briefing;
+    default:
+      return undefined;
+  }
+}
+
 export default function ActivityPlayer({
   activity,
   duration,
@@ -2622,6 +2681,7 @@ export default function ActivityPlayer({
   duration: string;
   onReady: () => void;
 }) {
+  const briefing = activityBriefing(activity);
   if (activity.kind === "video") {
     return (
       <>
@@ -2638,18 +2698,70 @@ export default function ActivityPlayer({
   if (activity.kind === "text" || activity.kind === "fiche") {
     return <TextActivity activity={activity} onReady={onReady} />;
   }
-  if (activity.kind === "quiz") return <QuizActivity questions={activity.questions} onReady={onReady} />;
-  if (activity.kind === "sort") return <SortActivity activity={activity} onReady={onReady} />;
-  if (activity.kind === "stamp") return <StampActivity activity={activity} onReady={onReady} />;
-  if (activity.kind === "scenario") return <ScenarioActivity steps={activity.steps} onReady={onReady} />;
+  if (activity.kind === "quiz") {
+    return (
+      <GameBriefing text={briefing}>
+        <QuizActivity questions={activity.questions} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "sort") {
+    return (
+      <GameBriefing text={briefing}>
+        <SortActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "stamp") {
+    return (
+      <GameBriefing text={briefing}>
+        <StampActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "scenario") {
+    return (
+      <GameBriefing text={briefing}>
+        <ScenarioActivity steps={activity.steps} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "checklist") {
     return <ChecklistActivity intro={activity.intro} items={activity.items} centered={activity.centered} onReady={onReady} />;
   }
-  if (activity.kind === "predict") return <PredictActivity activity={activity} onReady={onReady} />;
-  if (activity.kind === "spot") return <SpotActivity activity={activity} onReady={onReady} />;
-  if (activity.kind === "redact") return <RedactActivity activity={activity} onReady={onReady} />;
+  if (activity.kind === "predict") {
+    return (
+      <GameBriefing text={briefing}>
+        <PredictActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "spot") {
+    return (
+      <GameBriefing text={briefing}>
+        <SpotActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "redact") {
+    return (
+      <GameBriefing text={briefing}>
+        <RedactActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "traffic") return <TrafficActivity items={activity.items} onReady={onReady} />;
-  if (activity.kind === "tetris") return <TetrisActivity activity={activity} onReady={onReady} />;
+  if (activity.kind === "tetris") {
+    return (
+      <GameBriefing text={briefing}>
+        <TetrisActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "dodge") return <DodgeActivity activity={activity} onReady={onReady} />;
-  return <TimelineActivity items={activity.items} onReady={onReady} />;
+  return (
+    <GameBriefing text={briefing}>
+      <TimelineActivity items={activity.items} onReady={onReady} />
+    </GameBriefing>
+  );
 }

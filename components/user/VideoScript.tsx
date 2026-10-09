@@ -71,12 +71,12 @@ export default function VideoScript({
 
       <div
         ref={containerRef}
-        className="max-h-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white px-5 py-4 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        className="max-h-[min(70vh,36rem)] touch-pan-y overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white px-5 py-4 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
       >
         <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           À écouter / lire
         </p>
-        <p className="whitespace-pre-wrap text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+        <p className="whitespace-pre-wrap text-center text-base leading-relaxed text-slate-800 sm:text-lg sm:leading-8 dark:text-slate-100">
           {words.slice(0, revealed).join("")}
           {revealed < words.length && (
             <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse align-middle bg-blue-500" />

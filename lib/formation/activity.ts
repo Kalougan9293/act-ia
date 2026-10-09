@@ -6,12 +6,16 @@ export type ActivityChoice = {
   explanation: string;
 };
 
+/** Consigne lue avant de pouvoir cliquer. Le jeu n'apparaît qu'après. */
+type Brief = { briefing?: string };
+
 export type Activity =
   | { kind: "text"; paragraphs: string[]; points?: string[] }
   | { kind: "video"; format: string; script: string; src?: string }
-  | { kind: "quiz"; questions: { prompt: string; choices: ActivityChoice[] }[] }
+  | ({ kind: "quiz"; questions: { prompt: string; choices: ActivityChoice[] }[] } & Brief)
   | {
       kind: "sort";
+      briefing?: string;
       instruction: string;
       /** Conservé pour compatibilité ; les jeux de tri sont toujours colorés. */
       colorful?: boolean;
@@ -20,16 +24,19 @@ export type Activity =
     }
   | {
       kind: "stamp";
+      briefing?: string;
       stamps: { id: string; label: string; hint: string }[];
       cards: { id: string; label: string; stampId: string; explanation: string }[];
     }
   | {
       kind: "scenario";
+      briefing?: string;
       steps: { prompt: string; choices: ActivityChoice[]; mediaSrc?: string; imageSrc?: string }[];
     }
   | { kind: "checklist"; intro: string; items: string[]; centered?: boolean }
   | {
       kind: "tetris";
+      briefing?: string;
       intro: string;
       /** Gros blocs qui tombent — en pratique les 7 réflexes */
       blocks: { id: string; label: string }[];
@@ -43,6 +50,7 @@ export type Activity =
     }
   | {
       kind: "predict";
+      briefing?: string;
       /** Consigne commune (sinon hint par round). */
       hint?: string;
       rounds: {
@@ -54,13 +62,16 @@ export type Activity =
     }
   | {
       kind: "spot";
+      briefing?: string;
       intro: string;
       fragments: { id: string; text: string; trap: boolean; explanation?: string }[];
     }
   | {
       kind: "redact";
+      briefing?: string;
       intro: string;
-      tokens: { id: string; text: string; redact: boolean }[];
+      /** replacement : texte affiché à la place quand on retire le mot. Chaîne vide = on l'enlève. */
+      tokens: { id: string; text: string; redact: boolean; replacement?: string }[];
       explanation: string;
     }
   | {
@@ -69,6 +80,7 @@ export type Activity =
     }
   | {
       kind: "timeline";
+      briefing?: string;
       items: {
         id: string;
         /** Date courte sur le cube */

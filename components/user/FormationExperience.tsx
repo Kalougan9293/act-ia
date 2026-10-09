@@ -1051,38 +1051,38 @@ function HubAction({
 function chapterTeaser(chapter: Block["chapters"][number]): string {
   const teasers: Record<string, string> = {
     "1.1": "Pourquoi vous êtes ici",
-    "1.2": "4 mots à connaître",
-    "1.3": "L'IA qui crée",
-    "1.4": "Classez les exemples",
-    "1.5": "3 suites à deviner",
-    "1.6": "Repérez les inventions",
-    "1.7": "Checklist avant d'utiliser",
-    "2.1": "Le code de la route de l'IA",
+    "1.2": "Comment elle écrit",
+    "1.3": "Classique, ou qui crée ?",
+    "1.4": "Quatre mots, sans la définition écrite",
+    "1.5": "Quelle suite choisirait-elle ?",
+    "1.6": "Repérez ce qu'il ne faut pas reprendre",
+    "1.7": "Avant d'utiliser une réponse",
+    "2.1": "La loi, votre rôle, les quatre niveaux",
     "2.2": "Depuis quand c'est obligatoire ?",
     "2.3": "J'utilise ou je vends ?",
-    "2.4": "Du vert à l'interdit",
-    "2.5": "Les dates utiles",
-    "2.6": "Chatbot et deepfake",
-    "2.7": "Deux cas concrets",
-    "3.1": "Feu vert / orange / rouge",
-    "3.2": "Classez dans le bon feu",
-    "3.3": "Les bons gestes",
-    "3.4": "Masquez ce qui ne doit pas partir",
-    "3.5": "Outil autorisé ?",
-    "3.6": "La réunion de 14 h",
-    "3.7": "En cas d'erreur",
-    "4.1": "Pourquoi vérifier",
-    "4.2": "Le rapport trop beau",
-    "4.3": "Les biais",
-    "4.4": "Droits et images",
-    "4.5": "Deepfake",
-    "4.6": "Le faux directeur",
-    "4.7": "L'ordre caché",
-    "4.8": "Esquivez les rouges. Attrapez les verts !",
-    "5.1": "Vous gardez la main",
-    "5.2": "Vert, orange, rouge",
-    "6.1": "Les 7 réflexes en jeu",
-    "6.2": "La fiche à garder",
+    "2.4": "Quel niveau de règle ?",
+    "2.5": "La phrase à écrire au client",
+    "2.6": "Deux cas de chatbot",
+    "2.7": "Cinq dates, pour fermer le bloc",
+    "3.1": "Ce que vous pouvez coller",
+    "3.2": "Je peux, je fais attention, je ne colle pas",
+    "3.3": "Trois réflexes concrets",
+    "3.4": "Gardez une demande utile",
+    "3.5": "Trois questions avant d'ouvrir l'outil",
+    "3.6": "La réunion, y compris les externes",
+    "3.7": "Si vous avez collé ce qu'il ne fallait pas",
+    "4.1": "L'IA propose, vous décidez",
+    "4.2": "Qui valide vraiment ?",
+    "4.3": "Un score peut être injuste",
+    "4.4": "Lisez aussi le bas de la liste",
+    "4.5": "Avant de publier",
+    "4.6": "Je publie, ou je vérifie ?",
+    "4.7": "Elle ne doit pas agir seule",
+    "4.8": "L'ordre caché dans le mail",
+    "5.1": "Ce qu'est un deepfake, et les deux gestes",
+    "5.2": "Le faux directeur, puis la publication",
+    "6.1": "Les sept questions, expliquées",
+    "6.2": "Relisez-les dans le jeu",
   };
   return teasers[chapter.id] ?? chapter.format;
 }
@@ -1145,34 +1145,34 @@ function activityTone(format: string) {
 
 const BLOCK_RECAPS: Record<string, string[]> = {
   "bloc-1": [
-    "L'IA qui crée devine : elle peut inventer.",
-    "Bien écrit ≠ vrai : je vérifie.",
-    "Je suis là pour l'Art. 4 (attestation).",
+    "L'outil choisit la suite la plus probable. Ce n'est pas forcément vrai.",
+    "Je vérifie les chiffres, les sources et les lois avant de les reprendre.",
+    "Je suis ici parce que l'entreprise doit former ses équipes. L'attestation le prouve.",
   ],
   "bloc-2": [
-    "L'AI Act = le code de la route de l'IA.",
-    "Émotions au travail : interdit.",
-    "La machine n'est jamais responsable : c'est nous.",
+    "J'utilise un outil déjà en vente, ou mon entreprise vend une IA. Ce n'est pas le même rôle.",
+    "Un chatbot doit dire clairement qu'il est une IA.",
+    "Je ne récite pas toutes les dates. Je sais ce qui est déjà en vigueur, et ce que change décembre 2026.",
   ],
   "bloc-3": [
-    "Vert j'y vais · Orange prudence · Rouge stop.",
-    "Outil autorisé + le moins d'infos possible.",
-    "Erreur ? Je préviens tout de suite.",
+    "L'outil n'est pas un carnet privé. Le texte peut être enregistré et ressortir.",
+    "Je peux, je fais attention, ou je ne colle pas. La santé et les secrets ne partent pas.",
+    "Si je me trompe, je préviens tout de suite.",
   ],
   "bloc-4": [
-    "Chiffres, sources, noms : je vérifie.",
-    "Urgence bizarre : je rappelle sur un numéro connu.",
-    "Créé par l'IA ≠ libre de droits.",
+    "L'IA prépare. C'est moi qui décide, surtout quand une personne est concernée.",
+    "Je lis aussi les CV du bas. Un score ne choisit pas à ma place.",
+    "Je ne laisse pas l'outil envoyer, payer ou publier seul.",
   ],
   "bloc-5": [
-    "L'IA propose, un humain décide vraiment.",
-    "Valider sans lire ≠ décider.",
-    "Santé, décision, action définitive : je demande.",
+    "Une vidéo nette ne prouve plus que la personne a vraiment parlé.",
+    "Face à un message trop urgent, je rappelle sur un numéro que je connais déjà.",
+    "Si j'en publie une, je dis clairement qu'elle est générée.",
   ],
   "bloc-6": [
-    "Avant : secret ? personne ? privé ? outil OK ?",
-    "Après : vérifié ? humain décide ? je préviens ?",
-    "Un doute ? Je demande.",
+    "Avant : secret, personne, vie privée, outil autorisé.",
+    "Après : j'ai vérifié, un humain décide, je préviens si besoin.",
+    "Un doute ? Je demande. Je ne devine pas.",
   ],
 };
 
@@ -1192,15 +1192,15 @@ function BlockScreen({
   const recap = BLOCK_RECAPS[block.id] ?? [];
   const lexiconIds =
     block.id === "bloc-1"
-      ? ["ia-generative", "prompt", "hallucination", "deepfake", "llm", "ai-act", "art4"]
+      ? ["ia-generative", "prompt", "hallucination", "llm", "contexte", "ai-act", "art4"]
       : block.id === "bloc-2"
         ? ["ai-act", "art4", "art5", "art50", "haut-risque", "deployeur"]
         : block.id === "bloc-3"
           ? ["donnee-perso", "shadow-ai", "referent"]
           : block.id === "bloc-4"
-            ? ["deepfake", "hallucination", "art50"]
+            ? ["supervision-humaine", "referent"]
             : block.id === "bloc-5"
-              ? ["supervision-humaine", "referent"]
+              ? ["deepfake", "art50"]
               : block.id === "bloc-6"
                 ? ["referent", "shadow-ai"]
                 : undefined;
@@ -1508,7 +1508,7 @@ function ChapterScreen({
         onReady={() => setActivityComplete(true)}
       />
 
-      {kind === "fiche" && (
+      {(kind === "fiche" || chapter.id === "6.1") && (
         <div className="flex justify-center">
           <button
             type="button"
@@ -1803,19 +1803,19 @@ function QuizScreen({
   function positioningProfile(yes: number) {
     if (yes <= 3) {
       return {
-        title: "Explorateur",
-        text: "Vous découvrez l'IA. Parfait : cette formation est faite pour vous.",
+        title: "On démarre ensemble",
+        text: "Pas grave ! On est là pour ça.",
       };
     }
     if (yes <= 6) {
       return {
-        title: "Utilisateur",
-        text: "Vous utilisez déjà l'IA. On va vous donner les bons réflexes.",
+        title: "Vous avez déjà des bases",
+        text: "Super, on va pouvoir peaufiner tout ça !",
       };
     }
     return {
-      title: "Avancé",
-      text: "Vous connaissez déjà bien. Les parcours métier et le module entreprise sont pour vous.",
+      title: "Vous connaissez déjà bien",
+      text: "Trop bien, ça va aller vite pour la formation.",
     };
   }
 
@@ -1879,11 +1879,14 @@ function QuizScreen({
           {variant === "positioning" ? "Faisons connaissance !" : "Résultat de l'examen"}
         </h1>
         {variant === "positioning" ? (
-          <div className="space-y-2">
-            <p className="text-center text-3xl font-extrabold text-blue-700 dark:text-blue-300">
+          <div className="space-y-3">
+            <p className="text-center text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl dark:text-white">
+              {profile.text}
+            </p>
+            <p className="text-center text-lg font-semibold text-blue-700 dark:text-blue-300">
               {profile.title}
             </p>
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-base text-slate-600 dark:text-slate-300">
               {yes} « oui » sur {total}
             </p>
           </div>
@@ -1896,9 +1899,9 @@ function QuizScreen({
             {goodCount != null ? `${goodCount} / ${questionCount}` : `${score} %`}
           </p>
         )}
-        <p className="mx-auto max-w-md text-center text-sm text-slate-500">
+        <p className="mx-auto max-w-md text-center text-base leading-relaxed text-slate-700 dark:text-slate-200">
           {variant === "positioning"
-            ? profile.text
+            ? "Il n'y a pas de mauvaise réponse. On part de là où vous en êtes."
             : passed
               ? nextHint
               : `Presque ! ${
@@ -2170,7 +2173,7 @@ function QuizScreen({
             className={
               isFinal
                 ? "mt-2 text-center text-base leading-relaxed text-slate-800 dark:text-slate-100"
-                : "mt-3 text-center text-base font-semibold leading-relaxed text-slate-900 sm:text-lg dark:text-white"
+                : "mt-3 text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white"
             }
           >
             {current.q.explanation}

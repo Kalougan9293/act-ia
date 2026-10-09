@@ -129,7 +129,7 @@ export default function UserApp() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="mx-auto w-full max-w-6xl px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-32">
         <FormationExperience
           key={session.uid}
           uid={session.uid}
@@ -138,8 +138,8 @@ export default function UserApp() {
           companyName={companyName}
           companyModule={companyModule}
         />
-        <FloatingLexiconFab />
       </main>
+      <FloatingLexiconFab />
     </div>
   );
 }

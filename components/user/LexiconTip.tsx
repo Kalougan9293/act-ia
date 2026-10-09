@@ -141,7 +141,10 @@ export function FloatingLexiconFab() {
   );
 
   return (
-    <div ref={panelRef} className="fixed bottom-5 right-4 z-40 sm:bottom-6 sm:right-6">
+    <div
+      ref={panelRef}
+      className="fixed right-4 z-50 bottom-[max(5.5rem,env(safe-area-inset-bottom))] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-6"
+    >
       {open && (
         <div className="mb-3 w-[min(100vw-2rem,20rem)] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-600 dark:bg-slate-900">
           <div className="mb-3 flex items-center justify-between gap-2">
@@ -179,7 +182,7 @@ export function FloatingLexiconFab() {
         aria-expanded={open}
         aria-label="Ouvrir le lexique"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
       >
         <BookOpen className="h-3.5 w-3.5" aria-hidden />
         Les mots de l&apos;IA
