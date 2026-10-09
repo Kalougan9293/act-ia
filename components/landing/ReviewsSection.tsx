@@ -2,7 +2,18 @@
 
 import { Star } from "lucide-react";
 
-const reviews: { name: string; role: string; quote: string }[] = [];
+const reviews = [
+  {
+    name: "Cédric",
+    role: "Formateur certifié, 2 500 heures",
+    quote: "Cette formation est ludique, efficace et courte !",
+  },
+  {
+    name: "Sabrina",
+    role: "Avocat AI Act et RGPD",
+    quote: "La formation répond à toutes les attentes",
+  },
+];
 
 function Stars() {
   return (
@@ -15,11 +26,9 @@ function Stars() {
 }
 
 export default function ReviewsSection() {
-  if (reviews.length === 0) return null;
-
   return (
     <section className="bg-white pb-8 dark:bg-slate-900">
-      <div className={`mx-auto grid max-w-3xl gap-6 px-4 sm:px-6 ${reviews.length > 1 ? "sm:grid-cols-2" : ""}`}>
+      <div className="mx-auto grid max-w-3xl gap-6 px-4 sm:grid-cols-2 sm:px-6">
         {reviews.map((review) => (
           <figure key={review.name} className="text-center">
             <Stars />
