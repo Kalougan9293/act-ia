@@ -1,4 +1,4 @@
-import { deleteDoc, doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { saveUser } from "@/lib/firebase/admin-data";
 import { getStructureSeatStatus } from "@/lib/firebase/seats";
@@ -117,13 +117,15 @@ export async function provisionTenantUser(params: {
     createdAt: user.createdAt,
   });
 
-  // Après firstLogin : autorise le nettoyage d'un Auth orphelin (ancien bug)
+  // Après firstLogin : nettoyage d'un Auth orphelin (ancien bug).
+  // Best-effort : un échec ne doit pas bloquer la création RH (sièges / liste).
   try {
     await deleteAuthAccount({ email });
   } catch (error) {
-    await deleteDoc(doc(db, "firstLogin", email)).catch(() => undefined);
-    await deleteDoc(doc(db, "users", provisionalId)).catch(() => undefined);
-    throw error;
+    console.warn(
+      "[provisionTenantUser] nettoyage Auth orphelin échoué:",
+      error instanceof Error ? error.message : error,
+    );
   }
 
   // Réserve 1 siège dès la création RH (libéré si suppression avant activation)

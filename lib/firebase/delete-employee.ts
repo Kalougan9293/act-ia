@@ -9,7 +9,10 @@ import {
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { getStructure } from "@/lib/firebase/tenant-data";
 import { releaseSeatIfEmployee } from "@/lib/firebase/seats";
-import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
+import {
+  deleteAuthAccount,
+  isProvisionalUserId,
+} from "@/lib/firebase/delete-auth-account";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -69,8 +72,22 @@ export async function deleteEmployeeAsRh(params: {
   }
 
   const email = String(data.email ?? "").trim().toLowerCase();
-  // Auth avant Firestore : sinon le compte Auth orphelin bloque une future 1ʳᵉ connexion
-  await deleteAuthAccount({ uid: params.userId, email });
+  // Auth avant Firestore : sinon le compte Auth orphelin bloque une future 1ʳᵉ connexion.
+  // Comptes encore « pending_* » : pas d'Auth réel — nettoyage e-mail best-effort.
+  if (isProvisionalUserId(params.userId)) {
+    if (email) {
+      try {
+        await deleteAuthAccount({ email });
+      } catch (error) {
+        console.warn(
+          "[deleteEmployeeAsRh] nettoyage Auth provisoire échoué:",
+          error instanceof Error ? error.message : error,
+        );
+      }
+    }
+  } else {
+    await deleteAuthAccount({ uid: params.userId, email });
+  }
 
   // firstLogin n'existe que pour les comptes encore « en attente »
   const firstLoginRef = email ? doc(db, "firstLogin", email) : null;

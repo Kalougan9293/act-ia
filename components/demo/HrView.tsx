@@ -575,7 +575,7 @@ export default function HrView({
                       onClick={() => void removeCollaborator(employee)}
                       aria-label={`Effacer ${employee.name}`}
                       title="Effacer — perte définitive du suivi"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-100 transition-opacity hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

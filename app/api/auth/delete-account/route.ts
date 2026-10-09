@@ -51,14 +51,7 @@ async function assertCanDeleteAuth(
   }
 
   if (target.email) {
-    const usersSnap = await getAdminDb()
-      .collection("users")
-      .where("email", "==", target.email)
-      .where("structureId", "==", structureId)
-      .limit(1)
-      .get();
-    if (!usersSnap.empty) return;
-
+    // firstLogin d'abord (ID = e-mail) — évite une requête composite sans index
     const firstLoginSnap = await getAdminDb()
       .collection("firstLogin")
       .doc(target.email)
@@ -66,6 +59,20 @@ async function assertCanDeleteAuth(
     if (
       firstLoginSnap.exists &&
       String(firstLoginSnap.data()?.structureId ?? "") === structureId
+    ) {
+      return;
+    }
+
+    // Un seul filtre égalité = index automatique ; filtrer la structure en mémoire
+    const usersSnap = await getAdminDb()
+      .collection("users")
+      .where("email", "==", target.email)
+      .limit(10)
+      .get();
+    if (
+      usersSnap.docs.some(
+        (d) => String(d.data()?.structureId ?? "") === structureId,
+      )
     ) {
       return;
     }
@@ -144,7 +151,9 @@ export async function POST(request: NextRequest) {
       lower.includes("introuvable") ||
       lower.includes("non authentifié")
         ? 403
-        : 500;
+        : lower.includes("admin firebase non configuré")
+          ? 503
+          : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }
