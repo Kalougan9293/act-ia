@@ -62,7 +62,7 @@ export const faqs = [
   {
     question: "Combien coûte StartIA ?",
     answer:
-      "290 € par an jusqu'à 5 salariés, 590 € jusqu'à 20, 990 € jusqu'à 50. Au-delà, l'offre est sur devis. La TVA ne s'applique pas. Des attestations claires, sans budget formation externe à chaque équipe.",
+      "290 € par an jusqu'à 5 salariés, 590 € jusqu'à 20, 990 € jusqu'à 50. Au-delà, l'offre est sur devis. En option : module métier sur mesure à 690 € le module, atelier usages & automatisation sur devis, marque blanche sur devis. La TVA ne s'applique pas.",
   },
   {
     question: "Qu'est-ce que l'option marque blanche ?",
@@ -77,8 +77,14 @@ export const faqs = [
   {
     question: "Peut-on ajouter un module propre à notre métier ?",
     answer:
-      "Oui, à la demande, dès l'offre TPE. Le module s'ajoute à votre parcours pour coller à vos usages réels, sur devis.",
+      "Oui. Les parcours métiers prêts sont inclus dans l'abonnement. Un module rédigé pour votre métier (texte, cas pratique, idée d'usage) est une option à 690 € le module, puis intégré à votre parcours StartIA.",
   },
+  {
+    question: "Quelle différence entre le module sur mesure et l'atelier ?",
+    answer:
+      "Le module sur mesure est du contenu dans la plateforme : vos équipes le suivent en autonomie. L'atelier usages & automatisation est un accompagnement (visio ou présentiel) pour prioriser les usages et gagner du temps au quotidien. Les deux sont hors abonnement ; l'atelier est sur devis.",
+  },
+
   {
     question: "Où sont hébergées les données ?",
     answer:

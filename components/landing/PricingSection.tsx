@@ -23,7 +23,8 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 5 accès utilisateurs",
       "Abonnement annuel, sans frais cachés",
-      "Socle commun et parcours métiers",
+      "Socle commun et parcours métiers prêts",
+      "Module entreprise (charte, outils, référent)",
       "Attestations nominatives",
       "Preuves conservées 12 mois après le contrat",
       "Tableau de bord RH, suivi et export",
@@ -41,7 +42,6 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Modules sur mesure, à la demande",
       "Support prioritaire",
     ],
     cta: "Démarrer maintenant",
@@ -70,6 +70,33 @@ const plans: Plan[] = [
       "Contrat et support dédié",
     ],
     cta: "Démarrer maintenant",
+  },
+];
+
+const addons = [
+  {
+    name: "Module métier sur mesure",
+    tag: "Dans StartIA",
+    price: "690 €",
+    detail: "/ module",
+    description:
+      "Un module conçu au cas par cas, selon votre métier, vos usages et vos demandes — rédigé et intégré à votre parcours StartIA.",
+  },
+  {
+    name: "Marque blanche",
+    tag: "Partenaires",
+    price: "Sur devis",
+    detail: "",
+    description:
+      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH.",
+  },
+  {
+    name: "Atelier usages & automatisation",
+    tag: "Accompagnement",
+    price: "Sur devis",
+    detail: "",
+    description:
+      "Session avec vos équipes (visio ou présentiel) : prioriser les usages, gagner du temps sur le quotidien, cadrer ce qui peut être automatisé. Hors abonnement, sur devis.",
   },
 ];
 
@@ -168,15 +195,43 @@ export default function PricingSection() {
           ))}
         </div>
 
-        <div className="mx-auto mt-4 flex max-w-3xl flex-col items-center gap-1 text-center text-base leading-relaxed text-slate-600 dark:text-slate-300">
-          <p>
-            La plateforme peut aussi porter{" "}
-            <span className="font-medium text-blue-600 dark:text-blue-400">
-              votre logo et vos couleurs
-            </span>{" "}
-            (marque blanche).
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="mx-auto mt-10 max-w-5xl"
+        >
+          <h3 className="mb-5 text-center text-lg font-semibold text-slate-900 dark:text-white">
+            Options
+          </h3>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {addons.map((addon) => (
+              <div
+                key={addon.name}
+                className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 text-center dark:border-slate-700 dark:bg-slate-800"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  {addon.tag}
+                </p>
+                <p className="mt-2 font-semibold text-slate-900 dark:text-white">{addon.name}</p>
+                <p className="mt-3">
+                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                    {addon.price}
+                  </span>
+                  {addon.detail ? (
+                    <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                      {addon.detail}
+                    </span>
+                  ) : null}
+                </p>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                  {addon.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,4 +1,9 @@
-/** Parcours métiers — StartIA V1.0 (texte + cas + idée d'usage, sans vidéo). */
+/** Parcours métiers — StartIA V1.0 (texte + cas à trancher + idée d'usage). */
+
+export type CareerCaseOption = {
+  label: string;
+  correct: boolean;
+};
 
 export type CareerPath = {
   id: string;
@@ -8,6 +13,7 @@ export type CareerPath = {
   /** Texte concis à lire — phrases simples. */
   briefing: string;
   casePrompt: string;
+  caseOptions: CareerCaseOption[];
   caseCorrection: string;
   /** Idée concrète d'usage IA pour ce métier. */
   aiTip: string;
@@ -16,114 +22,178 @@ export type CareerPath = {
 export const CAREER_PATHS: CareerPath[] = [
   {
     id: "direction",
-    title: "Direction & management stratégique",
-    duration: "5–8 min",
+    title: "Direction",
+    duration: "3–5 min",
     focus: "Cadre, outils autorisés, décisions humaines.",
     briefing:
-      "Vous donnez le cadre. Si personne ne sait quels outils sont autorisés, chacun improvise. Et les informations sortent sans que vous le voyiez.\n\nAvant d'acheter une IA, posez trois questions. À quoi sert-elle vraiment ? Que dit le contrat sur vos données ? Est-ce que l'éditeur les réutilise pour s'entraîner ? Vous validez ça avant de brancher l'outil, pas après un incident.\n\nSi vous utilisez un outil acheté, vous restez responsable du bon usage. Si vous vendez une IA sous votre marque, les obligations sont plus lourdes. Dans les deux cas, une décision importante reste humaine.",
+      "Vous fixez le cadre : outils autorisés, contrats, responsabilités. Sans ça, chacun improvise et les infos sortent.\n\nAvant d'acheter une IA : à quoi sert-elle ? Que dit le contrat sur vos données ? L'éditeur les réutilise-t-il ? Une décision importante reste humaine.",
     casePrompt:
-      "Un éditeur vous propose une IA « pour booster la productivité ». Il veut faire signer cette semaine. Que vérifiez-vous avant de dire oui ?",
+      "Un éditeur veut faire signer une IA « productivité » cette semaine. Que faites-vous ?",
+    caseOptions: [
+      { label: "Signer vite pour ne pas bloquer les équipes", correct: false },
+      {
+        label: "Vérifier usage, clauses données et responsable interne avant",
+        correct: true,
+      },
+      { label: "Laisser chaque service décider seul", correct: false },
+    ],
     caseCorrection:
-      "Vous vérifiez l'usage réel, les clauses sur les données et le réentraînement, et qui sera responsable en interne. Vous ne signez pas « pour aller vite » sans ça. Ensuite seulement, l'outil peut entrer sur la liste autorisée.",
+      "Vous vérifiez l'usage réel, les clauses données / réentraînement, et qui est responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée.",
     aiTip:
-      "Demandez à l'IA une grille « oui / non / à clarifier » pour chaque nouvel outil. Elle prépare le dossier. Vous gardez la décision.",
+      "Demandez à l'IA une grille « oui / non / à clarifier » pour chaque nouvel outil. Elle prépare. Vous décidez.",
   },
   {
     id: "rh",
     title: "Ressources humaines",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "CV, entretiens, outils RH : données perso.",
     briefing:
-      "Un CV, une note d'entretien, un arrêt maladie, une fiche de paie : ce sont des données personnelles. Parfois, c'est même sensible.\n\nUne IA grand public n'est pas un coffre-fort. Pour analyser un CV ou préparer un compte rendu, vous passez par un outil autorisé. Vous ne donnez que ce qui sert.\n\nLa décision d'embaucher, ou de sanctionner, reste humaine. Un score donné par une IA ne remplace pas votre jugement. Vous le relisez. Vous le contestez s'il le faut. Et les personnes concernées sont informées si un outil pèse dans le process.",
+      "CV, notes d'entretien, paie : données personnelles, parfois sensibles. Une IA grand public n'est pas un coffre-fort.\n\nOutil autorisé, minimum de données, décision humaine. Un score IA ne remplace pas votre jugement.",
     casePrompt:
-      "On vous demande de coller 40 CV dans une IA publique pour « pré-trier » les candidats. Que répondez-vous ?",
+      "On vous demande de coller 40 CV dans une IA publique pour « pré-trier ». Que répondez-vous ?",
+    caseOptions: [
+      { label: "OK si on anonymise les prénoms seulement", correct: false },
+      {
+        label: "Refuser, sauf outil autorisé et cadre clair",
+        correct: true,
+      },
+      { label: "Accepter : un CV n'est pas une donnée personnelle", correct: false },
+    ],
     caseCorrection:
-      "Vous refusez, sauf outil autorisé et cadre clair. Un CV porte un nom, un parcours, parfois des infos sensibles. Vous proposez l'outil validé par l'entreprise, ou un tri humain sur des critères écrits.",
+      "Vous refusez hors outil autorisé. Un CV porte un nom et un parcours. Proposez l'outil validé, ou un tri humain sur critères écrits.",
     aiTip:
-      "Faites reformuler une offre d'emploi par l'IA : ton clair, inclusif, sans jargon. Vous ne collez aucun dossier candidat.",
+      "Faites reformuler une offre d'emploi par l'IA : ton clair, inclusif. Aucun dossier candidat.",
   },
   {
     id: "marketing",
     title: "Marketing & sales",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Chatbots, contenus générés, fichiers prospects.",
     briefing:
-      "Vous publiez vers l'extérieur. Vous touchez aussi aux fichiers clients.\n\nSi un chatbot répond sur le site, le client doit savoir dès le début qu'il parle à une machine. Ce n'est pas assez de le mettre dans les CGV.\n\nUne vidéo ou une voix qui imite quelqu'un se signale clairement. Vous vérifiez aussi les droits : image, voix, musique.\n\nUn fichier de milliers de prospects ne part pas dans une IA ouverte. Même pour « personnaliser » un mail : outil autorisé, contrat lu, et vous ne collez pas toute la base d'un coup.",
+      "Vous publiez dehors et touchez aux fichiers clients. Un chatbot doit se présenter comme machine dès le début.\n\nContenu généré qui imite quelqu'un : mention claire + droits (image, voix, musique). Pas de base prospects dans une IA ouverte.",
     casePrompt:
-      "Vous voulez une vidéo promo avec un porte-parole généré par IA. Quelles mentions et quelles vérifications faites-vous ?",
+      "Vidéo promo avec un porte-parole généré par IA. Que faites-vous ?",
+    caseOptions: [
+      { label: "Publier sans mention : c'est juste du marketing", correct: false },
+      {
+        label: "Mention IA si la personne paraît réelle + vérifier les droits",
+        correct: true,
+      },
+      { label: "Une relecture suffit, pas besoin de mention", correct: false },
+    ],
     caseCorrection:
-      "Vous indiquez clairement que c'est généré par IA si la personne paraît réelle. Vous vérifiez les droits sur l'image, la voix et la musique. Si vous imitez quelqu'un, vous avez son accord. Relire la vidéo ne dispense pas de la mention.",
+      "Mention claire si la personne paraît réelle, droits vérifiés, accord si vous imitez quelqu'un. Relire ne remplace pas la mention.",
     aiTip:
-      "Demandez à l'IA cinq angles de posts LinkedIn, sans coller de fichier clients. Vous choisissez. Vous adaptez au ton de la marque.",
+      "Cinq angles de posts LinkedIn via l'IA, sans fichier clients. Vous choisissez le ton marque.",
   },
   {
     id: "managers",
     title: "Managers",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Équipe, outils déclarés, relecture des livrables.",
     briefing:
-      "Vous êtes le lien entre les règles et ce que l'équipe fait vraiment.\n\nQuelqu'un utilise une IA hors liste ? Vous l'aidez à déclarer l'usage. Le but n'est pas de chercher un coupable. C'est de savoir où passent les informations.\n\nUn devis, un rapport, un code : rien ne part chez un client sans relecture humaine. Si des chiffres n'ont pas de source, vous les faites vérifier avant l'envoi.\n\nUn outil qui noterait la performance ou les primes : vous restez prudent. La décision reste humaine. Et un nouvel arrivant apprend les outils autorisés avant son premier collage dans ChatGPT.",
+      "Vous reliez les règles et le terrain. IA hors liste : aidez à déclarer, sans chercher un coupable.\n\nRien vers un client sans relecture. Chiffres sans source = à vérifier. Les nouveaux apprennent les outils autorisés avant le premier collage.",
     casePrompt:
-      "Un collaborateur vous rend un rapport clairement écrit par une IA, avec des chiffres sans source. Que faites-vous ?",
+      "Un rapport clairement écrit par une IA, chiffres sans source. Que faites-vous ?",
+    caseOptions: [
+      { label: "L'envoyer au client : le style est bon", correct: false },
+      {
+        label: "Bloquer, exiger sources et vérification avant envoi",
+        correct: true,
+      },
+      { label: "Corriger le ton seulement, garder les chiffres", correct: false },
+    ],
     caseCorrection:
-      "Vous ne transmettez pas le rapport en l'état. Vous demandez une source et une vérification pour chaque chiffre. Vous expliquez pourquoi : l'outil peut inventer. Vous rappelez la règle : rien vers l'extérieur sans relecture.",
+      "Vous ne transmettez pas en l'état. Source + vérif pour chaque chiffre. Règle : rien dehors sans relecture.",
     aiTip:
-      "Faites générer une checklist « avant envoi client » : chiffres, noms, promesses, ton. L'équipe s'en sert à chaque livrable.",
+      "Checklist « avant envoi client » générée une fois : chiffres, noms, promesses, ton.",
   },
   {
     id: "tech",
     title: "Tech, IT & développeurs",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Code, logs, secrets, outils dans l'IDE.",
     briefing:
-      "L'IA écrit du code. Elle explique un bug. Elle résume des logs. Elle peut aussi emporter des secrets.\n\nVous ne collez pas de configs, de clés, de logs clients ou de code sensible dans un outil grand public. Vous passez par un outil autorisé. Et vous relisez ce qui est généré — y compris les dépendances.\n\nUne extension « magique » dans l'IDE ? Vous vérifiez où part le code avant de l'activer sur le dépôt de l'entreprise.",
+      "L'IA aide sur le code et les bugs — et peut emporter des secrets. Pas de configs, clés, logs clients ou code sensible dans un outil grand public.\n\nOutil autorisé, extrait nettoyé, relecture (y compris dépendances). Extension IDE : savoir où part le code avant de l'activer.",
     casePrompt:
-      "Bug urgent. Vous voulez coller des logs et un extrait de code dans ChatGPT grand public. Est-ce OK ?",
+      "Bug urgent : coller logs + extrait de code dans ChatGPT grand public ?",
+    caseOptions: [
+      { label: "Oui, c'est urgent et interne", correct: false },
+      {
+        label: "Non : outil autorisé, données nettoyées, puis relecture",
+        correct: true,
+      },
+      { label: "Oui si on retire seulement les mots de passe visibles", correct: false },
+    ],
     caseCorrection:
-      "Non, pas sans outil autorisé. Les logs et le code peuvent contenir des secrets et des données clients. Vous utilisez l'outil validé. Vous retirez le superflu. Vous relisez le correctif proposé.",
+      "Non sans outil autorisé. Logs et code peuvent cacher secrets et données clients. Nettoyez, utilisez l'outil validé, relisez le correctif.",
     aiTip:
-      "Faites expliquer un diff, ou rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé. Vous gagnez du temps de revue sans exposer tout le dépôt.",
+      "Expliquer un diff ou rédiger des tests dans l'outil autorisé, sur un extrait anonymisé.",
   },
   {
     id: "finance",
     title: "Finance & comptabilité",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Paiements, factures, fraude, fichiers sensibles.",
     briefing:
-      "L'IA accélère les tableaux et les relances. Elle invente aussi des chiffres. Et les fraudeurs le savent.\n\nUn message urgent du « DAF » qui demande un virement ou un changement d'IBAN : vous ne bougez pas depuis ce message. Vous rappelez sur le numéro habituel.\n\nSur une facture, vous croisez les montants avec le document source avant de comptabiliser. Les IBAN, les salaires, les extraits bancaires ne partent pas dans un outil grand public.\n\nL'IA peut préparer un paiement. Elle ne le lance pas seule.",
+      "L'IA accélère tableaux et relances — et invente des chiffres. Les fraudeurs le savent.\n\nMessage urgent du « DAF » pour un virement / IBAN : rappel sur le numéro habituel. IBAN, salaires, extraits : pas dans une IA grand public. L'IA prépare ; elle ne lance pas le paiement.",
     casePrompt:
-      "Vous recevez un vocal du « DAF ». La voix est la sienne. Il demande de changer l'IBAN d'un fournisseur avant midi. Que faites-vous ?",
+      "Vocal du « DAF », voix crédible : changer l'IBAN d'un fournisseur avant midi. Que faites-vous ?",
+    caseOptions: [
+      { label: "Changer l'IBAN : la voix est la sienne", correct: false },
+      {
+        label: "Ne rien toucher ; rappeler sur le numéro habituel",
+        correct: true,
+      },
+      { label: "Répondre au vocal pour confirmer l'identité", correct: false },
+    ],
     caseCorrection:
-      "Vous ne touchez pas à l'IBAN. Vous rappelez le DAF sur son numéro habituel, ou vous passez par le process interne. Une voix se fabrique. Répondre au même vocal, c'est parler au fraudeur.",
+      "Vous ne touchez pas à l'IBAN. Rappel ou process interne. Une voix se fabrique ; répondre au vocal, c'est parler au fraudeur.",
     aiTip:
-      "Faites reformuler une relance client par l'IA, sans coller d'IBAN ni de fichier paie. L'outil soigne le ton. Les montants viennent de votre système.",
+      "Reformuler une relance client sans IBAN ni fichier paie. Les montants viennent de votre système.",
   },
   {
     id: "support",
     title: "Relation client & support",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Tickets, appels, chatbots : données clients.",
     briefing:
-      "Chaque jour, des tickets, des mails, des appels. Il y a des noms, des numéros, parfois un IBAN ou un numéro de commande.\n\nAvant de coller un ticket dans une IA, vous utilisez un outil autorisé. Vous retirez ce qui ne sert pas — le téléphone, l'adresse complète, un numéro de carte s'il y en a un.\n\nLa réponse part au nom de l'entreprise. Vous la relisez. L'outil peut inventer un délai de livraison ou un geste commercial. Vous ne validez pas une promesse que vous ne pouvez pas tenir.\n\nSi un chatbot répond aux clients, ils doivent savoir que c'est une machine, dès le début. Et vous ne collez pas tout l'historique CRM « pour que l'IA connaisse le client ».",
+      "Tickets et mails : noms, numéros, parfois IBAN. Outil autorisé, données inutiles retirées, réponse reluée.\n\nL'IA peut inventer un délai ou un geste commercial. Chatbot client : il se présente comme machine dès le début.",
     casePrompt:
-      "Un ticket contient le nom du client, son téléphone et le détail d'un litige. Vous voulez une réponse polie générée par l'IA. Que faites-vous avant ?",
+      "Ticket avec nom, téléphone et litige : vous voulez une réponse IA. Avant ?",
+    caseOptions: [
+      { label: "Coller tout le ticket pour plus de contexte", correct: false },
+      {
+        label: "Outil autorisé, retirer le superflu, relire avant envoi",
+        correct: true,
+      },
+      { label: "Envoyer tel quel : l'IA gère le ton", correct: false },
+    ],
     caseCorrection:
-      "Vous passez par un outil autorisé. Vous retirez le téléphone, et tout ce qui ne sert pas à rédiger. Vous relisez la réponse : pas de délai inventé, pas de geste commercial fantôme. Ensuite seulement, vous envoyez.",
+      "Outil autorisé, téléphone et superflu retirés, relecture : pas de délai inventé ni de geste fantôme. Puis envoi.",
     aiTip:
-      "Demandez trois formulations de réponse — ferme, empathique, factuelle — à partir d'un résumé anonymisé du litige. Vous choisissez le ton. L'IA ne décide pas du geste commercial.",
+      "Trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez. L'IA ne décide pas du geste.",
   },
   {
     id: "tous",
     title: "Autres",
-    duration: "5–8 min",
+    duration: "3–5 min",
     focus: "Accueil, mails, atelier : réflexes du quotidien.",
     briefing:
-      "Votre métier n'est pas dans une des cases à côté ? Les mêmes règles s'appliquent.\n\nUn client laisse un nom et un téléphone. Avant de coller ça dans une IA pour traduire ou préparer une réponse, vous utilisez un outil autorisé. Vous gardez seulement ce qui est utile.\n\nEnsuite, vous relisez. L'outil peut inventer une date de rendez-vous, ou changer le sens d'une phrase. Ce que vous renvoyez part avec le nom de l'entreprise.\n\nSi un collègue propose une extension IA « pour aller plus vite », vous demandez avant d'installer. Ce n'est pas une faute de poser la question.",
+      "Même hors cases : outil autorisé, minimum de données, relecture. Ce que vous renvoyez part au nom de l'entreprise.\n\nExtension IA « pour aller plus vite » : demander avant d'installer.",
     casePrompt:
-      "À l'accueil, vous devez préparer un message de rappel. Le mail client contient son nom, son téléphone et le motif de sa visite. Que faites-vous avant d'utiliser l'IA ?",
+      "Mail client (nom, téléphone, motif) : préparer un rappel avec l'IA. Avant ?",
+    caseOptions: [
+      { label: "Coller le mail entier pour être précis", correct: false },
+      {
+        label: "Outil autorisé, garder le utile, relire avant envoi",
+        correct: true,
+      },
+      { label: "Utiliser n'importe quelle IA : c'est juste un rappel", correct: false },
+    ],
     caseCorrection:
-      "Vous utilisez un outil autorisé. Vous retirez le téléphone, et le nom s'il ne sert pas. Vous gardez seulement ce qui aide à rédiger. Vous relisez le message avant de l'envoyer.",
+      "Outil autorisé. Retirez le téléphone (et le nom s'il ne sert pas). Relisez avant d'envoyer.",
     aiTip:
-      "Faites créer une fois un modèle de mail de confirmation de rendez-vous. Ensuite, vous le réutilisez. Moins de frappe, et vous ne collez jamais tout le carnet d'adresses.",
+      "Créez une fois un modèle de mail de confirmation, puis réutilisez-le — sans coller le carnet d'adresses.",
   },
 ];

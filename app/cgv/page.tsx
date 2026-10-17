@@ -32,11 +32,13 @@ export default function CgvPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Prix</h2>
         <p>
           Le prix est celui affiché sur le site au jour de la commande, pour douze mois : Micro
-          290 €, TPE 590 €, PME 990 €. L&apos;offre ETI est établie sur devis. La marque
-          blanche pour un organisme de formation ou un cabinet RH va de 2&nbsp;000 à 5&nbsp;000&nbsp;€
-          par an et par partenaire, plus un montant par apprenant. Il n&apos;y a pas
-          encore de paiement en ligne : la facture est envoyée par e-mail et se règle par virement
-          ou par carte.
+          290 €, TPE 590 €, PME 990 €. L&apos;offre ETI est établie sur devis. Hors abonnement :
+          le module métier sur mesure est facturé 690 € par module (texte, cas pratique et idée
+          d&apos;usage intégrés au parcours) ; l&apos;atelier usages et automatisation (visio ou
+          présentiel) est établi sur devis. La marque blanche pour un organisme de formation ou
+          un cabinet RH va de 2&nbsp;000 à 5&nbsp;000&nbsp;€ par an et par partenaire, plus un
+          montant par apprenant. Il n&apos;y a pas encore de paiement en ligne : la facture est
+          envoyée par e-mail et se règle par virement ou par carte.
         </p>
         <p>Le prix est dû à réception de la facture. TVA non applicable, article 293 B du CGI.</p>
       </section>

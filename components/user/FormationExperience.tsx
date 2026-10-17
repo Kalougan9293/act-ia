@@ -13,6 +13,7 @@ import {
   Lock,
   Play,
   Smartphone,
+  Sparkles,
   Timer,
   Trophy,
 } from "lucide-react";
@@ -2268,8 +2269,10 @@ function CareerScreen({
   onSelect: (id: string) => void;
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
-  const [caseRevealed, setCaseRevealed] = useState(false);
+  const [pickedIndex, setPickedIndex] = useState<number | null>(null);
   const path = CAREER_PATHS.find((item) => item.id === openId) ?? null;
+  const answered = pickedIndex !== null;
+  const pickedCorrect = answered && path ? path.caseOptions[pickedIndex]?.correct === true : false;
   const careerChoices = (() => {
     const others = CAREER_PATHS.find((item) => item.id === "tous");
     const support = CAREER_PATHS.find((item) => item.id === "support");
@@ -2294,7 +2297,8 @@ function CareerScreen({
         <div>
           <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Parcours métier</h1>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm text-slate-500">
-            Le socle est commun. Ici, choisissez le parcours le plus proche de votre métier : un texte court, un cas pratique, puis une idée d&apos;usage IA.
+            Le socle est commun. Choisissez le parcours le plus proche de votre métier : un texte
+            court, un cas à trancher, puis une idée d&apos;usage.
           </p>
         </div>
         <ul className="grid gap-2.5 sm:grid-cols-2">
@@ -2307,7 +2311,7 @@ function CareerScreen({
                   type="button"
                   onClick={() => {
                     setOpenId(item.id);
-                    setCaseRevealed(false);
+                    setPickedIndex(null);
                   }}
                   className={`w-full rounded-xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
                     isSelected ? style.selected : style.card
@@ -2322,17 +2326,15 @@ function CareerScreen({
             );
           })}
         </ul>
-        <div className="mx-auto max-w-lg space-y-3 text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-          <p className="text-center font-semibold text-slate-800 dark:text-slate-100">
-            Et si l&apos;IA s&apos;adaptait vraiment à votre métier ?
+        <div className="mx-auto flex max-w-lg flex-col items-center rounded-2xl border-2 border-teal-400 bg-gradient-to-b from-teal-50 to-white px-6 py-7 text-center shadow-lg shadow-teal-500/15 dark:border-teal-500 dark:from-teal-950/60 dark:to-slate-900 dark:shadow-teal-900/30">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-white shadow-md shadow-teal-600/30">
+            <Sparkles className="h-5 w-5" aria-hidden />
+          </span>
+          <p className="mt-4 w-full text-center text-xs font-bold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
+            Pour aller plus loin
           </p>
-          <p className="text-center">
-            Mails, dossiers, reporting, automatisation… Avec StartIA, allez plus loin grâce à une
-            formation sur mesure, conçue autour de vos besoins et de vos objectifs.
-          </p>
-          <p className="text-center font-semibold text-slate-800 dark:text-slate-100">
-            Moins de tâches répétitives, plus de temps et de performance. Devenez un spécialiste
-            de l&apos;IA !
+          <p className="mt-3 w-full text-center text-xl font-bold leading-snug text-slate-900 dark:text-white">
+            StartIA propose aussi des modules sur mesure, propres à votre fonction.
           </p>
         </div>
       </div>
@@ -2340,22 +2342,25 @@ function CareerScreen({
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-5">
       <button
         type="button"
-        onClick={() => setOpenId(null)}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
+        onClick={() => {
+          setOpenId(null);
+          setPickedIndex(null);
+        }}
+        className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-teal-600"
       >
         <ArrowLeft className="h-4 w-4" />
         Tous les parcours
       </button>
       <div className="text-center">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{path.title}</h1>
-        <p className="mt-2 text-center text-sm text-slate-500">{path.focus}</p>
+        <p className="mt-1 text-center text-sm text-slate-500">{path.focus}</p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+      <div className="rounded-2xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-800/60 dark:bg-amber-950/25">
+        <p className="text-center text-xs font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-300">
           À retenir
         </p>
         <p className="mt-3 whitespace-pre-line text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
@@ -2363,30 +2368,68 @@ function CareerScreen({
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center dark:border-slate-700 dark:bg-slate-900">
+      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
         <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Cas pratique
+          À vous de trancher
         </p>
-        <p className="mt-2 text-center text-sm text-slate-800 dark:text-slate-100">{path.casePrompt}</p>
-        {!caseRevealed ? (
-          <button
-            type="button"
-            onClick={() => setCaseRevealed(true)}
-            className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white"
+        <p className="mt-2 text-center text-sm font-medium text-slate-900 dark:text-white">
+          {path.casePrompt}
+        </p>
+        <ul className="mt-4 space-y-2">
+          {path.caseOptions.map((option, index) => {
+            const isPicked = pickedIndex === index;
+            let optionClass =
+              "border-slate-200 bg-slate-50 hover:border-teal-400 hover:bg-teal-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-teal-500 dark:hover:bg-teal-950/40";
+            if (answered) {
+              if (option.correct) {
+                optionClass =
+                  "border-teal-500 bg-teal-50 ring-2 ring-teal-300/50 dark:border-teal-400 dark:bg-teal-950/50 dark:ring-teal-700";
+              } else if (isPicked) {
+                optionClass =
+                  "border-rose-400 bg-rose-50 ring-2 ring-rose-200/60 dark:border-rose-500 dark:bg-rose-950/40 dark:ring-rose-800";
+              } else {
+                optionClass =
+                  "border-slate-200 bg-slate-50 opacity-55 dark:border-slate-700 dark:bg-slate-800";
+              }
+            } else if (isPicked) {
+              optionClass =
+                "border-teal-500 bg-teal-50 ring-2 ring-teal-300/40 dark:border-teal-400 dark:bg-teal-950/40";
+            }
+            return (
+              <li key={option.label}>
+                <button
+                  type="button"
+                  disabled={answered}
+                  onClick={() => setPickedIndex(index)}
+                  className={`w-full rounded-xl border px-4 py-3 text-left text-sm leading-snug text-slate-800 transition disabled:cursor-default dark:text-slate-100 ${optionClass}`}
+                >
+                  {option.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {answered && (
+          <div
+            className={`mt-4 rounded-xl px-4 py-3 text-center text-sm leading-relaxed ${
+              pickedCorrect
+                ? "bg-teal-100/80 text-teal-950 dark:bg-teal-950/50 dark:text-teal-100"
+                : "bg-rose-100/80 text-rose-950 dark:bg-rose-950/40 dark:text-rose-100"
+            }`}
           >
-            Voir la correction expliquée
-          </button>
-        ) : (
-          <p className="mt-4 text-center text-sm leading-relaxed text-emerald-900 dark:text-emerald-100">
-            {path.caseCorrection}
-          </p>
+            <p className="font-semibold">
+              {pickedCorrect ? "Bonne décision." : "Pas celle-là — voici pourquoi."}
+            </p>
+            <p className="mt-1.5">{path.caseCorrection}</p>
+          </div>
         )}
       </div>
 
-      {caseRevealed && (
+      {answered && (
         <div className="space-y-4">
-          <div className="rounded-2xl border-2 border-blue-300 bg-blue-50 px-5 py-4 text-center dark:border-blue-600 dark:bg-blue-950/40">
-            <p className="text-center text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+          <div className="rounded-2xl border-2 border-teal-300 bg-teal-50 px-5 py-4 text-center dark:border-teal-600 dark:bg-teal-950/40">
+            <p className="text-center text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">
               Idée d&apos;usage IA
             </p>
             <p className="mt-2 text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
@@ -2399,7 +2442,7 @@ function CareerScreen({
               <button
                 type="button"
                 onClick={() => onSelect(path.id)}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
+                className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-700"
               >
                 Valider le parcours
                 <Check className="h-4 w-4" />
@@ -2407,7 +2450,7 @@ function CareerScreen({
             </div>
           )}
           {selected === path.id && (
-            <p className="text-center text-sm font-medium text-emerald-700 dark:text-emerald-300">
+            <p className="text-center text-sm font-medium text-teal-700 dark:text-teal-300">
               Parcours validé — la carte est verte sur l&apos;accueil.
             </p>
           )}

@@ -41,7 +41,7 @@ const features = [
       "Modules après le socle",
       "Cas concrets par métier",
       "Consignes adaptées aux usages",
-      "Modules sur mesure, à la demande",
+      "Option : module rédigé pour votre métier",
     ],
     preview: "admin" as const,
   },
