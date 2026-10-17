@@ -93,7 +93,7 @@ export default function UserApp() {
               href="/"
               className="hidden shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 sm:flex dark:text-white"
             >
-              Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
               <GraduationCap
                 className="h-5 w-5 text-blue-600 dark:text-blue-400"
                 strokeWidth={2}

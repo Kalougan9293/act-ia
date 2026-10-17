@@ -78,7 +78,7 @@ export default function InvitationPage() {
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-1.5 font-bold text-lg tracking-tight">
-            Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+            Start<span className="text-blue-600 dark:text-blue-400">IA</span>
             <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
           </Link>
           <ThemeToggle />

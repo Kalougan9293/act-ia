@@ -1,6 +1,15 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -14,29 +23,45 @@ import {
   RotateCw,
   User,
   Video,
+  X,
 } from "lucide-react";
 import VideoScript from "@/components/user/VideoScript";
+import { withLexiconTips } from "@/components/user/LexiconTip";
 import type { Activity, ActivityChoice } from "@/lib/formation/activity";
 
 function Feedback({ text }: { text: string }) {
+  const long = text.length > 160 || text.includes("\n");
   return (
-    <div className="rounded-2xl border-2 border-blue-400 bg-blue-50 px-6 py-6 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60">
+    <div
+      className={`w-full rounded-2xl border-2 border-blue-400 bg-blue-50 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60 ${
+        long ? "px-4 py-3.5" : "px-6 py-6"
+      }`}
+    >
       <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
         À retenir
       </p>
-      <p className="mt-3 text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white">
-        {text}
+      <p
+        className={`mt-2 font-semibold text-slate-900 dark:text-white hyphens-none whitespace-pre-line ${
+          long
+            ? "text-justify text-[15px] leading-snug sm:text-base"
+            : "mt-3 text-center text-lg leading-relaxed sm:text-xl"
+        }`}
+      >
+        {withLexiconTips(text)}
       </p>
     </div>
   );
 }
 
-/** Feedback Oui/Non selon la réponse (les textes stockés commencent souvent par « Oui »). */
-function matchFeedback(right: boolean, explanation: string) {
+/** Feedback feux : en cas d'erreur, annonce la couleur attendue puis l'explication. */
+function trafficFeedback(
+  right: boolean,
+  level: "green" | "orange" | "red",
+  explanation: string,
+) {
   if (right) return explanation;
-  const stripped = explanation.replace(/^(Oui|Vrai|Faux)[,.]?\s*/i, "").trim();
-  if (!stripped) return "Non.";
-  return `Non. ${stripped.charAt(0).toUpperCase()}${stripped.slice(1)}`;
+  const color = level === "green" ? "VERT" : level === "orange" ? "ORANGE" : "ROUGE";
+  return `Non, la bonne réponse est ${color}. ${explanation}`;
 }
 
 function SceneFrame({
@@ -48,7 +73,7 @@ function SceneFrame({
   hideIcon = false,
   children,
 }: {
-  badge: string;
+  badge?: string;
   badgeTone: string;
   icon: LucideIcon;
   iconTone: string;
@@ -58,14 +83,16 @@ function SceneFrame({
 }) {
   return (
     <div className={`relative overflow-hidden rounded-3xl border-2 px-5 py-7 shadow-md sm:px-7 sm:py-8 ${shell}`}>
-      <div className="mb-5 flex items-center justify-center">
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wide uppercase ${badgeTone}`}
-        >
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white/90" />
-          {badge}
-        </span>
-      </div>
+      {badge ? (
+        <div className="mb-5 flex items-center justify-center">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wide uppercase ${badgeTone}`}
+          >
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white/90" />
+            {badge}
+          </span>
+        </div>
+      ) : null}
       {!hideIcon && (
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-white/70 bg-white/70 shadow-sm dark:border-white/10 dark:bg-slate-950/40">
           <Icon className={`h-7 w-7 ${iconTone}`} />
@@ -183,9 +210,49 @@ function TextActivity({
               key={paragraph}
               className="text-center text-[1.125rem] leading-8 text-slate-800 [font-family:var(--font-reading),Georgia,serif] dark:text-slate-100 sm:leading-9"
             >
-              {paragraph}
+              {withLexiconTips(paragraph)}
             </p>
           ))}
+          {activity.beforeAfter && (
+            <div className="mx-auto mt-6 grid w-full max-w-xl gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4 dark:border-slate-700 dark:bg-slate-950/40">
+                <p className="text-center text-[11px] font-bold tracking-[0.14em] text-blue-700 uppercase dark:text-blue-300">
+                  {activity.beforeAfter.beforeTitle}
+                </p>
+                <ol className="mt-3 space-y-2.5">
+                  {activity.beforeAfter.before.map((item, index) => (
+                    <li
+                      key={item}
+                      className="text-center text-sm leading-snug text-slate-800 dark:text-slate-100"
+                    >
+                      <span className="mr-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                        {index + 1}.
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4 dark:border-slate-700 dark:bg-slate-950/40">
+                <p className="text-center text-[11px] font-bold tracking-[0.14em] text-emerald-700 uppercase dark:text-emerald-300">
+                  {activity.beforeAfter.afterTitle}
+                </p>
+                <ol className="mt-3 space-y-2.5">
+                  {activity.beforeAfter.after.map((item, index) => (
+                    <li
+                      key={item}
+                      className="text-center text-sm leading-snug text-slate-800 dark:text-slate-100"
+                    >
+                      <span className="mr-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        {activity.beforeAfter!.before.length + index + 1}.
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          )}
           {activity.points && (
             <ul className="mt-8 space-y-3">
               {activity.points.map((point) => (
@@ -339,10 +406,330 @@ const BUBBLE_COLORS = [
   "border-lime-300 bg-lime-200 text-lime-950",
   "border-emerald-300 bg-emerald-200 text-emerald-950",
   "border-cyan-300 bg-cyan-200 text-cyan-950",
-  "border-sky-300 bg-sky-200 text-sky-950",
+  "border-indigo-400 bg-indigo-300 text-indigo-950",
   "border-violet-300 bg-violet-200 text-violet-950",
   "border-fuchsia-300 bg-fuchsia-200 text-fuchsia-950",
 ];
+
+/** Teinte « diluée » du liquide dans les tubes (même ordre que BUBBLE_COLORS). */
+const TUBE_LIQUID_COLORS = [
+  "rgba(251, 113, 133, 0.55)", // rose
+  "rgba(251, 146, 60, 0.55)", // orange
+  "rgba(251, 191, 36, 0.55)", // amber
+  "rgba(163, 230, 53, 0.5)", // lime
+  "rgba(52, 211, 153, 0.5)", // emerald
+  "rgba(34, 211, 238, 0.5)", // cyan
+  "rgba(129, 140, 248, 0.55)", // indigo
+  "rgba(167, 139, 250, 0.55)", // violet
+  "rgba(232, 121, 249, 0.55)", // fuchsia
+];
+
+function lineHitsRect(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  rect: DOMRect,
+) {
+  const left = rect.left;
+  const right = rect.right;
+  const top = rect.top;
+  const bottom = rect.bottom;
+  const minX = Math.min(x1, x2);
+  const maxX = Math.max(x1, x2);
+  const minY = Math.min(y1, y2);
+  const maxY = Math.max(y1, y2);
+  if (maxX < left || minX > right || maxY < top || minY > bottom) return false;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  if (dx === 0 && dy === 0) {
+    return x1 >= left && x1 <= right && y1 >= top && y1 <= bottom;
+  }
+  const points = [
+    [left, top],
+    [right, top],
+    [left, bottom],
+    [right, bottom],
+  ] as const;
+  for (const [px, py] of points) {
+    const t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
+    if (t >= 0 && t <= 1) {
+      const qx = x1 + t * dx;
+      const qy = y1 + t * dy;
+      if (qx >= left - 2 && qx <= right + 2 && qy >= top - 2 && qy <= bottom + 2) return true;
+    }
+  }
+  const edges: [number, number, number, number][] = [
+    [left, top, right, top],
+    [right, top, right, bottom],
+    [right, bottom, left, bottom],
+    [left, bottom, left, top],
+  ];
+  for (const [ax, ay, bx, by] of edges) {
+    const den = (x1 - x2) * (ay - by) - (y1 - y2) * (ax - bx);
+    if (den === 0) continue;
+    const t = ((x1 - ax) * (ay - by) - (y1 - ay) * (ax - bx)) / den;
+    const u = -((x1 - x2) * (y1 - ay) - (y1 - y2) * (x1 - ax)) / den;
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return true;
+  }
+  return (
+    (x1 >= left && x1 <= right && y1 >= top && y1 <= bottom) ||
+    (x2 >= left && x2 <= right && y2 >= top && y2 <= bottom)
+  );
+}
+
+function SlashActivity({
+  activity,
+  onReady,
+}: {
+  activity: Extract<Activity, { kind: "slash" }>;
+  onReady: () => void;
+}) {
+  const items = activity.items;
+  const personalTotal = items.filter((item) => item.personal).length;
+  const [cutOk, setCutOk] = useState<string[]>([]);
+  const [cutBad, setCutBad] = useState<string[]>([]);
+  const [toast, setToast] = useState<"bravo" | "erreur" | null>(null);
+  const [trail, setTrail] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(
+    null,
+  );
+  const arenaRef = useRef<HTMLDivElement>(null);
+  const bubbleRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const strokeRef = useRef<{ x: number; y: number } | null>(null);
+  const toastTimer = useRef<number | null>(null);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
+
+  const remaining = personalTotal - cutOk.length;
+  const done = remaining <= 0;
+
+  const bubbleLooks = useMemo(() => {
+    const tones = [
+      "border-sky-400 bg-sky-300 text-sky-950",
+      "border-amber-400 bg-amber-300 text-amber-950",
+      "border-violet-400 bg-violet-300 text-violet-950",
+      "border-rose-400 bg-rose-300 text-rose-950",
+      "border-lime-400 bg-lime-300 text-lime-950",
+      "border-cyan-400 bg-cyan-300 text-cyan-950",
+      "border-fuchsia-400 bg-fuchsia-300 text-fuchsia-950",
+      "border-orange-400 bg-orange-300 text-orange-950",
+      "border-teal-400 bg-teal-300 text-teal-950",
+      "border-indigo-400 bg-indigo-300 text-indigo-950",
+    ];
+    /** Grille espacée (~3×4) : compacte mais sans chevauchement. */
+    const slots = [
+      { left: 4, top: 4 },
+      { left: 36, top: 2 },
+      { left: 68, top: 6 },
+      { left: 14, top: 28 },
+      { left: 48, top: 26 },
+      { left: 76, top: 32 },
+      { left: 2, top: 52 },
+      { left: 34, top: 54 },
+      { left: 66, top: 50 },
+      { left: 20, top: 76 },
+    ];
+    const order = items.map((_, index) => index);
+    for (let i = order.length - 1; i > 0; i--) {
+      const seed = items[i]!.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), i * 17);
+      const j = seed % (i + 1);
+      const tmp = order[i]!;
+      order[i] = order[j]!;
+      order[j] = tmp;
+    }
+    return items.map((item, index) => {
+      const slot = slots[order[index] % slots.length]!;
+      const jitter = item.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+      return {
+        left: Math.min(78, Math.max(2, slot.left + (jitter % 3) - 1)),
+        top: Math.min(78, Math.max(2, slot.top + (jitter % 3) - 1)),
+        delay: `${(jitter % 9) * 0.22}s`,
+        tone: tones[index % tones.length]!,
+      };
+    });
+  }, [items]);
+
+  useEffect(() => {
+    if (done) onReadyRef.current();
+  }, [done]);
+
+  function flash(kind: "bravo" | "erreur") {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    setToast(kind);
+    toastTimer.current = window.setTimeout(() => setToast(null), 700);
+  }
+
+  function applySlash(x1: number, y1: number, x2: number, y2: number) {
+    const dist = Math.hypot(x2 - x1, y2 - y1);
+    if (dist < 36) return;
+    let hitPersonal: string | null = null;
+    let hitOther: string | null = null;
+    for (const item of items) {
+      if (cutOk.includes(item.id) || cutBad.includes(item.id)) continue;
+      const el = bubbleRefs.current[item.id];
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      if (!lineHitsRect(x1, y1, x2, y2, rect)) continue;
+      if (item.personal) hitPersonal = item.id;
+      else hitOther = item.id;
+    }
+    if (hitPersonal) {
+      setCutOk((current) => (current.includes(hitPersonal!) ? current : [...current, hitPersonal!]));
+      flash("bravo");
+      return;
+    }
+    if (hitOther) {
+      setCutBad((current) => (current.includes(hitOther!) ? current : [...current, hitOther!]));
+      flash("erreur");
+    }
+  }
+
+  function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (done) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    strokeRef.current = { x: event.clientX, y: event.clientY };
+    setTrail({ x1: event.clientX, y1: event.clientY, x2: event.clientX, y2: event.clientY });
+  }
+
+  function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    if (!strokeRef.current) return;
+    setTrail({
+      x1: strokeRef.current.x,
+      y1: strokeRef.current.y,
+      x2: event.clientX,
+      y2: event.clientY,
+    });
+  }
+
+  function onPointerUp(event: ReactPointerEvent<HTMLDivElement>) {
+    if (!strokeRef.current) return;
+    applySlash(strokeRef.current.x, strokeRef.current.y, event.clientX, event.clientY);
+    strokeRef.current = null;
+    window.setTimeout(() => setTrail(null), 120);
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl -mt-3 sm:-mt-4">
+      <p className="mb-1.5 text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
+        Coupez d&apos;un geste vif de bas en haut ou haut en bas !
+      </p>
+      <p className="mb-3 text-center text-sm font-bold text-blue-700 dark:text-blue-300">
+        {done
+          ? "Terminé"
+          : remaining === 1
+            ? "Plus que 1"
+            : `Plus que ${remaining}`}
+      </p>
+      <div
+        ref={arenaRef}
+        className="relative h-[28rem] w-full touch-none select-none overflow-hidden rounded-3xl border-2 border-slate-200 bg-gradient-to-b from-indigo-50 via-sky-50 to-emerald-50 dark:border-slate-600 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/40 sm:h-[30rem]"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        {items.map((item, index) => {
+          const look = bubbleLooks[index]!;
+          const ok = cutOk.includes(item.id);
+          const bad = cutBad.includes(item.id);
+          const severed = ok || bad;
+          const tone = ok
+            ? "border-emerald-500 bg-emerald-400 text-emerald-950"
+            : bad
+              ? "border-red-500 bg-red-400 text-red-950"
+              : look.tone;
+          if (severed) {
+            return (
+              <div
+                key={item.id}
+                className="pointer-events-none absolute z-10 max-w-[8.75rem] sm:max-w-[9.5rem]"
+                style={{ left: `${look.left}%`, top: `${look.top}%` }}
+                aria-hidden
+              >
+                <div className="relative">
+                  <span className="slash-impact-line absolute inset-y-[-4px] left-1/2 z-20 w-0.5 -translate-x-1/2 rotate-[-28deg] bg-white shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
+                  <div className="slash-half-left absolute left-0 top-0 w-1/2 overflow-hidden">
+                    <div
+                      className={`w-[200%] rounded-2xl border-2 border-r-0 px-2 py-1.5 text-center text-[10px] font-bold leading-tight shadow-md sm:px-2.5 sm:py-2 sm:text-[11px] ${tone}`}
+                    >
+                      {item.label}
+                    </div>
+                  </div>
+                  <div className="slash-half-right absolute right-0 top-0 w-1/2 overflow-hidden">
+                    <div
+                      className={`-ml-[100%] w-[200%] rounded-2xl border-2 border-l-0 px-2 py-1.5 text-center text-[10px] font-bold leading-tight shadow-md sm:px-2.5 sm:py-2 sm:text-[11px] ${tone}`}
+                    >
+                      {item.label}
+                    </div>
+                  </div>
+                  <div
+                    className={`invisible rounded-2xl border-2 px-2 py-1.5 text-center text-[10px] font-bold leading-tight sm:px-2.5 sm:py-2 sm:text-[11px] ${tone}`}
+                  >
+                    {item.label}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return (
+            <button
+              key={item.id}
+              type="button"
+              ref={(el) => {
+                bubbleRefs.current[item.id] = el;
+              }}
+              className={`slash-bubble-float absolute z-10 max-w-[8.75rem] rounded-2xl border-2 px-2 py-1.5 text-center text-[10px] font-bold leading-tight shadow-md transition sm:max-w-[9.5rem] sm:px-2.5 sm:py-2 sm:text-[11px] ${tone}`}
+              style={{
+                left: `${look.left}%`,
+                top: `${look.top}%`,
+                animationDelay: look.delay,
+                pointerEvents: "none",
+              }}
+              tabIndex={-1}
+              aria-hidden
+            >
+              {item.label}
+            </button>
+          );
+        })}
+        {trail && arenaRef.current && (
+          <svg className="pointer-events-none absolute inset-0 z-20 h-full w-full" aria-hidden>
+            <line
+              x1={trail.x1 - arenaRef.current.getBoundingClientRect().left}
+              y1={trail.y1 - arenaRef.current.getBoundingClientRect().top}
+              x2={trail.x2 - arenaRef.current.getBoundingClientRect().left}
+              y2={trail.y2 - arenaRef.current.getBoundingClientRect().top}
+              stroke="rgb(37 99 235)"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          </svg>
+        )}
+        {toast && (
+          <div
+            className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${
+              toast === "bravo" ? "text-emerald-600" : "text-red-600"
+            }`}
+          >
+            <span className="rounded-full bg-white/95 px-5 py-2 text-2xl font-extrabold shadow-lg dark:bg-slate-900/95">
+              {toast === "bravo" ? "Bravo !" : "Erreur !"}
+            </span>
+          </div>
+        )}
+      </div>
+      {done && (
+        <div className="mt-4 w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-5 py-4 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60">
+          <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+            À retenir
+          </p>
+          <p className="mt-2 whitespace-pre-line text-center text-[15px] font-semibold leading-relaxed text-slate-900 sm:text-base dark:text-white">
+            {withLexiconTips(activity.takeaway)}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SortActivity({
   activity,
@@ -352,11 +739,33 @@ function SortActivity({
   onReady: () => void;
 }) {
   const [placed, setPlaced] = useState<Record<string, string>>({});
+  /** Ordre de dépôt des pastilles (étages de liquide du bas vers le haut). */
+  const [dropOrder, setDropOrder] = useState<string[]>([]);
+  const [splash, setSplash] = useState<{ binId: string; color: string; key: number } | null>(
+    null,
+  );
   const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null);
   const [overBin, setOverBin] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
   const binRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const dragId = useRef<string | null>(null);
+  const splashTimer = useRef<number | null>(null);
+
+  function liquidColorFor(cardId: string) {
+    const index = activity.cards.findIndex((card) => card.id === cardId);
+    if (index < 0) return TUBE_LIQUID_COLORS[0]!;
+    return TUBE_LIQUID_COLORS[index % TUBE_LIQUID_COLORS.length]!;
+  }
+
+  function triggerSplash(binId: string, cardId: string) {
+    if (splashTimer.current) window.clearTimeout(splashTimer.current);
+    const color = liquidColorFor(cardId);
+    const key = Date.now();
+    setSplash({ binId, color, key });
+    splashTimer.current = window.setTimeout(() => {
+      setSplash((current) => (current?.key === key ? null : current));
+    }, 650);
+  }
   const allPlaced = activity.cards.every((card) => placed[card.id]);
   const draggingCard = activity.cards.find((card) => card.id === drag?.id);
   const row3 = activity.bins.length === 3;
@@ -375,6 +784,7 @@ function SortActivity({
 
   function startDrag(event: React.PointerEvent, cardId: string) {
     if (checked) return;
+    event.preventDefault();
     const pointerId = event.pointerId;
     const startX = event.clientX;
     const startY = event.clientY;
@@ -384,15 +794,9 @@ function SortActivity({
       if (moveEvent.pointerId !== pointerId) return;
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
-      if (!dragging) {
-        if (Math.hypot(dx, dy) < 8) return;
-        if (Math.abs(dy) > Math.abs(dx)) {
-          cleanup();
-          return;
-        }
-        dragging = true;
-        dragId.current = cardId;
-      }
+      if (!dragging && Math.hypot(dx, dy) < 8) return;
+      dragging = true;
+      dragId.current = cardId;
       moveEvent.preventDefault();
       setDrag({ id: cardId, x: moveEvent.clientX, y: moveEvent.clientY });
       setOverBin(hitBin(moveEvent.clientX, moveEvent.clientY));
@@ -402,12 +806,32 @@ function SortActivity({
       if (upEvent.pointerId !== pointerId) return;
       if (dragging && dragId.current) {
         const bin = hitBin(upEvent.clientX, upEvent.clientY);
+        /** Tubes (2 bacs) : max 4 pastilles — un 5ᵉ dépôt est ignoré, sans message. */
+        if (bin && !compact) {
+          const alreadyHere = placed[cardId] === bin;
+          const countInBin = activity.cards.filter(
+            (card) => card.id !== cardId && placed[card.id] === bin,
+          ).length;
+          if (!alreadyHere && countInBin >= 4) {
+            dragId.current = null;
+            setDrag(null);
+            setOverBin(null);
+            cleanup();
+            return;
+          }
+        }
+        const wasInBin = placed[cardId] === bin;
         setPlaced((current) => {
           const next = { ...current };
           if (bin) next[cardId] = bin;
           else delete next[cardId];
           return next;
         });
+        setDropOrder((current) => {
+          const without = current.filter((id) => id !== cardId);
+          return bin ? [...without, cardId] : without;
+        });
+        if (bin && !wasInBin) triggerSplash(bin, cardId);
       }
       dragId.current = null;
       setDrag(null);
@@ -418,12 +842,10 @@ function SortActivity({
     function cleanup() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-      window.removeEventListener("pointercancel", up);
     }
 
-    window.addEventListener("pointermove", move);
+    window.addEventListener("pointermove", move, { passive: false });
     window.addEventListener("pointerup", up);
-    window.addEventListener("pointercancel", up);
   }
 
   const guideCorrection = compact;
@@ -442,11 +864,11 @@ function SortActivity({
         : "border-red-900 bg-red-800 text-white"
       : BUBBLE_COLORS[index % BUBBLE_COLORS.length];
     const feedbackMotion =
-      checked && guideCorrection ? (right ? "sort-pop" : "sort-shake") : checked ? "sort-pop" : "";
-    return `touch-pan-y select-none border-2 text-center font-semibold shadow-sm transition ${
+      checked && guideCorrection ? (right ? "sort-pop" : "sort-shake") : "";
+    return `touch-none select-none border-2 text-center font-semibold shadow-sm transition ${
       compact
         ? "max-w-full rounded-xl px-1.5 py-1.5 text-[10px] leading-snug sm:px-2 sm:text-[11px]"
-        : "rounded-full px-3.5 py-2 text-xs"
+        : "max-w-[10.5rem] rounded-full px-3 py-1.5 text-xs leading-snug sm:max-w-[11.5rem] sm:px-3.5"
     } ${checked ? "cursor-default" : "cursor-grab active:cursor-grabbing"} ${tone} ${feedbackMotion}`;
   }
 
@@ -503,43 +925,134 @@ function SortActivity({
         {activity.instruction}
       </p>
       <div
-        className={`grid ${
-          row4
-            ? "grid-cols-4 gap-1.5 sm:gap-2"
-            : row3
-              ? "grid-cols-3 gap-1.5 sm:gap-2"
-              : "grid-cols-1 gap-3 sm:grid-cols-2"
-        }`}
+        className={
+          compact
+            ? `grid ${
+                row4
+                  ? "grid-cols-4 gap-1.5 sm:gap-2"
+                  : "grid-cols-3 gap-1.5 sm:gap-2"
+              }`
+            : checked
+              ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+              : "flex flex-wrap items-end justify-center gap-12 sm:gap-20"
+        }
       >
         {activity.bins.map((bin, binIndex) => {
           const tone = binTone(bin.id, binIndex);
           const hot = overBin === bin.id;
           const isTarget = targetBins.has(bin.id);
+          const fill = hot ? tone.over : tone.idle;
+          const cardsInBin = (
+            compact || checked ? activity.cards.filter((card) => placed[card.id] === bin.id) : []
+          ).map((card) => card.id);
+          const cardsInTube = dropOrder.filter((id) => placed[id] === bin.id);
+
+          if (compact) {
+            return (
+              <div
+                key={bin.id}
+                ref={(node) => {
+                  binRefs.current[bin.id] = node;
+                }}
+                className={`min-h-32 rounded-xl border-2 border-dashed p-1.5 transition sm:min-h-36 sm:rounded-2xl sm:p-2 ${fill} ${
+                  isTarget ? "sort-target border-emerald-500" : ""
+                }`}
+              >
+                <p
+                  className={`mb-1.5 text-center text-[10px] font-semibold uppercase leading-tight tracking-wide sm:text-[11px] ${tone.title}`}
+                >
+                  {bin.label}
+                </p>
+                <div className="flex flex-col items-center gap-1.5">
+                  {cardsInBin.map((cardId) => (
+                    <Bubble key={cardId} cardId={cardId} />
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          /** Après Vérifier : 2 rectangles neutres, uniquement vert/rouge + explications. */
+          if (checked) {
+            return (
+              <div
+                key={bin.id}
+                className="min-h-36 rounded-2xl border-2 border-slate-300 bg-slate-50 p-3 dark:border-slate-600 dark:bg-slate-900/40"
+              >
+                <p className="mb-3 text-center text-xs font-bold uppercase tracking-wide text-slate-700 dark:text-slate-200">
+                  {bin.label}
+                </p>
+                <div className="flex flex-col items-center gap-3">
+                  {cardsInBin.map((cardId) => (
+                    <Bubble key={cardId} cardId={cardId} />
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          const layerRem = 3.5;
+          const liquidHeight = cardsInTube.length * layerRem;
+          const showSplash = splash?.binId === bin.id;
           return (
             <div
               key={bin.id}
               ref={(node) => {
                 binRefs.current[bin.id] = node;
               }}
-              className={`border-2 border-dashed transition ${
-                compact
-                  ? "min-h-32 rounded-xl p-1.5 sm:min-h-36 sm:rounded-2xl sm:p-2"
-                  : "min-h-36 rounded-3xl p-3"
-              } ${hot ? tone.over : tone.idle} ${isTarget ? "sort-target border-emerald-500" : ""}`}
+              className={`relative flex h-[17rem] w-[11.5rem] flex-col items-center overflow-visible rounded-b-[3.25rem] border-2 border-t-0 pt-3 transition sm:h-[18.5rem] sm:w-[13rem] ${fill}`}
             >
+              {showSplash && splash && (
+                <div
+                  key={splash.key}
+                  aria-hidden
+                  className="pointer-events-none absolute left-1/2 z-20"
+                  style={{ bottom: `${liquidHeight}rem` }}
+                >
+                  {[
+                    { dx: -22, dy: -28, delay: 0 },
+                    { dx: -10, dy: -36, delay: 0.03 },
+                    { dx: 4, dy: -40, delay: 0.05 },
+                    { dx: 14, dy: -32, delay: 0.02 },
+                    { dx: 24, dy: -24, delay: 0.04 },
+                    { dx: -16, dy: -16, delay: 0.06 },
+                    { dx: 18, dy: -14, delay: 0.07 },
+                  ].map((drop, i) => (
+                    <span
+                      key={i}
+                      className="tube-splash-drop absolute left-0 top-0 rounded-full"
+                      style={{
+                        backgroundColor: splash.color,
+                        ["--splash-x" as string]: `${drop.dx}px`,
+                        ["--splash-y" as string]: `${drop.dy}px`,
+                        animationDelay: `${drop.delay}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-4 left-2.5 z-[1] w-1 rounded-full bg-white/50 dark:bg-white/15"
+              />
               <p
-                className={`text-center font-semibold uppercase tracking-wide ${
-                  compact ? "mb-1.5 text-[10px] leading-tight sm:text-[11px]" : "mb-3 text-xs"
-                } ${tone.title}`}
+                className={`relative z-[1] shrink-0 px-3 whitespace-nowrap text-center text-xs font-bold uppercase tracking-wide sm:px-3.5 sm:text-sm ${tone.title}`}
               >
                 {bin.label}
               </p>
-              <div className={`flex flex-col items-center ${compact ? "gap-1.5" : "gap-2"}`}>
-                {activity.cards
-                  .filter((card) => placed[card.id] === bin.id)
-                  .map((card) => (
-                    <Bubble key={card.id} cardId={card.id} />
-                  ))}
+              <div className="tube-liquid relative z-[1] mt-auto flex w-full flex-col-reverse overflow-hidden rounded-b-[3.15rem]">
+                {cardsInTube.map((cardId) => (
+                  <div
+                    key={cardId}
+                    className="tube-liquid-layer flex w-full shrink-0 flex-col items-center justify-center px-2"
+                    style={{
+                      height: `${layerRem}rem`,
+                      backgroundColor: liquidColorFor(cardId),
+                    }}
+                  >
+                    <Bubble cardId={cardId} />
+                  </div>
+                ))}
               </div>
             </div>
           );
@@ -790,7 +1303,7 @@ function scenarioSkin(prompt: string) {
   }
   return {
     Icon: MessageCircle,
-    badge: "Situation",
+    badge: "",
     shell:
       "border-blue-300 bg-gradient-to-b from-blue-100 via-white to-slate-50 dark:border-blue-800 dark:from-blue-950/50 dark:via-slate-900 dark:to-slate-950",
     badgeTone: "bg-blue-600 text-white",
@@ -798,11 +1311,225 @@ function scenarioSkin(prompt: string) {
   };
 }
 
+function TrueFakeAudioPanel({ src }: { src: string }) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const bars = [28, 48, 36, 62, 42, 70, 34, 56, 40, 64, 32, 50, 38, 58, 30, 46, 52, 36];
+
+  return (
+    <div className="flex aspect-video flex-col justify-between bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 px-5 py-4 text-white">
+      <div className="flex items-center gap-2">
+        <span className="relative flex h-2.5 w-2.5 shrink-0">
+          {playing ? (
+            <>
+              <span className="absolute inset-0 animate-ping rounded-full bg-rose-400 opacity-70" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-rose-500" />
+            </>
+          ) : (
+            <span className="relative h-2.5 w-2.5 rounded-full bg-slate-500" />
+          )}
+        </span>
+        <span className="text-xs font-semibold text-slate-200">Extrait voix</span>
+        <span className="ml-auto text-[11px] uppercase tracking-[0.14em] text-slate-400">
+          {playing ? "Lecture" : "Audio"}
+        </span>
+      </div>
+
+      <div
+        className={`flex h-20 items-center justify-center gap-[3px] px-2 ${playing ? "" : "opacity-55"}`}
+        aria-hidden
+      >
+        {bars.map((height, index) => (
+          <span
+            key={index}
+            className={`w-1 rounded-full bg-violet-400/90 ${playing ? "audio-bar" : ""}`}
+            style={{
+              height: `${height}%`,
+              animationDelay: playing ? `${index * 0.07}s` : undefined,
+              animationDuration: playing ? `${0.75 + (index % 4) * 0.12}s` : undefined,
+              transform: playing ? undefined : "scaleY(0.45)",
+              transformOrigin: "center",
+            }}
+          />
+        ))}
+      </div>
+
+      <audio
+        ref={audioRef}
+        className="w-full accent-violet-400"
+        controls
+        preload="metadata"
+        src={src}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+      >
+        Votre navigateur ne lit pas l&apos;audio.
+      </audio>
+    </div>
+  );
+}
+
+function TrueFakeActivity({
+  items,
+  outro,
+  onReady,
+}: {
+  items: {
+    id: string;
+    prompt: string;
+    mediaKind?: "video" | "audio";
+    mediaSrc?: string;
+    mediaPlaceholder: string;
+  }[];
+  outro: string;
+  onReady: () => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState<"real" | "fake" | null>(null);
+  const current = items[index];
+  if (!current) return null;
+  const answered = picked !== null;
+  const mediaKind =
+    current.mediaKind ??
+    (current.mediaSrc?.match(/\.(mp3|wav|ogg|m4a)(\?|$)/i) ? "audio" : "video");
+  // Peu importe le choix : on affiche toujours l'opposé comme « bonne » réponse.
+  const revealed = picked === "real" ? "fake" : picked === "fake" ? "real" : null;
+  const failMessage =
+    picked === "real"
+      ? "Non : c'était faux (généré par IA)."
+      : picked === "fake"
+        ? "Non : c'était vrai (réel)."
+        : "";
+
+  return (
+    <div className="space-y-5">
+      {items.length > 1 && (
+        <div className="flex justify-center gap-1.5">
+          {items.map((_, stepIndex) => (
+            <span
+              key={stepIndex}
+              className={`h-1.5 w-1.5 rounded-full ${
+                stepIndex < index
+                  ? "bg-rose-500"
+                  : stepIndex === index
+                    ? "bg-blue-500"
+                    : "bg-slate-300 dark:bg-slate-600"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-950/50">
+        {current.mediaSrc && mediaKind === "audio" ? (
+          <TrueFakeAudioPanel key={current.mediaSrc} src={current.mediaSrc} />
+        ) : current.mediaSrc ? (
+          <video
+            key={current.mediaSrc}
+            className="aspect-video w-full bg-black"
+            controls
+            playsInline
+            preload="metadata"
+            src={current.mediaSrc}
+          >
+            Votre navigateur ne lit pas la vidéo.
+          </video>
+        ) : (
+          <div className="flex aspect-video flex-col items-center justify-center gap-2 px-4 text-center">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              {current.mediaPlaceholder}
+            </p>
+            <p className="text-xs text-slate-400">
+              {mediaKind === "audio" ? "Voix à brancher" : "Vidéo à brancher"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <p className="mx-auto max-w-2xl text-center text-lg font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
+        {current.prompt}
+      </p>
+
+      <ul className="mx-auto grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+        {(
+          [
+            { id: "real" as const, label: "Vrai (réel)" },
+            { id: "fake" as const, label: "Faux (généré par IA)" },
+          ] as const
+        ).map((choice) => {
+          const selected = picked === choice.id;
+          const isRevealed = answered && revealed === choice.id;
+          const tone = answered
+            ? selected
+              ? "border-red-900 bg-red-800 font-semibold text-white"
+              : isRevealed
+                ? "border-emerald-700 bg-emerald-700 font-semibold text-white"
+                : "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+            : selected
+              ? "border-blue-400 bg-blue-50 text-slate-800 dark:bg-blue-950/30 dark:text-slate-100"
+              : "border-slate-200 bg-white text-slate-800 hover:border-blue-400 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-blue-500 dark:hover:bg-blue-950/40";
+          return (
+            <li key={choice.id}>
+              <button
+                type="button"
+                disabled={answered}
+                onClick={() => setPicked(choice.id)}
+                className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 px-4 py-4 text-center text-base transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:px-5 ${tone}`}
+              >
+                <span className="font-medium leading-snug">{choice.label}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      {answered && index < items.length - 1 && (
+        <>
+          <p className="mx-auto max-w-xl text-center text-base font-semibold text-red-800 dark:text-red-300">
+            {failMessage}
+          </p>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIndex((value) => value + 1);
+                setPicked(null);
+              }}
+              className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Suite
+            </button>
+          </div>
+        </>
+      )}
+      {answered && index === items.length - 1 && (
+        <>
+          <p className="mx-auto max-w-xl text-center text-base font-semibold text-red-800 dark:text-red-300">
+            {failMessage}
+          </p>
+          <Feedback text={outro} />
+          <ReadyOnce onReady={onReady} />
+        </>
+      )}
+    </div>
+  );
+}
+
 function ScenarioActivity({
   steps,
   onReady,
 }: {
-  steps: { prompt: string; choices: ActivityChoice[]; mediaSrc?: string; imageSrc?: string }[];
+  steps: {
+    prompt: string;
+    choices: ActivityChoice[];
+    mediaSrc?: string;
+    mediaLabel?: string;
+    imageSrc?: string;
+    imageSrcs?: string[];
+    imageAlt?: string;
+    imageCaption?: string;
+  }[];
   onReady: () => void;
 }) {
   const [index, setIndex] = useState(0);
@@ -810,12 +1537,20 @@ function ScenarioActivity({
   const current = steps[index];
   if (!current) return null;
   const answered = picked !== null;
+  const takeaway =
+    current.choices.find((choice) => choice.correct)?.explanation ??
+    (picked !== null ? current.choices[picked]?.explanation : undefined);
   const skin = scenarioSkin(current.prompt);
   const promptLower = current.prompt.toLowerCase();
   const isChatbot = promptLower.includes("chatbot");
   const isMeetingRec = promptLower.includes("enregistre") || promptLower.includes("résume la réunion");
   const isHiddenOrder = promptLower.includes("envoie les contrats");
-  const hasMedia = Boolean(current.mediaSrc || current.imageSrc);
+  const gallery = current.imageSrcs?.length
+    ? current.imageSrcs
+    : current.imageSrc
+      ? [current.imageSrc]
+      : [];
+  const hasMedia = Boolean(current.mediaSrc || gallery.length);
 
   return (
     <div className="space-y-5">
@@ -848,7 +1583,7 @@ function ScenarioActivity({
         {isMeetingRec && <MeetingRecPreview />}
         {isHiddenOrder && <HiddenInstructionPreview />}
         {current.mediaSrc && (
-          <div className="mx-auto mb-5 w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-black shadow-sm dark:border-slate-700">
+          <div className="relative mx-auto mb-5 w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-black shadow-sm dark:border-slate-700">
             <video
               key={current.mediaSrc}
               className="aspect-video w-full"
@@ -859,15 +1594,48 @@ function ScenarioActivity({
             >
               Votre navigateur ne lit pas la vidéo.
             </video>
+            {current.mediaLabel ? (
+              <span className="pointer-events-none absolute top-2 right-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-white/80 bg-black/35 backdrop-blur-[1px] sm:top-2.5 sm:right-2.5">
+                {current.mediaLabel}
+              </span>
+            ) : null}
           </div>
         )}
-        {current.imageSrc && (
-          <div className="mx-auto mb-5 w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700">
-            <img
-              src={current.imageSrc}
-              alt="Visio urgente : le directeur à l'écran demande un virement bancaire."
-              className="w-full"
-            />
+        {gallery.length > 0 && (
+          <div
+            className={
+              gallery.length === 1
+                ? "mx-auto mb-5 w-full max-w-[240px] space-y-2 sm:max-w-[280px]"
+                : "mx-auto mb-5 w-full max-w-[260px] space-y-1.5 sm:max-w-[280px]"
+            }
+          >
+            <div className={gallery.length === 1 ? "" : "grid grid-cols-3 gap-2"}>
+              {gallery.map((src, imageIndex) => (
+                <div
+                  key={src}
+                  className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700 sm:rounded-2xl"
+                >
+                  <img
+                    src={src}
+                    alt={
+                      current.imageAlt
+                        ? `${current.imageAlt} (${imageIndex + 1})`
+                        : `Illustration ${imageIndex + 1}`
+                    }
+                    className={
+                      gallery.length === 1
+                        ? "max-h-44 w-full object-contain bg-white sm:max-h-52"
+                        : "aspect-square w-full bg-white object-contain p-1"
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+            {current.imageCaption && (
+              <p className="text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                {current.imageCaption}
+              </p>
+            )}
           </div>
         )}
         <p className="mx-auto max-w-2xl text-center text-lg font-semibold leading-snug text-slate-900 dark:text-white sm:text-xl">
@@ -906,7 +1674,11 @@ function ScenarioActivity({
         })}
       </ul>
 
-      {answered && picked !== null && <Feedback text={current.choices[picked]!.explanation} />}
+      {answered && takeaway && (
+        <div className="mx-auto w-full max-w-2xl">
+          <Feedback text={takeaway} />
+        </div>
+      )}
 
       {answered && index < steps.length - 1 && (
         <div className="flex justify-center">
@@ -1053,7 +1825,7 @@ function PredictActivity({
           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{hint}</p>
         )}
         <p className="text-base font-bold leading-snug text-slate-900 dark:text-white sm:text-lg">
-          {round.lead}
+          «&nbsp;{round.lead}&nbsp;»
         </p>
       </div>
       <ul className="mx-auto grid w-full max-w-lg gap-2">
@@ -1098,7 +1870,7 @@ function PredictActivity({
       {open && (
         <>
           <p className="mx-auto max-w-lg text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            Ce pourcentage n&apos;est pas un chiffre de votre entreprise. Il dit seulement quelle suite est la plus courante.
+            Ce pourcentage, c&apos;est la probabilité que l&apos;IA choisisse cette suite. Plus ce pourcentage est haut, plus cette suite est courante.
           </p>
           <Feedback text={round.message} />
           {!finished && !last && (
@@ -1136,13 +1908,14 @@ function SpotActivity({
   const [picked, setPicked] = useState<string[]>([]);
   const [checked, setChecked] = useState(false);
   const traps = activity.fragments.filter((fragment) => fragment.trap);
+  const takeaways = traps.filter((trap) => trap.explanation);
   return (
-    <div className="space-y-5">
-      <p className="mx-auto max-w-lg text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+    <div className="mx-auto w-full max-w-3xl space-y-5">
+      <p className="text-justify text-base font-semibold leading-snug text-slate-900 dark:text-white">
         {activity.intro}
       </p>
-      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-5 dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-center text-sm leading-8 text-slate-800 dark:text-slate-100">
+      <div className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-5 dark:border-slate-700 dark:bg-slate-900">
+        <p className="text-justify text-sm leading-8 text-slate-800 dark:text-slate-100 sm:text-[15px]">
           {activity.fragments.map((fragment, index) => {
             const on = picked.includes(fragment.id);
             const text = fragment.text.trim();
@@ -1150,6 +1923,7 @@ function SpotActivity({
             const found = checked && fragment.trap && on;
             const missed = checked && fragment.trap && !on;
             const extra = checked && !fragment.trap && on;
+            const veiled = Boolean(fragment.veiled) && !checked && !on;
             const tone = checked
               ? found
                 ? "rounded bg-emerald-500 px-0.5 font-semibold text-white"
@@ -1160,7 +1934,9 @@ function SpotActivity({
                     : ""
               : on
                 ? "rounded bg-slate-200 px-0.5 dark:bg-slate-700"
-                : "rounded px-0.5 hover:bg-slate-100 dark:hover:bg-slate-800";
+                : veiled
+                  ? "rounded px-0.5 text-[11px] text-slate-200 hover:text-slate-400 dark:text-slate-700 dark:hover:text-slate-500"
+                  : "rounded px-0.5 hover:bg-slate-100 dark:hover:bg-slate-800";
             return (
               <Fragment key={fragment.id}>
                 {gap}
@@ -1193,15 +1969,18 @@ function SpotActivity({
           })}
         </p>
       </div>
-      {checked && (
-        <div className="mx-auto flex max-w-lg flex-col gap-2">
-          {traps.map((trap) => (
+      {checked && takeaways.length > 0 && (
+        <div className="flex w-full flex-col gap-2">
+          {takeaways.map((trap) => (
             <div
               key={trap.id}
-              className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-center dark:border-emerald-700 dark:bg-emerald-950/40"
+              className="w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-4 py-3.5 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60"
             >
-              <p className="text-center text-sm font-medium text-emerald-900 dark:text-emerald-100">
-                {trap.explanation}
+              <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+                À retenir
+              </p>
+              <p className="mt-2 text-justify text-[15px] font-semibold leading-snug text-slate-900 sm:text-base dark:text-white">
+                {withLexiconTips(trap.explanation!)}
               </p>
             </div>
           ))}
@@ -1241,13 +2020,24 @@ function RedactActivity({
         {activity.intro}
       </p>
       <div className="rounded-2xl border border-slate-200 bg-white px-5 py-5 dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-center text-sm leading-8">
+        <p className="text-center text-sm leading-8 text-slate-800 dark:text-slate-100">
           {activity.tokens.map((token, index) => {
             const on = hidden.includes(token.id);
-            const good = checked && token.redact && on;
+            const found = checked && token.redact && on;
             const missed = checked && token.redact && !on;
             const extra = checked && !token.redact && on;
             const replacement = token.replacement;
+            const tone = checked
+              ? found
+                ? "rounded bg-emerald-500 px-0.5 font-semibold text-white"
+                : missed
+                  ? "rounded bg-red-600 px-0.5 font-semibold text-white"
+                  : extra
+                    ? "rounded bg-red-200 px-0.5 font-semibold text-red-900 line-through"
+                    : ""
+              : on
+                ? "rounded bg-slate-200 px-0.5 dark:bg-slate-700"
+                : "rounded px-0.5 hover:bg-slate-100 dark:hover:bg-slate-800";
             return (
               <Fragment key={token.id}>
                 {index > 0 ? " " : null}
@@ -1261,24 +2051,14 @@ function RedactActivity({
                         : [...current, token.id],
                     );
                   }}
-                  className={`inline rounded px-0.5 py-0.5 font-medium transition ${
-                    checked
-                      ? good
-                        ? "bg-emerald-100 font-semibold text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100"
-                        : missed
-                          ? "bg-red-600 font-semibold text-white"
-                          : extra
-                            ? "bg-red-200 font-semibold text-red-900 line-through"
-                            : "text-slate-700 dark:text-slate-200"
-                      : on
-                        ? "bg-amber-100 text-slate-700 dark:bg-amber-950/50 dark:text-amber-50"
-                        : "text-slate-800 hover:bg-slate-100 dark:text-slate-100 dark:hover:bg-slate-800"
-                  }`}
+                  className={`inline cursor-pointer transition ${tone}`}
                 >
-                  {on && token.redact ? (
+                  {found ? (
                     <>
-                      <span className="line-through opacity-60">{token.text}</span>
-                      {replacement ? <span className="ml-1 no-underline opacity-100">{replacement}</span> : null}
+                      <span className="line-through opacity-70">{token.text}</span>
+                      {replacement ? (
+                        <span className="ml-1 no-underline">{replacement}</span>
+                      ) : null}
                     </>
                   ) : (
                     token.text
@@ -1294,11 +2074,12 @@ function RedactActivity({
         <div className="flex justify-center">
           <button
             type="button"
+            disabled={hidden.length === 0}
             onClick={() => {
               setChecked(true);
               onReady();
             }}
-            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-blue-700 disabled:opacity-40"
           >
             Vérifier
           </button>
@@ -1308,29 +2089,46 @@ function RedactActivity({
   );
 }
 
+/** Ordre d'affichage du feu : rouge en haut, vert en bas (traditionnel). */
 const TRAFFIC_LEVELS = [
   {
-    id: "green",
-    label: "Vert",
-    hint: "OK, usage courant",
-    idle: "border-emerald-400 bg-emerald-100 text-emerald-950 hover:bg-emerald-200 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-100 dark:hover:bg-emerald-900 dark:hover:text-emerald-50",
-    active: "border-emerald-600 bg-emerald-500 text-white",
+    id: "red",
+    label: "Stop",
+    hint: "Rouge",
+    lamp: "bg-red-500",
+    lampDim: "bg-red-900/35",
+    ring: "ring-red-400",
   },
   {
     id: "orange",
-    label: "Orange",
-    hint: "L'IA aide, l'humain décide",
-    idle: "border-orange-400 bg-orange-100 text-orange-950 hover:bg-orange-200 dark:border-orange-500 dark:bg-orange-950/50 dark:text-orange-100 dark:hover:bg-orange-900 dark:hover:text-orange-50",
-    active: "border-orange-600 bg-orange-500 text-white",
+    label: "Prudence",
+    hint: "Orange",
+    lamp: "bg-orange-500",
+    lampDim: "bg-orange-900/35",
+    ring: "ring-orange-400",
   },
   {
-    id: "red",
-    label: "Rouge",
-    hint: "On s'arrête",
-    idle: "border-red-400 bg-red-100 text-red-950 hover:bg-red-200 dark:border-red-500 dark:bg-red-950/50 dark:text-red-100 dark:hover:bg-red-900 dark:hover:text-red-50",
-    active: "border-red-600 bg-red-500 text-white",
+    id: "green",
+    label: "OK",
+    hint: "Vert",
+    lamp: "bg-emerald-500",
+    lampDim: "bg-emerald-900/35",
+    ring: "ring-emerald-400",
   },
 ] as const;
+
+const TRAFFIC_LANE =
+  "M -5 72 C 15 62, 28 82, 42 70 S 62 52, 72 68 S 88 84, 105 64";
+const TRAFFIC_ARRIVE_MS = 1850;
+const TRAFFIC_LEAVE_MS = 1200;
+/** Stop avant le feu (feu ≈ 54–55 % de largeur). */
+const TRAFFIC_STOP_X = 44;
+/** Empattement approximatif (centres des roues) selon la largeur CSS de la voiture. */
+function trafficWheelbasePx(sceneWidth: number) {
+  const carW = sceneWidth >= 640 ? 128 : 112; // w-28 / sm:w-32
+  const wheelInset = 6 + 6; // px-1.5 + moitié de w-3
+  return carW - 2 * wheelInset;
+}
 
 function TrafficActivity({
   items,
@@ -1340,27 +2138,134 @@ function TrafficActivity({
   onReady: () => void;
 }) {
   const [cursor, setCursor] = useState(0);
+  const [phase, setPhase] = useState<"arrive" | "choose" | "result" | "leave">("arrive");
   const [picked, setPicked] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
+  const [pose, setPose] = useState({ x: -5, y: 72, angle: 0 });
+  const pathRef = useRef<SVGPathElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const lastRef = useRef(false);
+  const onReadyRef = useRef(onReady);
   const item = items[cursor];
-  const revealed = picked !== null;
-  const right = revealed && item ? picked === item.level : false;
   const last = cursor >= items.length - 1;
+  const right = picked !== null && item ? picked === item.level : false;
+  lastRef.current = last;
+  onReadyRef.current = onReady;
 
-  function goNext() {
-    if (last) {
-      onReady();
-      setFinished(true);
+  useEffect(() => {
+    const path = pathRef.current;
+    const scene = sceneRef.current;
+    if (!path || !scene) return;
+    const total = path.getTotalLength();
+    const sceneW = scene.clientWidth || 1;
+    const sceneH = scene.clientHeight || 1;
+    const wheelbasePx = trafficWheelbasePx(sceneW);
+
+    /** Les 2 roues sur la ligne : corde entre essieu arrière et avant. */
+    function poseAt(rearDistance: number) {
+      const rearD = Math.max(0, Math.min(total, rearDistance));
+      const rear = path!.getPointAtLength(rearD);
+
+      let lo = rearD;
+      let hi = Math.min(total, rearD + total * 0.3);
+      for (let i = 0; i < 18; i++) {
+        const mid = (lo + hi) / 2;
+        const front = path!.getPointAtLength(mid);
+        const dist = Math.hypot(
+          ((front.x - rear.x) / 100) * sceneW,
+          ((front.y - rear.y) / 100) * sceneH,
+        );
+        if (dist < wheelbasePx) lo = mid;
+        else hi = mid;
+      }
+      const frontD = Math.min(total, (lo + hi) / 2);
+      const front = path!.getPointAtLength(frontD);
+      // Angle en pixels réels (la scène n'est pas carrée, contrairement au viewBox).
+      const dxPx = ((front.x - rear.x) / 100) * sceneW;
+      const dyPx = ((front.y - rear.y) / 100) * sceneH;
+      return {
+        x: (rear.x + front.x) / 2,
+        y: (rear.y + front.y) / 2,
+        angle: (Math.atan2(dyPx, dxPx) * 180) / Math.PI,
+      };
+    }
+
+    let stopDist = total * 0.42;
+    const step = Math.max(total / 300, 0.2);
+    for (let d = 0; d <= total; d += step) {
+      if (poseAt(d).x >= TRAFFIC_STOP_X) {
+        stopDist = d;
+        break;
+      }
+    }
+
+    if (phase === "choose" || phase === "result") {
+      setPose(poseAt(stopDist));
       return;
     }
-    setCursor((value) => value + 1);
-    setPicked(null);
+
+    const from = phase === "leave" ? stopDist : 0;
+    const maxRear = Math.max(0, total - total * 0.02);
+    const to = phase === "leave" ? maxRear : stopDist;
+    const duration = phase === "leave" ? TRAFFIC_LEAVE_MS : TRAFFIC_ARRIVE_MS;
+    let frame = 0;
+    const t0 = performance.now();
+
+    // Départ hors champ à gauche pour l'arrivée (évite le flash de la voiture précédente).
+    if (phase === "arrive") setPose(poseAt(0));
+
+    function tick(now: number) {
+      const t = Math.min(1, (now - t0) / duration);
+      const eased = phase === "arrive" ? 1 - (1 - t) ** 2.2 : t;
+      setPose(poseAt(from + (to - from) * eased));
+      if (t < 1) {
+        frame = requestAnimationFrame(tick);
+        return;
+      }
+      if (phase === "arrive") {
+        setPhase("choose");
+        return;
+      }
+      if (phase === "leave") {
+        if (lastRef.current) {
+          onReadyRef.current();
+          setFinished(true);
+          return;
+        }
+        // Reset atomique : nouvelle voiture déjà hors champ, puis arrive.
+        setPicked(null);
+        setPose(poseAt(0));
+        setCursor((value) => value + 1);
+        setPhase("arrive");
+      }
+    }
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [phase, cursor]);
+
+  function pick(levelId: string) {
+    if (phase !== "choose" || picked !== null || finished) return;
+    setPicked(levelId);
+    setPhase("result");
+  }
+
+  function continueNext() {
+    if (phase !== "result" || finished) return;
+    setPhase("leave");
   }
 
   if (!item) return null;
 
+  const carTone =
+    phase === "result" || phase === "leave"
+      ? right
+        ? "border-emerald-800 bg-emerald-700 text-white"
+        : "border-red-950 bg-red-800 text-white"
+      : "border-blue-900 bg-gradient-to-b from-blue-700 to-blue-900 text-white";
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex justify-center gap-1.5">
         {items.map((_, index) => (
           <span
@@ -1376,71 +2281,178 @@ function TrafficActivity({
         ))}
       </div>
 
-      <div className="flex justify-center">
-        <div
-          className={`w-full max-w-lg rounded-3xl border-2 px-6 py-8 shadow-lg transition duration-300 ${
-            revealed
-              ? right
-                ? "sort-pop border-emerald-600 bg-emerald-500 text-white"
-                : "sort-shake border-red-900 bg-red-800 text-white"
-              : "border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900"
-          }`}
+      <div
+        ref={sceneRef}
+        className="relative mx-auto h-72 w-full max-w-3xl overflow-hidden rounded-3xl border-2 border-sky-200 shadow-lg dark:border-slate-600 sm:h-80"
+      >
+        {/* Ciel */}
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-200 dark:from-slate-800 dark:via-slate-900 dark:to-emerald-950" />
+        <div className="traffic-sun absolute top-4 right-8 h-12 w-12 rounded-full bg-amber-300 shadow-[0_0_30px_rgba(251,191,36,0.7)]" />
+        <div className="traffic-cloud absolute top-6 left-8 h-7 w-14 rounded-full bg-white/80 dark:bg-slate-600/50" />
+        <div className="traffic-cloud-slow absolute top-10 left-20 h-5 w-10 rounded-full bg-white/70 dark:bg-slate-600/40" />
+        <div className="traffic-cloud absolute top-8 right-28 h-6 w-12 rounded-full bg-white/75 dark:bg-slate-600/45" />
+
+        {/* Collines */}
+        <div className="absolute bottom-0 left-0 h-20 w-36 rounded-t-full bg-emerald-400/80 dark:bg-emerald-800/70" />
+        <div className="absolute bottom-0 right-0 h-24 w-44 rounded-t-full bg-lime-400/70 dark:bg-emerald-700/60" />
+        <div className="absolute bottom-0 left-1/3 h-14 w-32 rounded-t-full bg-green-400/75 dark:bg-emerald-900/50" />
+
+        {/* Route : la ligne blanche pointillée = voie que suivent les 2 roues */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
         >
-          <p
-            className={`text-center text-base font-bold leading-snug sm:text-lg ${
-              revealed ? "text-white" : "text-slate-900 dark:text-white"
-            }`}
-          >
-            {item.label}
-          </p>
-          {revealed && (
-            <p className="mt-4 text-center text-sm font-medium leading-relaxed text-white/95">
-              {matchFeedback(right, item.explanation)}
-            </p>
-          )}
+          <path
+            d={`${TRAFFIC_LANE} L 105 100 L -5 100 Z`}
+            className="fill-slate-500 dark:fill-slate-600"
+          />
+          <path
+            ref={pathRef}
+            d={TRAFFIC_LANE}
+            fill="none"
+            stroke="white"
+            strokeWidth="0.7"
+            strokeDasharray="2.2 2"
+            opacity="0.9"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d="M -5 66 C 15 56, 28 76, 42 64 S 62 46, 72 62 S 88 78, 105 58"
+            fill="none"
+            stroke="#fbbf24"
+            strokeWidth="1.1"
+            opacity="0.95"
+          />
+          <path
+            d="M -5 78 C 15 68, 28 88, 42 76 S 62 58, 72 74 S 88 90, 105 70"
+            fill="none"
+            stroke="#fbbf24"
+            strokeWidth="1.1"
+            opacity="0.95"
+          />
+        </svg>
+
+        {/* Feu : pied sur la ligne haute de la route grise, devant la voiture */}
+        <div className="absolute bottom-[34%] left-[54%] z-20 flex items-stretch gap-2 sm:left-[55%]">
+          <div className="flex flex-col items-center">
+            <div className="flex h-[4.75rem] w-9 flex-col justify-evenly rounded-xl border-2 border-slate-800 bg-slate-900 px-1 py-1 shadow-lg dark:border-slate-300 sm:h-[5.25rem] sm:w-10">
+              {TRAFFIC_LEVELS.map((level) => {
+                const isAnswer = item.level === level.id;
+                const isPick = picked === level.id;
+                const lit =
+                  phase === "choose"
+                    ? true
+                    : phase === "result" || phase === "leave"
+                      ? isAnswer || isPick
+                      : level.id === "red";
+                return (
+                  <button
+                    key={level.id}
+                    type="button"
+                    disabled={phase !== "choose" || picked !== null}
+                    onClick={() => pick(level.id)}
+                    className={`mx-auto h-5 w-5 rounded-full border border-black/20 shadow-inner transition enabled:hover:scale-125 disabled:cursor-default sm:h-6 sm:w-6 ${
+                      lit ? level.lamp : level.lampDim
+                    } ${phase === "choose" ? `traffic-lamp-pulse ring-2 ${level.ring}` : ""}`}
+                    aria-label={`${level.label} — ${level.hint}`}
+                  />
+                );
+              })}
+            </div>
+            <div className="h-10 w-1.5 bg-gradient-to-b from-slate-600 to-slate-800 dark:from-slate-400 dark:to-slate-600" />
+            <div className="h-1.5 w-6 rounded-full bg-slate-700 dark:bg-slate-500" />
+          </div>
+          <div className="flex h-[4.75rem] flex-col justify-evenly py-0.5 sm:h-[5.25rem]">
+            {TRAFFIC_LEVELS.map((level) => (
+              <button
+                key={`label-${level.id}`}
+                type="button"
+                disabled={phase !== "choose" || picked !== null}
+                onClick={() => pick(level.id)}
+                className="text-left text-[10px] font-extrabold uppercase leading-none tracking-wide text-slate-800 transition enabled:hover:text-blue-700 disabled:cursor-default dark:text-slate-100 dark:enabled:hover:text-blue-300 sm:text-xs"
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Voiture : bas centré entre les 2 roues, angle = corde sur la ligne pointillée */}
+        <div
+          className="absolute z-10"
+          style={{
+            left: `${pose.x}%`,
+            top: `${pose.y}%`,
+            transform: `translate(-50%, -100%) rotate(${pose.angle}deg)`,
+            transformOrigin: "50% 100%",
+          }}
+        >
+          <div className="relative w-28 sm:w-32">
+            {(phase === "result" || phase === "leave") && (
+              <span className="absolute -top-2.5 left-1/2 z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-white shadow">
+                {right ? (
+                  <Check className="h-3 w-3 text-emerald-600" />
+                ) : (
+                  <X className="h-3 w-3 text-red-600" />
+                )}
+              </span>
+            )}
+            <div className="mx-auto h-3 w-[55%] rounded-t-lg border-2 border-b-0 border-blue-900 bg-sky-200 dark:border-blue-300 dark:bg-sky-800/70" />
+            <div
+              className={`flex h-11 items-center justify-center rounded-xl border-2 px-2 text-center shadow-md sm:h-12 ${carTone}`}
+            >
+              <span className="text-[11px] font-extrabold leading-tight drop-shadow-sm sm:text-xs">
+                {item.label}
+              </span>
+            </div>
+            <div className="relative -mt-1.5 flex justify-between px-1.5">
+              <span className="h-3 w-3 rounded-full border-2 border-slate-800 bg-slate-900 dark:border-slate-200" />
+              <span className="h-3 w-3 rounded-full border-2 border-slate-800 bg-slate-900 dark:border-slate-200" />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        {TRAFFIC_LEVELS.map((level) => {
-          const isPick = picked === level.id;
-          const isAnswer = revealed && level.id === item.level;
-          return (
-            <button
-              key={level.id}
-              type="button"
-              disabled={revealed}
-              onClick={() => setPicked(level.id)}
-              className={`flex flex-col items-center justify-center rounded-xl border-2 px-2.5 py-2 text-center shadow-sm transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:px-3 sm:py-2.5 ${
-                revealed
-                  ? isAnswer
-                    ? level.active
-                    : isPick
-                      ? "border-red-900 bg-red-800 text-white"
-                      : "border-slate-200 bg-slate-50 text-slate-400 opacity-45 dark:border-slate-700 dark:bg-slate-900"
-                  : level.idle
-              }`}
-            >
-              <span className="inline-flex items-center justify-center gap-1 text-sm font-bold uppercase tracking-wide">
-                {revealed && isAnswer ? <Check className="h-3.5 w-3.5 shrink-0" /> : null}
-                {level.label}
-              </span>
-              <span className="mt-1 block text-[11px] font-medium leading-snug normal-case opacity-90 sm:text-xs">
-                {level.hint}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {phase === "choose" && (
+        <p className="text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
+          Choisissez le feu
+        </p>
+      )}
 
-      {revealed && !finished && (
-        <div className="flex justify-center">
+      {phase === "result" && (
+        <div
+          className={`mx-auto flex w-full max-w-3xl flex-col gap-2 rounded-xl border px-3.5 py-3 sm:flex-row sm:items-center sm:gap-3 ${
+            right
+              ? "border-emerald-400 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/50"
+              : "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950/40"
+          }`}
+        >
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">
+              <span
+                className={
+                  right
+                    ? "text-emerald-700 dark:text-emerald-300"
+                    : "text-red-700 dark:text-red-300"
+                }
+              >
+                {right ? "Validé" : "Pas celui-là"}
+              </span>
+              <span className="mx-1.5 text-slate-400">·</span>
+              {item.label}
+            </p>
+            <p className="mt-1 text-xs leading-snug text-slate-600 dark:text-slate-300 sm:text-[13px]">
+              {withLexiconTips(trafficFeedback(right, item.level, item.explanation))}
+            </p>
+          </div>
           <button
             type="button"
-            onClick={goNext}
-            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            onClick={continueNext}
+            className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 sm:self-center"
           >
-            Suivant
+            Continuer
           </button>
         </div>
       )}
@@ -1529,6 +2541,351 @@ const STAMP_TONES: Record<string, { idle: string; active: string }> = {
   },
 };
 
+function shuffleIds(ids: string[]) {
+  const next = [...ids];
+  for (let i = next.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j]!, next[i]!];
+  }
+  return next;
+}
+
+function MatchActivity({
+  activity,
+  onReady,
+}: {
+  activity: Extract<Activity, { kind: "match" }>;
+  onReady: () => void;
+}) {
+  const pairs = activity.pairs;
+  const byId = Object.fromEntries(pairs.map((pair) => [pair.id, pair]));
+  const [leftOrder] = useState(() => shuffleIds(pairs.map((pair) => pair.id)));
+  const [rightOrder] = useState(() => shuffleIds(pairs.map((pair) => pair.id)));
+  /** leftId -> rightId */
+  const [links, setLinks] = useState<Record<string, string>>({});
+  const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
+  const [selectedRight, setSelectedRight] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const leftRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const rightRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [lines, setLines] = useState<
+    {
+      id: string;
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      c1x: number;
+      c1y: number;
+      c2x: number;
+      c2y: number;
+      ok: boolean | null;
+      hue: number;
+    }[]
+  >([]);
+
+  const linkedRight = new Set(Object.values(links));
+  const allLinked = Object.keys(links).length === pairs.length;
+  const lineHues = [217, 160, 280, 25];
+
+  function refreshLines() {
+    const board = boardRef.current;
+    if (!board) return;
+    const box = board.getBoundingClientRect();
+    const next = Object.entries(links).map(([leftId, rightId], index) => {
+      const leftEl = leftRefs.current[leftId];
+      const rightEl = rightRefs.current[rightId];
+      if (!leftEl || !rightEl) {
+        return {
+          id: leftId,
+          x1: 0,
+          y1: 0,
+          x2: 0,
+          y2: 0,
+          c1x: 0,
+          c1y: 0,
+          c2x: 0,
+          c2y: 0,
+          ok: null,
+          hue: lineHues[index % lineHues.length]!,
+        };
+      }
+      const left = leftEl.getBoundingClientRect();
+      const right = rightEl.getBoundingClientRect();
+      const x1 = left.right - box.left;
+      const y1 = left.top + left.height / 2 - box.top;
+      const x2 = right.left - box.left;
+      const y2 = right.top + right.height / 2 - box.top;
+      const midX = (x1 + x2) / 2;
+      const bend = (index % 2 === 0 ? -1 : 1) * Math.min(28, Math.abs(y2 - y1) * 0.35 + 14);
+      return {
+        id: leftId,
+        x1,
+        y1,
+        x2,
+        y2,
+        c1x: midX,
+        c1y: y1 + bend,
+        c2x: midX,
+        c2y: y2 - bend,
+        ok: checked ? leftId === rightId : null,
+        hue: lineHues[index % lineHues.length]!,
+      };
+    });
+    setLines(next);
+  }
+
+  useLayoutEffect(() => {
+    refreshLines();
+    function onResize() {
+      refreshLines();
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [links, checked, leftOrder, rightOrder]);
+
+  function clearPairFor(leftId: string, rightId: string) {
+    setLinks((current) => {
+      const next = { ...current };
+      for (const [l, r] of Object.entries(next)) {
+        if (l === leftId || r === rightId) delete next[l];
+      }
+      return next;
+    });
+  }
+
+  function pickLeft(id: string) {
+    if (checked) return;
+    if (selectedRight) {
+      clearPairFor(id, selectedRight);
+      setLinks((current) => ({ ...current, [id]: selectedRight }));
+      setSelectedLeft(null);
+      setSelectedRight(null);
+      return;
+    }
+    setSelectedLeft((current) => (current === id ? null : id));
+  }
+
+  function pickRight(id: string) {
+    if (checked) return;
+    if (selectedLeft) {
+      clearPairFor(selectedLeft, id);
+      setLinks((current) => ({ ...current, [selectedLeft]: id }));
+      setSelectedLeft(null);
+      setSelectedRight(null);
+      return;
+    }
+    setSelectedRight((current) => (current === id ? null : id));
+  }
+
+  function resetLinks() {
+    setLinks({});
+    setSelectedLeft(null);
+    setSelectedRight(null);
+    setChecked(false);
+  }
+
+  function validate() {
+    if (!allLinked) return;
+    setChecked(true);
+    onReady();
+  }
+
+  const cardTone = (state: {
+    checked: boolean;
+    ok: boolean | null;
+    selected: boolean;
+    linked: boolean;
+  }) => {
+    if (state.checked) {
+      return state.ok
+        ? "border-emerald-500 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-100"
+        : "border-red-500 bg-red-50 text-red-950 dark:bg-red-950/40 dark:text-red-100";
+    }
+    if (state.selected) {
+      return "border-blue-600 bg-blue-50 text-blue-950 shadow-sm dark:bg-blue-950/50 dark:text-blue-100";
+    }
+    if (state.linked) {
+      return "border-blue-300 bg-white text-slate-900 dark:border-blue-700 dark:bg-slate-900 dark:text-white";
+    }
+    return "border-slate-200 bg-white text-slate-900 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-900 dark:text-white";
+  };
+
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-4">
+      <p className="mx-auto max-w-lg text-center text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
+        {activity.instruction ?? "Reliez chaque situation à la bonne règle."}
+      </p>
+
+      <div
+        ref={boardRef}
+        className="relative mx-auto grid w-full grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)] items-start gap-y-3 sm:grid-cols-[minmax(0,1fr)_6.5rem_minmax(0,1fr)] sm:gap-y-5"
+      >
+        <p className="col-start-1 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+          Situations
+        </p>
+        <span className="col-start-2" aria-hidden />
+        <p className="col-start-3 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+          Règles
+        </p>
+
+        <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full overflow-visible" aria-hidden>
+          <defs>
+            {lines.map((line) => {
+              const color =
+                line.ok === true
+                  ? "#059669"
+                  : line.ok === false
+                    ? "#dc2626"
+                    : `hsl(${line.hue} 84% 52%)`;
+              return (
+                <linearGradient
+                  key={`grad-${line.id}`}
+                  id={`match-grad-${line.id}`}
+                  x1={line.x1}
+                  y1={line.y1}
+                  x2={line.x2}
+                  y2={line.y2}
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop offset="0%" stopColor={color} stopOpacity="0.95" />
+                  <stop offset="50%" stopColor={color} stopOpacity="0.75" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0.95" />
+                </linearGradient>
+              );
+            })}
+          </defs>
+          {lines.map((line) => {
+            const color =
+              line.ok === true
+                ? "#059669"
+                : line.ok === false
+                  ? "#dc2626"
+                  : `hsl(${line.hue} 84% 52%)`;
+            const d = `M ${line.x1} ${line.y1} C ${line.c1x} ${line.c1y}, ${line.c2x} ${line.c2y}, ${line.x2} ${line.y2}`;
+            return (
+              <g key={line.id}>
+                <path
+                  d={d}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={6}
+                  strokeLinecap="round"
+                  opacity={0.18}
+                />
+                <path
+                  d={d}
+                  fill="none"
+                  stroke={`url(#match-grad-${line.id})`}
+                  strokeWidth={line.ok == null ? 2.75 : 3.25}
+                  strokeLinecap="round"
+                  strokeDasharray={line.ok === false ? "7 6" : undefined}
+                  className="origin-center transition-all duration-300"
+                />
+                <circle cx={line.x1} cy={line.y1} r={4.5} fill={color} />
+                <circle cx={line.x2} cy={line.y2} r={4.5} fill={color} />
+                <circle cx={line.x1} cy={line.y1} r={2} fill="white" opacity={0.9} />
+                <circle cx={line.x2} cy={line.y2} r={2} fill="white" opacity={0.9} />
+              </g>
+            );
+          })}
+        </svg>
+
+        <div className="relative z-20 col-start-1 flex flex-col gap-4 sm:gap-6">
+          {leftOrder.map((id) => {
+            const pair = byId[id]!;
+            const linked = Boolean(links[id]);
+            const selected = selectedLeft === id;
+            const ok = checked ? links[id] === id : null;
+            return (
+              <button
+                key={`left-${id}`}
+                type="button"
+                ref={(el) => {
+                  leftRefs.current[id] = el;
+                }}
+                disabled={checked}
+                onClick={() => pickLeft(id)}
+                className={`flex min-h-[2.75rem] w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-semibold leading-tight transition sm:min-h-[3rem] sm:px-2.5 sm:text-xs ${cardTone(
+                  { checked, ok, selected, linked },
+                )}`}
+              >
+                {pair.left}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="col-start-2" aria-hidden />
+
+        <div className="relative z-20 col-start-3 flex flex-col gap-4 sm:gap-6">
+          {rightOrder.map((id) => {
+            const pair = byId[id]!;
+            const linked = linkedRight.has(id);
+            const selected = selectedRight === id;
+            const leftForRight = Object.entries(links).find(([, rightId]) => rightId === id)?.[0];
+            const ok = checked && leftForRight ? leftForRight === id : null;
+            return (
+              <button
+                key={`right-${id}`}
+                type="button"
+                ref={(el) => {
+                  rightRefs.current[id] = el;
+                }}
+                disabled={checked}
+                onClick={() => pickRight(id)}
+                className={`flex min-h-[2.75rem] w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-bold leading-tight transition sm:min-h-[3rem] sm:px-2.5 sm:text-xs ${cardTone(
+                  { checked, ok, selected, linked },
+                )}`}
+              >
+                {pair.right}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {checked && (
+        <div className="w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-4 py-3.5 shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60">
+          <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+            À retenir
+          </p>
+          <ol className="mt-2 list-decimal space-y-4 pl-5 text-justify text-[15px] font-semibold leading-snug text-slate-900 sm:text-base dark:text-white">
+            {leftOrder.map((id) => {
+              const pair = byId[id]!;
+              return (
+                <li key={`explain-${id}`}>{withLexiconTips(pair.explanation)}</li>
+              );
+            })}
+          </ol>
+        </div>
+      )}
+
+      {!checked && (
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={resetLinks}
+            disabled={Object.keys(links).length === 0}
+            className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-default disabled:opacity-40 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+          >
+            Effacer
+          </button>
+          <button
+            type="button"
+            onClick={validate}
+            disabled={!allLinked}
+            className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-default disabled:opacity-40"
+          >
+            Vérifier
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StampActivity({
   activity,
   onReady,
@@ -1582,9 +2939,9 @@ function StampActivity({
       </div>
 
       <p className="text-center text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
-        Lisez la situation
+        Lisez l&apos;exemple au travail.
         <br />
-        puis choisissez le mot
+        Puis choisissez le mot qui le décrit.
       </p>
 
       <div className="flex justify-center">
@@ -1606,7 +2963,9 @@ function StampActivity({
           </p>
           {revealed && (
             <p className="mt-3 text-center text-sm font-medium leading-relaxed text-white/95">
-              {matchFeedback(right, card.explanation)}
+              {right
+                ? card.explanation
+                : `Ce n'est pas cette réponse. ${card.explanation}`}
             </p>
           )}
         </div>
@@ -1673,7 +3032,9 @@ function TimelineActivity({
   items: Extract<Activity, { kind: "timeline" }>["items"];
   onReady: () => void;
 }) {
+
   const [opened, setOpened] = useState<string[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const nextIndex = opened.length;
   const allOpen = opened.length === items.length;
 
@@ -1688,13 +3049,16 @@ function TimelineActivity({
     const isNext = index === nextIndex;
     if (!already && !isNext) return;
     if (isNext) setOpened((current) => [...current, item.id]);
+    setActiveId(item.id);
   }
 
-  const activeId = opened[opened.length - 1];
   const active = items.find((item) => item.id === activeId);
   const activeTone = active
     ? CUBE_TONES[items.findIndex((item) => item.id === active.id) % CUBE_TONES.length]!
     : null;
+  const [activeMain, activeFootnote] = active
+    ? active.detail.split(/\n\n\*\s*/)
+    : [undefined, undefined];
 
   return (
     <div className="space-y-4 px-1 pt-2">
@@ -1704,18 +3068,19 @@ function TimelineActivity({
           const already = opened.includes(item.id);
           const isNext = index === nextIndex;
           const locked = !already && !isNext;
+          const isActive = item.id === activeId;
           return (
             <li key={item.id} className="flex min-w-0 flex-col items-center">
               <button
                 type="button"
-                disabled={locked || already}
+                disabled={locked}
                 onClick={() => handleCube(index)}
                 className={`group relative w-full disabled:cursor-default ${isNext ? "cube-nudge" : ""}`}
                 aria-label={
                   locked
                     ? `${item.date}, verrouillé`
                     : already
-                      ? `${item.date}, ouvert`
+                      ? `${item.date}, relire`
                       : `${item.date}, cliquer`
                 }
               >
@@ -1728,7 +3093,13 @@ function TimelineActivity({
                 <span
                   className={`relative flex aspect-square w-full flex-col items-center justify-center rounded-xl border-2 px-1 shadow-lg transition ${
                     tone.face
-                  } ${tone.glow} ${locked ? "grayscale opacity-45" : isNext ? "hover:-translate-y-1" : ""}`}
+                  } ${tone.glow} ${
+                    locked
+                      ? "grayscale opacity-45"
+                      : isActive
+                        ? "-translate-y-1 ring-2 ring-slate-900/25 dark:ring-white/30"
+                        : "hover:-translate-y-1"
+                  }`}
                 >
                   {already ? (
                     <Check className="mb-0.5 h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -1751,21 +3122,26 @@ function TimelineActivity({
         })}
       </ul>
       <div
-        className={`flex min-h-40 flex-col justify-center rounded-xl border px-4 py-4 text-center sm:min-h-44 sm:px-5 ${
+        className={`flex min-h-40 flex-col items-center justify-center rounded-xl border px-4 py-4 sm:min-h-44 sm:px-5 ${
           activeTone ? activeTone.panel : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900"
         }`}
       >
         {active && activeTone ? (
-          <div className="space-y-2">
-            <p className={`text-sm font-bold sm:text-base ${activeTone.accent}`}>{active.date}</p>
-            <p className="text-sm font-semibold text-slate-900 sm:text-base dark:text-white">{active.law}</p>
-            <p className="text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">{active.detail}</p>
+          <div className="w-full max-w-xl space-y-2 text-center">
+            <p className={`text-center text-sm font-bold sm:text-base ${activeTone.accent}`}>{active.date}</p>
+            <p className="text-center text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
+              {withLexiconTips(active.law)}
+            </p>
+            <p className="text-center text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">
+              {withLexiconTips(activeMain ?? active.detail)}
+            </p>
+            {activeFootnote ? (
+              <p className="text-center text-sm italic leading-relaxed text-slate-500 sm:text-base dark:text-slate-400">
+                * {activeFootnote}
+              </p>
+            ) : null}
           </div>
-        ) : (
-          <p className="text-sm leading-relaxed text-slate-500">
-            Ouvrez les dates dans l&apos;ordre. L&apos;explication s&apos;affiche ici, toujours au même endroit.
-          </p>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -2633,15 +4009,212 @@ function DodgeActivity({
   );
 }
 
+function SwipeActivity({
+  activity,
+  onReady,
+}: {
+  activity: Extract<Activity, { kind: "swipe" }>;
+  onReady: () => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [verdict, setVerdict] = useState<"ok" | "ko" | null>(null);
+  const startX = useRef(0);
+  const card = activity.cards[index];
+  if (!card) return null;
+
+  const threshold = 120;
+  const answered = verdict !== null;
+  const leanLeft = offsetX < -28;
+  const leanRight = offsetX > 28;
+  const progress = Math.min(1, Math.abs(offsetX) / threshold);
+
+  function commit(zoneId: string) {
+    if (answered) return;
+    const ok = zoneId === card.zoneId;
+    setVerdict(ok ? "ok" : "ko");
+    setOffsetX(zoneId === activity.left.id ? -220 : 220);
+  }
+
+  function onPointerDown(event: React.PointerEvent) {
+    if (answered) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    startX.current = event.clientX;
+    setDragging(true);
+  }
+
+  function onPointerMove(event: React.PointerEvent) {
+    if (!dragging || answered) return;
+    setOffsetX(event.clientX - startX.current);
+  }
+
+  function onPointerUp() {
+    if (!dragging) return;
+    setDragging(false);
+    if (answered) return;
+    if (offsetX <= -threshold) commit(activity.left.id);
+    else if (offsetX >= threshold) commit(activity.right.id);
+    else setOffsetX(0);
+  }
+
+  function goNext() {
+    if (index >= activity.cards.length - 1) {
+      onReady();
+      return;
+    }
+    setIndex((value) => value + 1);
+    setOffsetX(0);
+    setVerdict(null);
+  }
+
+  const leftIdle =
+    "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200";
+  const leftHot =
+    "border-amber-300 bg-amber-400 text-amber-950 dark:border-amber-200 dark:bg-amber-400 dark:text-amber-950";
+  const rightIdle =
+    "border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-600 dark:bg-violet-950/40 dark:text-violet-200";
+  const rightHot =
+    "border-violet-300 bg-violet-500 text-white dark:border-violet-200 dark:bg-violet-500 dark:text-white";
+
+  return (
+    <div className="mx-auto w-full max-w-2xl space-y-5 sm:max-w-3xl">
+      <div className="flex justify-center gap-1.5">
+        {activity.cards.map((_, step) => (
+          <span
+            key={step}
+            className={`h-1.5 w-1.5 rounded-full ${
+              step < index
+                ? "bg-emerald-500"
+                : step === index
+                  ? "bg-blue-500"
+                  : "bg-slate-300 dark:bg-slate-600"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="relative mx-auto flex h-64 w-full max-w-2xl items-center justify-between gap-6 overflow-visible px-2 sm:h-72 sm:gap-10 sm:px-4">
+        <div className="relative flex h-36 w-36 shrink-0 items-center justify-center sm:h-44 sm:w-44">
+          {leanLeft && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-[-12%] rounded-full bg-amber-400/35 blur-xl dark:bg-amber-400/30"
+              style={{ opacity: 0.35 + progress * 0.35, transform: `scale(${1 + progress * 0.2})` }}
+            />
+          )}
+          <button
+            type="button"
+            disabled={answered}
+            onClick={() => commit(activity.left.id)}
+            className={`relative z-10 flex h-28 w-28 items-center justify-center rounded-full border-2 px-3 text-center text-sm font-bold leading-tight transition enabled:hover:scale-105 sm:h-36 sm:w-36 sm:text-base ${
+              leanLeft ? leftHot : leftIdle
+            }`}
+            style={{
+              opacity: leanLeft ? 0.9 + progress * 0.1 : 0.85,
+              boxShadow: leanLeft
+                ? `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(251, 191, 36, ${0.28 + progress * 0.22})`
+                : undefined,
+              transform: leanLeft ? `scale(${1.03 + progress * 0.05})` : undefined,
+            }}
+          >
+            {activity.left.label}
+          </button>
+        </div>
+
+        <div className="relative flex h-full min-w-0 flex-1 items-center justify-center">
+          <div
+            role="button"
+            tabIndex={0}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            className={`absolute z-20 flex w-full max-w-[14rem] cursor-grab touch-none select-none items-center justify-center rounded-2xl border-2 px-5 py-6 text-center text-sm font-semibold shadow-lg active:cursor-grabbing sm:max-w-[16rem] sm:text-base ${
+              answered
+                ? verdict === "ok"
+                  ? "border-emerald-700 bg-emerald-600 text-white"
+                  : "border-red-900 bg-red-800 text-white"
+                : "border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+            }`}
+            style={{
+              transform: `translateX(${offsetX}px) rotate(${offsetX / 28}deg)`,
+              transition: dragging ? "none" : "transform 0.22s ease-out",
+            }}
+          >
+            {card.label}
+          </div>
+        </div>
+
+        <div className="relative flex h-36 w-36 shrink-0 items-center justify-center sm:h-44 sm:w-44">
+          {leanRight && (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-[-12%] rounded-full bg-violet-500/35 blur-xl dark:bg-violet-400/30"
+              style={{ opacity: 0.35 + progress * 0.35, transform: `scale(${1 + progress * 0.2})` }}
+            />
+          )}
+          <button
+            type="button"
+            disabled={answered}
+            onClick={() => commit(activity.right.id)}
+            className={`relative z-10 flex h-28 w-28 items-center justify-center rounded-full border-2 px-3 text-center text-sm font-bold leading-tight transition enabled:hover:scale-105 sm:h-36 sm:w-36 sm:text-base ${
+              leanRight ? rightHot : rightIdle
+            }`}
+            style={{
+              opacity: leanRight ? 0.9 + progress * 0.1 : 0.85,
+              boxShadow: leanRight
+                ? `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(139, 92, 246, ${0.3 + progress * 0.22})`
+                : undefined,
+              transform: leanRight ? `scale(${1.03 + progress * 0.05})` : undefined,
+            }}
+          >
+            {activity.right.label}
+          </button>
+        </div>
+      </div>
+
+      {!answered && (
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Balancez la carte, ou tapez une zone
+        </p>
+      )}
+
+      {answered && (
+        <div className="space-y-3">
+          <p
+            className={`text-center text-sm font-semibold ${
+              verdict === "ok"
+                ? "text-emerald-700 dark:text-emerald-300"
+                : "text-red-800 dark:text-red-300"
+            }`}
+          >
+            {verdict === "ok" ? "Bien vu." : "Pas celle-là."} {card.explanation}
+          </p>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={goNext}
+              className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              {index >= activity.cards.length - 1 ? "Terminer" : "Suite"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GameBriefing({ text, children }: { text?: string; children: ReactNode }) {
   const [ready, setReady] = useState(!text);
   if (!text || ready) return <>{children}</>;
   return (
-    <div className="mx-auto max-w-lg space-y-5 px-1 text-center">
+    <div className="mx-auto w-full max-w-lg space-y-5 px-1 text-center sm:max-w-2xl">
       <p className="text-center text-xs font-bold tracking-[0.16em] text-blue-700 uppercase dark:text-blue-300">
         Avant de jouer
       </p>
-      <p className="text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white">
+      <p className="text-center text-lg font-semibold leading-relaxed whitespace-pre-line text-slate-900 sm:text-xl dark:text-white">
         {text}
       </p>
       <button
@@ -2659,13 +4232,18 @@ function activityBriefing(activity: Activity): string | undefined {
   switch (activity.kind) {
     case "quiz":
     case "sort":
+    case "slash":
     case "stamp":
+    case "swipe":
+    case "match":
     case "scenario":
+    case "truefake":
     case "predict":
     case "spot":
     case "redact":
     case "timeline":
     case "tetris":
+    case "traffic":
       return activity.briefing;
     default:
       return undefined;
@@ -2712,6 +4290,13 @@ export default function ActivityPlayer({
       </GameBriefing>
     );
   }
+  if (activity.kind === "slash") {
+    return (
+      <GameBriefing text={briefing}>
+        <SlashActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "stamp") {
     return (
       <GameBriefing text={briefing}>
@@ -2719,10 +4304,31 @@ export default function ActivityPlayer({
       </GameBriefing>
     );
   }
+  if (activity.kind === "swipe") {
+    return (
+      <GameBriefing text={briefing}>
+        <SwipeActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "match") {
+    return (
+      <GameBriefing text={briefing}>
+        <MatchActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "scenario") {
     return (
       <GameBriefing text={briefing}>
         <ScenarioActivity steps={activity.steps} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "truefake") {
+    return (
+      <GameBriefing text={briefing}>
+        <TrueFakeActivity items={activity.items} outro={activity.outro} onReady={onReady} />
       </GameBriefing>
     );
   }
@@ -2750,7 +4356,13 @@ export default function ActivityPlayer({
       </GameBriefing>
     );
   }
-  if (activity.kind === "traffic") return <TrafficActivity items={activity.items} onReady={onReady} />;
+  if (activity.kind === "traffic") {
+    return (
+      <GameBriefing text={briefing}>
+        <TrafficActivity items={activity.items} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
   if (activity.kind === "tetris") {
     return (
       <GameBriefing text={briefing}>

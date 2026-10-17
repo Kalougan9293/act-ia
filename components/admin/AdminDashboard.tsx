@@ -594,7 +594,7 @@ export default function AdminDashboard() {
         <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
             <a href="/" className="flex items-center gap-1.5 font-bold text-base tracking-tight">
-              Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
               <GraduationCap className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </a>
             <span className="hidden sm:inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Mentions légales — ConformAI",
+  title: "Mentions légales — StartIA",
 };
 
 export default function MentionsLegalesPage() {
@@ -11,7 +11,7 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Éditeur</h2>
         <p>
-          Le site ConformAI, plateforme de formation et de traçabilité relative à la maîtrise de
+          Le site StartIA, plateforme de formation et de traçabilité relative à la maîtrise de
           l&apos;IA (article 4 du règlement européen sur l&apos;IA), est édité par :
         </p>
         <p>
@@ -54,7 +54,7 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Responsabilité</h2>
         <p>
-          ConformAI fournit des outils d&apos;aide à la conformité et une formation. Le contenu ne
+          StartIA fournit des outils d&apos;aide à la conformité et une formation. Le contenu ne
           constitue pas un conseil juridique. L&apos;attestation de suivi documente les mesures
           prises au titre de l&apos;article 4 ; elle ne certifie pas l&apos;entreprise.
         </p>

@@ -3,7 +3,7 @@ import UserApp from "@/components/user/UserApp";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
-  title: "Formation — ConformAI",
+  title: "Formation — StartIA",
   description: "Espace collaborateur : parcours AI Act & RGPD.",
 };
 

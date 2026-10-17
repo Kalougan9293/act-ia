@@ -6,10 +6,14 @@ import {
   formatProofDate,
   formatProofDateUtc,
 } from "@/lib/formation/proof";
+import {
+  ATTESTATION_COURSE_TITLE,
+  SOCLE_DURATION_LABEL,
+} from "@/lib/formation/curriculum";
 import { buildSimplePdf, downloadBytes, slug } from "@/lib/export/proof-zip";
 
-/** Durée pédagogique du socle, reprise sur l'attestation individuelle. */
-export const TRAINING_HOURS_EACH = 1.5;
+/** Durée pédagogique du socle (heures), reprise sur l'attestation / registre. */
+export const TRAINING_HOURS_EACH = 1;
 
 export type LearnerAttestationInput = {
   fullName: string;
@@ -51,9 +55,9 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
   const hash = certificateFingerprint(serial);
   const { paris, utc } = stampLines(input.issuedAt, input.dateLabel, input.timeLabel);
   const lines = [
-    "CONFORMAI",
+    "StartIA",
     "Attestation de suivi de formation et de sensibilisation",
-    "Maîtrise de l'IA — Article 4 (AI Act) et RGPD",
+    "Maîtrise de l'IA — Article 4 (AI Act)",
     "",
     `Attestation n° ${input.certificateId}`,
     `Version ${CURRICULUM_LABEL}`,
@@ -66,11 +70,11 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
     `Entreprise : ${input.companyName}`,
     "",
     "02 — Parcours suivi",
-    "Sensibilisation à la littératie en intelligence artificielle et bonnes pratiques de protection des données.",
-    "Référentiel : EU AI Act (AI literacy, article 4) et RGPD.",
+    ATTESTATION_COURSE_TITLE + ".",
+    "Référentiel : EU AI Act (AI literacy, article 4).",
     "",
     "03 — Validation",
-    "Durée pédagogique prévue : max 1 h 30",
+    `Durée pédagogique prévue : ${SOCLE_DURATION_LABEL}`,
     "Parcours complété : 100 %",
     `Évaluation finale : ${input.quizScore} / 100`,
     "Seuil de réussite : 80 / 100",
@@ -129,28 +133,28 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
   });
 
   const lines = [
-    "CONFORMAI",
+    "StartIA",
     "Rapport d'engagement et de conformité — Article 4",
     "Attestations de suivi · AI Act (article 4) et RGPD",
     "",
     `Raison sociale : ${companyName}`,
-    `Identifiant registre : ${registryId}`,
+    `Identifiant suivi : ${registryId}`,
     `Empreinte : ${hash}`,
     `Émis le : ${paris.date} à ${paris.time} (Europe/Paris)`,
     `Horodatage UTC : ${utc.date} à ${utc.time} UTC`,
-    `Statut du registre : ${complete ? "À jour — chaque collaborateur actif a une attestation" : "En cours"}`,
+    `Statut du suivi : ${complete ? "À jour — chaque collaborateur actif a une attestation" : "En cours"}`,
     "",
     "Synthèse",
     `Collaborateurs actifs : ${stats.total}`,
     `Parcours validés à 100 % : ${stats.trained}/${stats.total} (${stats.rate} %)`,
     `Attestations de suivi émises : ${stats.certified}`,
     `Volume d'heures : ${stats.hours} h`,
-    "Durée pédagogique comptée : max 1 h 30 par collaborateur au parcours validé (100 %).",
+    `Durée pédagogique comptée : ${SOCLE_DURATION_LABEL} par collaborateur au parcours validé (100 %).`,
     "",
     "Récapitulatif horodaté — archive audit",
     ...(people.length ? people : ["Aucun collaborateur."]),
     "",
-    "Document émis par ConformAI et conservé dans le registre de suivi.",
+    "Document émis par StartIA et conservé dans le suivi des parcours.",
     "Il consigne les attestations de suivi des collaborateurs.",
     "Il ne certifie pas l'entreprise et ne constitue pas un conseil juridique.",
   ];

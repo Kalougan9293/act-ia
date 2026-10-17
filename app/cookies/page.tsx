@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Cookies — ConformAI",
+  title: "Cookies — StartIA",
 };
 
 export default function CookiesPage() {
@@ -11,7 +11,7 @@ export default function CookiesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">En bref</h2>
         <p>
-          ConformAI n&apos;utilise <strong>pas</strong> de cookies publicitaires ni de traceurs
+          StartIA n&apos;utilise <strong>pas</strong> de cookies publicitaires ni de traceurs
           analytics tiers. Aucun bandeau de consentement n&apos;est requis pour les seuls éléments
           techniques indispensables au service.
         </p>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Film } from "lucide-react";
+import { LexiconInlineTerm } from "@/components/user/LexiconTip";
 
 /** Vidéo (fichier ou placeholder) + script qui se déroule progressivement */
 export default function VideoScript({
@@ -77,7 +78,18 @@ export default function VideoScript({
           À écouter / lire
         </p>
         <p className="whitespace-pre-wrap text-center text-base leading-relaxed text-slate-800 sm:text-lg sm:leading-8 dark:text-slate-100">
-          {words.slice(0, revealed).join("")}
+          {words.slice(0, revealed).map((word, index) => {
+            const match = word.match(/^(DPO)([.,;:!?)]*)$/);
+            if (match) {
+              return (
+                <Fragment key={`w-${index}`}>
+                  <LexiconInlineTerm id="dpo" />
+                  {match[2]}
+                </Fragment>
+              );
+            }
+            return <Fragment key={`w-${index}`}>{word}</Fragment>;
+          })}
           {revealed < words.length && (
             <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse align-middle bg-blue-500" />
           )}

@@ -3,6 +3,7 @@
 import { Download, X } from "lucide-react";
 import type { Employee } from "./data";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
+import { ATTESTATION_COURSE_TITLE, SOCLE_DURATION_LABEL } from "@/lib/formation/curriculum";
 import { certificateFingerprint, CURRICULUM_LABEL, formatProofDateUtc } from "@/lib/formation/proof";
 
 const demoProofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
@@ -105,11 +106,11 @@ export default function CertificatePreview({
 
         <div className="px-8 sm:px-12 py-10 space-y-8">
           <header className="text-center space-y-2 border-b border-slate-200 pb-6">
-            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">CONFORMAI</div>
+            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">StartIA</div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
               Attestation de suivi de formation et de sensibilisation
             </h2>
-            <p className="text-center text-sm text-slate-600">Intelligence artificielle — EU AI Act &amp; RGPD</p>
+            <p className="text-center text-sm text-slate-600">Maîtrise de l&apos;IA — EU AI Act (article 4)</p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
               <span>Attestation n° {certificateId}</span>
               <span>Version {CURRICULUM_LABEL}</span>
@@ -138,18 +139,16 @@ export default function CertificatePreview({
           <section className="space-y-3">
             <h3 className="text-xs font-bold tracking-widest text-blue-700">02 — Parcours suivi</h3>
             <p className="text-left text-sm leading-relaxed">
-              Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation proposé par la plateforme ConformAI et a satisfait aux conditions de validation définies pour ce parcours.
+              Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation proposé par la plateforme StartIA et a satisfait aux conditions de validation définies pour ce parcours.
             </p>
             <div className="text-sm">
               <div className="text-xs text-slate-500">Intitulé du parcours</div>
-              <div className="font-semibold">
-                Sensibilisation à la littératie en intelligence artificielle et bonnes pratiques de protection des données
-              </div>
+              <div className="font-semibold">{ATTESTATION_COURSE_TITLE}</div>
             </div>
             <div className="text-sm">
               <div className="text-xs text-slate-500">Référentiel</div>
-              <div>EU AI Act — dispositions relatives à la AI literacy</div>
-              <div>Règlement général sur la protection des données (RGPD)</div>
+              <div>EU AI Act — maîtrise de l&apos;IA (article 4)</div>
+              <div>Données personnelles et bons usages au travail</div>
             </div>
             <ul className="text-sm text-left space-y-1 list-disc pl-5">
               <li>Comprendre les principes liés à l&apos;utilisation de l&apos;IA et à la AI literacy.</li>
@@ -164,7 +163,7 @@ export default function CertificatePreview({
             <table className="w-full text-sm text-left border border-slate-200">
               <tbody>
                 {[
-                  ["Durée pédagogique prévue", "max 1 h 30"],
+                  ["Durée pédagogique prévue", SOCLE_DURATION_LABEL],
                   ["Parcours complété", "100 %"],
                   ["Évaluation finale", `${proof.score} / 100`],
                   ["Seuil de réussite", "80 / 100"],
@@ -186,7 +185,7 @@ export default function CertificatePreview({
           <section className="space-y-3">
             <h3 className="text-xs font-bold tracking-widest text-blue-700">04 — Traçabilité</h3>
             <p className="text-left text-sm leading-relaxed">
-              Attestation générée automatiquement par ConformAI à partir des données de suivi enregistrées.
+              Attestation générée automatiquement par StartIA à partir des données de suivi enregistrées.
             </p>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 text-sm">
               <div className="space-y-2">
@@ -213,7 +212,7 @@ export default function CertificatePreview({
 
           <footer className="border-t border-slate-200 pt-6 space-y-3 text-sm">
             <div>
-              <div className="font-semibold">ConformAI</div>
+              <div className="font-semibold">StartIA</div>
               <div className="text-slate-600">
                 {specimen ? "Émetteur — spécimen de démonstration" : "Émetteur — attestation de suivi"}
               </div>

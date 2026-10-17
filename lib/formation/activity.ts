@@ -10,7 +10,18 @@ export type ActivityChoice = {
 type Brief = { briefing?: string };
 
 export type Activity =
-  | { kind: "text"; paragraphs: string[]; points?: string[] }
+  | {
+      kind: "text";
+      paragraphs: string[];
+      points?: string[];
+      /** Encadrés Avant / Après (ex. 7 réflexes) — évite de répéter les questions dans le texte */
+      beforeAfter?: {
+        beforeTitle: string;
+        before: string[];
+        afterTitle: string;
+        after: string[];
+      };
+    }
   | { kind: "video"; format: string; script: string; src?: string }
   | ({ kind: "quiz"; questions: { prompt: string; choices: ActivityChoice[] }[] } & Brief)
   | {
@@ -23,15 +34,65 @@ export type Activity =
       cards: { id: string; label: string; binId: string; explanation: string }[];
     }
   | {
+      /** Bulles flottantes : on découpe (souris / doigt) celles qui sont une donnée perso. */
+      kind: "slash";
+      briefing?: string;
+      intro: string;
+      /** Deux phrases centrées après le jeu (but de l'exercice). */
+      takeaway: string;
+      items: { id: string; label: string; personal: boolean; explanation: string }[];
+    }
+  | {
       kind: "stamp";
       briefing?: string;
       stamps: { id: string; label: string; hint: string }[];
       cards: { id: string; label: string; stampId: string; explanation: string }[];
     }
   | {
+      /** Une carte au centre : on la balance à gauche ou à droite. */
+      kind: "swipe";
+      briefing?: string;
+      left: { id: string; label: string };
+      right: { id: string; label: string };
+      cards: { id: string; label: string; zoneId: string; explanation: string }[];
+    }
+  | {
+      kind: "match";
+      briefing?: string;
+      instruction?: string;
+      /** Gauche = situations, droite = réponses à relier */
+      pairs: { id: string; left: string; right: string; explanation: string }[];
+    }
+  | {
       kind: "scenario";
       briefing?: string;
-      steps: { prompt: string; choices: ActivityChoice[]; mediaSrc?: string; imageSrc?: string }[];
+      steps: {
+        prompt: string;
+        choices: ActivityChoice[];
+        mediaSrc?: string;
+        /** Bandeau visible sur la vidéo (ex. « Générée par l'IA ») */
+        mediaLabel?: string;
+        imageSrc?: string;
+        imageSrcs?: string[];
+        imageAlt?: string;
+        imageCaption?: string;
+      }[];
+    }
+  | {
+      /** Vrai / faux : peu importe le choix, on révèle toujours l'opposé (leçon deepfake). */
+      kind: "truefake";
+      briefing?: string;
+      outro: string;
+      items: {
+        id: string;
+        prompt: string;
+        /** video (défaut) ou audio */
+        mediaKind?: "video" | "audio";
+        /** Média à brancher plus tard */
+        mediaSrc?: string;
+        /** Texte dans l'encadré vide tant qu'il n'y a pas de média */
+        mediaPlaceholder: string;
+      }[];
     }
   | { kind: "checklist"; intro: string; items: string[]; centered?: boolean }
   | {
@@ -64,7 +125,14 @@ export type Activity =
       kind: "spot";
       briefing?: string;
       intro: string;
-      fragments: { id: string; text: string; trap: boolean; explanation?: string }[];
+      fragments: {
+        id: string;
+        text: string;
+        trap: boolean;
+        /** Ordre presque invisible (encre pâle), à repérer. */
+        veiled?: boolean;
+        explanation?: string;
+      }[];
     }
   | {
       kind: "redact";
@@ -76,6 +144,7 @@ export type Activity =
     }
   | {
       kind: "traffic";
+      briefing?: string;
       items: { id: string; label: string; level: "green" | "orange" | "red"; explanation: string }[];
     }
   | {

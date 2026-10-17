@@ -339,7 +339,7 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
     exporteLe: exportedAt,
     mention:
       "Dossier d'aide à la documentation. Il ne constitue pas un conseil juridique et ne garantit pas à lui seul la conformité.",
-    dureePedagogique: "max 1 h 30",
+    dureePedagogique: "1 h 00",
     moduleEntreprise: {
       outils: module.tools,
       charte: module.charter,
@@ -355,11 +355,11 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
   };
 
   const pdfLines = [
-    "ConformAI — Dossier de preuve",
+    "StartIA — Preuves de parcours",
     companyName,
     `Export : ${exportedAt}`,
     "Aide a la documentation. Ne constitue pas un conseil juridique.",
-    "Duree pedagogique prevue : max 1 h 30",
+    "Duree pedagogique prevue : 1 h 00",
     "",
     "Attestations de suivi",
     ...attestations.map(

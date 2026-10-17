@@ -3,7 +3,7 @@ import RhApp from "@/components/rh/RhApp";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
-  title: "Espace RH — ConformAI",
+  title: "Espace RH — StartIA",
   description: "Pilotage RH : collaborateurs, conformité AI Act & RGPD, attestations.",
 };
 

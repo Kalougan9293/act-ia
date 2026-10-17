@@ -5,8 +5,8 @@ import { CheckCircle } from "lucide-react";
 
 const stats = [
   {
-    value: "Dossier de preuve Art. 4",
-    label: "Attestations de suivi et registre des usages",
+    value: "Preuves Art. 4",
+    label: "Attestations nominatives et suivi des parcours",
   },
   {
     value: "RS6776 & RS6601",
@@ -17,8 +17,8 @@ const stats = [
     label: "Nominative et horodatée",
   },
   {
-    value: "Registre pour le DPO",
-    label: "Qui a suivi quoi, et quelles IA sont utilisées",
+    value: "Suivi RH",
+    label: "Qui a suivi quoi, et qui est en retard",
   },
   {
     value: "Prise en main immédiate",
@@ -26,7 +26,7 @@ const stats = [
   },
   {
     value: "Veille réglementaire",
-    label: "Vous êtes informés des évolutions de l'AI Act et du RGPD. Le parcours suit l'actualité.",
+    label: "Vous êtes informés des évolutions de l'AI Act. Le parcours suit l'actualité.",
   },
 ];
 

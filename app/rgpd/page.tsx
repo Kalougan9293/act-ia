@@ -3,14 +3,14 @@ import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "RGPD — ConformAI",
+  title: "RGPD — StartIA",
 };
 
 export default function RgpdPage() {
   return (
     <LegalShell title="RGPD">
       <p>
-        ConformAI traite des données de compte et de formation pour délivrer le service. Les
+        StartIA traite des données de compte et de formation pour délivrer le service. Les
         détails figurent dans la{" "}
         <Link href="/confidentialite" className="text-blue-600 hover:underline dark:text-blue-400">
           politique de confidentialité

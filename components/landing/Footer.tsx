@@ -52,7 +52,7 @@ export default function Footer() {
             href="/"
             className="flex shrink-0 items-center gap-1.5 justify-self-start text-lg font-bold tracking-tight text-white"
           >
-            Conform<span className="text-blue-400">AI</span>
+            Start<span className="text-blue-400">IA</span>
             <GraduationCap className="h-5 w-5 text-blue-400" strokeWidth={2} aria-hidden="true" />
           </Link>
           <LinkLine items={legal} />
@@ -61,7 +61,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-3 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} ConformAI. Tous droits réservés.
+          © {new Date().getFullYear()} StartIA. Tous droits réservés.
         </div>
       </div>
     </footer>

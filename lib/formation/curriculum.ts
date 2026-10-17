@@ -1,4 +1,4 @@
-/** Contenu pédagogique Layer 1 — ConformAI. L'accueil lit les blocs ; les activités sont dans le socle. */
+/** Contenu pédagogique Layer 1 — StartIA. L'accueil lit les blocs ; les activités sont dans le socle. */
 
 import {
   BLOCKS as SOCLE_BLOCKS,
@@ -13,11 +13,15 @@ export const BLOCKS = SOCLE_BLOCKS;
 export { SEVEN_REFLEXES, REFLEXES_BEFORE, REFLEXES_AFTER };
 
 export const FORMATION_PROMISE =
-  "Des réflexes concrets pour utiliser l'IA sans vous faire piéger — ni mettre l'entreprise en danger. La loi le demande aussi (AI Act, Art. 4). Une attestation de suivi à la fin.";
+  "Des réflexes concrets pour utiliser l'IA sans vous faire piéger ni mettre l'entreprise en danger — AI Act (art. 4) et bases du RGPD —, avec une attestation de suivi à la fin.";
 
-/** Parcours complet : max 1h30 (plusieurs sessions possibles). */
-export const SOCLE_DURATION_LABEL = "max 1h30";
-export const FULL_PATH_DURATION_LABEL = "max 1h30";
+/** Durée pédagogique du socle (examen compris), reprise partout y compris sur l'attestation. */
+export const SOCLE_DURATION_LABEL = "1 h 00";
+export const FULL_PATH_DURATION_LABEL = "1 h 00";
+
+/** Intitulé officiel du parcours, aligné attestation PDF / aperçu. */
+export const ATTESTATION_COURSE_TITLE =
+  "Sensibilisation à la maîtrise de l'IA et aux bons usages des données au travail";
 
 export const AI_ACT_MILESTONES = [
   {
@@ -37,8 +41,8 @@ export const AI_ACT_MILESTONES = [
   },
   {
     date: "2 décembre 2026",
-    label: "Nouvelle interdiction",
-    detail: "Contenus intimes ou sexuels non consentis, contenus pédocriminels.",
+    label: "Deepfakes intimes — interdits",
+    detail: "Toujours l'Art. 5 : contenus intimes non consentis et contenus pédocriminels.",
   },
   {
     date: "2 décembre 2027",

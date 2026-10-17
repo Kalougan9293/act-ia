@@ -20,9 +20,9 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "ConformAI — Formation EU AI Act & RGPD pour les entreprises",
+  title: "StartIA — Formation EU AI Act & RGPD pour les entreprises",
   description:
-    "Formez les équipes qui utilisent l'IA. Attestations de suivi et registre pour la direction et le DPO.",
+    "Formez les équipes qui utilisent l'IA. Attestations de suivi et tableau de bord pour la direction et les RH.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

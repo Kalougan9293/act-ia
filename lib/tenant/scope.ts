@@ -64,7 +64,7 @@ export function employeesForRh(session: AppSession): Employee[] {
       name: u.name,
       email: u.email,
       role: u.role === "rh" ? "RH" : "Collaborateur",
-      path: "IA + RGPD",
+      path: "Socle IA",
       status: toStatus(u.progressPercent),
       percent: u.progressPercent ?? 0,
       lastSeen: formatLastSeen(u.lastLoginAt),

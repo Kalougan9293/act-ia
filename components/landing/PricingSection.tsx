@@ -26,7 +26,7 @@ const plans: Plan[] = [
       "Socle commun et parcours métiers",
       "Attestations nominatives",
       "Preuves conservées 12 mois après le contrat",
-      "Tableau de bord RH, registre et export",
+      "Tableau de bord RH, suivi et export",
       "Veille incluse : le parcours suit l'actualité",
       "Support par email",
     ],
@@ -41,7 +41,7 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Module sur mesure, à la demande",
+      "Modules sur mesure, à la demande",
       "Support prioritaire",
     ],
     cta: "Démarrer maintenant",
@@ -51,12 +51,12 @@ const plans: Plan[] = [
     seats: "21 à 50 salariés",
     price: "990 €",
     priceLabel: "/ an",
-    highlight: true,
+    highlight: false,
     features: [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
     ],
-    cta: "Constituer le dossier de preuve",
+    cta: "Démarrer maintenant",
   },
   {
     name: "ETI",
@@ -69,7 +69,7 @@ const plans: Plan[] = [
       "Intégrations sur devis",
       "Contrat et support dédié",
     ],
-    cta: "Contacter l'équipe",
+    cta: "Démarrer maintenant",
   },
 ];
 
@@ -85,8 +85,8 @@ export default function PricingSection() {
           className="mb-8 text-center space-y-4"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, un{" "}
-            <span className="text-blue-600 dark:text-blue-400">registre</span> à jour
+            Un <span className="text-blue-600 dark:text-blue-400">prix</span> fixe, des{" "}
+            <span className="text-blue-600 dark:text-blue-400">attestations</span> à jour
           </h2>
         </motion.div>
 
@@ -152,8 +152,8 @@ export default function PricingSection() {
                 <a
                   href={
                     plan.name === "ETI"
-                      ? "mailto:contact@conformai.fr?subject=ConformAI%20ETI%20-%20devis"
-                      : "mailto:contact@conformai.fr?subject=ConformAI%20-%20demarrer"
+                      ? "mailto:contact@conformai.fr?subject=StartIA%20ETI%20-%20devis"
+                      : "mailto:contact@conformai.fr?subject=StartIA%20-%20demarrer"
                   }
                   className={`w-full text-center px-5 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
                     plan.highlight
@@ -170,9 +170,11 @@ export default function PricingSection() {
 
         <div className="mx-auto mt-4 flex max-w-3xl flex-col items-center gap-1 text-center text-base leading-relaxed text-slate-600 dark:text-slate-300">
           <p>
-            Option{" "}
-            <span className="font-medium text-blue-600 dark:text-blue-400">marque blanche</span>{" "}
-            disponible.
+            La plateforme peut aussi porter{" "}
+            <span className="font-medium text-blue-600 dark:text-blue-400">
+              votre logo et vos couleurs
+            </span>{" "}
+            (marque blanche).
           </p>
         </div>
       </div>

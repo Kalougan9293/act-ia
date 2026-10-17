@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "CGV — ConformAI",
+  title: "CGV — StartIA",
 };
 
 export default function CgvPage() {
@@ -11,7 +11,7 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Vendeur</h2>
         <p>
-          Les abonnements ConformAI sont vendus par FITOPS AI, micro-entreprise, 119 rue Jules
+          Les abonnements StartIA sont vendus par FITOPS AI, micro-entreprise, 119 rue Jules
           Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063. TVA non applicable, article
           293 B du CGI.
         </p>

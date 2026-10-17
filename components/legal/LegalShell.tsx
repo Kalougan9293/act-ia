@@ -17,7 +17,7 @@ export default function LegalShell({
             href="/"
             className="flex items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
           >
-            Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+            Start<span className="text-blue-600 dark:text-blue-400">IA</span>
             <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" strokeWidth={2} />
           </Link>
           <Link href="/" className="text-sm font-medium text-slate-500 hover:text-blue-600">

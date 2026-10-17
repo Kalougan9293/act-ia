@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,7 +16,6 @@ import {
   Timer,
   Trophy,
 } from "lucide-react";
-import VideoScript from "@/components/user/VideoScript";
 import ActivityPlayer from "@/components/user/ActivityPlayer";
 import LexiconBar from "@/components/user/LexiconTip";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
@@ -30,6 +29,7 @@ import {
   FORMATION_PROMISE,
   REFLEXES_AFTER,
   REFLEXES_BEFORE,
+  SOCLE_DURATION_LABEL,
   findChapter,
   type Block,
 } from "@/lib/formation/curriculum";
@@ -80,8 +80,16 @@ function shuffleChoices(question: QuizQuestion) {
   return indexed;
 }
 
-function toRound(questions: QuizQuestion[]): ShuffledQuestion[] {
-  return questions.map((q) => ({ q, options: shuffleChoices(q) }));
+function toRound(
+  questions: QuizQuestion[],
+  { shuffleOptions = true }: { shuffleOptions?: boolean } = {},
+): ShuffledQuestion[] {
+  return questions.map((q) => ({
+    q,
+    options: shuffleOptions
+      ? shuffleChoices(q)
+      : q.choices.map((text, index) => ({ text, index })),
+  }));
 }
 
 export default function FormationExperience({
@@ -113,7 +121,9 @@ export default function FormationExperience({
   } = useFormationProgress(uid);
 
   const [screen, setScreen] = useState<Screen | null>(null);
-  const [positioningRound] = useState(() => toRound(drawPositioningQuiz()));
+  const [positioningRound] = useState(() =>
+    toRound(drawPositioningQuiz(), { shuffleOptions: false }),
+  );
   const [positioningIndex, setPositioningIndex] = useState(0);
   const [positioningAnswers, setPositioningAnswers] = useState<(number | null)[]>(() =>
     Array.from({ length: positioningRound.length }, () => null),
@@ -133,6 +143,14 @@ export default function FormationExperience({
   const [quizReturn, setQuizReturn] = useState<"intro" | "hub">("intro");
 
   const active: Screen = screen ?? { kind: "intro" };
+
+  function withDesign(node: ReactNode) {
+    return (
+      <div data-design="v2" className="formation-shell relative">
+        {node}
+      </div>
+    );
+  }
 
   function openFinalQuiz(from: "intro" | "hub") {
     setQuizReturn(from);
@@ -162,7 +180,7 @@ export default function FormationExperience({
   }
 
   if (active.kind === "intro") {
-    return (
+    return withDesign(
       <IntroScreen
         firstName={firstName}
         fullName={fullName}
@@ -187,12 +205,12 @@ export default function FormationExperience({
         onOpenCompany={() => setScreen({ kind: "company" })}
         onOpenQuiz={() => openFinalQuiz("intro")}
         onOpenCareer={() => setScreen({ kind: "career" })}
-      />
+      />,
     );
   }
 
   if (active.kind === "positioning") {
-    return (
+    return withDesign(
       <QuizScreen
         variant="positioning"
         shuffled={positioningRound}
@@ -232,12 +250,12 @@ export default function FormationExperience({
           markPositioning(positioningScore ?? 0);
           setScreen({ kind: "intro" });
         }}
-      />
+      />,
     );
   }
 
   if (active.kind === "hub") {
-    return (
+    return withDesign(
       <HubScreen
         firstName={firstName}
         fullName={fullName}
@@ -251,20 +269,20 @@ export default function FormationExperience({
         onOpenCompany={() => setScreen({ kind: "company" })}
         onOpenQuiz={() => openFinalQuiz("hub")}
         onOpenCareer={() => setScreen({ kind: "career" })}
-      />
+      />,
     );
   }
 
   if (active.kind === "block") {
     const block = BLOCKS.find((b) => b.id === active.blockId);
     if (!block) return null;
-    return (
+    return withDesign(
       <BlockScreen
         block={block}
         completed={progress.completedChapters}
         onBack={() => setScreen({ kind: "intro" })}
         onOpenChapter={(chapterId) => setScreen({ kind: "chapter", chapterId })}
-      />
+      />,
     );
   }
 
@@ -273,7 +291,7 @@ export default function FormationExperience({
     if (!found) return null;
     const { block, chapter, index } = found;
     const next = block.chapters[index + 1];
-    return (
+    return withDesign(
       <ChapterScreen
         block={block}
         chapter={chapter}
@@ -284,12 +302,12 @@ export default function FormationExperience({
           if (next) setScreen({ kind: "chapter", chapterId: next.id });
           else setScreen({ kind: "intro" });
         }}
-      />
+      />,
     );
   }
 
   if (active.kind === "company") {
-    return (
+    return withDesign(
       <CompanyScreen
         companyName={companyName}
         companyModule={companyModule}
@@ -301,12 +319,12 @@ export default function FormationExperience({
             kind: progress.quizPassed && !progress.careerPathId ? "career" : "intro",
           });
         }}
-      />
+      />,
     );
   }
 
   if (active.kind === "quiz") {
-    return (
+    return withDesign(
       <QuizScreen
         variant="final"
         shuffled={quizRound}
@@ -361,12 +379,12 @@ export default function FormationExperience({
         continueCareerHint="Bravo ! Vous savez utiliser l'IA sans vous faire piéger. Attestation Art. 4 disponible. Les bonus restent facultatifs."
         onOpenCompany={() => setScreen({ kind: "company" })}
         onFinish={() => setScreen({ kind: quizReturn })}
-      />
+      />,
     );
   }
 
   if (active.kind === "career") {
-    return (
+    return withDesign(
       <CareerScreen
         selected={progress.careerPathId}
         onBack={() => setScreen({ kind: "intro" })}
@@ -374,7 +392,7 @@ export default function FormationExperience({
           markCareer(id);
           setScreen({ kind: "intro" });
         }}
-      />
+      />,
     );
   }
 
@@ -550,9 +568,6 @@ function IntroScreen({
     : quizPassed
       ? "current"
       : "locked";
-  const careerTitle = careerPathId
-    ? CAREER_PATHS.find((path) => path.id === careerPathId)?.title ?? "Parcours choisi"
-    : null;
 
   function openOrDeny(id: string, locked: boolean, onOpen: () => void) {
     if (!locked) {
@@ -568,10 +583,10 @@ function IntroScreen({
   return (
     <div className="mx-auto max-w-3xl space-y-7 py-6 text-center sm:space-y-8">
       <div className="space-y-4 sm:space-y-5">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 sm:text-sm">
-          ConformAI Academy
+        <p className="formation-kicker text-center text-xs font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 sm:text-sm">
+          StartIA Academy
         </p>
-        <h1 className="text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+        <h1 className="formation-title text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Bienvenue{firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
@@ -609,7 +624,13 @@ function IntroScreen({
               <div className="border-orbit-line" />
             </div>
           )}
-          <span className="relative flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full bg-slate-50 px-3 py-1.5 dark:bg-slate-950">
+          <span
+            className={`relative flex max-w-full flex-wrap items-center justify-center gap-2 rounded-full px-3 py-1.5 ${
+              positioningDone
+                ? "bg-emerald-50 dark:bg-emerald-950/40"
+                : "bg-slate-50 dark:bg-slate-900"
+            }`}
+          >
             {positioningDone ? (
               <Check className="h-3.5 w-3.5" aria-hidden />
             ) : (
@@ -618,7 +639,7 @@ function IntroScreen({
             <span>
               {positioningDone
                 ? "Faisons connaissance — terminé"
-                : `Faisons connaissance · ${positioningCount} questions rapides · pas de mauvaise réponse`}
+                : `Faisons connaissance · ${positioningCount} questions rapides`}
             </span>
           </span>
           <span className="sr-only">
@@ -747,7 +768,7 @@ function IntroScreen({
           <PathCard
             label="Bonus"
             title="Parcours métier"
-            meta={careerTitle ?? "Optionnel"}
+            meta={careerPathId ? "Validé" : "Optionnel"}
             state={careerState}
             denied={deniedId === "career"}
             onClick={() => openOrDeny("career", careerState === "locked", onOpenCareer)}
@@ -757,15 +778,12 @@ function IntroScreen({
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-xl space-y-2.5 pt-6 text-center">
-        <p className="text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-          Examen final : {QUIZ_DRAW_SIZE} questions.
-        </p>
+      <div className="mx-auto w-full max-w-xl pt-6 text-center">
         <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-slate-400">
-          <span>Plusieurs sessions possibles</span>
+          <span>À faire en une ou plusieurs fois · {SOCLE_DURATION_LABEL}</span>
           <span className="inline-flex items-center gap-1">
             <Smartphone className="h-4 w-4 shrink-0" aria-hidden />
-            Mobile OK
+            Compatible téléphone
           </span>
         </p>
       </div>
@@ -852,7 +870,7 @@ function LearnerAttestation({
             name: fullName,
             email: "",
             role,
-            path: "IA + RGPD",
+            path: "Socle IA",
             status: "done",
             percent: 100,
             lastSeen: proof.date,
@@ -1052,33 +1070,29 @@ function chapterTeaser(chapter: Block["chapters"][number]): string {
   const teasers: Record<string, string> = {
     "1.1": "Pourquoi vous êtes ici",
     "1.2": "Comment elle écrit",
-    "1.3": "Classique, ou qui crée ?",
+    "1.3": "IA classique ou Générative ?",
     "1.4": "Quatre mots, sans la définition écrite",
-    "1.5": "Quelle suite choisirait-elle ?",
+    "1.5": "Quelle suite l'IA choisirait-elle ?",
     "1.6": "Repérez ce qu'il ne faut pas reprendre",
     "1.7": "Avant d'utiliser une réponse",
     "2.1": "La loi, votre rôle, les quatre niveaux",
-    "2.2": "Depuis quand c'est obligatoire ?",
+    "2.2": "Depuis quand l'article 4 s'applique ?",
     "2.3": "J'utilise ou je vends ?",
-    "2.4": "Quel niveau de règle ?",
-    "2.5": "La phrase à écrire au client",
-    "2.6": "Deux cas de chatbot",
-    "2.7": "Cinq dates, pour fermer le bloc",
-    "3.1": "Ce que vous pouvez coller",
-    "3.2": "Je peux, je fais attention, je ne colle pas",
-    "3.3": "Trois réflexes concrets",
+    "2.4": "Quel niveau de risque ?",
+    "2.5": "Cinq dates, pour fermer le bloc",
+    "3.1": "Ce que vous pouvez saisir",
+    "3.2": "OK, prudence, interdit",
+    "3.3": "Feu vert, orange ou rouge",
     "3.4": "Gardez une demande utile",
     "3.5": "Trois questions avant d'ouvrir l'outil",
     "3.6": "La réunion, y compris les externes",
-    "3.7": "Si vous avez collé ce qu'il ne fallait pas",
+    "3.7": "Si vous avez mis ce qu'il ne fallait pas",
     "4.1": "L'IA propose, vous décidez",
     "4.2": "Qui valide vraiment ?",
-    "4.3": "Un score peut être injuste",
-    "4.4": "Lisez aussi le bas de la liste",
-    "4.5": "Avant de publier",
-    "4.6": "Je publie, ou je vérifie ?",
-    "4.7": "Elle ne doit pas agir seule",
-    "4.8": "L'ordre caché dans le mail",
+    "4.3": "Reliez la bonne règle",
+    "4.4": "Avant de publier ou d'agir",
+    "4.5": "Je publie, ou je vérifie ?",
+    "4.6": "Ce qui pourrait faire agir l'IA",
     "5.1": "Ce qu'est un deepfake, et les deux gestes",
     "5.2": "Le faux directeur, puis la publication",
     "6.1": "Les sept questions, expliquées",
@@ -1145,34 +1159,27 @@ function activityTone(format: string) {
 
 const BLOCK_RECAPS: Record<string, string[]> = {
   "bloc-1": [
+    "Je suis ici parce que l'entreprise doit prendre des mesures pour que je sache utiliser l'IA. L'attestation le prouve.",
     "L'outil choisit la suite la plus probable. Ce n'est pas forcément vrai.",
-    "Je vérifie les chiffres, les sources et les lois avant de les reprendre.",
-    "Je suis ici parce que l'entreprise doit former ses équipes. L'attestation le prouve.",
+    "Je vérifie les chiffres, les noms et les sources avant de les reprendre.",
   ],
   "bloc-2": [
-    "J'utilise un outil déjà en vente, ou mon entreprise vend une IA. Ce n'est pas le même rôle.",
-    "Un chatbot doit dire clairement qu'il est une IA.",
-    "Je ne récite pas toutes les dates. Je sais ce qui est déjà en vigueur, et ce que change décembre 2026.",
+    "Presque tout le monde utilise un outil déjà en vente (ChatGPT, Copilot). Si mon entreprise fabrique une IA et la vend sous son nom, les règles sont plus lourdes.",
+    "Risque limité : on dit clairement que c'est une IA. Risque inacceptable : émotions ou religion d'après une photo, on ne le fait pas.",
+    "Je sais ce qui est déjà en vigueur, et ce que change décembre 2026.",
   ],
   "bloc-3": [
-    "L'outil n'est pas un carnet privé. Le texte peut être enregistré et ressortir.",
-    "Je peux, je fais attention, ou je ne colle pas. La santé et les secrets ne partent pas.",
-    "Si je me trompe, je préviens tout de suite.",
+    "L'outil n'est pas un carnet privé. OK, prudence, ou interdit.",
+    "Santé et secrets : interdit. Si je me trompe, je préviens tout de suite.",
   ],
   "bloc-4": [
     "L'IA prépare. C'est moi qui décide, surtout quand une personne est concernée.",
-    "Je lis aussi les CV du bas. Un score ne choisit pas à ma place.",
-    "Je ne laisse pas l'outil envoyer, payer ou publier seul.",
+    "Score, envoi, paiement, publication : un humain doit toujours garder la main.",
   ],
   "bloc-5": [
     "Une vidéo nette ne prouve plus que la personne a vraiment parlé.",
     "Face à un message trop urgent, je rappelle sur un numéro que je connais déjà.",
     "Si j'en publie une, je dis clairement qu'elle est générée.",
-  ],
-  "bloc-6": [
-    "Avant : secret, personne, vie privée, outil autorisé.",
-    "Après : j'ai vérifié, un humain décide, je préviens si besoin.",
-    "Un doute ? Je demande. Je ne devine pas.",
   ],
 };
 
@@ -1196,7 +1203,7 @@ function BlockScreen({
       : block.id === "bloc-2"
         ? ["ai-act", "art4", "art5", "art50", "haut-risque", "deployeur"]
         : block.id === "bloc-3"
-          ? ["donnee-perso", "shadow-ai", "referent"]
+          ? ["donnee-perso", "shadow-ai", "referent", "dpo"]
           : block.id === "bloc-4"
             ? ["supervision-humaine", "referent"]
             : block.id === "bloc-5"
@@ -1345,7 +1352,7 @@ function printReflexSheet() {
   doc.open();
   doc.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Les 7 réflexes IA</title>
     <style>body{font-family:Georgia,serif;max-width:640px;margin:2.5rem auto;color:#0f172a;padding:0 1.5rem;text-align:center}h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:1.6rem}p,li{line-height:1.45}ol{list-style:none;padding:0;margin:0}</style>
-    </head><body><p>ConformAI · AI Act Art. 4</p><h1>Les 7 réflexes</h1>
+    </head><body><p>StartIA · AI Act Art. 4</p><h1>Les 7 réflexes</h1>
     <h2>Avant d'écrire à l'IA</h2><ol>${before}</ol>
     <h2>Après la réponse de l'IA</h2><ol>${after}</ol>
     <p><strong>Un doute ?</strong> Je ne devine pas. Je demande à mon manager ou au référent IA.</p></body></html>`);
@@ -1373,7 +1380,7 @@ function ChapterScreen({
 }) {
   const kind = chapter.activity.kind;
   const ackRequired = needsAck(kind, chapter.id, chapter.duration);
-  const mountMs = mountDwellMs(kind, chapter.duration);
+  const mountMs = mountDwellMs(kind, chapter.duration, chapter.id);
   const holdMs = feedbackHoldMs(kind);
   // Vidéo / texte / fiche : prêts dès l'ouverture (le dwell gère l'attente)
   const instantActivity =
@@ -1388,7 +1395,7 @@ function ChapterScreen({
 
   // Dwell à l'ouverture (lecture / script vidéo)
   useEffect(() => {
-    const nextMount = mountDwellMs(kind, chapter.duration);
+    const nextMount = mountDwellMs(kind, chapter.duration, chapter.id);
     const nextHold = feedbackHoldMs(kind);
     const nextInstant =
       kind === "video" || kind === "text" || kind === "fiche";
@@ -1451,7 +1458,7 @@ function ChapterScreen({
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-7 sm:space-y-8">
+    <div className="mx-auto w-full max-w-3xl space-y-7 sm:space-y-8">
       <div className="px-1">
         <ol className="flex justify-between gap-1">
           {block.chapters.map((item, index) => {
@@ -1611,6 +1618,7 @@ function CompanyScreen({
           {filled ? `Consignes internes · ${companyName}` : `En attente de votre RH · ${companyName}`}
         </p>
       </div>
+
       <div className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
           Registre des usages IA
@@ -1680,7 +1688,7 @@ function CompanyScreen({
           </div>
         ))}
       </div>
-      <p className="text-justify text-xs text-slate-400 hyphens-auto">
+      <p className="text-center text-xs text-slate-400">
         Ce module n&apos;entre pas dans le QCM : son contenu est renseigné par votre RH.
       </p>
       <button
@@ -1803,19 +1811,19 @@ function QuizScreen({
   function positioningProfile(yes: number) {
     if (yes <= 3) {
       return {
-        title: "On démarre ensemble",
-        text: "Pas grave ! On est là pour ça.",
+        title: "Pas d'inquiétude",
+        text: "Vous partez de zéro, et c'est tout à fait normal : la formation vous guide étape par étape.",
       };
     }
     if (yes <= 6) {
       return {
-        title: "Vous avez déjà des bases",
-        text: "Super, on va pouvoir peaufiner tout ça !",
+        title: "Bonne nouvelle !",
+        text: "Vous avez déjà des bases : la formation va les préciser et les renforcer.",
       };
     }
     return {
-      title: "Vous connaissez déjà bien",
-      text: "Trop bien, ça va aller vite pour la formation.",
+      title: "Bonne nouvelle !",
+      text: "La formation va se dérouler facilement pour vous.",
     };
   }
 
@@ -1876,15 +1884,12 @@ function QuizScreen({
     return (
       <div className="mx-auto max-w-lg space-y-6 py-8 text-center">
         <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">
-          {variant === "positioning" ? "Faisons connaissance !" : "Résultat de l'examen"}
+          {variant === "positioning" ? profile.title : "Résultat de l'examen"}
         </h1>
         {variant === "positioning" ? (
           <div className="space-y-3">
-            <p className="text-center text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl dark:text-white">
+            <p className="text-center text-xl font-semibold leading-snug text-slate-900 sm:text-2xl dark:text-white">
               {profile.text}
-            </p>
-            <p className="text-center text-lg font-semibold text-blue-700 dark:text-blue-300">
-              {profile.title}
             </p>
             <p className="text-center text-base text-slate-600 dark:text-slate-300">
               {yes} « oui » sur {total}
@@ -1901,7 +1906,7 @@ function QuizScreen({
         )}
         <p className="mx-auto max-w-md text-center text-base leading-relaxed text-slate-700 dark:text-slate-200">
           {variant === "positioning"
-            ? "Il n'y a pas de mauvaise réponse. On part de là où vous en êtes."
+            ? "On part de là où vous en êtes."
             : passed
               ? nextHint
               : `Presque ! ${
@@ -2026,6 +2031,10 @@ function QuizScreen({
   if (!current) return null;
   const selected = answers[index];
   const isFinal = variant === "final";
+  const retainText =
+    selected != null && current.q.explanations
+      ? (current.q.explanations[selected] ?? current.q.explanation)
+      : current.q.explanation;
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
@@ -2056,7 +2065,7 @@ function QuizScreen({
         </h1>
         {variant === "positioning" && index === 0 && !reveal && (
           <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-500 sm:text-base">
-            8 questions rapides. Il n&apos;y a pas de mauvaise réponse.
+            8 questions rapides.
           </p>
         )}
       </div>
@@ -2173,10 +2182,12 @@ function QuizScreen({
             className={
               isFinal
                 ? "mt-2 text-center text-base leading-relaxed text-slate-800 dark:text-slate-100"
-                : "mt-3 text-center text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white"
+                : `mt-3 text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white ${
+                    retainText.length > 160 ? "text-justify" : "text-center"
+                  }`
             }
           >
-            {current.q.explanation}
+            {retainText}
           </p>
         </div>
       )}
@@ -2230,6 +2241,16 @@ const CAREER_CARD_STYLE: Record<
     card: "border-emerald-200 bg-emerald-50/80 hover:border-emerald-400 hover:bg-emerald-100/80 dark:border-emerald-800 dark:bg-emerald-950/30 dark:hover:border-emerald-600",
     selected: "border-emerald-500 bg-emerald-100 ring-2 ring-emerald-300/60 dark:border-emerald-400 dark:bg-emerald-950/50 dark:ring-emerald-700",
   },
+  finance: {
+    emoji: "💶",
+    card: "border-teal-200 bg-teal-50/80 hover:border-teal-400 hover:bg-teal-100/80 dark:border-teal-800 dark:bg-teal-950/30 dark:hover:border-teal-600",
+    selected: "border-teal-500 bg-teal-100 ring-2 ring-teal-300/60 dark:border-teal-400 dark:bg-teal-950/50 dark:ring-teal-700",
+  },
+  support: {
+    emoji: "🎧",
+    card: "border-cyan-200 bg-cyan-50/80 hover:border-cyan-400 hover:bg-cyan-100/80 dark:border-cyan-800 dark:bg-cyan-950/30 dark:hover:border-cyan-600",
+    selected: "border-cyan-500 bg-cyan-100 ring-2 ring-cyan-300/60 dark:border-cyan-400 dark:bg-cyan-950/50 dark:ring-cyan-700",
+  },
   tous: {
     emoji: "✨",
     card: "border-slate-200 bg-slate-50/90 hover:border-slate-400 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:hover:border-slate-500",
@@ -2248,13 +2269,16 @@ function CareerScreen({
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [caseRevealed, setCaseRevealed] = useState(false);
-  const [quizIndex, setQuizIndex] = useState(0);
-  const [quizReveal, setQuizReveal] = useState(false);
-  const [picked, setPicked] = useState<number | null>(null);
   const path = CAREER_PATHS.find((item) => item.id === openId) ?? null;
-  const careerChoices = [...CAREER_PATHS].sort((a, b) =>
-    a.id === "tous" ? 1 : b.id === "tous" ? -1 : 0,
-  );
+  const careerChoices = (() => {
+    const others = CAREER_PATHS.find((item) => item.id === "tous");
+    const support = CAREER_PATHS.find((item) => item.id === "support");
+    const rest = CAREER_PATHS.filter(
+      (item) => item.id !== "tous" && item.id !== "support",
+    );
+    const tail = [support, others].filter(Boolean) as typeof CAREER_PATHS;
+    return [...rest, ...tail];
+  })();
 
   if (!path) {
     return (
@@ -2270,7 +2294,7 @@ function CareerScreen({
         <div>
           <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Parcours métier</h1>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm text-slate-500">
-            Choisissez le parcours le plus proche de votre métier. Un seul suffit : vidéo, cas pratique, puis 3 questions.
+            Le socle est commun. Ici, choisissez le parcours le plus proche de votre métier : un texte court, un cas pratique, puis une idée d&apos;usage IA.
           </p>
         </div>
         <ul className="grid gap-2.5 sm:grid-cols-2">
@@ -2284,9 +2308,6 @@ function CareerScreen({
                   onClick={() => {
                     setOpenId(item.id);
                     setCaseRevealed(false);
-                    setQuizIndex(0);
-                    setQuizReveal(false);
-                    setPicked(null);
                   }}
                   className={`w-full rounded-xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
                     isSelected ? style.selected : style.card
@@ -2301,13 +2322,22 @@ function CareerScreen({
             );
           })}
         </ul>
+        <div className="mx-auto max-w-lg space-y-3 text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="text-center font-semibold text-slate-800 dark:text-slate-100">
+            Et si l&apos;IA s&apos;adaptait vraiment à votre métier ?
+          </p>
+          <p className="text-center">
+            Mails, dossiers, reporting, automatisation… Avec StartIA, allez plus loin grâce à une
+            formation sur mesure, conçue autour de vos besoins et de vos objectifs.
+          </p>
+          <p className="text-center font-semibold text-slate-800 dark:text-slate-100">
+            Moins de tâches répétitives, plus de temps et de performance. Devenez un spécialiste
+            de l&apos;IA !
+          </p>
+        </div>
       </div>
     );
   }
-
-  const question = path.questions[quizIndex]!;
-  const options = question.choices.map((text, index) => ({ text, index }));
-  const finished = quizReveal && quizIndex === path.questions.length - 1;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -2321,11 +2351,22 @@ function CareerScreen({
       </button>
       <div className="text-center">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{path.title}</h1>
-        <p className="mt-2 text-sm text-slate-500">{path.focus}</p>
+        <p className="mt-2 text-center text-sm text-slate-500">{path.focus}</p>
       </div>
-      <VideoScript format="vidéo métier" script={path.script} />
+
+      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
+        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+          À retenir
+        </p>
+        <p className="mt-3 whitespace-pre-line text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+          {path.briefing}
+        </p>
+      </div>
+
       <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">Cas pratique</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Cas pratique
+        </p>
         <p className="mt-2 text-center text-sm text-slate-800 dark:text-slate-100">{path.casePrompt}</p>
         {!caseRevealed ? (
           <button
@@ -2336,86 +2377,41 @@ function CareerScreen({
             Voir la correction expliquée
           </button>
         ) : (
-          <p className="mt-4 text-center text-sm leading-relaxed text-emerald-900 dark:text-emerald-100">{path.caseCorrection}</p>
+          <p className="mt-4 text-center text-sm leading-relaxed text-emerald-900 dark:text-emerald-100">
+            {path.caseCorrection}
+          </p>
         )}
       </div>
+
       {caseRevealed && (
-        <div className="space-y-3">
-          <p className="text-center text-xs font-semibold text-blue-600 dark:text-blue-400">
-            Question {quizIndex + 1} / {path.questions.length}
-          </p>
-          <h2 className="text-center text-xl font-bold leading-snug text-slate-900 dark:text-white sm:text-2xl">
-            {question.prompt}
-          </h2>
-          <ul className="space-y-3">
-            {options.map((opt) => {
-              const isSelected = picked === opt.index;
-              const isCorrect = opt.index === question.correctIndex;
-              let style = "border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100";
-              if (quizReveal && isCorrect) style = "border-emerald-700 bg-emerald-600 font-semibold text-white";
-              else if (quizReveal && isSelected && !isCorrect) style = "border-red-900 bg-red-800 font-semibold text-white";
-              else if (isSelected) style = "border-blue-400 bg-blue-50 text-slate-800 dark:bg-blue-950/30 dark:text-slate-100";
-              return (
-                <li key={opt.text}>
-                  <button
-                    type="button"
-                    disabled={quizReveal}
-                    onClick={() => {
-                      setPicked(opt.index);
-                      setQuizReveal(true);
-                    }}
-                    className={`w-full rounded-xl border px-4 py-4 text-center text-base leading-relaxed sm:px-5 sm:text-[1.05rem] ${style}`}
-                  >
-                    {opt.text}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {quizReveal && (
-            <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-center text-base leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-              {question.explanation}
+        <div className="space-y-4">
+          <div className="rounded-2xl border-2 border-blue-300 bg-blue-50 px-5 py-4 text-center dark:border-blue-600 dark:bg-blue-950/40">
+            <p className="text-center text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+              Idée d&apos;usage IA
             </p>
-          )}
-          {quizReveal && !finished && (
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setQuizIndex((i) => i + 1);
-                  setQuizReveal(false);
-                  setPicked(null);
-                }}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white"
-              >
-                Question suivante
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          {finished && !selected && (
+            <p className="mt-2 text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+              {path.aiTip}
+            </p>
+          </div>
+
+          {!selected && (
             <div className="flex justify-center">
               <button
                 type="button"
                 onClick={() => onSelect(path.id)}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-700"
               >
-                Valider et obtenir l&apos;attestation
-                <ArrowRight className="h-4 w-4" />
+                Valider le parcours
+                <Check className="h-4 w-4" />
               </button>
             </div>
           )}
-          {finished && (
-            <p className="text-center text-sm text-slate-600 dark:text-slate-300">
-              On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
-            </p>
-          )}
-          {finished && selected === path.id && (
+          {selected === path.id && (
             <p className="text-center text-sm font-medium text-emerald-700 dark:text-emerald-300">
-              Parcours déjà validé.
+              Parcours validé — la carte est verte sur l&apos;accueil.
             </p>
           )}
-          {finished && selected && selected !== path.id && (
+          {selected && selected !== path.id && (
             <p className="text-center text-sm text-slate-500">
               Un parcours est déjà validé. Le socle ne se complète qu&apos;avec un seul métier.
             </p>

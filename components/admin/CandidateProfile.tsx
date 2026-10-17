@@ -98,7 +98,7 @@ export default function CandidateProfile({ userId }: { userId: string }) {
             </Link>
             <span className="hidden sm:inline text-slate-300">|</span>
             <span className="hidden sm:inline-flex items-center gap-1.5 font-bold text-lg tracking-tight">
-              Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
               <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </span>
           </div>

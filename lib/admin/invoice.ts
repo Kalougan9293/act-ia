@@ -80,7 +80,7 @@ function invoiceHtml(structure: Structure) {
     <tbody>
       <tr>
         <td>
-          Abonnement ConformAI · ${escapeHtml(PLAN_LABELS[billing.plan])}<br>
+          Abonnement StartIA · ${escapeHtml(PLAN_LABELS[billing.plan])}<br>
           <span class="muted">${billing.seats} accès · prochaine échéance ${escapeHtml(formatDate(billing.nextInvoiceAt))}</span>
         </td>
         <td class="amount">${escapeHtml(money(billing.priceMonthlyEur))}</td>

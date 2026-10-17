@@ -46,7 +46,7 @@ export default function CompanyCertificate({
   const stats = companyTrainingStats(employees.length ? employees : []);
   const hours = employees.length ? stats.hours : done * TRAINING_HOURS_EACH;
   const certified = employees.length ? stats.certified : unlocked ? total : 0;
-  const badgeText = `${company} — attestations de suivi à jour pour l'article 4 et le RGPD. Registre ConformAI ${registryId}.`;
+  const badgeText = `${company} — attestations de suivi à jour pour l'article 4. Suivi StartIA ${registryId}.`;
 
   async function copyBadge() {
     try {
@@ -71,12 +71,12 @@ export default function CompanyCertificate({
 
         <article className="overflow-hidden rounded-sm bg-[#fbf8f1] text-slate-900 shadow-2xl">
           <div className="bg-emerald-800 px-8 py-3 text-center text-xs font-semibold tracking-[0.28em] text-emerald-50">
-            CONFORMAI · REGISTRE 2026
+            StartIA · REGISTRE 2026
           </div>
           <div className="border-[10px] border-emerald-800/90 px-6 py-8 sm:px-10">
             <div className="border border-emerald-700/30 px-6 py-8 text-center">
               {!unlocked && (
-                <div className="mb-4 text-xs font-semibold uppercase tracking-widest text-amber-700">
+                <div className="mb-4 text-center text-xs font-semibold uppercase tracking-widest text-amber-700">
                   Aperçu — disponible lorsque chaque collaborateur a une attestation de suivi
                 </div>
               )}
@@ -84,22 +84,27 @@ export default function CompanyCertificate({
               <h2 className="mt-5 text-xl font-bold tracking-tight sm:text-2xl">
                 Rapport d&apos;engagement — Article 4
               </h2>
-              <p className="mt-2 text-sm text-slate-600">Attestations de suivi · AI Act (article 4) &amp; RGPD</p>
+              <p className="mt-2 text-center text-sm text-slate-600">
+                Attestations de suivi · AI Act (article 4)
+              </p>
 
-              <p className="mt-8 text-xs uppercase tracking-[0.2em] text-slate-500">Raison sociale</p>
-              <p className="mt-1 text-3xl font-semibold">{company}</p>
+              <p className="mt-8 text-center text-xs uppercase tracking-[0.2em] text-slate-500">
+                Raison sociale
+              </p>
+              <p className="mt-1 text-center text-3xl font-semibold">{company}</p>
 
               <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-800 px-4 py-1.5 text-sm font-semibold text-white">
                 <ShieldCheck className="h-4 w-4" />
                 {done}/{total} collaborateurs formés · {total === 0 ? 0 : Math.round((done / total) * 100)} %
               </div>
-              <p className="mt-3 text-sm text-slate-700">
-                {hours} h de formation · {certified} attestation{certified > 1 ? "s" : ""} émise{certified > 1 ? "s" : ""}
+              <p className="mt-3 text-center text-sm text-slate-700">
+                {hours} h de formation · {certified} attestation{certified > 1 ? "s" : ""} émise
+                {certified > 1 ? "s" : ""}
               </p>
 
               <dl className="mx-auto mt-8 max-w-md space-y-3 text-left text-sm">
                 <div>
-                  <dt className="text-xs uppercase tracking-wider text-slate-500">Identifiant registre</dt>
+                  <dt className="text-xs uppercase tracking-wider text-slate-500">Identifiant suivi</dt>
                   <dd className="font-mono text-sm">{registryId}</dd>
                 </div>
                 <div>
@@ -108,12 +113,12 @@ export default function CompanyCertificate({
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Périmètre validé</dt>
-                  <dd>Usage des IA génératives, protection des données et cadre EU AI Act &amp; RGPD.</dd>
+                  <dd>Usage des IA génératives, protection des données et cadre EU AI Act (article 4).</dd>
                 </div>
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Volume d&apos;heures</dt>
                   <dd>
-                    {Number.isInteger(hours) ? hours : hours.toLocaleString("fr-FR")} h — max 1 h 30 par
+                    {Number.isInteger(hours) ? hours : hours.toLocaleString("fr-FR")} h — 1 h 00 par
                     collaborateur au parcours validé (100 %).
                   </dd>
                 </div>
@@ -128,8 +133,8 @@ export default function CompanyCertificate({
                 </div>
               </dl>
 
-              <p className="mx-auto mt-8 max-w-md text-xs leading-relaxed text-slate-500">
-                Document émis par ConformAI et conservé dans le registre de suivi. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique. Le récapitulatif nominatif horodaté est dans le PDF.
+              <p className="mx-auto mt-8 max-w-md text-center text-xs leading-relaxed text-slate-500">
+                Document émis par StartIA et conservé dans le suivi des parcours. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique. Le récapitulatif nominatif horodaté est dans le PDF.
               </p>
             </div>
           </div>
@@ -155,7 +160,7 @@ export default function CompanyCertificate({
             </span>
             <span className="text-left">
               <span className="block text-sm font-bold text-emerald-900">{company}</span>
-              <span className="block text-xs text-emerald-800">Suivi à jour · AI Act &amp; RGPD · 2026</span>
+              <span className="block text-xs text-emerald-800">Suivi à jour · AI Act Art. 4 · 2026</span>
             </span>
           </div>
           <button

@@ -14,11 +14,11 @@ export default function DemoApp() {
   const [view, setView] = useState<View>("rh");
 
   return (
-    <div className={`min-h-screen ${view === "rh" ? "bg-blue-50 dark:bg-slate-950" : "bg-violet-50 dark:bg-slate-950"}`}>
+    <div className={`min-h-screen ${view === "rh" ? "bg-blue-50 dark:bg-slate-950" : "bg-slate-50 dark:bg-slate-950"}`}>
       <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight shrink-0">
-            Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+            Start<span className="text-blue-600 dark:text-blue-400">IA</span>
             <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" strokeWidth={2} aria-hidden="true" />
           </Link>
 

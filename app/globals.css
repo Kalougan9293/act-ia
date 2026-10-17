@@ -279,6 +279,88 @@ p.text-center {
   animation: sort-target-pulse 1.2s ease-in-out infinite;
 }
 
+.tube-liquid {
+  transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tube-liquid-layer {
+  transition: background-color 0.45s ease, height 0.45s ease;
+}
+
+@keyframes tube-splash {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(var(--splash-x, 0), var(--splash-y, -24px)) scale(0.25);
+    opacity: 0;
+  }
+}
+
+.tube-splash-drop {
+  width: 7px;
+  height: 7px;
+  animation: tube-splash 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tube-liquid,
+  .tube-liquid-layer,
+  .tube-splash-drop {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes traffic-lamp-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 255 255 / 0%);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgb(255 255 255 / 0.28);
+  }
+}
+
+@keyframes traffic-sun-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes traffic-cloud-drift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(18px);
+  }
+}
+
+.traffic-lamp-pulse {
+  animation: traffic-lamp-pulse 1s ease-in-out infinite;
+}
+
+.traffic-sun {
+  animation: traffic-sun-bob 3.5s ease-in-out infinite;
+}
+
+.traffic-cloud {
+  animation: traffic-cloud-drift 8s ease-in-out infinite alternate;
+}
+
+.traffic-cloud-slow {
+  animation: traffic-cloud-drift 12s ease-in-out infinite alternate-reverse;
+}
+
 @keyframes cube-nudge {
   0%,
   100% {
@@ -383,4 +465,188 @@ p.text-center {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ——— Design formation (peau discrète, sans fond encadré) ——— */
+.formation-shell[data-design="v2"] {
+  --v2-accent: #5b21b6;
+  min-height: 100%;
+}
+
+.formation-shell[data-design="v2"] .formation-kicker {
+  color: var(--v2-accent);
+  letter-spacing: 0.28em;
+  font-weight: 700;
+}
+.dark .formation-shell[data-design="v2"] .formation-kicker {
+  color: #c4b5fd;
+}
+
+.formation-shell[data-design="v2"] .formation-title {
+  font-family: var(--font-reading), Georgia, serif;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #0f172a 0%, #312e81 55%, #5b21b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dark .formation-shell[data-design="v2"] .formation-title {
+  background: linear-gradient(135deg, #f8fafc 0%, #e9d5ff 60%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.formation-shell[data-design="v2"] h1,
+.formation-shell[data-design="v2"] h2 {
+  font-family: var(--font-reading), Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+.formation-shell[data-design="v2"] button.group.relative.w-full {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.7) inset,
+    0 10px 28px rgb(15 23 42 / 0.07);
+}
+.formation-shell[data-design="v2"] button.group.relative.w-full:hover {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.8) inset,
+    0 16px 36px rgb(91 33 182 / 0.14);
+}
+.dark .formation-shell[data-design="v2"] button.group.relative.w-full {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 12px 30px rgb(0 0 0 / 0.35);
+}
+
+.formation-shell[data-design="v2"] .rounded-2xl.border-2.border-blue-400 {
+  border-color: rgb(167 139 250 / 0.7);
+  background: linear-gradient(180deg, #f5f3ff, #eef2ff);
+  box-shadow: 0 12px 40px rgb(91 33 182 / 0.12);
+}
+.dark .formation-shell[data-design="v2"] .rounded-2xl.border-2.border-blue-400 {
+  border-color: rgb(139 92 246 / 0.55);
+  background: linear-gradient(180deg, rgb(46 16 101 / 0.45), rgb(30 27 75 / 0.55));
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
+}
+
+.formation-shell[data-design="v2"] .rounded-2xl.border-2.border-blue-400 > p:first-child {
+  color: #6d28d9;
+  letter-spacing: 0.2em;
+}
+.dark .formation-shell[data-design="v2"] .rounded-2xl.border-2.border-blue-400 > p:first-child {
+  color: #c4b5fd;
+}
+
+.formation-shell[data-design="v2"] button.rounded-xl.bg-blue-600 {
+  background: linear-gradient(180deg, #4f46e5, #3730a3);
+  box-shadow: 0 8px 20px rgb(79 70 229 / 0.28);
+}
+.formation-shell[data-design="v2"] button.rounded-xl.bg-blue-600:hover {
+  background: linear-gradient(180deg, #6366f1, #4338ca);
+}
+
+@keyframes v2-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.formation-shell[data-design="v2"] > * {
+  animation: v2-rise 0.38s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .formation-shell[data-design="v2"] > * {
+    animation: none;
+  }
+}
+
+@keyframes slash-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.slash-bubble-float {
+  animation: slash-float 3.2s ease-in-out infinite;
+}
+
+@keyframes slash-fall-left {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  12% {
+    transform: translate(-6px, 2px) rotate(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-48px, 110vh) rotate(-38deg);
+    opacity: 0.15;
+  }
+}
+
+@keyframes slash-fall-right {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  12% {
+    transform: translate(6px, 2px) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(52px, 110vh) rotate(42deg);
+    opacity: 0.15;
+  }
+}
+
+@keyframes slash-impact {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  35% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.slash-half-left {
+  animation: slash-fall-left 0.85s cubic-bezier(0.33, 0.02, 0.7, 0.3) forwards;
+}
+
+.slash-half-right {
+  animation: slash-fall-right 0.85s cubic-bezier(0.33, 0.02, 0.7, 0.3) forwards;
+}
+
+.slash-impact-line {
+  animation: slash-impact 0.35s ease-out forwards;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slash-bubble-float {
+    animation: none;
+  }
+  .slash-half-left,
+  .slash-half-right,
+  .slash-impact-line {
+    animation-duration: 0.01ms;
+  }
 }

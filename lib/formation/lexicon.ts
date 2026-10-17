@@ -12,19 +12,20 @@ export const LEXICON: LexiconEntry[] = [
     id: "ai-act",
     term: "AI Act",
     definition: "La loi européenne qui encadre l'IA.",
-    example: "Elle demande de former les équipes (Art. 4).",
+    example: "Elle demande des mesures pour que vous sachiez utiliser l'IA (Art. 4).",
   },
   {
     id: "art4",
     term: "Article 4",
-    definition: "Obligation depuis fév. 2025 : former les utilisateurs d'IA.",
-    example: "Votre attestation de suivi est la preuve.",
+    definition:
+      "Depuis fév. 2025 : l'entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA.",
+    example: "Cette formation en fait partie. L'attestation prouve le suivi.",
   },
   {
     id: "art5",
     term: "Pratiques interdites",
     definition: "Usages d'IA carrément interdits (Art. 5).",
-    example: "Noter les émotions des salariés au travail.",
+    example: "Inférer les émotions d'un collègue, ou déduire sa religion d'une photo.",
   },
   {
     id: "art50",
@@ -35,7 +36,7 @@ export const LEXICON: LexiconEntry[] = [
   {
     id: "haut-risque",
     term: "Haut risque",
-    definition: "IA très encadrée (ex. tri de CV). Un humain décide.",
+    definition: "Niveau de risque AI Act (ex. tri de CV). Un humain décide.",
     example: "Recrutement, notes de salariés…",
   },
   {
@@ -76,9 +77,10 @@ export const LEXICON: LexiconEntry[] = [
   },
   {
     id: "deployeur",
-    term: "Déployeur / fournisseur",
-    definition: "Déployeur = j'utilise une IA. Fournisseur = je la fabrique ou la vends.",
-    example: "ChatGPT au bureau = votre entreprise est déployeur.",
+    term: "Utilisateur / vendeur",
+    definition:
+      "Utilisateur = j'utilise une IA déjà en vente. Vendeur = je la fabrique ou la mets sur le marché sous ma marque.",
+    example: "ChatGPT au bureau = vous utilisez. Cas le plus courant.",
   },
   {
     id: "donnee-perso",
@@ -88,20 +90,34 @@ export const LEXICON: LexiconEntry[] = [
   },
   {
     id: "shadow-ai",
-    term: "Shadow AI",
-    definition: "Utiliser une IA en cachette, sans accord.",
+    term: "Outil en cachette",
+    definition: "Utiliser une IA sans que l'entreprise le sache.",
     example: "ChatGPT perso avec des fichiers clients.",
   },
   {
     id: "referent",
     term: "Référent IA",
     definition: "La personne à qui poser vos questions sur l'IA.",
-    example: "« Cet outil est-il autorisé ? »",
+    example: "« Cette IA est-elle autorisée ? »",
+  },
+  {
+    id: "dpo",
+    term: "DPO",
+    definition:
+      "Délégué à la protection des données : la personne qui veille au respect du RGPD dans l'entreprise.",
+    example: "En cas d'erreur avec des données personnelles, vous le prévenez aussi.",
   },
   {
     id: "supervision-humaine",
     term: "Supervision humaine",
     definition: "Un humain garde le dernier mot, pas l'IA seule.",
     example: "Valider une décision avant de l'appliquer.",
+  },
+  {
+    id: "omnibus",
+    term: "Omnibus",
+    definition:
+      "Texte européen qui a reporté certaines échéances de l'AI Act, dont les règles strictes sur le tri de CV.",
+    example: "Le geste du quotidien ne change pas : un humain garde la décision.",
   },
 ];

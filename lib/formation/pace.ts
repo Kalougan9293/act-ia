@@ -19,6 +19,7 @@ export function isPassiveKind(kind: Activity["kind"]): boolean {
 export function isGameKind(kind: Activity["kind"]): boolean {
   return (
     kind === "sort" ||
+    kind === "slash" ||
     kind === "spot" ||
     kind === "redact" ||
     kind === "traffic" ||
@@ -26,13 +27,20 @@ export function isGameKind(kind: Activity["kind"]): boolean {
     kind === "scenario" ||
     kind === "timeline" ||
     kind === "stamp" ||
+    kind === "match" ||
     kind === "tetris"
   );
 }
 
 /** Délai depuis l'ouverture pour les contenus à lire / script vidéo placeholder. */
-export function mountDwellMs(kind: Activity["kind"], duration: string): number {
+export function mountDwellMs(
+  kind: Activity["kind"],
+  duration: string,
+  chapterId?: string,
+): number {
   if (!isPassiveKind(kind)) return 0;
+  // Fiche des 7 réflexes : lecture rapide, pas plus de 5 s.
+  if (chapterId === "6.1") return 5_000;
   const total = parseDurationMs(duration) || 60_000;
   // Vidéo placeholder : court délai visible (le script se déroule), pas toute la durée.
   if (kind === "video") {

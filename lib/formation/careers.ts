@@ -1,320 +1,129 @@
-/** Parcours métiers — ConformAI V1.0 */
-
-import type { QuizQuestion } from "@/lib/formation/evaluation";
+/** Parcours métiers — StartIA V1.0 (texte + cas + idée d'usage, sans vidéo). */
 
 export type CareerPath = {
   id: string;
   title: string;
   duration: string;
   focus: string;
-  script: string;
+  /** Texte concis à lire — phrases simples. */
+  briefing: string;
   casePrompt: string;
   caseCorrection: string;
-  questions: QuizQuestion[];
+  /** Idée concrète d'usage IA pour ce métier. */
+  aiTip: string;
 };
 
 export const CAREER_PATHS: CareerPath[] = [
   {
-    id: "tous",
-    title: "Autres",
-    duration: "10–15 min",
-    focus: "Réflexes quotidiens, vérification des faits, sécurité des données et Shadow AI.",
-    script:
-      "Vous, au quotidien, vous êtes au cœur de l'usage. Trois réflexes. C'est tout.\n\nAvant de coller quoi que ce soit, enlevez au maximum les infos perso ou confidentielles.\n\nEnsuite, vérifiez. L'IA aide mais elle ne décide pas. Elle peut inventer. Vous restez responsable de ce que vous envoyez.\n\nEt troisième point, déclarez vos outils. Pas d'IA perso non autorisée sur des docs internes. Sinon, c'est du Shadow AI.",
-    casePrompt:
-      "Vous devez résumer un compte rendu de réunion contenant des noms de clients. Que faites-vous avant d'utiliser l'IA ?",
-    caseCorrection:
-      "J'utilise un outil autorisé par l'entreprise et je retire ou remplace les noms des clients s'ils ne sont pas nécessaires au résumé. Je relis ensuite le résumé avant de le diffuser, car l'IA peut déformer des propos.",
-    questions: [
-      {
-        id: "t1",
-        blockId: "tous",
-        prompt: "Vous devez traduire un email client contenant son adresse et son téléphone.",
-        choices: [
-          "Je colle l'email entier dans n'importe quelle IA.",
-          "J'utilise un outil autorisé et je retire les coordonnées si elles ne sont pas utiles.",
-          "Je ne traduis jamais d'email.",
-        ],
-        correctIndex: 1,
-        explanation: "Outil autorisé et minimisation : les deux premiers réflexes.",
-      },
-      {
-        id: "t2",
-        blockId: "tous",
-        prompt: "Une synthèse IA contient un chiffre surprenant.",
-        choices: [
-          "Je le diffuse, c'est une information intéressante.",
-          "Je retrouve la source avant de diffuser.",
-          "Je l'arrondis.",
-        ],
-        correctIndex: 1,
-        explanation: "Un chiffre surprenant est souvent une hallucination.",
-      },
-      {
-        id: "t3",
-        blockId: "tous",
-        prompt: "Un collègue vous recommande une extension IA gratuite pour votre navigateur.",
-        choices: [
-          "Je l'installe tout de suite.",
-          "Je demande sa validation avant de l'installer.",
-          "Je l'installe sur mon poste personnel et j'y traite mes fichiers pro.",
-        ],
-        correctIndex: 1,
-        explanation: "Une extension peut lire tout ce qui s'affiche à l'écran.",
-      },
-    ],
-  },
-  {
     id: "direction",
     title: "Direction & management stratégique",
-    duration: "10–15 min",
-    focus: "Gouvernance, politique d'achat, responsabilité de l'employeur et arbitrage des risques.",
-    script:
-      "Vous êtes dirigeant. Votre job, c'est le cadre. Protéger l'entreprise.\n\nD'abord, la liste des outils. Lesquels on utilise, pour quoi, et qui est responsable. Sinon, chacun prend une IA dans son coin. L'entreprise ne le voit même pas.\n\nEnsuite, avant d'acheter. À quoi sert l'outil. Ce que dit le contrat. Et est-ce que vos données sont protégées. Vous vérifiez ça avant de brancher. Pas après.\n\nDernière chose. Vos équipes fabriquent une IA, ou la vendent avec votre nom dessus ? Vous n'êtes plus seulement celui qui l'utilise. Vous devenez celui qui la fournit. Les règles sont plus lourdes. Faites vérifier. Avant.",
+    duration: "5–8 min",
+    focus: "Cadre, outils autorisés, décisions humaines.",
+    briefing:
+      "Vous donnez le cadre. Si personne ne sait quels outils sont autorisés, chacun improvise. Et les informations sortent sans que vous le voyiez.\n\nAvant d'acheter une IA, posez trois questions. À quoi sert-elle vraiment ? Que dit le contrat sur vos données ? Est-ce que l'éditeur les réutilise pour s'entraîner ? Vous validez ça avant de brancher l'outil, pas après un incident.\n\nSi vous utilisez un outil acheté, vous restez responsable du bon usage. Si vous vendez une IA sous votre marque, les obligations sont plus lourdes. Dans les deux cas, une décision importante reste humaine.",
     casePrompt:
-      "Un responsable d'équipe a souscrit seul un abonnement IA pour ses collaborateurs. Quelles questions posez-vous avant de le valider ?",
+      "Un éditeur vous propose une IA « pour booster la productivité ». Il veut faire signer cette semaine. Que vérifiez-vous avant de dire oui ?",
     caseCorrection:
-      "Je vérifie la finalité, le contrat (DPA), la réutilisation des données et l'hébergement, puis je fais inscrire l'outil au registre avant de le valider. Un achat isolé crée du Shadow AI, même avec de bonnes intentions.",
-    questions: [
-      {
-        id: "d1",
-        blockId: "direction",
-        prompt:
-          "Une agence modifie de manière substantielle un système d'IA à Haut Risque et le commercialise sous sa propre marque. Quelle affirmation est exacte ?",
-        choices: [
-          "Elle reste simple déployeur tant qu'elle n'a pas entraîné le modèle de base.",
-          "Dans les conditions de l'Article 25, elle peut devenir Fournisseur du système à Haut Risque et en assumer les obligations.",
-          "Elle reste déployeur tant que le client n'a pas mis le système en service.",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Le statut de fournisseur dépend des conditions précises de l'Article 25 (marque, modification substantielle, changement de finalité) : à analyser au cas par cas.",
-      },
-      {
-        id: "d2",
-        blockId: "direction",
-        prompt: "Avant d'acheter un logiciel d'IA pour l'entreprise, la priorité est :",
-        choices: [
-          "Le prix le plus bas.",
-          "Valider la finalité, la base légale, le contrat (DPA) et la réutilisation des données.",
-          "Le nombre de fonctionnalités.",
-        ],
-        correctIndex: 1,
-        explanation: "On encadre l'achat avant le déploiement, pas après.",
-      },
-      {
-        id: "d3",
-        blockId: "direction",
-        prompt: "En cas de contrôle, comment prouver votre démarche Article 4 ?",
-        choices: [
-          "Une déclaration orale du dirigeant.",
-          "Registre des usages, attestations de suivi et traces de formation.",
-          "Aucune preuve n'est nécessaire.",
-        ],
-        correctIndex: 1,
-        explanation: "Le dossier de preuve (registre, attestations, suivi formation) sert à documenter la démarche.",
-      },
-    ],
+      "Vous vérifiez l'usage réel, les clauses sur les données et le réentraînement, et qui sera responsable en interne. Vous ne signez pas « pour aller vite » sans ça. Ensuite seulement, l'outil peut entrer sur la liste autorisée.",
+    aiTip:
+      "Demandez à l'IA une grille « oui / non / à clarifier » pour chaque nouvel outil. Elle prépare le dossier. Vous gardez la décision.",
   },
   {
     id: "rh",
     title: "Ressources humaines",
-    duration: "10–15 min",
-    focus: "Recrutement, évaluation des candidats et salariés, Article 22 RGPD et dialogue social.",
-    script:
-      "Côté RH, on est dans le dur. C'est très réglementé.\n\nTri de CV, évaluation… ça part en haut risque. Annexe III. Échéance fin 2027. Et là, un humain doit vraiment superviser. Pas juste cliquer OK.\n\nLe RGPD aussi. Pas d'embauche ou de promotion décidée uniquement par un algo. Un recruteur doit pouvoir dire non. Modifier. Et le candidat doit pouvoir s'exprimer.\n\nDernière chose, informez. Les équipes. Les représentants. En France, ça passe aussi par le CSE. Pas de surprise.",
+    duration: "5–8 min",
+    focus: "CV, entretiens, outils RH : données perso.",
+    briefing:
+      "Un CV, une note d'entretien, un arrêt maladie, une fiche de paie : ce sont des données personnelles. Parfois, c'est même sensible.\n\nUne IA grand public n'est pas un coffre-fort. Pour analyser un CV ou préparer un compte rendu, vous passez par un outil autorisé. Vous ne donnez que ce qui sert.\n\nLa décision d'embaucher, ou de sanctionner, reste humaine. Un score donné par une IA ne remplace pas votre jugement. Vous le relisez. Vous le contestez s'il le faut. Et les personnes concernées sont informées si un outil pèse dans le process.",
     casePrompt:
-      "Votre logiciel de recrutement propose un classement automatique des candidats. Qui valide, et comment un candidat peut-il contester ?",
+      "On vous demande de coller 40 CV dans une IA publique pour « pré-trier » les candidats. Que répondez-vous ?",
     caseCorrection:
-      "Un recruteur humain valide, avec le pouvoir réel de modifier ou rejeter le classement. Les candidats sont informés et peuvent présenter leur point de vue et contester. C'est un usage à Haut Risque, et l'Article 22 RGPD s'applique.",
-    questions: [
-      {
-        id: "r1",
-        blockId: "rh",
-        prompt: "Votre logiciel de recrutement classe automatiquement les candidats. Qui décide ?",
-        choices: [
-          "Le logiciel, il est plus objectif.",
-          "Un recruteur humain, avec le pouvoir réel de modifier ou rejeter le classement.",
-          "Le premier candidat de la liste est retenu d'office.",
-        ],
-        correctIndex: 1,
-        explanation: "Haut risque (Annexe III) et Article 22 RGPD.",
-      },
-      {
-        id: "r2",
-        blockId: "rh",
-        prompt: "L'entreprise veut déployer une IA d'évaluation des salariés. Que faut-il prévoir ?",
-        choices: [
-          "Rien, c'est un outil interne.",
-          "Informer les salariés et leurs représentants, notamment le CSE.",
-          "Prévenir uniquement les managers.",
-        ],
-        correctIndex: 1,
-        explanation: "L'information des salariés et du CSE est un préalable.",
-      },
-      {
-        id: "r3",
-        blockId: "rh",
-        prompt: "Un outil propose d'analyser les émotions des candidats pendant les entretiens vidéo.",
-        choices: [
-          "C'est autorisé si le candidat ne le sait pas.",
-          "Cela relève des pratiques interdites de l'Article 5 (reconnaissance des émotions dans le cadre du travail).",
-          "C'est autorisé s'il est hébergé en Europe.",
-        ],
-        correctIndex: 1,
-        explanation: "Seules les exceptions médicales ou de sécurité sont prévues.",
-      },
-    ],
+      "Vous refusez, sauf outil autorisé et cadre clair. Un CV porte un nom, un parcours, parfois des infos sensibles. Vous proposez l'outil validé par l'entreprise, ou un tri humain sur des critères écrits.",
+    aiTip:
+      "Faites reformuler une offre d'emploi par l'IA : ton clair, inclusif, sans jargon. Vous ne collez aucun dossier candidat.",
   },
   {
     id: "marketing",
     title: "Marketing & sales",
-    duration: "10–15 min",
-    focus: "Génération de contenu, chatbots clients (Art. 50), deepfakes, propriété intellectuelle et RGPD commercial.",
-    script:
-      "Marketing, ventes… vous touchez à la donnée client. Et vous publiez vers l'extérieur. Donc prudence.\n\nUn chatbot ? Le client doit savoir qu'il parle à une IA. Sauf si c'est vraiment évident.\n\nUne vidéo, une voix, un visage généré qui imite quelqu'un ? Vous le dites clairement. Même si ça se voit, ça ne suffit pas.\n\nEt les fichiers CRM, jamais dans une IA publique tant que vous n'avez pas vérifié le contrat. S'il réutilise vos données pour s'entraîner, ou si vous ne le savez pas… vous ne collez pas.",
+    duration: "5–8 min",
+    focus: "Chatbots, contenus générés, fichiers prospects.",
+    briefing:
+      "Vous publiez vers l'extérieur. Vous touchez aussi aux fichiers clients.\n\nSi un chatbot répond sur le site, le client doit savoir dès le début qu'il parle à une machine. Ce n'est pas assez de le mettre dans les CGV.\n\nUne vidéo ou une voix qui imite quelqu'un se signale clairement. Vous vérifiez aussi les droits : image, voix, musique.\n\nUn fichier de milliers de prospects ne part pas dans une IA ouverte. Même pour « personnaliser » un mail : outil autorisé, contrat lu, et vous ne collez pas toute la base d'un coup.",
     casePrompt:
-      "Vous voulez une vidéo promotionnelle avec un porte-parole généré par IA. Quelles mentions et quelles vérifications ?",
+      "Vous voulez une vidéo promo avec un porte-parole généré par IA. Quelles mentions et quelles vérifications faites-vous ?",
     caseCorrection:
-      "La vidéo doit indiquer clairement qu'elle est générée par IA si le porte-parole ressemble à une personne réelle (deepfake). Je vérifie aussi les droits (image, voix, musique) et l'accord de la personne imitée, le cas échéant.",
-    questions: [
-      {
-        id: "m1",
-        blockId: "marketing",
-        prompt: "Vous lancez un agent conversationnel pour le service client.",
-        choices: [
-          "Inutile de préciser que c'est une IA.",
-          "Les clients doivent être informés qu'ils échangent avec une IA.",
-          "Il suffit de l'indiquer dans les CGV.",
-        ],
-        correctIndex: 1,
-        explanation: "Article 50 : l'information doit être claire au moment de l'échange.",
-      },
-      {
-        id: "m2",
-        blockId: "marketing",
-        prompt: "Une vidéo publicitaire met en scène une personne réelle générée par IA, relue par l'équipe.",
-        choices: [
-          "La relecture dispense de mention.",
-          "La mention d'IA reste obligatoire.",
-          "La mention n'est utile que sur les réseaux sociaux.",
-        ],
-        correctIndex: 1,
-        explanation: "Pas d'exception de relecture pour les deepfakes.",
-      },
-      {
-        id: "m3",
-        blockId: "marketing",
-        prompt: "Vous voulez faire analyser un fichier de 5 000 prospects par une IA publique.",
-        choices: [
-          "C'est possible, ce sont des données commerciales.",
-          "Pas sans avoir vérifié la finalité, le contrat et l'absence de réentraînement.",
-          "C'est possible si le fichier est en Excel.",
-        ],
-        correctIndex: 1,
-        explanation: "Un fichier prospects contient des données personnelles.",
-      },
-    ],
+      "Vous indiquez clairement que c'est généré par IA si la personne paraît réelle. Vous vérifiez les droits sur l'image, la voix et la musique. Si vous imitez quelqu'un, vous avez son accord. Relire la vidéo ne dispense pas de la mention.",
+    aiTip:
+      "Demandez à l'IA cinq angles de posts LinkedIn, sans coller de fichier clients. Vous choisissez. Vous adaptez au ton de la marque.",
   },
   {
     id: "managers",
     title: "Managers",
-    duration: "10–15 min",
-    focus: "Encadrement des équipes, contrôle qualité des livrables et gestion du Shadow AI.",
-    script:
-      "Vous êtes manager. Vous êtes le lien entre les règles… et le terrain.\n\nQuelqu'un dans l'équipe utilise une nouvelle IA pas dans le registre ? Vous l'accompagnez. Vous l'aidez à déclarer. Pas la chasse aux sorcières.\n\nEt les livrables, devis, rapport, code… rien ne part chez un client sans relecture humaine. L'IA peut aider. Elle n'envoie pas toute seule.",
+    duration: "5–8 min",
+    focus: "Équipe, outils déclarés, relecture des livrables.",
+    briefing:
+      "Vous êtes le lien entre les règles et ce que l'équipe fait vraiment.\n\nQuelqu'un utilise une IA hors liste ? Vous l'aidez à déclarer l'usage. Le but n'est pas de chercher un coupable. C'est de savoir où passent les informations.\n\nUn devis, un rapport, un code : rien ne part chez un client sans relecture humaine. Si des chiffres n'ont pas de source, vous les faites vérifier avant l'envoi.\n\nUn outil qui noterait la performance ou les primes : vous restez prudent. La décision reste humaine. Et un nouvel arrivant apprend les outils autorisés avant son premier collage dans ChatGPT.",
     casePrompt:
-      "Un collaborateur vous rend un rapport visiblement rédigé par IA, avec des chiffres non sourcés. Comment réagissez-vous ?",
+      "Un collaborateur vous rend un rapport clairement écrit par une IA, avec des chiffres sans source. Que faites-vous ?",
     caseCorrection:
-      "Je ne transmets pas le rapport en l'état : je demande que chaque chiffre soit sourcé et vérifié. J'explique pourquoi (hallucinations) plutôt que de sanctionner, et je rappelle la règle : aucun document externe sans relecture humaine.",
-    questions: [
-      {
-        id: "g1",
-        blockId: "managers",
-        prompt: "Un membre de votre équipe utilise un outil d'IA non répertorié.",
-        choices: [
-          "Je l'interdis sans explication.",
-          "Je l'accompagne pour déclarer le cas d'usage dans le registre.",
-          "Je fais comme si je n'avais rien vu.",
-        ],
-        correctIndex: 1,
-        explanation: "Le but est de faire sortir le Shadow AI de l'ombre, pas de sanctionner.",
-      },
-      {
-        id: "g2",
-        blockId: "managers",
-        prompt: "Un rapport destiné à un client contient des chiffres non sourcés, visiblement générés par IA.",
-        choices: [
-          "Je l'envoie, le client vérifiera.",
-          "Je demande la vérification des chiffres avant tout envoi.",
-          "Je supprime les chiffres sans prévenir.",
-        ],
-        correctIndex: 1,
-        explanation: "Aucun document externe sans relecture humaine.",
-      },
-      {
-        id: "g3",
-        blockId: "managers",
-        prompt: "On vous propose une IA pour évaluer la performance de votre équipe.",
-        choices: [
-          "Je l'utilise pour décider des primes.",
-          "Je reste prudent : risque de biais, décision humaine, information des salariés.",
-          "Je l'utilise sans prévenir l'équipe.",
-        ],
-        correctIndex: 1,
-        explanation: "Plus la décision touche une personne, plus on contrôle.",
-      },
-    ],
+      "Vous ne transmettez pas le rapport en l'état. Vous demandez une source et une vérification pour chaque chiffre. Vous expliquez pourquoi : l'outil peut inventer. Vous rappelez la règle : rien vers l'extérieur sans relecture.",
+    aiTip:
+      "Faites générer une checklist « avant envoi client » : chiffres, noms, promesses, ton. L'équipe s'en sert à chaque livrable.",
   },
   {
     id: "tech",
     title: "Tech, IT & développeurs",
-    duration: "10–15 min",
-    focus: "API, agents autonomes, gestion des secrets, RAG et sécurité des flux no-code.",
-    script:
-      "Vous êtes tech. Vous construisez le tuyau.\n\nUn agent IA branché sur vos bases ? Droits au strict minimum. Lecture, écriture… seulement ce qu'il faut. Pas plus.\n\nProtégez vos bases. Attention aux injections de prompt. Et jamais de clé d'API en dur dans le code.\n\nDernier point. Si vous assemblez des briques IA — no-code ou code — vous pouvez faire basculer l'entreprise en fournisseur d'un système à haut risque. Sans le vouloir. Donc feu vert du juridique avant. Pas après.",
+    duration: "5–8 min",
+    focus: "Code, logs, secrets, outils dans l'IDE.",
+    briefing:
+      "L'IA écrit du code. Elle explique un bug. Elle résume des logs. Elle peut aussi emporter des secrets.\n\nVous ne collez pas de configs, de clés, de logs clients ou de code sensible dans un outil grand public. Vous passez par un outil autorisé. Et vous relisez ce qui est généré — y compris les dépendances.\n\nUne extension « magique » dans l'IDE ? Vous vérifiez où part le code avant de l'activer sur le dépôt de l'entreprise.",
     casePrompt:
-      "On vous demande de connecter un agent IA à la boîte mail commerciale. Quelles permissions lui donnez-vous, et quelles actions restent validées par un humain ?",
+      "Bug urgent. Vous voulez coller des logs et un extrait de code dans ChatGPT grand public. Est-ce OK ?",
     caseCorrection:
-      "Je donne uniquement les droits nécessaires (lecture ou brouillons), jamais l'envoi, la suppression ou le transfert automatique. Toute action importante reste validée par un humain, car l'agent peut être manipulé par un email piégé (injection de prompt).",
-    questions: [
-      {
-        id: "te1",
-        blockId: "tech",
-        prompt: "Quelle est la priorité lors de la connexion d'un agent IA à une base de données via une API ?",
-        choices: [
-          "Lui donner les droits administrateur pour fluidifier les requêtes.",
-          "Restreindre ses droits d'écriture et de suppression et garder un contrôle humain sur les décisions critiques.",
-          "Désactiver les logs pour accélérer.",
-        ],
-        correctIndex: 1,
-        explanation: "Principe du moindre privilège : restreindre les droits et garder un contrôle humain.",
-      },
-      {
-        id: "te2",
-        blockId: "tech",
-        prompt: "Où stocker la clé d'API d'un service d'IA ?",
-        choices: [
-          "Directement dans le code source.",
-          "Dans un gestionnaire de secrets ou des variables d'environnement.",
-          "Dans un commentaire du code.",
-        ],
-        correctIndex: 1,
-        explanation: "Une clé en dur finit tôt ou tard dans un dépôt partagé.",
-      },
-      {
-        id: "te3",
-        blockId: "tech",
-        prompt:
-          "Vous assemblez des briques IA en un outil de tri de CV que l'entreprise veut vendre sous sa marque.",
-        choices: [
-          "Aucun impact juridique, ce sont des briques existantes.",
-          "J'alerte la direction juridique : l'entreprise peut devenir Fournisseur d'un système à Haut Risque.",
-          "Il suffit d'héberger l'outil en Europe.",
-        ],
-        correctIndex: 1,
-        explanation: "Articles 3 et 25 : le statut de fournisseur peut entraîner des obligations lourdes, selon les conditions exactes.",
-      },
-    ],
+      "Non, pas sans outil autorisé. Les logs et le code peuvent contenir des secrets et des données clients. Vous utilisez l'outil validé. Vous retirez le superflu. Vous relisez le correctif proposé.",
+    aiTip:
+      "Faites expliquer un diff, ou rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé. Vous gagnez du temps de revue sans exposer tout le dépôt.",
+  },
+  {
+    id: "finance",
+    title: "Finance & comptabilité",
+    duration: "5–8 min",
+    focus: "Paiements, factures, fraude, fichiers sensibles.",
+    briefing:
+      "L'IA accélère les tableaux et les relances. Elle invente aussi des chiffres. Et les fraudeurs le savent.\n\nUn message urgent du « DAF » qui demande un virement ou un changement d'IBAN : vous ne bougez pas depuis ce message. Vous rappelez sur le numéro habituel.\n\nSur une facture, vous croisez les montants avec le document source avant de comptabiliser. Les IBAN, les salaires, les extraits bancaires ne partent pas dans un outil grand public.\n\nL'IA peut préparer un paiement. Elle ne le lance pas seule.",
+    casePrompt:
+      "Vous recevez un vocal du « DAF ». La voix est la sienne. Il demande de changer l'IBAN d'un fournisseur avant midi. Que faites-vous ?",
+    caseCorrection:
+      "Vous ne touchez pas à l'IBAN. Vous rappelez le DAF sur son numéro habituel, ou vous passez par le process interne. Une voix se fabrique. Répondre au même vocal, c'est parler au fraudeur.",
+    aiTip:
+      "Faites reformuler une relance client par l'IA, sans coller d'IBAN ni de fichier paie. L'outil soigne le ton. Les montants viennent de votre système.",
+  },
+  {
+    id: "support",
+    title: "Relation client & support",
+    duration: "5–8 min",
+    focus: "Tickets, appels, chatbots : données clients.",
+    briefing:
+      "Chaque jour, des tickets, des mails, des appels. Il y a des noms, des numéros, parfois un IBAN ou un numéro de commande.\n\nAvant de coller un ticket dans une IA, vous utilisez un outil autorisé. Vous retirez ce qui ne sert pas — le téléphone, l'adresse complète, un numéro de carte s'il y en a un.\n\nLa réponse part au nom de l'entreprise. Vous la relisez. L'outil peut inventer un délai de livraison ou un geste commercial. Vous ne validez pas une promesse que vous ne pouvez pas tenir.\n\nSi un chatbot répond aux clients, ils doivent savoir que c'est une machine, dès le début. Et vous ne collez pas tout l'historique CRM « pour que l'IA connaisse le client ».",
+    casePrompt:
+      "Un ticket contient le nom du client, son téléphone et le détail d'un litige. Vous voulez une réponse polie générée par l'IA. Que faites-vous avant ?",
+    caseCorrection:
+      "Vous passez par un outil autorisé. Vous retirez le téléphone, et tout ce qui ne sert pas à rédiger. Vous relisez la réponse : pas de délai inventé, pas de geste commercial fantôme. Ensuite seulement, vous envoyez.",
+    aiTip:
+      "Demandez trois formulations de réponse — ferme, empathique, factuelle — à partir d'un résumé anonymisé du litige. Vous choisissez le ton. L'IA ne décide pas du geste commercial.",
+  },
+  {
+    id: "tous",
+    title: "Autres",
+    duration: "5–8 min",
+    focus: "Accueil, mails, atelier : réflexes du quotidien.",
+    briefing:
+      "Votre métier n'est pas dans une des cases à côté ? Les mêmes règles s'appliquent.\n\nUn client laisse un nom et un téléphone. Avant de coller ça dans une IA pour traduire ou préparer une réponse, vous utilisez un outil autorisé. Vous gardez seulement ce qui est utile.\n\nEnsuite, vous relisez. L'outil peut inventer une date de rendez-vous, ou changer le sens d'une phrase. Ce que vous renvoyez part avec le nom de l'entreprise.\n\nSi un collègue propose une extension IA « pour aller plus vite », vous demandez avant d'installer. Ce n'est pas une faute de poser la question.",
+    casePrompt:
+      "À l'accueil, vous devez préparer un message de rappel. Le mail client contient son nom, son téléphone et le motif de sa visite. Que faites-vous avant d'utiliser l'IA ?",
+    caseCorrection:
+      "Vous utilisez un outil autorisé. Vous retirez le téléphone, et le nom s'il ne sert pas. Vous gardez seulement ce qui aide à rédiger. Vous relisez le message avant de l'envoyer.",
+    aiTip:
+      "Faites créer une fois un modèle de mail de confirmation de rendez-vous. Ensuite, vous le réutilisez. Moins de frappe, et vous ne collez jamais tout le carnet d'adresses.",
   },
 ];

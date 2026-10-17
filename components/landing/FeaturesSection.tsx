@@ -6,40 +6,42 @@ import { Award, Check, Download } from "lucide-react";
 const features = [
   {
     number: "01",
-    title: "Des formations opérationnelles",
-    subtitle: "Sans bloquer la journée",
+    title: "Pour les salariés",
+    subtitle: "Réflexes du quotidien",
     description:
-      "Vos équipes avancent seules, à leur rythme, sur l'IA et le RGPD.",
+      "Comprendre les risques, protéger les données, vérifier les réponses et savoir quand demander de l'aide.",
     points: [
-      "Un parcours selon le métier",
-      "Sur mobile, tablette ou ordinateur",
-      "Rien à installer",
+      "Risques et hallucinations",
+      "Données et secrets d'entreprise",
+      "Vérifier avant d'utiliser",
+      "Savoir quand demander de l'aide",
     ],
     preview: "course" as const,
   },
   {
     number: "02",
-    title: "Une attestation, un dossier",
-    subtitle: "Article 4",
+    title: "Pour les entreprises",
+    subtitle: "Démarche documentée",
     description:
-      "Chaque parcours validé produit une attestation nominative. Le dossier indique qui a suivi quoi, et quand.",
+      "Sensibiliser les équipes, adapter les consignes aux usages réels et conserver des traces de la démarche Article 4.",
     points: [
-      "PDF dès la validation",
-      "Conservée pendant le contrat, puis 12 mois",
-      "Visible par la direction et le DPO",
+      "Attestations nominatives",
+      "Suivi RH : qui a suivi",
+      "Export pour audits et contrôles",
     ],
     preview: "diploma" as const,
   },
   {
     number: "03",
-    title: "Un registre pour le DPO",
-    subtitle: "Gouvernance",
+    title: "Pour les responsables métiers",
+    subtitle: "Usages ciblés",
     description:
-      "Avancement et usages couverts au même endroit. Y compris les outils utilisés hors charte.",
+      "Accéder à des modules spécialisés adaptés à votre métier pour aller plus loin.",
     points: [
-      "Suivi par équipe",
-      "Personnes en retard visibles",
-      "Export ZIP / JSON et attestations",
+      "Modules après le socle",
+      "Cas concrets par métier",
+      "Consignes adaptées aux usages",
+      "Modules sur mesure, à la demande",
     ],
     preview: "admin" as const,
   },
@@ -65,7 +67,7 @@ function barColor(value: number) {
 function CoursePreview() {
   const steps = [
     { label: "AI Act", state: "done" },
-    { label: "RGPD", state: "current" },
+    { label: "Données", state: "current" },
     { label: "Usages", state: "todo" },
     { label: "Quiz", state: "todo" },
     { label: "Preuve", state: "diploma" },
@@ -146,13 +148,13 @@ function DiplomaPreview() {
         </div>
 
         <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">
-          Dossier de preuve Article 4
+          Preuve Article 4
         </p>
         <h3 className="mt-2 max-w-[16rem] text-xl font-bold leading-snug text-slate-900 dark:text-white">
           Une attestation de suivi nominative
         </h3>
         <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-          Horodatée, versée au registre.
+          Horodatée, archivée au suivi.
         </p>
 
         <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
@@ -219,11 +221,11 @@ export default function FeaturesSection() {
           className="text-center mb-20 space-y-4"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white hyphens-none">
-            Former, attester,{" "}
-            <span className="text-blue-600 dark:text-blue-400">exporter</span>
+            Les bons réflexes,{" "}
+            <span className="text-blue-600 dark:text-blue-400">pour chacun</span>
           </h2>
           <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
-            Trois fonctions. Un seul dossier pour la direction et le DPO.
+            Salariés, entreprise, métiers — un parcours adapté à chaque rôle.
           </p>
         </motion.div>
 

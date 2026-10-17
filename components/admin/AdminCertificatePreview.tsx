@@ -66,12 +66,12 @@ export default function AdminCertificatePreview({
 
         <div className="px-8 sm:px-12 py-10 space-y-8">
           <header className="text-center space-y-2 border-b border-slate-200 pb-6">
-            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">CONFORMAI</div>
+            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">StartIA</div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
               Attestation de suivi de formation et de sensibilisation
             </h2>
             <p className="text-center text-sm text-slate-600">
-              Intelligence artificielle — EU AI Act &amp; RGPD
+              Maîtrise de l&apos;IA — EU AI Act (article 4)
             </p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
               <span>Attestation n° {certificateId}</span>

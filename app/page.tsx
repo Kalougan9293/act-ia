@@ -12,7 +12,7 @@ import { faqJsonLd } from "@/lib/landing/faq";
 
 export const metadata: Metadata = {
   description:
-    "Formation à l'IA pour les entreprises, au titre de l'article 4 de l'AI Act. Attestations nominatives et registre des usages pour la direction et le DPO. À partir de 290 € par an.",
+    "Formation à l'IA pour les entreprises, au titre de l'article 4 de l'AI Act. Attestations nominatives et suivi des parcours pour la direction et les RH. À partir de 290 € par an.",
 };
 
 export default function Home() {

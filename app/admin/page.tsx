@@ -3,7 +3,7 @@ import AdminDashboard from "@/components/admin/AdminDashboard";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
-  title: "Admin — ConformAI",
+  title: "Admin — StartIA",
   description: "Espace super admin : structures, comptes et facturation.",
 };
 

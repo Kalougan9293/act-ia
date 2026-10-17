@@ -321,7 +321,7 @@ export default function HrView({
           name: created.name,
           email: created.email,
           role: created.role === "rh" ? "RH" : "Collaborateur",
-          path: "IA + RGPD",
+          path: "Socle IA",
           status: "todo" as const,
           percent: created.progressPercent ?? 0,
           lastSeen:
@@ -429,7 +429,7 @@ export default function HrView({
           onClick={() => setShowCompany(true)}
           className="mx-auto block w-full max-w-2xl rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100 dark:hover:bg-emerald-950/50"
         >
-          Registre à jour : chaque collaborateur actif a une attestation de suivi. Cliquez pour voir le dossier de preuve Article 4.
+          Registre à jour !
         </button>
       )}
 
@@ -910,7 +910,7 @@ export default function HrView({
                     label: "Procédure de déclaration",
                     why: "Comment un collab demande un nouvel outil ou signale un usage. Étapes courtes + délai attendu.",
                     placeholder:
-                      "Pour déclarer un nouvel outil ou usage :\n1. Remplir le formulaire : https://intranet.entreprise.fr/ia\n2. Attendre le statut « validé » (délai indicatif : 5 jours ouvrés)\n3. Ne pas utiliser l'outil tant qu'il n'est pas au registre",
+                      "Pour déclarer un nouvel outil ou usage :\n1. Remplir le formulaire : https://intranet.entreprise.fr/ia\n2. Attendre le statut « validé » (délai indicatif : 5 jours ouvrés)\n3. Ne pas utiliser l'outil tant qu'elle n'est pas au registre",
                   },
                 ] as const
               ).map((field) => {

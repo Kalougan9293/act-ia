@@ -26,7 +26,7 @@ export default function Navbar() {
     >
       <nav className="max-w-7xl mx-auto pl-4 pr-6 sm:pl-6 sm:pr-8 lg:pl-8 lg:pr-12 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-lg tracking-tight">
-          Conform<span className="text-blue-600 dark:text-blue-400">AI</span>
+          Start<span className="text-blue-600 dark:text-blue-400">IA</span>
           <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" strokeWidth={2} aria-hidden="true" />
         </Link>
 
