@@ -4,23 +4,60 @@ import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
   title: "RGPD — StartIA",
+  description:
+    "RGPD et IA au travail : ce que traite StartIA, et ce que le parcours enseigne aux équipes.",
 };
 
 export default function RgpdPage() {
   return (
     <LegalShell title="RGPD">
-      <p>
-        StartIA traite des données de compte et de formation pour délivrer le service. Les
-        détails figurent dans la{" "}
-        <Link href="/confidentialite" className="text-blue-600 hover:underline dark:text-blue-400">
-          politique de confidentialité
-        </Link>
-        .
-      </p>
-      <p>
-        Le parcours pédagogique rappelle aussi les réflexes RGPD utiles au quotidien lors de
-        l&apos;usage de l&apos;IA (données personnelles, minimisation, outils autorisés).
-      </p>
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Deux sujets distincts
+        </h2>
+        <p>
+          <strong>1. StartIA en tant que prestataire</strong> — nous traitons des données de compte
+          et de formation (identité, e-mail, progression, attestations) pour délivrer le service.
+          Les finalités, durées de conservation et droits figurent dans la{" "}
+          <Link
+            href="/confidentialite"
+            className="text-blue-600 hover:underline dark:text-blue-400"
+          >
+            politique de confidentialité
+          </Link>
+          .
+        </p>
+        <p>
+          <strong>2. Le parcours pédagogique</strong> — dès qu&apos;un salarié colle un nom, un
+          e-mail, une voix ou un fichier client dans une IA, le RGPD s&apos;applique. La formation
+          rappelle les réflexes concrets : quoi saisir ou ne pas saisir, données personnelles,
+          secrets d&apos;entreprise, et quand alerter le référent ou le DPO.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Ce que le parcours couvre
+        </h2>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>Données personnelles vs secrets d&apos;entreprise</li>
+          <li>Minimisation et outils autorisés</li>
+          <li>Décision humaine et publication de contenus générés</li>
+          <li>Que faire en cas d&apos;erreur (alerte rapide)</li>
+        </ul>
+        <p>
+          Ce n&apos;est <strong>pas</strong> un audit RGPD de votre organisation, ni un substitut à
+          un DPO ou à un conseil juridique.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Hébergement</h2>
+        <p>
+          Les comptes, la formation et le suivi sont stockés dans l&apos;Union européenne. Le détail
+          des sous-traitants figure dans la politique de confidentialité.
+        </p>
+      </section>
     </LegalShell>
   );
 }

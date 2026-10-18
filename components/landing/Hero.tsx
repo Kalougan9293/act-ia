@@ -62,8 +62,9 @@ export default function Hero() {
               {...fadeUp(0.2)}
               className="text-base sm:text-[1.0625rem] text-slate-700 dark:text-slate-200 leading-relaxed text-justify hyphens-auto"
             >
-              Mettez les salariés de votre entreprise en mesure de répondre à
-              l&apos;AI act (article 4) et suivez l&apos;avancement RH sans effort
+              Depuis le 2 février 2025, l&apos;article 4 demande des mesures
+              documentées. Formez vos équipes en ~1&nbsp;h, suivez l&apos;avancement
+              RH et gardez des attestations + preuves exportables.
             </motion.p>
 
             {/* CTAs */}
@@ -73,7 +74,7 @@ export default function Hero() {
                 transition={{ type: "spring", stiffness: 380, damping: 15 }}
               >
                 <a
-                  href="mailto:contact@conformai.fr?subject=Demande%20StartIA"
+                  href="mailto:contact@lockin-web.online?subject=Demande%20StartIA"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.85)] transition-shadow duration-300 group"
                 >
                   Demander un accès

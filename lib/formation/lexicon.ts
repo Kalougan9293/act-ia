@@ -25,7 +25,8 @@ export const LEXICON: LexiconEntry[] = [
     id: "art5",
     term: "Pratiques interdites",
     definition: "Usages d'IA carrément interdits (Art. 5).",
-    example: "Inférer les émotions d'un collègue, ou déduire sa religion d'une photo.",
+    example:
+      "Inférer les émotions d'un collègue (hors exceptions limitées), ou déduire sa religion d'une photo.",
   },
   {
     id: "art50",

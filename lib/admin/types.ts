@@ -211,9 +211,9 @@ export const PLAN_LABELS: Record<PlanId, string> = {
 };
 
 export const PLAN_PRICES: Record<PlanId, number> = {
-  starter: 290,
-  pro: 590,
-  pme: 990,
+  starter: 390,
+  pro: 790,
+  pme: 1290,
   enterprise: 0,
 };
 

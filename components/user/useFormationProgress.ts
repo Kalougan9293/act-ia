@@ -17,7 +17,7 @@ import {
 export type { FormationProgress };
 
 function storageKey(uid: string) {
-  return `conformai:formation:${uid}`;
+  return `startia:formation:${uid}`;
 }
 
 function readLocal(uid: string): FormationProgress | null {

@@ -1,4 +1,4 @@
-/** Parcours métiers — StartIA V1.0 (texte + cas à trancher + idée d'usage). */
+/** Fiches métiers — StartIA V1.0 (texte + cas à trancher + idée d'usage). */
 
 export type CareerCaseOption = {
   label: string;
@@ -82,7 +82,7 @@ export const CAREER_PATHS: CareerPath[] = [
       { label: "Une relecture suffit, pas besoin de mention", correct: false },
     ],
     caseCorrection:
-      "Mention claire si la personne paraît réelle, droits vérifiés, accord si vous imitez quelqu'un. Relire ne remplace pas la mention.",
+      "Mention claire si la personne paraît réelle, droits vérifiés, et accord de la personne si vous l'imitez. Relire ne remplace ni la mention ni l'accord.",
     aiTip:
       "Cinq angles de posts LinkedIn via l'IA, sans fichier clients. Vous choisissez le ton marque.",
   },

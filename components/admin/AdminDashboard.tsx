@@ -1075,9 +1075,9 @@ export default function AdminDashboard() {
                     }}
                     className={inputClass}
                   >
-                    <option value="starter">Micro — 290 € / an</option>
-                    <option value="pro">TPE — 590 € / an</option>
-                    <option value="pme">PME — 990 € / an</option>
+                    <option value="starter">Micro — 390 € / an</option>
+                    <option value="pro">TPE — 790 € / an</option>
+                    <option value="pme">PME — 1 290 € / an</option>
                     <option value="enterprise">ETI — Sur devis</option>
                   </select>
                 </label>

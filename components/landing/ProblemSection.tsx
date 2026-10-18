@@ -7,7 +7,7 @@ const problems = [
     tag: "AI Act • Article 4",
     title: "Agir sans pouvoir le prouver",
     description:
-      "L'article 4 du règlement européen sur l'IA impose déjà des mesures pour les équipes qui l'utilisent. En cas de contrôle, d'incident ou d'audit client, sans preuves de suivi, votre démarche ne tient pas.",
+      "Comme pour le RGPD, le risque n'est pas seulement d'avoir agi : c'est de pouvoir le montrer. L'article 4 impose déjà des mesures pour les équipes qui utilisent l'IA. En cas de contrôle, d'incident ou d'audit client, sans preuves de suivi, votre démarche ne tient pas.",
     stat: "Depuis le 2 février 2025",
     statLabel: "L'obligation s'applique déjà",
     card: "bg-blue-50/80 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900",
@@ -52,7 +52,8 @@ export default function ProblemSection() {
           </h2>
           <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
             L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA,
-            et il faut pouvoir le montrer. Sans preuves, le risque reste entier.
+            et il faut pouvoir le montrer — comme pour le RGPD. Sans preuves, le risque
+            reste entier.
           </p>
         </motion.div>
 

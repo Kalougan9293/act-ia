@@ -17,18 +17,19 @@ const plans: Plan[] = [
   {
     name: "Micro",
     seats: "1 à 5 salariés",
-    price: "290 €",
+    price: "390 €",
     priceLabel: "/ an",
     highlight: false,
     features: [
       "Jusqu'à 5 accès utilisateurs",
       "Abonnement annuel, sans frais cachés",
-      "Socle commun et parcours métiers prêts",
+      "Socle commun et fiches métiers incluses",
       "Module entreprise (charte, outils, référent)",
       "Attestations nominatives",
       "Preuves conservées 12 mois après le contrat",
       "Tableau de bord RH, suivi et export",
       "Veille incluse : le parcours suit l'actualité",
+      "Renouvellement : nouveaux arrivants + mises à jour",
       "Support par email",
     ],
     cta: "Démarrer maintenant",
@@ -36,7 +37,7 @@ const plans: Plan[] = [
   {
     name: "TPE",
     seats: "6 à 20 salariés",
-    price: "590 €",
+    price: "790 €",
     priceLabel: "/ an",
     highlight: false,
     features: [
@@ -49,7 +50,7 @@ const plans: Plan[] = [
   {
     name: "PME",
     seats: "21 à 50 salariés",
-    price: "990 €",
+    price: "1 290 €",
     priceLabel: "/ an",
     highlight: false,
     features: [
@@ -76,25 +77,28 @@ const plans: Plan[] = [
 const addons = [
   {
     name: "Module métier sur mesure",
-    tag: "Dans StartIA",
+    tag: "Option la plus demandée",
     price: "690 €",
     detail: "/ module",
+    featured: true,
     description:
-      "Un module conçu au cas par cas, selon votre métier, vos usages et vos demandes — rédigé et intégré à votre parcours StartIA.",
+      "Format standard à 690 € : texte + cas pratique + idée d'usage, rédigé pour votre métier et intégré au parcours. Demande plus large (plusieurs métiers, contenus longs) : sur devis.",
   },
   {
     name: "Marque blanche",
     tag: "Partenaires",
-    price: "Sur devis",
-    detail: "",
+    price: "2 000 – 5 000 €",
+    detail: "/ an + par apprenant",
+    featured: false,
     description:
-      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH.",
+      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH. Fourchette indicative ; devis selon le volume.",
   },
   {
     name: "Atelier usages & automatisation",
     tag: "Accompagnement",
     price: "Sur devis",
     detail: "",
+    featured: false,
     description:
       "Session avec vos équipes (visio ou présentiel) : prioriser les usages, gagner du temps sur le quotidien, cadrer ce qui peut être automatisé. Hors abonnement, sur devis.",
   },
@@ -179,8 +183,8 @@ export default function PricingSection() {
                 <a
                   href={
                     plan.name === "ETI"
-                      ? "mailto:contact@conformai.fr?subject=StartIA%20ETI%20-%20devis"
-                      : "mailto:contact@conformai.fr?subject=StartIA%20-%20demarrer"
+                      ? "mailto:contact@lockin-web.online?subject=StartIA%20ETI%20-%20devis"
+                      : "mailto:contact@lockin-web.online?subject=StartIA%20-%20demarrer"
                   }
                   className={`w-full text-center px-5 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
                     plan.highlight
@@ -202,16 +206,35 @@ export default function PricingSection() {
           transition={{ duration: 0.45, delay: 0.1 }}
           className="mx-auto mt-10 max-w-5xl"
         >
-          <h3 className="mb-5 text-center text-lg font-semibold text-slate-900 dark:text-white">
+          <h3 className="mb-2 text-center text-lg font-semibold text-slate-900 dark:text-white">
             Options
           </h3>
+          <p className="mx-auto mb-5 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-300">
+            Le socle et les fiches métiers incluses sont dans l&apos;abonnement. Besoin d&apos;un
+            contenu propre à votre métier ? Ajoutez un module sur mesure — rédigé et intégré pour vous.
+          </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {addons.map((addon) => (
               <div
                 key={addon.name}
-                className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 text-center dark:border-slate-700 dark:bg-slate-800"
+                className={`relative flex flex-col rounded-2xl border p-5 text-center ${
+                  addon.featured
+                    ? "border-blue-500 bg-blue-50/60 shadow-md dark:border-blue-500 dark:bg-blue-950/30 lg:scale-[1.02]"
+                    : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+                }`}
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                {addon.featured ? (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                    Sur mesure
+                  </span>
+                ) : null}
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wider ${
+                    addon.featured
+                      ? "text-blue-700 dark:text-blue-300"
+                      : "text-blue-600 dark:text-blue-400"
+                  }`}
+                >
                   {addon.tag}
                 </p>
                 <p className="mt-2 font-semibold text-slate-900 dark:text-white">{addon.name}</p>
@@ -228,6 +251,14 @@ export default function PricingSection() {
                 <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                   {addon.description}
                 </p>
+                {addon.featured ? (
+                  <a
+                    href="mailto:contact@lockin-web.online?subject=StartIA%20-%20module%20metier%20sur%20mesure"
+                    className="mt-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                  >
+                    Demander un module sur mesure
+                  </a>
+                ) : null}
               </div>
             ))}
           </div>

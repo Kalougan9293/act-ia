@@ -4,7 +4,7 @@ import RequireAuth from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
   title: "Espace RH — StartIA",
-  description: "Pilotage RH : collaborateurs, conformité AI Act & RGPD, attestations.",
+  description: "Pilotage RH : collaborateurs, suivi AI Act & RGPD, attestations.",
 };
 
 export default function RhPage() {

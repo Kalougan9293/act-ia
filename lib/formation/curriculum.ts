@@ -27,7 +27,8 @@ export const AI_ACT_MILESTONES = [
   {
     date: "2 février 2025",
     label: "Article 4 et pratiques interdites",
-    detail: "Maîtrise de l'IA (Art. 4) et pratiques interdites (Art. 5).",
+    detail:
+      "Mesures pour soutenir la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026) et pratiques interdites (Art. 5).",
   },
   {
     date: "2 août 2025",
@@ -37,17 +38,19 @@ export const AI_ACT_MILESTONES = [
   {
     date: "2 août 2026",
     label: "Article 50 — transparence",
-    detail: "Chatbots, deepfakes, contenus générés. Les obligations varient selon le cas.",
+    detail:
+      "Chatbots et contenus générés qui peuvent passer pour réels. Les obligations varient selon le cas.",
   },
   {
     date: "2 décembre 2026",
-    label: "Deepfakes intimes — interdits",
-    detail: "Toujours l'Art. 5 : contenus intimes non consentis et contenus pédocriminels.",
+    label: "Deepfakes intimes — AI Act",
+    detail:
+      "Interdiction AI Act renforcée. En France, la diffusion sans consentement est déjà un délit (loi SREN).",
   },
   {
     date: "2 décembre 2027",
     label: "Haut risque (Annexe III)",
-    detail: "Dont le recrutement et la gestion RH.",
+    detail: "Dont le recrutement et la gestion RH. Le RGPD art. 22 s'applique déjà (décision humaine).",
   },
   {
     date: "2 août 2028",

@@ -168,12 +168,12 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     prompt: "Votre entreprise publie une fausse vidéo d'un vrai salarié. Elle doit…",
     choices: [
       "Publier sans rien dire si l'équipe a relu",
-      "Demander seulement l'accord du manager",
-      "Dire clairement que c'est généré par IA",
+      "Dire clairement que c'est généré par IA, sans demander au salarié",
+      "Obtenir l'accord du salarié et indiquer clairement que c'est généré par IA",
     ],
     correctIndex: 2,
     explanation:
-      "Même si le texte est exact, vous indiquez que la vidéo est générée. Relire ne suffit pas.",
+      "Accord de la personne + mention claire. Relire ou seulement afficher « Générée par l'IA » ne suffit pas.",
   },
   {
     id: "q11",
@@ -187,7 +187,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Interdit dans tous les cas",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Le recrutement est à haut risque. L'humain tranche.",
+    explanation:
+      "Pourquoi ? L'humain tranche. Les règles AI Act « haut risque » RH sont renforcées plus tard, mais le RGPD (art. 22) s'applique déjà.",
   },
   {
     id: "q12",
@@ -203,7 +204,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 1,
     explanation:
-      "Déduire les émotions des salariés avec une IA est interdit au travail (Art. 5), même si l'équipe est prévenue.",
+      "Déduire les émotions des salariés avec une IA est en principe interdit au travail (Art. 5), hors exceptions très limitées — même si l'équipe est prévenue.",
   },
   {
     id: "q13",
@@ -218,7 +219,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 1,
     explanation:
-      "Un arrêt parle de santé. L'outil n'est pas un carnet privé : le texte peut être enregistré.",
+      "Un arrêt parle de santé. Règle de prudence : pas dans une IA grand public non autorisée — le texte peut être traité selon l'outil et le contrat.",
   },
   {
     id: "q14",
@@ -276,7 +277,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Effacez l'historique et n'en parlez pas",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? L'entreprise n'a parfois que 72 h. Le dire vite vous protège.",
+    explanation:
+      "Pourquoi ? Vous alertez tout de suite en interne. Si l'entreprise doit prévenir la CNIL, le délai de 72 h peut courir — le dire vite vous protège.",
   },
   {
     id: "q18",

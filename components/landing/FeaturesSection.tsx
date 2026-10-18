@@ -36,9 +36,9 @@ const features = [
     title: "Pour les responsables métiers",
     subtitle: "Usages ciblés",
     description:
-      "Accéder à des modules spécialisés adaptés à votre métier pour aller plus loin.",
+      "Accéder à des fiches métiers adaptées à votre fonction pour aller plus loin.",
     points: [
-      "Modules après le socle",
+      "Fiches métiers après le socle",
       "Cas concrets par métier",
       "Consignes adaptées aux usages",
       "Option : module rédigé pour votre métier",

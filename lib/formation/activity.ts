@@ -79,13 +79,15 @@ export type Activity =
       }[];
     }
   | {
-      /** Vrai / faux : peu importe le choix, on révèle toujours l'opposé (leçon deepfake). */
+      /** Vrai / faux : révèle la bonne réponse (réel ou généré par IA). */
       kind: "truefake";
       briefing?: string;
       outro: string;
       items: {
         id: string;
         prompt: string;
+        /** Bonne réponse */
+        answer: "real" | "fake";
         /** video (défaut) ou audio */
         mediaKind?: "video" | "audio";
         /** Média à brancher plus tard */

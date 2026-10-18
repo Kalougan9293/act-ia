@@ -32,7 +32,7 @@ export function emptyProgress(): FormationProgress {
 
 /**
  * Avancement RH / barre : socle + examen uniquement.
- * Module entreprise et parcours métier viennent après, sans bloquer le 100 %.
+ * Module entreprise et fiche métier viennent après, sans bloquer le 100 %.
  */
 export function computeFormationPercent(progress: FormationProgress): number {
   const chapters = allChapterIds();

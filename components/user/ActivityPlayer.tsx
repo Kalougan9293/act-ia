@@ -1378,6 +1378,7 @@ function TrueFakeActivity({
   items: {
     id: string;
     prompt: string;
+    answer: "real" | "fake";
     mediaKind?: "video" | "audio";
     mediaSrc?: string;
     mediaPlaceholder: string;
@@ -1393,14 +1394,17 @@ function TrueFakeActivity({
   const mediaKind =
     current.mediaKind ??
     (current.mediaSrc?.match(/\.(mp3|wav|ogg|m4a)(\?|$)/i) ? "audio" : "video");
-  // Peu importe le choix : on affiche toujours l'opposé comme « bonne » réponse.
-  const revealed = picked === "real" ? "fake" : picked === "fake" ? "real" : null;
-  const failMessage =
-    picked === "real"
-      ? "Non : c'était faux (généré par IA)."
-      : picked === "fake"
-        ? "Non : c'était vrai (réel)."
-        : "";
+  const correct = current.answer;
+  const isCorrect = picked === correct;
+  const feedbackMessage = !answered
+    ? ""
+    : isCorrect
+      ? correct === "fake"
+        ? "Oui : généré par IA. Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
+        : "Oui : c'était réel. Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
+      : correct === "fake"
+        ? "Non : c'était faux (généré par IA). Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
+        : "Non : c'était vrai (réel). Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus.";
 
   return (
     <div className="space-y-5">
@@ -1441,7 +1445,9 @@ function TrueFakeActivity({
               {current.mediaPlaceholder}
             </p>
             <p className="text-xs text-slate-400">
-              {mediaKind === "audio" ? "Voix à brancher" : "Vidéo à brancher"}
+              {mediaKind === "audio"
+                ? "Média audio indisponible — écoutez le contexte dans le texte"
+                : "Média vidéo indisponible — lisez le contexte ci-dessous"}
             </p>
           </div>
         )}
@@ -1459,12 +1465,12 @@ function TrueFakeActivity({
           ] as const
         ).map((choice) => {
           const selected = picked === choice.id;
-          const isRevealed = answered && revealed === choice.id;
+          const isAnswer = answered && choice.id === correct;
           const tone = answered
-            ? selected
-              ? "border-red-900 bg-red-800 font-semibold text-white"
-              : isRevealed
-                ? "border-emerald-700 bg-emerald-700 font-semibold text-white"
+            ? isAnswer
+              ? "border-emerald-700 bg-emerald-700 font-semibold text-white"
+              : selected
+                ? "border-red-900 bg-red-800 font-semibold text-white"
                 : "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
             : selected
               ? "border-blue-400 bg-blue-50 text-slate-800 dark:bg-blue-950/30 dark:text-slate-100"
@@ -1486,8 +1492,14 @@ function TrueFakeActivity({
 
       {answered && index < items.length - 1 && (
         <>
-          <p className="mx-auto max-w-xl text-center text-base font-semibold text-red-800 dark:text-red-300">
-            {failMessage}
+          <p
+            className={`mx-auto max-w-xl text-center text-base font-semibold ${
+              isCorrect
+                ? "text-emerald-800 dark:text-emerald-300"
+                : "text-red-800 dark:text-red-300"
+            }`}
+          >
+            {feedbackMessage}
           </p>
           <div className="flex justify-center">
             <button
@@ -1505,8 +1517,14 @@ function TrueFakeActivity({
       )}
       {answered && index === items.length - 1 && (
         <>
-          <p className="mx-auto max-w-xl text-center text-base font-semibold text-red-800 dark:text-red-300">
-            {failMessage}
+          <p
+            className={`mx-auto max-w-xl text-center text-base font-semibold ${
+              isCorrect
+                ? "text-emerald-800 dark:text-emerald-300"
+                : "text-red-800 dark:text-red-300"
+            }`}
+          >
+            {feedbackMessage}
           </p>
           <Feedback text={outro} />
           <ReadyOnce onReady={onReady} />

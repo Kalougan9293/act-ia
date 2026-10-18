@@ -590,6 +590,13 @@ function IntroScreen({
         <h1 className="formation-title text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Bienvenue{firstName ? `, ${firstName}` : ""}
         </h1>
+        <div className="mx-auto max-w-xl rounded-2xl border border-blue-200 bg-blue-50/70 px-5 py-4 dark:border-blue-800 dark:bg-blue-950/40">
+          <p className="text-center text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-100 sm:text-base sm:leading-7">
+            L&apos;IA peut vraiment vous faire gagner du temps. Cette formation sert à
+            l&apos;utiliser <span className="text-blue-700 dark:text-blue-300">sans vous mettre
+            en danger</span> — données, deepfakes, décisions — pas à vous fliquer.
+          </p>
+        </div>
         <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
           {FORMATION_PROMISE}
         </p>
@@ -768,13 +775,13 @@ function IntroScreen({
           />
           <PathCard
             label="Bonus"
-            title="Parcours métier"
+            title="Fiche métier"
             meta={careerPathId ? "Validé" : "Optionnel"}
             state={careerState}
             denied={deniedId === "career"}
             onClick={() => openOrDeny("career", careerState === "locked", onOpenCareer)}
             lockedHint="Disponible après l'attestation"
-            doneHint="Parcours métier validé"
+            doneHint="Fiche métier validée"
           />
         </div>
       </div>
@@ -1016,7 +1023,7 @@ function HubScreen({
         />
         <HubAction
           icon={<GraduationCap className="h-5 w-5" />}
-          title="Parcours métier"
+          title="Fiche métier"
           subtitle={
             progress.careerPathId
               ? CAREER_PATHS.find((p) => p.id === progress.careerPathId)?.title ?? "Choisi"
@@ -2295,7 +2302,7 @@ function CareerScreen({
           Retour
         </button>
         <div>
-          <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Parcours métier</h1>
+          <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Fiches métiers</h1>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm text-slate-500">
             Le socle est commun. Choisissez le parcours le plus proche de votre métier : un texte
             court, un cas à trancher, puis une idée d&apos;usage.
@@ -2331,10 +2338,14 @@ function CareerScreen({
             <Sparkles className="h-5 w-5" aria-hidden />
           </span>
           <p className="mt-4 w-full text-center text-xs font-bold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
-            Pour aller plus loin
+            Option — 690 € / module
           </p>
           <p className="mt-3 w-full text-center text-xl font-bold leading-snug text-slate-900 dark:text-white">
-            StartIA propose aussi des modules sur mesure, propres à votre fonction.
+            Module métier sur mesure, propre à votre fonction
+          </p>
+          <p className="mt-2 w-full text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            Texte, cas pratique et idée d&apos;usage rédigés pour vous, puis intégrés au parcours
+            StartIA.
           </p>
         </div>
       </div>

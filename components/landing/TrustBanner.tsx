@@ -10,7 +10,7 @@ const stats = [
   },
   {
     value: "RS6776 & RS6601",
-    label: "Parcours proposé avec un organisme de formation partenaire",
+    label: "Contenu conçu avec des formateurs certifiés RS6776 et RS6601",
   },
   {
     value: "Attestation de suivi",
@@ -21,8 +21,8 @@ const stats = [
     label: "Qui a suivi quoi, et qui est en retard",
   },
   {
-    value: "Prise en main immédiate",
-    label: "100 % SaaS, aucune installation",
+    value: "Alternative aux formations externes",
+    label: "1 h, suivi RH, preuves exportables — 100 % SaaS",
   },
   {
     value: "Veille réglementaire",

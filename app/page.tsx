@@ -5,6 +5,7 @@ import ReviewsSection from "@/components/landing/ReviewsSection";
 import TrustBanner from "@/components/landing/TrustBanner";
 import ProblemSection from "@/components/landing/ProblemSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
+import DeploySection from "@/components/landing/DeploySection";
 import PricingSection from "@/components/landing/PricingSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
@@ -12,7 +13,7 @@ import { faqJsonLd } from "@/lib/landing/faq";
 
 export const metadata: Metadata = {
   description:
-    "Formation à l'IA pour les entreprises, au titre de l'article 4 de l'AI Act. Attestations nominatives et suivi des parcours pour la direction et les RH. À partir de 290 € par an.",
+    "Formation à l'IA pour les entreprises, au titre de l'article 4 de l'AI Act. Attestations nominatives et suivi des parcours pour la direction et les RH. À partir de 390 € par an.",
 };
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
       <TrustBanner />
       <ProblemSection />
       <FeaturesSection />
+      <DeploySection />
       <PricingSection />
       <FAQSection />
       <Footer />

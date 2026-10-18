@@ -18,7 +18,7 @@ export const mockStructures: Structure[] = [
       phone: "04 78 12 34 56",
       plan: "pro",
       seats: 20,
-      priceMonthlyEur: 590,
+      priceMonthlyEur: 790,
       nextInvoiceAt: "2027-03-12",
     },
   },
@@ -38,7 +38,7 @@ export const mockStructures: Structure[] = [
       phone: "01 44 55 66 77",
       plan: "starter",
       seats: 5,
-      priceMonthlyEur: 290,
+      priceMonthlyEur: 390,
       nextInvoiceAt: "2027-06-02",
     },
   },
@@ -67,7 +67,7 @@ export const mockStructures: Structure[] = [
 export const mockUsers: PlatformUser[] = [
   {
     id: "usr_super",
-    email: "admin@conformai.fr",
+    email: "admin@startia.fr",
     name: "Super Admin",
     role: "super_admin",
     structureId: null,

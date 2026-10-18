@@ -54,7 +54,7 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Responsabilité</h2>
         <p>
-          StartIA fournit des outils d&apos;aide à la conformité et une formation. Le contenu ne
+          StartIA fournit des outils pour documenter une démarche de formation et une formation. Le contenu ne
           constitue pas un conseil juridique. L&apos;attestation de suivi documente les mesures
           prises au titre de l&apos;article 4 ; elle ne certifie pas l&apos;entreprise.
         </p>

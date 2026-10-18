@@ -170,7 +170,7 @@ export default function CompanyCertificate({
             className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:underline disabled:cursor-not-allowed disabled:text-slate-400 disabled:no-underline"
           >
             <Copy className="h-4 w-4" />
-            {copied ? "Badge copié" : "Copier le badge de conformité pour notre site web"}
+            {copied ? "Badge copié" : "Copier le badge de suivi Art. 4 pour notre site web"}
           </button>
         </div>
       </div>

@@ -134,7 +134,7 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
 
   const lines = [
     "StartIA",
-    "Rapport d'engagement et de conformité — Article 4",
+    "Rapport d'engagement et de suivi — Article 4",
     "Attestations de suivi · AI Act (article 4) et RGPD",
     "",
     `Raison sociale : ${companyName}`,

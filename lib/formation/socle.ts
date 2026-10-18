@@ -320,7 +320,7 @@ export const BLOCKS: Block[] = [
           kind: "video",
           format: "vidéo courte",
           script:
-            "Les voitures ont un code de la route, pour que chacun sache ce qui est permis. L'Europe a fait quelque chose de comparable pour l'IA. Ce texte s'appelle l'AI Act.\n\nPour votre quotidien, l'AI Act prévoit quatre niveaux de risque.\nLe risque inacceptable : c'est interdit. Par exemple, demander à une IA, à partir d'une vidéo ou de la voix, si un collègue a l'air stressé ou motivé. Autre exemple, analyser la photo d'un collègue pour déduire sa religion ou son origine.\nLe haut risque : des exigences plus strictes. Par exemple, un outil qui trie des CV peut aider, mais un humain doit garder la décision finale.\nLe risque limité : il faut prévenir. Par exemple avec un chatbot, l'utilisateur doit savoir qu'il parle à une machine, pas à un humain. Il faut clairement l'indiquer.\nEnfin, le risque minimal : pas d'obligation particulière comme corriger un mail, résumer une réunion… juste du bon sens.\n\nCe texte regarde aussi votre place face à l'outil. Il y a 2 cas de figure : soit vous utilisez Claude, Gemini ou Copilot pour travailler — vous êtes utilisateurs, comme presque tout le monde. Soit votre entreprise fabrique une IA et la vend sous son nom — vous êtes vendeurs, et là les règles sont plus lourdes.\n\nPour finir : ce n'est jamais la machine qui est responsable, c'est l'entreprise. Et concrètement, celui qui utilise l'IA répond de ce qu'il en fait.",
+            "Les voitures ont un code de la route, pour que chacun sache ce qui est permis. L'Europe a fait quelque chose de comparable pour l'IA. Ce texte s'appelle l'AI Act.\n\nPour votre quotidien, l'AI Act prévoit quatre niveaux de risque.\nLe risque inacceptable : en principe interdit. Par exemple, demander à une IA, à partir d'une vidéo ou de la voix, si un collègue a l'air stressé ou motivé — sauf exceptions très limitées, notamment santé ou sécurité. Autre exemple, analyser la photo d'un collègue pour déduire sa religion ou son origine.\nLe haut risque : des exigences plus strictes. Par exemple, un outil qui trie des CV peut aider, mais un humain doit garder la décision finale.\nLe risque limité : dans la plupart des cas, il faut prévenir. Par exemple avec un chatbot, l'utilisateur doit savoir qu'il parle à une machine, pas à un humain. Il faut clairement l'indiquer, sauf exceptions prévues par le texte.\nEnfin, le risque minimal : pas d'obligation particulière comme corriger un mail, résumer une réunion… juste du bon sens.\n\nCe texte regarde aussi votre place face à l'outil. Il y a 2 cas de figure : soit vous utilisez Claude, Gemini ou Copilot pour travailler — vous êtes utilisateurs, comme presque tout le monde. Soit votre entreprise fabrique une IA et la vend sous son nom — vous êtes vendeurs, et là les règles sont plus lourdes.\n\nPour finir : c'est l'entreprise qui reste responsable face à la loi. Vous, en tant qu'utilisateur, devez suivre les règles internes et les bons réflexes : c'est comme ça que vous protégez l'entreprise et vous-même.",
         },
       },
       {
@@ -428,14 +428,14 @@ export const BLOCKS: Block[] = [
               label: "Tri automatique de CV",
               binId: "high",
               explanation:
-                "C'est du haut risque. L'outil peut aider à trier, mais c'est un humain qui doit garder la décision finale.",
+                "C'est du haut risque (AI Act). L'outil peut aider à trier, mais un humain garde la décision — déjà exigé par le RGPD (art. 22).",
             },
             {
               id: "emotion",
               label: "Demander à une IA si un collègue a l'air stressé d'après sa voix ou une vidéo",
               binId: "ban",
               explanation:
-                "C'est un risque inacceptable (Art. 5). Sur le lieu de travail, on ne déduit pas les émotions d'une personne avec une IA.",
+                "C'est un risque inacceptable (Art. 5) : au travail, on ne déduit pas les émotions avec une IA, hors exceptions très limitées (notamment santé ou sécurité).",
             },
             {
               id: "biocat",
@@ -462,7 +462,7 @@ export const BLOCKS: Block[] = [
               label: "Déjà en vigueur",
               law: "Articles 4 et 5 — déjà en vigueur",
               detail:
-                "Article 4 : votre entreprise doit déjà prendre des mesures pour que les personnes qui utilisent l'IA sachent s'en servir. Cette formation en fait partie. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo), ou déduire sa religion ou son origine à partir d'une photo.",
+                "Article 4 (après l'Omnibus 2026) : l'entreprise doit prendre des mesures pour soutenir la maîtrise de l'IA chez celles et ceux qui l'utilisent — pas « garantir » un niveau d'expertise. Cette formation en fait partie. Le texte n'attache pas d'amende spécifique à l'article 4. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo) — hors exceptions très limitées —, ou déduire sa religion ou son origine à partir d'une photo.",
             },
             {
               id: "aout26",
@@ -471,16 +471,16 @@ export const BLOCKS: Block[] = [
               label: "Déjà en vigueur",
               law: "Article 50 — transparence",
               detail:
-                "Août 2026, c'est la règle de la transparence. Concrètement : si c'est une IA, on le dit. Un chatbot doit le dire dès le début. Une image, une vidéo ou une voix fabriquée aussi. Vous avez le droit d'en publier, à condition de prévenir clairement. Le but : personne ne doit croire que c'est un humain, ou un vrai enregistrement.",
+                "Août 2026, c'est surtout la transparence (Art. 50). Un chatbot doit dire dès le début que c'est une machine. Pour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas toute image IA stylisée. Le but : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
             },
             {
               id: "dec26",
               shortDate: "Déc. 2026",
               date: "2 décembre 2026",
               label: "Prochaine échéance",
-              law: "Deepfakes intimes — interdits",
+              law: "Deepfakes intimes — AI Act + déjà en France",
               detail:
-                "Décembre 2026, ce n'est plus la même chose qu'en août. En août, on disait : « prévenez que c'est une IA ». Ici, une chose devient totalement interdite : fabriquer une image, une vidéo ou une voix **intime** d'une vraie personne, sans son accord explicite. Si ce n'est pas votre métier, retenez : on ne fait pas ça.\n\n* On y revient plus tard dans la formation.",
+                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN). Au 2 décembre 2026, l'AI Act ajoute aussi une interdiction européenne sur certains systèmes qui produisent ce type de contenus intimes non consentis. Retenez : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
             },
             {
               id: "dec27",
@@ -489,7 +489,7 @@ export const BLOCKS: Block[] = [
               label: "Recrutement",
               law: "Haut risque — décalé par l'Omnibus",
               detail:
-                "Décembre 2027 concerne surtout le recrutement et les outils qui trient des CV ou notent des salariés. L'Europe a reporté à cette date (via l'Omnibus) les règles les plus strictes sur ces outils « haut risque ». En attendant, le geste du quotidien ne change pas : l'outil peut aider à classer, mais c'est un humain qui doit garder la décision finale. On ne laisse pas l'IA choisir seule qui est reçu, promu ou écarté.",
+                "Décembre 2027 concerne surtout les règles AI Act les plus strictes sur le recrutement et les outils qui trient des CV ou notent des salariés (report via l'Omnibus). Attention : le RGPD (art. 22) s'applique déjà — on ne laisse pas une machine écarter seule un candidat. L'outil peut aider à classer, mais un humain garde la décision finale.",
             },
             {
               id: "aout28",
@@ -521,7 +521,7 @@ export const BLOCKS: Block[] = [
           kind: "video",
           format: "vidéo courte",
           script:
-            "Avant de saisir ou de coller un texte dans une IA, retenez une chose : l'outil n'est pas un carnet privé.\n\nDans un outil grand public, votre texte peut être enregistré. Il peut être relu. Il peut être réutilisé. La fenêtre est sur votre écran, mais l'information, elle, peut sortir de l'entreprise.\n\nDeux textes comptent ici : l'AI Act qui encadre les outils d'IA, et le RGPD qui protège les données personnelles, avec ou sans IA.\n\nUne donnée personnelle, c'est tout ce qui permet d'identifier quelqu'un : un nom, bien sûr, mais aussi un e-mail, une voix, une photo, une plaque d'immatriculation. Et même une simple description : « le directeur de l'agence de Paris », ça suffit à l'identifier.\n\nPour savoir ce que vous pouvez saisir, il y a trois degrés de vigilance, matérialisés par trois couleurs.\n\nVert : OK. Pas d'information secrète, pas de personne reconnaissable non plus. Cela peut concerner une idée de titre, ou une question déjà publiée sur votre site, par exemple.\n\nOrange : la prudence est de mise si une personne est identifiable. Évitez les informations qui permettent de la reconnaître, et n'utilisez qu'un outil autorisé. Exemple : au lieu d'écrire à l'IA « Julie Martin », écrivez « une collègue ». Le RGPD appelle ça la minimisation.\n\nRouge : interdit dans un outil grand public. Les informations relatives à la santé, la religion, l'appartenance syndicale ou l'origine sont des données sensibles. De même pour les secrets de l'entreprise comme les prix non publics, les contrats, le business plan ou le code interne. Un outil validé par l'entreprise peut être utilisé pour ça, seulement si c'est nécessaire et autorisé.\n\nSi un usage d'IA devient régulier dans votre équipe, vous en parlez à votre manager ou au référent IA : l'entreprise doit avoir connaissance des outils utilisés par ses salariés.",
+            "Avant de saisir ou de coller un texte dans une IA, retenez une chose : l'outil n'est pas un carnet privé.\n\nDans un outil grand public, votre texte peut être enregistré, relu ou réutilisé — selon l'outil, ses paramètres et ses conditions. La fenêtre est sur votre écran, mais l'information, elle, peut sortir de l'entreprise.\n\nDeux textes comptent ici : l'AI Act qui encadre les outils d'IA, et le RGPD qui protège les données personnelles, avec ou sans IA.\n\nUne donnée personnelle, c'est tout ce qui permet d'identifier quelqu'un : un nom, bien sûr, mais aussi un e-mail, une voix, une photo, une plaque d'immatriculation. Et même une simple description : « le directeur de l'agence de Paris », ça suffit à l'identifier.\n\nPour savoir ce que vous pouvez saisir, il y a trois degrés de vigilance, matérialisés par trois couleurs.\n\nVert : OK. Pas d'information secrète, pas de personne reconnaissable non plus. Cela peut concerner une idée de titre, ou une question déjà publiée sur votre site, par exemple.\n\nOrange : la prudence est de mise si une personne est identifiable. Évitez les informations qui permettent de la reconnaître, et n'utilisez qu'un outil autorisé. Exemple : au lieu d'écrire à l'IA « Julie Martin », écrivez « une collègue ». Le RGPD appelle ça la minimisation.\n\nRouge : règle de prudence — ne mettez pas ça dans une IA grand public non autorisée. Les informations relatives à la santé, la religion, l'appartenance syndicale ou l'origine sont des données sensibles. De même pour les secrets de l'entreprise comme les prix non publics, les contrats, le business plan ou le code interne. Un outil validé par l'entreprise peut être utilisé pour ça, seulement si c'est nécessaire et autorisé.\n\nSi un usage d'IA devient régulier dans votre équipe, vous en parlez à votre manager ou au référent IA : l'entreprise doit avoir connaissance des outils utilisés par ses salariés.",
         },
       },
       {
@@ -631,49 +631,49 @@ export const BLOCKS: Block[] = [
               label: "E-mail d'un collègue",
               level: "orange",
               explanation:
-                "Vous avez le droit, mais encadré. Une adresse mail (ex. marie.dupont@entreprise.fr) est une donnée personnelle au sens de l'article 4 du RGPD : elle désigne quelqu'un. Passez uniquement par un outil autorisé par l'entreprise, et n'écrivez que le minimum utile — pas toute la conversation.",
+                "Vous avez le droit, mais encadré. Une adresse mail (ex. marie.dupont@entreprise.fr) est une donnée personnelle au sens du RGPD : elle désigne quelqu'un. Passez uniquement par un outil autorisé par l'entreprise, et n'écrivez que le minimum utile — pas toute la conversation.",
             },
             {
               id: "cv",
               label: "CV d'un candidat",
               level: "orange",
               explanation:
-                "Vous avez le droit, mais encadré. Un CV porte un nom, un téléphone, un parcours : c'est une donnée personnelle (article 4 du RGPD). Utilisez un outil autorisé, et ne donnez que ce qui sert — par exemple le poste et les compétences, pas l'adresse ni le numéro « au cas où ».",
+                "Vous avez le droit, mais encadré. Un CV porte un nom, un téléphone, un parcours : c'est une donnée personnelle au sens du RGPD. Utilisez un outil autorisé, et ne donnez que ce qui sert — par exemple le poste et les compétences, pas l'adresse ni le numéro « au cas où ».",
             },
             {
               id: "arret",
               label: "Arrêt maladie",
               level: "red",
               explanation:
-                "Vous n'avez pas le droit. Un arrêt maladie révèle l'état de santé de quelqu'un — catégorie protégée par l'article 9 du RGPD. Même « grippe » ou « opération » : ça ne s'écrit jamais dans une IA grand public.",
+                "Donnée sensible (art. 9 RGPD). Règle de prudence : ne la saisissez pas dans une IA grand public non autorisée — même « grippe » ou « opération ».",
             },
             {
               id: "syndicat",
               label: "Liste d'adhérents syndicaux",
               level: "red",
               explanation:
-                "Vous n'avez pas le droit. L'appartenance syndicale est une donnée sensible au sens de l'article 9 du RGPD — au même titre que la santé, la religion ou l'origine. Savoir qui est adhérent, c'est très intime : cette liste ne va jamais dans une IA grand public.",
+                "Donnée sensible (art. 9 RGPD). Règle de prudence : cette liste ne va pas dans une IA grand public non autorisée.",
             },
             {
               id: "plan",
               label: "Business plan",
               level: "red",
               explanation:
-                "Vous n'avez pas le droit. Un business plan contient la stratégie, les chiffres, les projets à venir. Même sans aucun nom de personne, un concurrent qui le lit en sait trop. Ne l'écrivez pas dans une IA externe.",
+                "Secret d'entreprise. Règle de prudence : ne l'écrivez pas dans une IA externe non autorisée — même sans aucun nom.",
             },
             {
               id: "prix",
               label: "Grille de prix non publique",
               level: "red",
               explanation:
-                "Vous n'avez pas le droit. Remises clients, marges, tarifs négociés : ce n'est pas sur le site. Un concurrent qui les lit peut s'aligner ou vous sous-cotter. Ne les écrivez pas dans une IA externe.",
+                "Secret d'entreprise. Règle de prudence : remises, marges, tarifs négociés — pas dans une IA externe non autorisée.",
             },
             {
               id: "code",
               label: "Code d'un logiciel interne",
               level: "red",
               explanation:
-                "Vous n'avez pas le droit. Ici, « code » veut dire le programme écrit par vos équipes (algorithmes, formules, logique métier) — pas un code promo. C'est le savoir-faire technique de l'entreprise : ne l'écrivez jamais dans une IA grand public.",
+                "Secret d'entreprise. Ici, « code » = programme écrit par vos équipes. Règle de prudence : pas dans une IA grand public non autorisée.",
             },
           ],
         },
@@ -718,7 +718,7 @@ export const BLOCKS: Block[] = [
             { id: "w22", text: "professionnel.", redact: false },
           ],
           explanation:
-            "C'est le principe de minimisation : on ne donne à l'IA que le strict nécessaire.\n« Julie Martin » devient « une collègue ». L'e-mail et l'âge partent.\n« En arrêt » suffit pour le contexte.\n« Pour dépression depuis mars » ne doit pas y figurer, car c'est une information de santé, et elle ne va jamais dans un outil grand public.\nLa demande reste claire, sans personne reconnaissable.",
+            "C'est le principe de minimisation : on ne donne à l'IA que le strict nécessaire.\n« Julie Martin » devient « une collègue ». L'e-mail et l'âge partent.\n« En arrêt » suffit pour le contexte.\n« Pour dépression depuis mars » ne doit pas y figurer : c'est une information de santé — règle de prudence face à un outil grand public non autorisé.\nLa demande reste claire, sans personne reconnaissable.",
         },
       },
       {
@@ -730,7 +730,7 @@ export const BLOCKS: Block[] = [
           kind: "video",
           format: "vidéo courte",
           script:
-            "Trois situations arrivent fréquemment au travail, et voici quoi faire si ça survient.\n\nPremière situation : l'erreur. Imaginez que vous venez de coller par erreur un fichier clients, ou le motif d'un arrêt maladie, dans une IA grand public. Vous ne faites pas comme si de rien n'était. Vous prévenez tout de suite votre manager, le référent IA ou le DPO. Pourquoi cette urgence ? Parce que le RGPD (article 33) laisse souvent seulement 72 heures à l'entreprise pour prévenir la CNIL en cas de fuite de données. Plus vous parlez tôt, plus elle peut réagir à temps.\n\nDeuxième situation : la réunion. Avant d'appuyer sur « enregistrer » pour qu'un outil résume l'échange, vous prévenez tout le monde dans la salle — y compris le prestataire ou le client en visio, parce que leur voix est aussi une donnée personnelle. Et ensuite, vous ne laissez pas l'enregistrement dormir des mois dans un dossier partagé : vous suivez la durée de conservation prévue dans votre entreprise.\n\nTroisième situation : un client ou un collègue vous contacte parce qu'il veut consulter les données personnelles que l'entreprise conserve à son sujet, corriger une adresse erronée, ou demander l'effacement de ses informations. Ces droits figurent aux articles 15 à 17 du RGPD. Vous ne traitez pas la demande seul : vous la transmettez tout de suite au DPO ou au référent. L'entreprise dispose en général d'un mois pour répondre.",
+            "Trois situations arrivent fréquemment au travail, et voici quoi faire si ça survient.\n\nPremière situation : l'erreur. Imaginez que vous venez de coller par erreur un fichier clients, ou le motif d'un arrêt maladie, dans une IA grand public. Vous ne faites pas comme si de rien n'était. Vous prévenez tout de suite votre manager, le référent IA ou le DPO. Pourquoi cette urgence ? L'entreprise doit pouvoir évaluer l'incident. Si c'est une violation de données à risque pour les personnes, le RGPD (article 33) prévoit en général 72 heures pour prévenir la CNIL — ce n'est pas automatique pour chaque erreur, mais plus vous parlez tôt, plus elle peut réagir à temps.\n\nDeuxième situation : la réunion. Avant d'appuyer sur « enregistrer » pour qu'un outil résume l'échange, vous prévenez tout le monde dans la salle — y compris le prestataire ou le client en visio, parce que leur voix est aussi une donnée personnelle. Et ensuite, vous ne laissez pas l'enregistrement dormir des mois dans un dossier partagé : vous suivez la durée de conservation prévue dans votre entreprise.\n\nTroisième situation : un client ou un collègue vous contacte parce qu'il veut consulter les données personnelles que l'entreprise conserve à son sujet, corriger une adresse erronée, ou demander l'effacement de ses informations. Ces droits figurent aux articles 15 à 17 du RGPD. Vous ne traitez pas la demande seul : vous la transmettez tout de suite au DPO ou au référent. L'entreprise dispose en général d'un mois pour répondre.",
         },
       },
       {
@@ -877,7 +877,7 @@ export const BLOCKS: Block[] = [
           kind: "video",
           format: "vidéo courte",
           script:
-            "Jusqu'ici, on a vu ce qu'on peut saisir dans une IA, et comment réagir quand quelque chose dérape. Dans cette vidéo, on attire votre attention sur un point essentiel : l'IA peut proposer et aider, mais c'est vous qui restez le décideur final — et vous devez comprendre ce qu'elle vous propose avant de valider.\n\nCertains usages sont dits « haut risque » parce qu'ils touchent fortement les personnes — par exemple un outil qui trie des CV ou qui note des salariés. C'est pour ça qu'un humain doit garder la décision finale. Voici ce que ça change pour tout le monde au travail, pas seulement pour les RH.\n\nL'IA peut vous préparer un texte, une liste ou une proposition, ou vous aider à trier, mais elle ne décide pas à votre place. Dès qu'une personne est concernée, qu'il s'agisse d'un client, d'un collègue, d'un remboursement, d'une sanction ou d'un paiement, vous devez rester vigilant. Valider sans lire, ce n'est pas décider : décider, concrètement, c'est comprendre ce que l'outil propose, pouvoir le modifier, et pouvoir dire non.\n\nUn score ou un classement peut aussi être injuste, parce que l'IA apprend sur des exemples du passé, et si ce passé était biaisé, l'outil peut reproduire cette injustice tout en ayant l'air neutre. Un exemple connu : chez Amazon, un outil de tri de CV a appris sur des embauches surtout masculines, et il écartait ou mettait de côté les profils associés aux femmes, sans que personne ait écrit cette consigne. Le même risque existe dès qu'un outil classe des personnes, des demandes ou des dossiers.\n\nConcrètement, l'outil peut classer ou vous aider à trier, mais il ne doit pas faire disparaître une personne ou un dossier sans que vous le sachiez. Vous regardez aussi ce qu'il a écarté ou mis de côté, c'est vous qui choisissez, et qui pouvez expliquer pourquoi.",
+            "Jusqu'ici, on a vu ce qu'on peut saisir dans une IA, et comment réagir quand quelque chose dérape. Dans cette vidéo, on attire votre attention sur un point essentiel : l'IA peut proposer et aider, mais c'est vous qui restez le décideur final — et vous devez comprendre ce qu'elle vous propose avant de valider.\n\nCertains usages sont dits « haut risque » parce qu'ils touchent fortement les personnes — par exemple un outil qui trie des CV ou qui note des salariés. C'est pour ça qu'un humain doit garder la décision finale. Le RGPD (article 22) l'exige déjà : on ne laisse pas une machine écarter seule une personne. Voici ce que ça change pour tout le monde au travail, pas seulement pour les RH.\n\nL'IA peut vous préparer un texte, une liste ou une proposition, ou vous aider à trier, mais elle ne décide pas à votre place. Dès qu'une personne est concernée, qu'il s'agisse d'un client, d'un collègue, d'un remboursement, d'une sanction ou d'un paiement, vous devez rester vigilant. Valider sans lire, ce n'est pas décider : décider, concrètement, c'est comprendre ce que l'outil propose, pouvoir le modifier, et pouvoir dire non.\n\nUn score ou un classement peut aussi être injuste, parce que l'IA apprend sur des exemples du passé, et si ce passé était biaisé, l'outil peut reproduire cette injustice tout en ayant l'air neutre. Un exemple connu : chez Amazon, un outil de tri de CV a appris sur des embauches surtout masculines, et il écartait ou mettait de côté les profils associés aux femmes, sans que personne ait écrit cette consigne. Le même risque existe dès qu'un outil classe des personnes, des demandes ou des dossiers.\n\nConcrètement, l'outil peut classer ou vous aider à trier, mais il ne doit pas faire disparaître une personne ou un dossier sans que vous le sachiez. Vous regardez aussi ce qu'il a écarté ou mis de côté, c'est vous qui choisissez, et qui pouvez expliquer pourquoi.",
         },
       },
       {
@@ -1189,37 +1189,41 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "truefake",
           briefing:
-            "Quatre extraits. Pour chacun, choisissez « vrai » ou « faux ».",
+            "Quatre extraits. Pour chacun, choisissez « vrai » ou « faux ». Les quatre sont générés par IA.",
           outro:
-            "Dans ce jeu, peu importe votre choix : la réponse affichée était toujours l'opposé. Le message : on ne peut plus se fier seulement à l'œil ou à l'oreille. On verra juste après comment faire attention, concrètement.",
+            "Les quatre extraits étaient générés par IA. Le message : on ne peut plus se fier seulement à l'œil ou à l'oreille. On verra juste après comment faire attention, concrètement.",
           items: [
             {
               id: "tf1",
               prompt: "Cette vidéo est-elle réelle ou générée par IA ?",
+              answer: "fake",
               mediaKind: "video",
               mediaSrc: "/media/formation/truefake-1.mp4",
-              mediaPlaceholder: "Vidéo 1",
+              mediaPlaceholder: "Exemple vidéo — extrait 1",
             },
             {
               id: "tf2",
               prompt: "Cette voix est-elle réelle ou générée par IA ?",
+              answer: "fake",
               mediaKind: "audio",
               mediaSrc: "/media/formation/truefake-voice-1.mp3",
-              mediaPlaceholder: "Voix 1",
+              mediaPlaceholder: "Exemple audio — voix 1",
             },
             {
               id: "tf3",
               prompt: "Cette vidéo est-elle réelle ou générée par IA ?",
+              answer: "fake",
               mediaKind: "video",
               mediaSrc: "/media/formation/truefake-2.mp4",
-              mediaPlaceholder: "Vidéo 2",
+              mediaPlaceholder: "Exemple vidéo — extrait 2",
             },
             {
               id: "tf4",
               prompt: "Cette voix est-elle réelle ou générée par IA ?",
+              answer: "fake",
               mediaKind: "audio",
               mediaSrc: "/media/formation/truefake-voice-2.mp3",
-              mediaPlaceholder: "Voix 2",
+              mediaPlaceholder: "Exemple audio — voix 2",
             },
           ],
         },
@@ -1232,9 +1236,9 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "video",
           format: "vidéo maison",
-          // src à brancher : vidéo faite maison
+          src: "/media/deepfake-exemple.mp4",
           script:
-            "On va parler des deepfakes : ce que c'est, ce que vous faites si vous en recevez un, et quoi faire si votre entreprise en publie un.\n\nUn deepfake, c'est une vidéo, une photo ou une voix fabriquée par une IA pour imiter une vraie personne. Le résultat peut être très net, avec le bon logo, la bonne intonation et le bon bureau en arrière-plan, et pourtant ça ne prouve plus que c'est vraiment réel.\n\nRegardez l'exemple. Aujourd'hui, on peut fabriquer un message où votre directeur semble vous demander un virement ou un mot de passe, et l'urgence fait partie du piège. Surtout, ne faites pas ce qui est demandé, et vérifiez avant tout par un autre canal que vous connaissez déjà, comme le numéro habituel ou le mail. N'utilisez pas le lien suspect.\n\nEnsuite, parfois c'est votre entreprise qui publie. Si vous diffusez une vidéo ou une voix générée par une IA qui ressemble à une vraie personne, vous devez le dire clairement, parce que les gens doivent le savoir, même si c'est évident : la personne qui regarde doit comprendre que ce n'est pas un enregistrement réel.\n\nSi un message vous semble trop urgent pour être honnête, ou si vous hésitez avant de publier, vous demandez.",
+            "On va parler des deepfakes : ce que c'est, ce que vous faites si vous en recevez un, et quoi faire si votre entreprise en publie un.\n\nUn deepfake, c'est une vidéo, une photo ou une voix fabriquée par une IA pour imiter une vraie personne. Le résultat peut être très net, avec le bon logo, la bonne intonation et le bon bureau en arrière-plan, et pourtant ça ne prouve plus que c'est vraiment réel.\n\nRegardez l'exemple. Aujourd'hui, on peut fabriquer un message où votre directeur semble vous demander un virement ou un mot de passe, et l'urgence fait partie du piège. Surtout, ne faites pas ce qui est demandé, et vérifiez avant tout par un autre canal que vous connaissez déjà, comme le numéro habituel ou le mail. N'utilisez pas le lien suspect.\n\nEnsuite, parfois c'est votre entreprise qui publie. Si vous diffusez une vidéo ou une voix générée par une IA qui peut passer pour réelle, vous devez le dire clairement — et obtenir l'accord de la personne concernée (droit à l'image, RGPD). La mention « Générée par l'IA » seule ne suffit pas sans cet accord.\n\nEt pour un deepfake sexuel sans consentement : en France, c'est déjà un délit (loi SREN), avant même certaines dates de l'AI Act.\n\nSi un message vous semble trop urgent pour être honnête, ou si vous hésitez avant de publier, vous demandez.",
         },
       },
       {
@@ -1275,19 +1279,20 @@ export const BLOCKS: Block[] = [
                   label: "On publie : le contenu a été relu, ça suffit",
                   correct: false,
                   explanation:
-                    "Vous le dites clairement, même si le contenu est juste, par exemple avec une mention évidente comme « Générée par l'IA ». Une fausse vidéo d'une vraie personne se signale. Toujours.",
+                    "Il faut l'accord du salarié et une mention claire « Générée par l'IA ». Relire ne suffit pas.",
                 },
                 {
-                  label: "On cache la mention dans la description, sous la vidéo",
+                  label: "On indique « Générée par l'IA », sans demander au salarié",
                   correct: false,
                   explanation:
-                    "Vous le dites clairement, même si le contenu est juste, par exemple avec une mention évidente comme « Générée par l'IA ». Une fausse vidéo d'une vraie personne se signale. Toujours.",
+                    "La mention seule ne suffit pas : il faut aussi l'accord de la personne (droit à l'image, RGPD).",
                 },
                 {
-                  label: "On publie seulement en indiquant clairement que c'est généré par IA",
+                  label:
+                    "On obtient l'accord du salarié et on indique clairement que c'est généré par IA",
                   correct: true,
                   explanation:
-                    "Vous le dites clairement, même si le contenu est juste, par exemple avec une mention évidente comme « Générée par l'IA ». Une fausse vidéo d'une vraie personne se signale. Toujours.",
+                    "Accord de la personne + mention claire. Les deux sont nécessaires pour publier une vidéo IA d'un vrai salarié.",
                 },
               ],
             },

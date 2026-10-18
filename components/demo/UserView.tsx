@@ -148,7 +148,7 @@ export default function UserView() {
           />
           <DemoAction
             icon={<GraduationCap className="h-5 w-5" />}
-            title="Parcours métier"
+            title="Fiche métier"
             subtitle="Après le quiz"
             locked
           />
