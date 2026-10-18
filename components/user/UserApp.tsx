@@ -129,7 +129,8 @@ export default function UserApp() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-32">
+      {/* pb large : on peut scroller sous le FAB « Les mots de l'IA » pour accéder aux boutons */}
+      <main className="mx-auto w-full max-w-6xl scroll-pb-40 px-4 pb-44 pt-8 sm:scroll-pb-36 sm:px-6 sm:pb-36 sm:pt-10">
         <FormationExperience
           key={session.uid}
           uid={session.uid}

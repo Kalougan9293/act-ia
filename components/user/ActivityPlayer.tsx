@@ -485,6 +485,7 @@ function SlashActivity({
   activity: Extract<Activity, { kind: "slash" }>;
   onReady: () => void;
 }) {
+  const narrow = useNarrowSwipe();
   const items = activity.items;
   const personalTotal = items.filter((item) => item.personal).length;
   const [cutOk, setCutOk] = useState<string[]>([]);
@@ -516,7 +517,27 @@ function SlashActivity({
       "border-teal-400 bg-teal-300 text-teal-950",
       "border-indigo-400 bg-indigo-300 text-indigo-950",
     ];
-    /** Grille espacée (~3×4) : compacte mais sans chevauchement. */
+    /**
+     * Smartphone : nuage désordonné qui remplit toute la largeur.
+     * `right` ancre à droite (exploite l’espace), `left` à gauche.
+     * Tops tous différents ; pas de colonnes alignées.
+     */
+    const mobileScatter: Record<
+      string,
+      { top: number; left?: number; right?: number }
+    > = {
+      ip: { left: 2, top: 2 },
+      photo: { right: 2, top: 10 },
+      ca: { left: 16, top: 19 },
+      ri: { right: 3, top: 28 },
+      mail: { left: 4, top: 37 },
+      badge: { right: 6, top: 46 },
+      brive: { left: 22, top: 55 },
+      plaque: { right: 2, top: 64 },
+      stats: { left: 8, top: 73 },
+      voix: { right: 4, top: 82 },
+    };
+    /** Desktop : grille espacée (~3×4). */
     const slots = [
       { left: 4, top: 4 },
       { left: 36, top: 2 },
@@ -537,17 +558,57 @@ function SlashActivity({
       order[i] = order[j]!;
       order[j] = tmp;
     }
-    return items.map((item, index) => {
-      const slot = slots[order[index] % slots.length]!;
+    const looks = items.map((item, index) => {
       const jitter = item.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+      const tone = tones[index % tones.length]!;
+      const delay = `${(jitter % 9) * 0.22}s`;
+      const len = item.label.length;
+      /** Sur mobile : court / moyen / long — évite le mur de bulles identiques. */
+      const sizeClass = narrow
+        ? len <= 34
+          ? "w-[34%] max-w-[8.5rem]"
+          : len <= 44
+            ? "w-[42%] max-w-[10.5rem]"
+            : "w-[48%] max-w-[12rem]"
+        : "max-w-[7.75rem] sm:max-w-[9.5rem]";
+      if (narrow && mobileScatter[item.id]) {
+        const pin = mobileScatter[item.id]!;
+        return {
+          left: pin.left,
+          right: pin.right,
+          top: pin.top,
+          delay,
+          tone,
+          sizeClass,
+        };
+      }
+      const slot = slots[order[index] % slots.length]!;
       return {
         left: Math.min(78, Math.max(2, slot.left + (jitter % 3) - 1)),
+        right: undefined as number | undefined,
         top: Math.min(78, Math.max(2, slot.top + (jitter % 3) - 1)),
-        delay: `${(jitter % 9) * 0.22}s`,
-        tone: tones[index % tones.length]!,
+        delay,
+        tone,
+        sizeClass,
       };
     });
-  }, [items]);
+
+    // PC : « voix » en bas à droite, même abscisse que le badge
+    if (!narrow) {
+      const badge = looks.find((_, i) => items[i]?.id === "badge");
+      const voixIndex = items.findIndex((item) => item.id === "voix");
+      if (badge && voixIndex >= 0) {
+        looks[voixIndex] = {
+          ...looks[voixIndex]!,
+          left: badge.left,
+          right: undefined,
+          top: 78,
+        };
+      }
+    }
+
+    return looks;
+  }, [items, narrow]);
 
   useEffect(() => {
     if (done) onReadyRef.current();
@@ -622,7 +683,7 @@ function SlashActivity({
       </p>
       <div
         ref={arenaRef}
-        className="relative h-[28rem] w-full touch-none select-none overflow-hidden rounded-3xl border-2 border-slate-200 bg-gradient-to-b from-indigo-50 via-sky-50 to-emerald-50 dark:border-slate-600 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/40 sm:h-[30rem]"
+        className="relative h-[24rem] w-full touch-none select-none overflow-hidden rounded-3xl border-2 border-slate-200 bg-gradient-to-b from-indigo-50 via-sky-50 to-emerald-50 dark:border-slate-600 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/40 sm:h-[30rem]"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -638,12 +699,19 @@ function SlashActivity({
             : bad
               ? "border-red-500 bg-red-400 text-red-950"
               : look.tone;
+          const anchorStyle = {
+            top: `${look.top}%`,
+            ...(look.right != null
+              ? { right: `${look.right}%`, left: "auto" as const }
+              : { left: `${look.left}%` }),
+          };
+          const bubbleSize = look.sizeClass;
           if (severed) {
             return (
               <div
                 key={item.id}
-                className="pointer-events-none absolute z-10 max-w-[8.75rem] sm:max-w-[9.5rem]"
-                style={{ left: `${look.left}%`, top: `${look.top}%` }}
+                className={`pointer-events-none absolute z-10 ${bubbleSize}`}
+                style={anchorStyle}
                 aria-hidden
               >
                 <div className="relative">
@@ -678,10 +746,9 @@ function SlashActivity({
               ref={(el) => {
                 bubbleRefs.current[item.id] = el;
               }}
-              className={`slash-bubble-float absolute z-10 max-w-[8.75rem] rounded-2xl border-2 px-2 py-1.5 text-center text-[10px] font-bold leading-tight shadow-md transition sm:max-w-[9.5rem] sm:px-2.5 sm:py-2 sm:text-[11px] ${tone}`}
+              className={`slash-bubble-float absolute z-10 rounded-2xl border-2 px-2 py-1.5 text-center text-[10px] font-bold leading-tight shadow-md transition sm:px-2.5 sm:py-2 sm:text-[11px] ${bubbleSize} ${tone}`}
               style={{
-                left: `${look.left}%`,
-                top: `${look.top}%`,
+                ...anchorStyle,
                 animationDelay: look.delay,
                 pointerEvents: "none",
               }}
@@ -2730,21 +2797,24 @@ function MatchActivity({
     return "border-slate-200 bg-white text-slate-900 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-900 dark:text-white";
   };
 
+  const boardMinH =
+    pairs.length >= 5 ? "sm:min-h-[26rem]" : "sm:min-h-[22rem]";
+
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4">
+    <div className="mx-auto w-full max-w-3xl space-y-4 sm:max-w-5xl">
       <p className="mx-auto max-w-lg text-center text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
         {activity.instruction ?? "Reliez chaque situation à la bonne règle."}
       </p>
 
       <div
         ref={boardRef}
-        className="relative mx-auto grid w-full grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)] items-start gap-y-3 sm:grid-cols-[minmax(0,1fr)_6.5rem_minmax(0,1fr)] sm:gap-y-5"
+        className={`relative mx-auto grid w-full grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] grid-rows-[auto_1fr] items-stretch gap-x-1 sm:grid-cols-[minmax(0,1.15fr)_4.5rem_minmax(0,0.95fr)] sm:gap-x-3 ${boardMinH}`}
       >
-        <p className="col-start-1 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+        <p className="col-start-1 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:mb-2">
           Situations
         </p>
         <span className="col-start-2" aria-hidden />
-        <p className="col-start-3 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+        <p className="col-start-3 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:mb-2">
           Règles
         </p>
 
@@ -2810,7 +2880,7 @@ function MatchActivity({
           })}
         </svg>
 
-        <div className="relative z-20 col-start-1 flex flex-col gap-4 sm:gap-6">
+        <div className="relative z-20 col-start-1 flex h-full flex-col justify-between gap-2.5 sm:gap-0 sm:py-0.5">
           {leftOrder.map((id) => {
             const pair = byId[id]!;
             const linked = Boolean(links[id]);
@@ -2825,7 +2895,7 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickLeft(id)}
-                className={`flex min-h-[2.75rem] w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-semibold leading-tight transition sm:min-h-[3rem] sm:px-2.5 sm:text-xs ${cardTone(
+                className={`flex w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-semibold leading-snug transition sm:px-3 sm:py-2 sm:text-[13px] sm:leading-snug ${cardTone(
                   { checked, ok, selected, linked },
                 )}`}
               >
@@ -2837,7 +2907,7 @@ function MatchActivity({
 
         <div className="col-start-2" aria-hidden />
 
-        <div className="relative z-20 col-start-3 flex flex-col gap-4 sm:gap-6">
+        <div className="relative z-20 col-start-3 flex h-full flex-col justify-between gap-2.5 sm:gap-0 sm:py-0.5">
           {rightOrder.map((id) => {
             const pair = byId[id]!;
             const linked = linkedRight.has(id);
@@ -2853,7 +2923,7 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickRight(id)}
-                className={`flex min-h-[2.75rem] w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-bold leading-tight transition sm:min-h-[3rem] sm:px-2.5 sm:text-xs ${cardTone(
+                className={`flex w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-bold leading-snug transition sm:px-3 sm:py-2 sm:text-[13px] sm:leading-snug ${cardTone(
                   { checked, ok, selected, linked },
                 )}`}
               >
@@ -3294,7 +3364,8 @@ function useTetrisCellSize() {
   const [cell, setCell] = useState(TETRIS_CELL_MAX);
   useEffect(() => {
     function measure() {
-      const gutter = window.innerWidth < 640 ? 176 : 48;
+      // Mobile : plus de colonnes latérales — on élargit le plateau.
+      const gutter = window.innerWidth < 640 ? 40 : 48;
       const available = Math.min(window.innerWidth - gutter, 240);
       setCell(Math.max(TETRIS_CELL_MIN, Math.min(TETRIS_CELL_MAX, Math.floor(available / TETRIS_COLS))));
     }
@@ -3312,6 +3383,7 @@ function TetrisActivity({
   activity: Extract<Activity, { kind: "tetris" }>;
   onReady: () => void;
 }) {
+  const narrow = useNarrowSwipe();
   const reflexes = activity.blocks.slice(0, 7);
   const drops = reflexes.map((block, index) => ({
     id: block.id,
@@ -3587,6 +3659,9 @@ function TetrisActivity({
     "flex items-start gap-1 rounded-lg border border-emerald-400 bg-emerald-50 px-1.5 py-1 text-left text-[10px] font-medium leading-snug break-words text-emerald-900 sm:text-[11px] dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-100";
   const playWidth = frameWidth || TETRIS_COLS * cell + 16;
   const lastSlot = reflexes.length - 1;
+  const showSides = !narrow;
+  const showEndList = narrow && finished;
+  const endLabels = sideLabels.length > 0 ? sideLabels : reflexes.map((block) => block.label);
 
   function sideStyle(index: number) {
     const top = lastSlot <= 0 ? 0 : (index / lastSlot) * 100;
@@ -3625,17 +3700,25 @@ function TetrisActivity({
         )}
       </div>
 
-      <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-2 sm:gap-3">
-        <ul className="relative h-full min-w-0">
-          {sideLabels.map((label, index) =>
-            index % 2 === 0 ? (
-              <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
-                <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
-                <span className="min-w-0">{label}</span>
-              </li>
-            ) : null,
-          )}
-        </ul>
+      <div
+        className={
+          showSides
+            ? "grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-2 sm:gap-3"
+            : "flex w-full justify-center"
+        }
+      >
+        {showSides && (
+          <ul className="relative h-full min-w-0">
+            {sideLabels.map((label, index) =>
+              index % 2 === 0 ? (
+                <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
+                  <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
+                  <span className="min-w-0">{label}</span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        )}
 
         <div
           ref={frameRef}
@@ -3645,45 +3728,63 @@ function TetrisActivity({
             className="relative touch-manipulation overflow-hidden bg-slate-800"
             style={{ width: TETRIS_COLS * cell, height: TETRIS_ROWS * cell }}
           >
-            <div
-              className="pointer-events-none absolute inset-0 opacity-30"
-              style={{
-                backgroundImage:
-                  "linear-gradient(to right, rgb(148 163 184 / 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgb(148 163 184 / 0.45) 1px, transparent 1px)",
-                backgroundSize: `${cell}px ${cell}px`,
-              }}
-            />
-            {board.map((row, y) =>
-              row.map((spot, x) =>
-                spot ? (
-                  <div
-                    key={`b-${x}-${y}`}
-                    className={`absolute rounded-md border-2 shadow-sm ${tetrisToneClass(spot.neutral, spot.tone)}`}
-                    style={{
-                      left: x * cell,
-                      top: y * cell,
-                      width: cell - Math.max(2, Math.round(cell * 0.08)),
-                      height: cell - Math.max(2, Math.round(cell * 0.08)),
-                    }}
-                  />
-                ) : null,
-              ),
+            {showEndList ? (
+              <ul className="absolute inset-0 z-10 flex flex-col justify-center gap-1.5 overflow-y-auto bg-slate-800 px-3 py-3">
+                {endLabels.map((label) => (
+                  <li
+                    key={label}
+                    className="flex items-start gap-2 text-left text-[12px] font-semibold leading-snug text-emerald-100"
+                  >
+                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden />
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <>
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to right, rgb(148 163 184 / 0.45) 1px, transparent 1px), linear-gradient(to bottom, rgb(148 163 184 / 0.45) 1px, transparent 1px)",
+                    backgroundSize: `${cell}px ${cell}px`,
+                  }}
+                />
+                {board.map((row, y) =>
+                  row.map((spot, x) =>
+                    spot ? (
+                      <div
+                        key={`b-${x}-${y}`}
+                        className={`absolute rounded-md border-2 shadow-sm ${tetrisToneClass(spot.neutral, spot.tone)}`}
+                        style={{
+                          left: x * cell,
+                          top: y * cell,
+                          width: cell - Math.max(2, Math.round(cell * 0.08)),
+                          height: cell - Math.max(2, Math.round(cell * 0.08)),
+                        }}
+                      />
+                    ) : null,
+                  ),
+                )}
+                {ghost && renderPiece(ghost, true)}
+                {current && renderPiece(current)}
+              </>
             )}
-            {ghost && renderPiece(ghost, true)}
-            {current && renderPiece(current)}
           </div>
         </div>
 
-        <ul className="relative h-full min-w-0">
-          {sideLabels.map((label, index) =>
-            index % 2 === 1 ? (
-              <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
-                <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
-                <span className="min-w-0">{label}</span>
-              </li>
-            ) : null,
-          )}
-        </ul>
+        {showSides && (
+          <ul className="relative h-full min-w-0">
+            {sideLabels.map((label, index) =>
+              index % 2 === 1 ? (
+                <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
+                  <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
+                  <span className="min-w-0">{label}</span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        )}
       </div>
 
       {!finished && (
@@ -4027,6 +4128,18 @@ function DodgeActivity({
   );
 }
 
+function useNarrowSwipe() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return narrow;
+}
+
 function SwipeActivity({
   activity,
   onReady,
@@ -4034,46 +4147,62 @@ function SwipeActivity({
   activity: Extract<Activity, { kind: "swipe" }>;
   onReady: () => void;
 }) {
+  const vertical = useNarrowSwipe();
   const [index, setIndex] = useState(0);
-  const [offsetX, setOffsetX] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [verdict, setVerdict] = useState<"ok" | "ko" | null>(null);
-  const startX = useRef(0);
+  const startPos = useRef(0);
+  const stageRef = useRef<HTMLDivElement>(null);
   const card = activity.cards[index];
-  if (!card) return null;
 
-  const threshold = 120;
+  const threshold = vertical ? 64 : 88;
   const answered = verdict !== null;
-  const leanLeft = offsetX < -28;
-  const leanRight = offsetX > 28;
-  const progress = Math.min(1, Math.abs(offsetX) / threshold);
+  /** Négatif = zone « left » (haut sur mobile, gauche sur desktop). */
+  const leanPrimary = offset < -28;
+  const leanSecondary = offset > 28;
+  const progress = Math.min(1, Math.abs(offset) / threshold);
+
+  function settleOffset(zoneId: string) {
+    const size = vertical
+      ? (stageRef.current?.clientHeight ?? 320)
+      : (stageRef.current?.clientWidth ?? 640);
+    // Mobile : reste dans le champ. Desktop : dépasse un peu (effet “balancé”).
+    const fly = vertical ? Math.min(48, Math.round(size * 0.1)) : 220;
+    return zoneId === activity.left.id ? -fly : fly;
+  }
 
   function commit(zoneId: string) {
-    if (answered) return;
+    if (answered || !card) return;
     const ok = zoneId === card.zoneId;
     setVerdict(ok ? "ok" : "ko");
-    setOffsetX(zoneId === activity.left.id ? -220 : 220);
+    setOffset(settleOffset(zoneId));
   }
 
   function onPointerDown(event: React.PointerEvent) {
     if (answered) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    startX.current = event.clientX;
+    startPos.current = vertical ? event.clientY : event.clientX;
     setDragging(true);
   }
 
   function onPointerMove(event: React.PointerEvent) {
     if (!dragging || answered) return;
-    setOffsetX(event.clientX - startX.current);
+    const size = vertical
+      ? (stageRef.current?.clientHeight ?? 320)
+      : (stageRef.current?.clientWidth ?? 360);
+    const maxDrag = Math.round(size * (vertical ? 0.22 : 0.28));
+    const raw = (vertical ? event.clientY : event.clientX) - startPos.current;
+    setOffset(Math.max(-maxDrag, Math.min(maxDrag, raw)));
   }
 
   function onPointerUp() {
     if (!dragging) return;
     setDragging(false);
     if (answered) return;
-    if (offsetX <= -threshold) commit(activity.left.id);
-    else if (offsetX >= threshold) commit(activity.right.id);
-    else setOffsetX(0);
+    if (offset <= -threshold) commit(activity.left.id);
+    else if (offset >= threshold) commit(activity.right.id);
+    else setOffset(0);
   }
 
   function goNext() {
@@ -4082,9 +4211,16 @@ function SwipeActivity({
       return;
     }
     setIndex((value) => value + 1);
-    setOffsetX(0);
+    setOffset(0);
     setVerdict(null);
   }
+
+  // Reset le lean si on passe mobile ↔ desktop en cours de carte
+  useEffect(() => {
+    if (!answered) setOffset(0);
+  }, [vertical, answered]);
+
+  if (!card) return null;
 
   const leftIdle =
     "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200";
@@ -4095,8 +4231,94 @@ function SwipeActivity({
   const rightHot =
     "border-violet-300 bg-violet-500 text-white dark:border-violet-200 dark:bg-violet-500 dark:text-white";
 
+  const idleInvite = !answered && !dragging && offset === 0;
+
+  const cardClass = `flex w-full cursor-grab touch-none select-none items-center justify-center rounded-2xl border-2 text-center font-semibold shadow-lg active:cursor-grabbing ${
+    vertical
+      ? "max-w-sm px-4 py-5 text-sm leading-snug"
+      : "max-w-[16rem] px-5 py-6 text-base leading-relaxed"
+  } ${
+    answered
+      ? verdict === "ok"
+        ? "border-emerald-700 bg-emerald-600 text-white"
+        : "border-red-900 bg-red-800 text-white"
+      : "border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
+  } ${
+    idleInvite ? (vertical ? "swipe-card-nudge-y" : "swipe-card-nudge-x") : ""
+  }`;
+
+  const cardStyle =
+    idleInvite
+      ? undefined
+      : ({
+          transform: vertical
+            ? `translateY(${offset}px) rotate(${offset / 48}deg)`
+            : `translateX(${offset}px) rotate(${offset / 36}deg)`,
+          transition: dragging ? "none" : "transform 0.22s ease-out",
+        } as const);
+
+  function renderZone(
+    side: "primary" | "secondary",
+    hot: boolean,
+    hotClass: string,
+    idleClass: string,
+    label: string,
+    zoneId: string,
+    compact: boolean,
+  ) {
+    return (
+      <div
+        className={`relative flex items-center justify-center ${
+          compact ? "h-14 w-full max-w-[14rem]" : "h-44 w-44"
+        }`}
+      >
+        <button
+          type="button"
+          disabled={answered}
+          onClick={() => commit(zoneId)}
+          className={`relative z-10 flex items-center justify-center border-2 font-bold leading-tight transition enabled:hover:scale-105 ${
+            compact
+              ? "h-12 w-full rounded-2xl px-3 text-sm"
+              : "h-36 w-36 rounded-full px-3 text-base"
+          } ${hot ? hotClass : idleClass}`}
+          style={{
+            opacity: hot ? 0.9 + progress * 0.1 : 0.85,
+            boxShadow: hot
+              ? side === "primary"
+                ? `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(251, 191, 36, ${0.28 + progress * 0.22})`
+                : `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(139, 92, 246, ${0.3 + progress * 0.22})`
+              : undefined,
+            transform: hot ? `scale(${1.03 + progress * 0.05})` : undefined,
+          }}
+        >
+          {label}
+        </button>
+      </div>
+    );
+  }
+
+  const cardNode = (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={
+        vertical
+          ? "Glisser la carte vers le haut ou le bas"
+          : "Glisser la carte vers la gauche ou la droite"
+      }
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      className={cardClass}
+      style={cardStyle}
+    >
+      {card.label}
+    </div>
+  );
+
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-5 sm:max-w-3xl">
+    <div className="mx-auto w-full max-w-2xl space-y-4 sm:max-w-3xl sm:space-y-5">
       <div className="flex justify-center gap-1.5">
         {activity.cards.map((_, step) => (
           <span
@@ -4112,96 +4334,78 @@ function SwipeActivity({
         ))}
       </div>
 
-      <div className="relative mx-auto flex h-64 w-full max-w-2xl items-center justify-between gap-6 overflow-visible px-2 sm:h-72 sm:gap-10 sm:px-4">
-        <div className="relative flex h-36 w-36 shrink-0 items-center justify-center sm:h-44 sm:w-44">
-          {leanLeft && (
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-[-12%] rounded-full bg-amber-400/35 blur-xl dark:bg-amber-400/30"
-              style={{ opacity: 0.35 + progress * 0.35, transform: `scale(${1 + progress * 0.2})` }}
-            />
+      {vertical ? (
+        <div
+          ref={stageRef}
+          className="relative mx-auto flex h-[22rem] w-full max-w-sm flex-col items-center justify-between overflow-hidden py-1"
+        >
+          {renderZone(
+            "primary",
+            leanPrimary,
+            leftHot,
+            leftIdle,
+            activity.left.label,
+            activity.left.id,
+            true,
           )}
-          <button
-            type="button"
-            disabled={answered}
-            onClick={() => commit(activity.left.id)}
-            className={`relative z-10 flex h-28 w-28 items-center justify-center rounded-full border-2 px-3 text-center text-sm font-bold leading-tight transition enabled:hover:scale-105 sm:h-36 sm:w-36 sm:text-base ${
-              leanLeft ? leftHot : leftIdle
-            }`}
-            style={{
-              opacity: leanLeft ? 0.9 + progress * 0.1 : 0.85,
-              boxShadow: leanLeft
-                ? `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(251, 191, 36, ${0.28 + progress * 0.22})`
-                : undefined,
-              transform: leanLeft ? `scale(${1.03 + progress * 0.05})` : undefined,
-            }}
-          >
-            {activity.left.label}
-          </button>
-        </div>
 
-        <div className="relative flex h-full min-w-0 flex-1 items-center justify-center">
-          <div
-            role="button"
-            tabIndex={0}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            className={`absolute z-20 flex w-full max-w-[14rem] cursor-grab touch-none select-none items-center justify-center rounded-2xl border-2 px-5 py-6 text-center text-sm font-semibold shadow-lg active:cursor-grabbing sm:max-w-[16rem] sm:text-base ${
-              answered
-                ? verdict === "ok"
-                  ? "border-emerald-700 bg-emerald-600 text-white"
-                  : "border-red-900 bg-red-800 text-white"
-                : "border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
-            }`}
-            style={{
-              transform: `translateX(${offsetX}px) rotate(${offsetX / 28}deg)`,
-              transition: dragging ? "none" : "transform 0.22s ease-out",
-            }}
-          >
-            {card.label}
+          <div className="relative z-20 flex w-full flex-1 items-center justify-center px-3">
+            {cardNode}
+          </div>
+
+          {renderZone(
+            "secondary",
+            leanSecondary,
+            rightHot,
+            rightIdle,
+            activity.right.label,
+            activity.right.id,
+            true,
+          )}
+        </div>
+      ) : (
+        <div
+          ref={stageRef}
+          className="relative mx-auto h-72 w-full max-w-2xl overflow-visible px-4"
+        >
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex w-44 items-center justify-center">
+            <div className="pointer-events-auto">
+              {renderZone(
+                "primary",
+                leanPrimary,
+                leftHot,
+                leftIdle,
+                activity.left.label,
+                activity.left.id,
+                false,
+              )}
+            </div>
+          </div>
+
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-44 items-center justify-center">
+            <div className="pointer-events-auto">
+              {renderZone(
+                "secondary",
+                leanSecondary,
+                rightHot,
+                rightIdle,
+                activity.right.label,
+                activity.right.id,
+                false,
+              )}
+            </div>
+          </div>
+
+          <div className="absolute inset-0 z-20 flex items-center justify-center px-36">
+            {cardNode}
           </div>
         </div>
-
-        <div className="relative flex h-36 w-36 shrink-0 items-center justify-center sm:h-44 sm:w-44">
-          {leanRight && (
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-[-12%] rounded-full bg-violet-500/35 blur-xl dark:bg-violet-400/30"
-              style={{ opacity: 0.35 + progress * 0.35, transform: `scale(${1 + progress * 0.2})` }}
-            />
-          )}
-          <button
-            type="button"
-            disabled={answered}
-            onClick={() => commit(activity.right.id)}
-            className={`relative z-10 flex h-28 w-28 items-center justify-center rounded-full border-2 px-3 text-center text-sm font-bold leading-tight transition enabled:hover:scale-105 sm:h-36 sm:w-36 sm:text-base ${
-              leanRight ? rightHot : rightIdle
-            }`}
-            style={{
-              opacity: leanRight ? 0.9 + progress * 0.1 : 0.85,
-              boxShadow: leanRight
-                ? `0 0 ${14 + progress * 16}px ${4 + progress * 8}px rgba(139, 92, 246, ${0.3 + progress * 0.22})`
-                : undefined,
-              transform: leanRight ? `scale(${1.03 + progress * 0.05})` : undefined,
-            }}
-          >
-            {activity.right.label}
-          </button>
-        </div>
-      </div>
-
-      {!answered && (
-        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-          Balancez la carte, ou tapez une zone
-        </p>
       )}
 
       {answered && (
-        <div className="space-y-3">
+        <div className="space-y-3 px-1">
           <p
-            className={`text-center text-sm font-semibold ${
+            className={`text-center text-sm font-semibold leading-snug ${
               verdict === "ok"
                 ? "text-emerald-700 dark:text-emerald-300"
                 : "text-red-800 dark:text-red-300"

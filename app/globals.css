@@ -650,3 +650,45 @@ p.text-center {
     animation-duration: 0.01ms;
   }
 }
+
+/* Swipe (2.3…) : invitation visuelle sans texte */
+@keyframes swipe-card-nudge-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-7px);
+  }
+  75% {
+    transform: translateX(7px);
+  }
+}
+
+@keyframes swipe-card-nudge-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-7px);
+  }
+  75% {
+    transform: translateY(7px);
+  }
+}
+
+.swipe-card-nudge-x {
+  animation: swipe-card-nudge-x 2.4s ease-in-out infinite;
+}
+
+.swipe-card-nudge-y {
+  animation: swipe-card-nudge-y 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-card-nudge-x,
+  .swipe-card-nudge-y {
+    animation: none;
+  }
+}

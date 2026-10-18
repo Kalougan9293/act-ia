@@ -13,11 +13,11 @@ import {
   Lock,
   Play,
   Smartphone,
-  Sparkles,
   Timer,
   Trophy,
 } from "lucide-react";
 import ActivityPlayer from "@/components/user/ActivityPlayer";
+import CareerScreen from "@/components/user/CareerScreen";
 import LexiconBar from "@/components/user/LexiconTip";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
@@ -142,8 +142,17 @@ export default function FormationExperience({
   const [lastScore, setLastScore] = useState<number | null>(null);
   const [shownAttempts, setShownAttempts] = useState(0);
   const [quizReturn, setQuizReturn] = useState<"intro" | "hub">("intro");
+  /** Encadré d’accueil : masqué dès l’ouverture du module 1.1 (ou s’il est déjà terminé). */
+  const [firstModuleLaunched, setFirstModuleLaunched] = useState(false);
 
   const active: Screen = screen ?? { kind: "intro" };
+  const hideWelcomePitch =
+    firstModuleLaunched || progress.completedChapters.includes("1.1");
+
+  function openChapter(chapterId: string) {
+    if (chapterId === "1.1") setFirstModuleLaunched(true);
+    setScreen({ kind: "chapter", chapterId });
+  }
 
   function withDesign(node: ReactNode) {
     return (
@@ -194,6 +203,7 @@ export default function FormationExperience({
         companyDone={progress.companyModuleDone}
         careerPathId={progress.careerPathId}
         positioningCount={positioningRound.length}
+        showWelcomePitch={!hideWelcomePitch}
         onOpenPositioning={() => {
           if (!progress.introDone) markIntroDone();
           setScreen({ kind: "positioning" });
@@ -282,7 +292,7 @@ export default function FormationExperience({
         block={block}
         completed={progress.completedChapters}
         onBack={() => setScreen({ kind: "intro" })}
-        onOpenChapter={(chapterId) => setScreen({ kind: "chapter", chapterId })}
+        onOpenChapter={openChapter}
       />,
     );
   }
@@ -300,7 +310,7 @@ export default function FormationExperience({
         onBack={() => setScreen({ kind: "block", blockId: block.id })}
         onComplete={() => {
           markChapterDone(chapter.id);
-          if (next) setScreen({ kind: "chapter", chapterId: next.id });
+          if (next) openChapter(next.id);
           else setScreen({ kind: "intro" });
         }}
       />,
@@ -527,6 +537,7 @@ function IntroScreen({
   companyDone,
   careerPathId,
   positioningCount,
+  showWelcomePitch,
   onOpenPositioning,
   onOpenBlock,
   onOpenCompany,
@@ -544,6 +555,7 @@ function IntroScreen({
   companyDone: boolean;
   careerPathId: string | null;
   positioningCount: number;
+  showWelcomePitch: boolean;
   onOpenPositioning: () => void;
   onOpenBlock: (blockId: string) => void;
   onOpenCompany: () => void;
@@ -590,13 +602,18 @@ function IntroScreen({
         <h1 className="formation-title text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Bienvenue{firstName ? `, ${firstName}` : ""}
         </h1>
-        <div className="mx-auto max-w-xl rounded-2xl border border-blue-200 bg-blue-50/70 px-5 py-4 dark:border-blue-800 dark:bg-blue-950/40">
-          <p className="text-center text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-100 sm:text-base sm:leading-7">
-            L&apos;IA peut vraiment vous faire gagner du temps. Cette formation sert à
-            l&apos;utiliser <span className="text-blue-700 dark:text-blue-300">sans vous mettre
-            en danger</span> — données, deepfakes, décisions — pas à vous fliquer.
-          </p>
-        </div>
+        {showWelcomePitch && (
+          <div className="mx-auto max-w-xl rounded-2xl border border-blue-200 bg-blue-50/70 px-5 py-4 dark:border-blue-800 dark:bg-blue-950/40">
+            <p className="text-center text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-100 sm:text-base sm:leading-7">
+              L&apos;IA peut vraiment vous faire gagner du temps. Cette formation sert à
+              l&apos;utiliser{" "}
+              <span className="text-blue-700 dark:text-blue-300">
+                sans mettre en danger l&apos;entreprise ou vous-même
+              </span>
+              .
+            </p>
+          </div>
+        )}
         <p className="mx-auto max-w-2xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
           {FORMATION_PROMISE}
         </p>
@@ -2214,262 +2231,6 @@ function QuizScreen({
             {index < shuffled.length - 1 ? "Question suivante" : "Voir le résultat"}
             <ArrowRight className="h-4 w-4" />
           </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-const CAREER_CARD_STYLE: Record<
-  string,
-  { emoji: string; card: string; selected: string }
-> = {
-  direction: {
-    emoji: "🏛️",
-    card: "border-violet-200 bg-violet-50/80 hover:border-violet-400 hover:bg-violet-100/80 dark:border-violet-800 dark:bg-violet-950/30 dark:hover:border-violet-600",
-    selected: "border-violet-500 bg-violet-100 ring-2 ring-violet-300/60 dark:border-violet-400 dark:bg-violet-950/50 dark:ring-violet-700",
-  },
-  rh: {
-    emoji: "🤝",
-    card: "border-rose-200 bg-rose-50/80 hover:border-rose-400 hover:bg-rose-100/80 dark:border-rose-800 dark:bg-rose-950/30 dark:hover:border-rose-600",
-    selected: "border-rose-500 bg-rose-100 ring-2 ring-rose-300/60 dark:border-rose-400 dark:bg-rose-950/50 dark:ring-rose-700",
-  },
-  marketing: {
-    emoji: "📣",
-    card: "border-orange-200 bg-orange-50/80 hover:border-orange-400 hover:bg-orange-100/80 dark:border-orange-800 dark:bg-orange-950/30 dark:hover:border-orange-600",
-    selected: "border-orange-500 bg-orange-100 ring-2 ring-orange-300/60 dark:border-orange-400 dark:bg-orange-950/50 dark:ring-orange-700",
-  },
-  managers: {
-    emoji: "🧭",
-    card: "border-sky-200 bg-sky-50/80 hover:border-sky-400 hover:bg-sky-100/80 dark:border-sky-800 dark:bg-sky-950/30 dark:hover:border-sky-600",
-    selected: "border-sky-500 bg-sky-100 ring-2 ring-sky-300/60 dark:border-sky-400 dark:bg-sky-950/50 dark:ring-sky-700",
-  },
-  tech: {
-    emoji: "💻",
-    card: "border-emerald-200 bg-emerald-50/80 hover:border-emerald-400 hover:bg-emerald-100/80 dark:border-emerald-800 dark:bg-emerald-950/30 dark:hover:border-emerald-600",
-    selected: "border-emerald-500 bg-emerald-100 ring-2 ring-emerald-300/60 dark:border-emerald-400 dark:bg-emerald-950/50 dark:ring-emerald-700",
-  },
-  finance: {
-    emoji: "💶",
-    card: "border-teal-200 bg-teal-50/80 hover:border-teal-400 hover:bg-teal-100/80 dark:border-teal-800 dark:bg-teal-950/30 dark:hover:border-teal-600",
-    selected: "border-teal-500 bg-teal-100 ring-2 ring-teal-300/60 dark:border-teal-400 dark:bg-teal-950/50 dark:ring-teal-700",
-  },
-  support: {
-    emoji: "🎧",
-    card: "border-cyan-200 bg-cyan-50/80 hover:border-cyan-400 hover:bg-cyan-100/80 dark:border-cyan-800 dark:bg-cyan-950/30 dark:hover:border-cyan-600",
-    selected: "border-cyan-500 bg-cyan-100 ring-2 ring-cyan-300/60 dark:border-cyan-400 dark:bg-cyan-950/50 dark:ring-cyan-700",
-  },
-  tous: {
-    emoji: "✨",
-    card: "border-slate-200 bg-slate-50/90 hover:border-slate-400 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:hover:border-slate-500",
-    selected: "border-slate-500 bg-slate-100 ring-2 ring-slate-300/60 dark:border-slate-400 dark:bg-slate-800 dark:ring-slate-600",
-  },
-};
-
-function CareerScreen({
-  selected,
-  onBack,
-  onSelect,
-}: {
-  selected: string | null;
-  onBack: () => void;
-  onSelect: (id: string) => void;
-}) {
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [pickedIndex, setPickedIndex] = useState<number | null>(null);
-  const path = CAREER_PATHS.find((item) => item.id === openId) ?? null;
-  const answered = pickedIndex !== null;
-  const pickedCorrect = answered && path ? path.caseOptions[pickedIndex]?.correct === true : false;
-  const careerChoices = (() => {
-    const others = CAREER_PATHS.find((item) => item.id === "tous");
-    const support = CAREER_PATHS.find((item) => item.id === "support");
-    const rest = CAREER_PATHS.filter(
-      (item) => item.id !== "tous" && item.id !== "support",
-    );
-    const tail = [support, others].filter(Boolean) as typeof CAREER_PATHS;
-    return [...rest, ...tail];
-  })();
-
-  if (!path) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-6 text-center">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </button>
-        <div>
-          <h1 className="text-center text-2xl font-bold text-slate-900 dark:text-white">Fiches métiers</h1>
-          <p className="mx-auto mt-2 max-w-lg text-center text-sm text-slate-500">
-            Le socle est commun. Choisissez le parcours le plus proche de votre métier : un texte
-            court, un cas à trancher, puis une idée d&apos;usage.
-          </p>
-        </div>
-        <ul className="grid gap-2.5 sm:grid-cols-2">
-          {careerChoices.map((item) => {
-            const style = CAREER_CARD_STYLE[item.id] ?? CAREER_CARD_STYLE.tous!;
-            const isSelected = selected === item.id;
-            return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenId(item.id);
-                    setPickedIndex(null);
-                  }}
-                  className={`w-full rounded-xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
-                    isSelected ? style.selected : style.card
-                  }`}
-                >
-                  <span className="mb-1 block text-lg leading-none" aria-hidden>
-                    {style.emoji}
-                  </span>
-                  <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="mx-auto flex max-w-lg flex-col items-center rounded-2xl border-2 border-teal-400 bg-gradient-to-b from-teal-50 to-white px-6 py-7 text-center shadow-lg shadow-teal-500/15 dark:border-teal-500 dark:from-teal-950/60 dark:to-slate-900 dark:shadow-teal-900/30">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-600 text-white shadow-md shadow-teal-600/30">
-            <Sparkles className="h-5 w-5" aria-hidden />
-          </span>
-          <p className="mt-4 w-full text-center text-xs font-bold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
-            Option — 690 € / module
-          </p>
-          <p className="mt-3 w-full text-center text-xl font-bold leading-snug text-slate-900 dark:text-white">
-            Module métier sur mesure, propre à votre fonction
-          </p>
-          <p className="mt-2 w-full text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            Texte, cas pratique et idée d&apos;usage rédigés pour vous, puis intégrés au parcours
-            StartIA.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mx-auto max-w-2xl space-y-5">
-      <button
-        type="button"
-        onClick={() => {
-          setOpenId(null);
-          setPickedIndex(null);
-        }}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-teal-600"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Tous les parcours
-      </button>
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{path.title}</h1>
-        <p className="mt-1 text-center text-sm text-slate-500">{path.focus}</p>
-      </div>
-
-      <div className="rounded-2xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-800/60 dark:bg-amber-950/25">
-        <p className="text-center text-xs font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-300">
-          À retenir
-        </p>
-        <p className="mt-3 whitespace-pre-line text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
-          {path.briefing}
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
-        <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
-          À vous de trancher
-        </p>
-        <p className="mt-2 text-center text-sm font-medium text-slate-900 dark:text-white">
-          {path.casePrompt}
-        </p>
-        <ul className="mt-4 space-y-2">
-          {path.caseOptions.map((option, index) => {
-            const isPicked = pickedIndex === index;
-            let optionClass =
-              "border-slate-200 bg-slate-50 hover:border-teal-400 hover:bg-teal-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-teal-500 dark:hover:bg-teal-950/40";
-            if (answered) {
-              if (option.correct) {
-                optionClass =
-                  "border-teal-500 bg-teal-50 ring-2 ring-teal-300/50 dark:border-teal-400 dark:bg-teal-950/50 dark:ring-teal-700";
-              } else if (isPicked) {
-                optionClass =
-                  "border-rose-400 bg-rose-50 ring-2 ring-rose-200/60 dark:border-rose-500 dark:bg-rose-950/40 dark:ring-rose-800";
-              } else {
-                optionClass =
-                  "border-slate-200 bg-slate-50 opacity-55 dark:border-slate-700 dark:bg-slate-800";
-              }
-            } else if (isPicked) {
-              optionClass =
-                "border-teal-500 bg-teal-50 ring-2 ring-teal-300/40 dark:border-teal-400 dark:bg-teal-950/40";
-            }
-            return (
-              <li key={option.label}>
-                <button
-                  type="button"
-                  disabled={answered}
-                  onClick={() => setPickedIndex(index)}
-                  className={`w-full rounded-xl border px-4 py-3 text-left text-sm leading-snug text-slate-800 transition disabled:cursor-default dark:text-slate-100 ${optionClass}`}
-                >
-                  {option.label}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-
-        {answered && (
-          <div
-            className={`mt-4 rounded-xl px-4 py-3 text-center text-sm leading-relaxed ${
-              pickedCorrect
-                ? "bg-teal-100/80 text-teal-950 dark:bg-teal-950/50 dark:text-teal-100"
-                : "bg-rose-100/80 text-rose-950 dark:bg-rose-950/40 dark:text-rose-100"
-            }`}
-          >
-            <p className="font-semibold">
-              {pickedCorrect ? "Bonne décision." : "Pas celle-là — voici pourquoi."}
-            </p>
-            <p className="mt-1.5">{path.caseCorrection}</p>
-          </div>
-        )}
-      </div>
-
-      {answered && (
-        <div className="space-y-4">
-          <div className="rounded-2xl border-2 border-teal-300 bg-teal-50 px-5 py-4 text-center dark:border-teal-600 dark:bg-teal-950/40">
-            <p className="text-center text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">
-              Idée d&apos;usage IA
-            </p>
-            <p className="mt-2 text-center text-sm leading-relaxed text-slate-800 dark:text-slate-100">
-              {path.aiTip}
-            </p>
-          </div>
-
-          {!selected && (
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => onSelect(path.id)}
-                className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-700"
-              >
-                Valider le parcours
-                <Check className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          {selected === path.id && (
-            <p className="text-center text-sm font-medium text-teal-700 dark:text-teal-300">
-              Parcours validé — la carte est verte sur l&apos;accueil.
-            </p>
-          )}
-          {selected && selected !== path.id && (
-            <p className="text-center text-sm text-slate-500">
-              Un parcours est déjà validé. Le socle ne se complète qu&apos;avec un seul métier.
-            </p>
-          )}
         </div>
       )}
     </div>

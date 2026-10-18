@@ -1,199 +1,1074 @@
-/** Fiches métiers — StartIA V1.0 (texte + cas à trancher + idée d'usage). */
+/** Fiches métiers — gabarit 6 rubriques (~8 min), StartIA. */
 
-export type CareerCaseOption = {
-  label: string;
-  correct: boolean;
+export type CareerTrafficLevel = "green" | "orange" | "red";
+
+export type CareerTrafficItem = {
+  level: CareerTrafficLevel;
+  situation: string;
+  explanation: string;
+};
+
+export type CareerCase = {
+  situation: string;
+  answer: string;
+};
+
+export type CareerQuizQuestion = {
+  prompt: string;
+  choices: [string, string, string];
+  correctIndex: 0 | 1 | 2;
+  why: string;
 };
 
 export type CareerPath = {
   id: string;
   title: string;
-  duration: string;
-  focus: string;
-  /** Texte concis à lire — phrases simples. */
-  briefing: string;
-  casePrompt: string;
-  caseOptions: CareerCaseOption[];
-  caseCorrection: string;
-  /** Idée concrète d'usage IA pour ce métier. */
-  aiTip: string;
+  duration: string; // "≈ 8 min"
+  focus: string; // short subtitle under title
+  whyExposed: string;
+  neverList: string[];
+  traffic: CareerTrafficItem[]; // 5 items: 2 green, 1 orange, 2 red
+  cases: CareerCase[]; // 3
+  tips: string[]; // 3
+  quiz: CareerQuizQuestion[]; // 3
 };
 
 export const CAREER_PATHS: CareerPath[] = [
   {
     id: "direction",
     title: "Direction",
-    duration: "3–5 min",
-    focus: "Cadre, outils autorisés, décisions humaines.",
-    briefing:
-      "Vous fixez le cadre : outils autorisés, contrats, responsabilités. Sans ça, chacun improvise et les infos sortent.\n\nAvant d'acheter une IA : à quoi sert-elle ? Que dit le contrat sur vos données ? L'éditeur les réutilise-t-il ? Une décision importante reste humaine.",
-    casePrompt:
-      "Un éditeur veut faire signer une IA « productivité » cette semaine. Que faites-vous ?",
-    caseOptions: [
-      { label: "Signer vite pour ne pas bloquer les équipes", correct: false },
-      {
-        label: "Vérifier usage, clauses données et responsable interne avant",
-        correct: true,
-      },
-      { label: "Laisser chaque service décider seul", correct: false },
+    duration: "≈ 8 min",
+    focus: "Cadre, outils autorisés, contrats, décisions humaines",
+    whyExposed:
+      "Vous fixez le cadre : quels outils sont autorisés, ce que disent les contrats, qui est responsable. Sans ce cadre, chacun improvise et les informations sortent. Et c'est vous qui signez avec les éditeurs d'IA : ce qu'ils font de vos données se décide à ce moment-là.",
+    neverList: [
+      "Business plan et projets stratégiques",
+      "Projets de rachat, de cession ou de levée de fonds",
+      "Comptes et chiffres non publiés",
+      "Négociations en cours avec clients ou fournisseurs",
+      "Rémunérations et dossiers individuels de salariés",
+      "Contentieux et procédures en cours",
     ],
-    caseCorrection:
-      "Vous vérifiez l'usage réel, les clauses données / réentraînement, et qui est responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée.",
-    aiTip:
-      "Demandez à l'IA une grille « oui / non / à clarifier » pour chaque nouvel outil. Elle prépare. Vous décidez.",
+    traffic: [
+      {
+        level: "green",
+        situation:
+          "Reformuler votre mot d'accueil pour la newsletter interne, sans chiffre non publié",
+        explanation:
+          "Rien de secret, personne de reconnaissable. Vous relisez avant diffusion.",
+      },
+      {
+        level: "green",
+        situation: "Préparer la trame d'un séminaire d'équipe",
+        explanation: "Une structure générique ne révèle rien.",
+      },
+      {
+        level: "orange",
+        situation: "Synthétiser le compte rendu d'un comité de direction",
+        explanation:
+          "Seulement dans l'outil autorisé, noms et chiffres sensibles retirés.",
+      },
+      {
+        level: "red",
+        situation:
+          "Faire analyser un projet de rachat d'un concurrent par une IA grand public",
+        explanation:
+          "Secret stratégique : une fuite peut faire échouer l'opération.",
+      },
+      {
+        level: "red",
+        situation:
+          "Coller la grille des salaires pour préparer les augmentations",
+        explanation:
+          "Données personnelles et secret d'entreprise à la fois.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un éditeur veut vous faire signer une IA « productivité » cette semaine.",
+        answer:
+          "Vous vérifiez d'abord l'usage réel, ce que dit le contrat sur vos données (réutilisation, entraînement, lieu d'hébergement) et qui sera responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée.",
+      },
+      {
+        situation:
+          "Un manager vous apprend que son équipe utilise une IA gratuite depuis trois mois.",
+        answer:
+          "Vous ne cherchez pas de coupable. Vous faites déclarer l'usage, vous évaluez l'outil, puis vous le validez ou vous proposez une alternative autorisée.",
+      },
+      {
+        situation:
+          "Un tableau de bord IA classe les commerciaux et propose de supprimer la prime des trois derniers.",
+        answer:
+          "Une décision qui touche une personne reste humaine. Vous regardez les dossiers, vous comprenez le classement, et vous devez pouvoir expliquer votre choix.",
+      },
+    ],
+    tips: [
+      "Une grille « oui / non / à clarifier » pour évaluer chaque nouvel outil IA. Elle prépare, vous décidez.",
+      "Un premier brouillon de charte IA à partir de vos propres règles, relu avant diffusion.",
+      "La liste des questions à poser à un éditeur avant d'acheter.",
+    ],
+    quiz: [
+      {
+        prompt: "Avant d'acheter un outil IA, le point clé du contrat, c'est…",
+        choices: [
+          "Le prix par utilisateur",
+          "Le design de l'interface",
+          "Ce que l'éditeur fait de vos données",
+        ],
+        correctIndex: 2,
+        why: "L'éditeur peut réutiliser vos données ou s'en servir pour entraîner son modèle : c'est le contrat qui le dit.",
+      },
+      {
+        prompt:
+          "Une équipe utilise une IA non autorisée depuis des mois. Vous…",
+        choices: [
+          "Faites déclarer l'usage et évaluez l'outil",
+          "Sanctionnez le manager",
+          "Laissez faire : ça fonctionne",
+        ],
+        correctIndex: 0,
+        why: "L'objectif est de connaître les outils utilisés, pas de punir. Un usage caché est un risque que personne ne gère.",
+      },
+      {
+        prompt:
+          "Un outil propose de supprimer la prime de trois salariés. Qui décide ?",
+        choices: [
+          "L'outil, il est neutre",
+          "Un humain, après lecture des dossiers",
+          "Le premier qui clique sur valider",
+        ],
+        correctIndex: 1,
+        why: "Un classement peut reproduire des biais. Décider, c'est comprendre, pouvoir modifier et pouvoir dire non.",
+      },
+    ],
   },
   {
     id: "rh",
     title: "Ressources humaines",
-    duration: "3–5 min",
-    focus: "CV, entretiens, outils RH : données perso.",
-    briefing:
-      "CV, notes d'entretien, paie : données personnelles, parfois sensibles. Une IA grand public n'est pas un coffre-fort.\n\nOutil autorisé, minimum de données, décision humaine. Un score IA ne remplace pas votre jugement.",
-    casePrompt:
-      "On vous demande de coller 40 CV dans une IA publique pour « pré-trier ». Que répondez-vous ?",
-    caseOptions: [
-      { label: "OK si on anonymise les prénoms seulement", correct: false },
-      {
-        label: "Refuser, sauf outil autorisé et cadre clair",
-        correct: true,
-      },
-      { label: "Accepter : un CV n'est pas une donnée personnelle", correct: false },
+    duration: "≈ 8 min",
+    focus: "Recrutement, paie, dossiers salariés",
+    whyExposed:
+      "CV, notes d'entretien, paie, arrêts maladie : vous manipulez les données personnelles de toute l'entreprise, et certaines sont sensibles. Une IA grand public n'est pas un coffre-fort. Et dès qu'un outil trie ou note des personnes, c'est un humain qui garde la décision.",
+    neverList: [
+      "CV et lettres de candidature complets",
+      "Arrêts maladie, visites médicales, situations de handicap",
+      "Bulletins de paie et numéros de sécurité sociale",
+      "Dossiers disciplinaires et enquêtes internes",
+      "Appartenance syndicale",
+      "Notes d'entretien sur un candidat ou un salarié",
     ],
-    caseCorrection:
-      "Vous refusez hors outil autorisé. Un CV porte un nom et un parcours. Proposez l'outil validé, ou un tri humain sur critères écrits.",
-    aiTip:
-      "Faites reformuler une offre d'emploi par l'IA : ton clair, inclusif. Aucun dossier candidat.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Reformuler une offre d'emploi pour un ton clair et inclusif",
+        explanation: "Aucun candidat concerné. Vous relisez avant publication.",
+      },
+      {
+        level: "green",
+        situation: "Préparer un guide d'entretien pour un poste",
+        explanation: "Une trame de questions ne vise personne.",
+      },
+      {
+        level: "orange",
+        situation: "Résumer les compétences d'un CV",
+        explanation:
+          "Seulement dans l'outil RH autorisé, sans adresse, téléphone ni date de naissance.",
+      },
+      {
+        level: "red",
+        situation: "Rédiger un courrier en citant le motif médical d'un arrêt",
+        explanation:
+          "Donnée de santé : jamais dans une IA grand public, même sans le nom.",
+      },
+      {
+        level: "red",
+        situation:
+          "Faire analyser la vidéo d'un entretien pour mesurer la motivation du candidat",
+        explanation:
+          "Interdit : on ne déduit pas les émotions d'une personne avec une IA au travail, recrutement compris.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "On vous demande de coller 40 CV dans une IA publique pour faire un pré-tri.",
+        answer:
+          "Vous refusez hors outil autorisé. Vous proposez l'outil validé par l'entreprise, ou un tri humain sur des critères écrits à l'avance.",
+      },
+      {
+        situation:
+          "Un candidat écarté par un tri automatique demande qu'un recruteur relise son dossier.",
+        answer:
+          "C'est son droit. Vous transmettez la demande, et un humain revoit réellement le dossier.",
+      },
+      {
+        situation:
+          "Un prestataire vous propose un logiciel qui analyse les visios d'entretien pour noter la motivation des candidats.",
+        answer:
+          "Vous refusez : cette pratique est interdite. Vous en parlez au référent IA ou au DPO.",
+      },
+    ],
+    tips: [
+      "Reformuler une offre d'emploi : ton clair, inclusif, sans aucun dossier candidat.",
+      "Construire la trame du parcours d'intégration d'un nouveau poste.",
+      "Transformer une note RH en FAQ simple pour les salariés, vérifiée avant diffusion.",
+    ],
+    quiz: [
+      {
+        prompt: "Un CV, c'est…",
+        choices: [
+          "Une donnée personnelle",
+          "Une information libre si on retire le prénom",
+          "Une donnée publique",
+        ],
+        correctIndex: 0,
+        why: "Un CV porte un nom, un parcours, des coordonnées : il permet de reconnaître la personne.",
+      },
+      {
+        prompt:
+          "Un logiciel mesure la motivation des candidats pendant la visio.",
+        choices: [
+          "C'est possible si le candidat est prévenu",
+          "C'est possible si seul le recruteur voit le score",
+          "C'est interdit",
+        ],
+        correctIndex: 2,
+        why: "Déduire les émotions d'une personne avec une IA est interdit au travail, et le recrutement en fait partie.",
+      },
+      {
+        prompt:
+          "Un candidat écarté automatiquement demande une relecture humaine.",
+        choices: [
+          "Impossible : le score est définitif",
+          "Vous transmettez : un humain revoit le dossier",
+          "Seulement s'il prouve que le score est faux",
+        ],
+        correctIndex: 1,
+        why: "Une personne peut demander qu'un humain intervienne quand une machine a pris seule une décision qui la concerne.",
+      },
+    ],
   },
   {
     id: "marketing",
-    title: "Marketing & sales",
-    duration: "3–5 min",
-    focus: "Chatbots, contenus générés, fichiers prospects.",
-    briefing:
-      "Vous publiez dehors et touchez aux fichiers clients. Un chatbot doit se présenter comme machine dès le début.\n\nContenu généré qui imite quelqu'un : mention claire + droits (image, voix, musique). Pas de base prospects dans une IA ouverte.",
-    casePrompt:
-      "Vidéo promo avec un porte-parole généré par IA. Que faites-vous ?",
-    caseOptions: [
-      { label: "Publier sans mention : c'est juste du marketing", correct: false },
-      {
-        label: "Mention IA si la personne paraît réelle + vérifier les droits",
-        correct: true,
-      },
-      { label: "Une relecture suffit, pas besoin de mention", correct: false },
+    title: "Marketing & ventes",
+    duration: "≈ 8 min",
+    focus: "Contenus générés, chatbots, fichiers clients et prospects",
+    whyExposed:
+      "Vous publiez à l'extérieur et vous travaillez avec les fichiers clients. Ce que l'IA produit part au nom de l'entreprise : les droits sur les images, la transparence envers le public et la protection des prospects se jouent chez vous.",
+    neverList: [
+      "Fichiers clients et prospects, exports du CRM",
+      "Grilles de prix non publiques, remises et marges",
+      "Lancements et campagnes non annoncés",
+      "Propositions commerciales nominatives",
+      "Photos ou voix de clients ou de salariés sans leur accord",
     ],
-    caseCorrection:
-      "Mention claire si la personne paraît réelle, droits vérifiés, et accord de la personne si vous l'imitez. Relire ne remplace ni la mention ni l'accord.",
-    aiTip:
-      "Cinq angles de posts LinkedIn via l'IA, sans fichier clients. Vous choisissez le ton marque.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Trouver cinq angles de posts LinkedIn sur un sujet public",
+        explanation:
+          "Rien de secret. Vous choisissez et adaptez le ton de la marque.",
+      },
+      {
+        level: "green",
+        situation: "Reformuler une fiche produit déjà en ligne",
+        explanation:
+          "Le texte est public. Vous vérifiez que les caractéristiques restent exactes.",
+      },
+      {
+        level: "orange",
+        situation: "Personnaliser un mail de prospection",
+        explanation:
+          "Dans l'outil autorisé, avec le minimum : prénom et secteur, pas tout l'historique.",
+      },
+      {
+        level: "red",
+        situation:
+          "Importer l'export du CRM dans une IA grand public pour segmenter les clients",
+        explanation:
+          "Fichier de données personnelles et secret commercial : jamais.",
+      },
+      {
+        level: "red",
+        situation:
+          "Générer une vidéo d'un vrai client qui recommande votre produit, sans son accord",
+        explanation:
+          "Image utilisée sans accord et faux témoignage trompeur : on ne le fait pas.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Votre équipe veut une vidéo promo avec un porte-parole généré par IA, qui a l'air d'une vraie personne.",
+        answer:
+          "Vous ajoutez une mention claire « générée par IA », vous vérifiez les droits (image, voix, musique) et vous obtenez un accord écrit si la vidéo imite une personne réelle.",
+      },
+      {
+        situation: "Le chatbot du site répond aux clients.",
+        answer:
+          "Il se présente comme une IA dès le début de l'échange. Une mention cachée dans les conditions générales ne suffit pas.",
+      },
+      {
+        situation:
+          "L'IA propose de rédiger vingt avis clients pour votre fiche en ligne.",
+        answer:
+          "Vous refusez. De faux avis trompent les clients et sont interdits. Vous sollicitez plutôt de vrais avis.",
+      },
+    ],
+    tips: [
+      "Cinq angles de posts LinkedIn, sans fichier client. Vous choisissez le ton de la marque.",
+      "Décliner un texte validé en version courte, longue et newsletter.",
+      "Préparer les réponses aux objections fréquentes d'un argumentaire, sans donnée client.",
+    ],
+    quiz: [
+      {
+        prompt: "Le chatbot du site doit…",
+        choices: [
+          "Se présenter comme une IA dès le début",
+          "Ne rien dire : le client s'en doute",
+          "Être mentionné dans les conditions générales",
+        ],
+        correctIndex: 0,
+        why: "La personne doit savoir qu'elle échange avec une machine, au moment de l'échange.",
+      },
+      {
+        prompt: "L'IA propose d'écrire vingt avis clients.",
+        choices: [
+          "C'est possible s'ils sont réalistes",
+          "Non : de faux avis trompent les clients",
+          "C'est possible si on en publie peu",
+        ],
+        correctIndex: 1,
+        why: "Un avis doit venir d'un vrai client. Un faux avis est une pratique commerciale trompeuse.",
+      },
+      {
+        prompt: "Un visuel généré ressemble au logo d'une marque connue.",
+        choices: [
+          "On publie : l'IA l'a créé",
+          "On le retouche un peu",
+          "On ne publie pas dans le doute",
+        ],
+        correctIndex: 2,
+        why: "Un logo reconnaissable peut être protégé. Le retoucher ne règle pas la question des droits.",
+      },
+    ],
   },
   {
     id: "managers",
     title: "Managers",
-    duration: "3–5 min",
-    focus: "Équipe, outils déclarés, relecture des livrables.",
-    briefing:
-      "Vous reliez les règles et le terrain. IA hors liste : aidez à déclarer, sans chercher un coupable.\n\nRien vers un client sans relecture. Chiffres sans source = à vérifier. Les nouveaux apprennent les outils autorisés avant le premier collage.",
-    casePrompt:
-      "Un rapport clairement écrit par une IA, chiffres sans source. Que faites-vous ?",
-    caseOptions: [
-      { label: "L'envoyer au client : le style est bon", correct: false },
-      {
-        label: "Bloquer, exiger sources et vérification avant envoi",
-        correct: true,
-      },
-      { label: "Corriger le ton seulement, garder les chiffres", correct: false },
+    duration: "≈ 8 min",
+    focus: "Équipe, outils déclarés, relecture des livrables",
+    whyExposed:
+      "Vous faites le lien entre les règles et le terrain. Votre équipe vous demande si un outil est autorisé, et ce qu'elle envoie aux clients passe souvent par vous. Votre rôle : aider à déclarer, relire, et montrer l'exemple.",
+    neverList: [
+      "Entretiens annuels et évaluations individuelles",
+      "Santé, vie privée ou situation familiale d'un collaborateur",
+      "Conflits et dossiers disciplinaires",
+      "Objectifs et chiffres internes non publiés",
+      "Documents clients confidentiels",
     ],
-    caseCorrection:
-      "Vous ne transmettez pas en l'état. Source + vérif pour chaque chiffre. Règle : rien dehors sans relecture.",
-    aiTip:
-      "Checklist « avant envoi client » générée une fois : chiffres, noms, promesses, ton.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Préparer l'ordre du jour d'une réunion d'équipe",
+        explanation: "Rien de personnel ni de secret.",
+      },
+      {
+        level: "green",
+        situation: "Reformuler une consigne pour la rendre plus claire",
+        explanation:
+          "Vous relisez pour vérifier que le sens n'a pas changé.",
+      },
+      {
+        level: "orange",
+        situation: "Résumer les retours de l'équipe sur un projet",
+        explanation: "Dans l'outil autorisé, prénoms retirés.",
+      },
+      {
+        level: "red",
+        situation:
+          "Coller les notes d'entretien annuel d'un collaborateur pour rédiger son évaluation",
+        explanation:
+          "Données personnelles sur une personne précise : jamais dans une IA grand public.",
+      },
+      {
+        level: "red",
+        situation:
+          "Demander à une IA si un collaborateur a l'air démotivé d'après une vidéo de réunion",
+        explanation:
+          "Interdit : on ne déduit pas les émotions d'un salarié avec une IA.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un rapport visiblement écrit par une IA, avec des chiffres sans source, doit partir chez un client.",
+        answer:
+          "Vous bloquez l'envoi. Chaque chiffre a une source et a été vérifié. Règle d'équipe : rien ne sort sans relecture.",
+      },
+      {
+        situation:
+          "Un collaborateur utilise une IA gratuite non autorisée depuis des semaines.",
+        answer:
+          "Vous l'aidez à déclarer l'usage au référent IA, sans chercher de coupable. L'outil sera validé ou remplacé.",
+      },
+      {
+        situation: "Un nouvel arrivant commence lundi.",
+        answer:
+          "Vous lui montrez la liste des outils autorisés et les réflexes de base avant son premier copier-coller.",
+      },
+    ],
+    tips: [
+      "Une checklist « avant envoi client » : chiffres, noms, promesses, ton.",
+      "Un compte rendu de réunion d'équipe à partir de vos notes, sans sujet personnel, relu avant envoi.",
+      "La trame d'accueil d'un nouvel arrivant.",
+    ],
+    quiz: [
+      {
+        prompt:
+          "Un livrable rédigé avec l'IA contient des chiffres sans source.",
+        choices: [
+          "On l'envoie : le style est bon",
+          "On bloque jusqu'à vérification",
+          "On corrige seulement le ton",
+        ],
+        correctIndex: 1,
+        why: "Un chiffre sans source peut être inventé. Ce qui part chez un client engage l'entreprise.",
+      },
+      {
+        prompt: "Un collaborateur utilise une IA non autorisée.",
+        choices: [
+          "Sanction immédiate",
+          "On ferme les yeux",
+          "On l'aide à déclarer l'usage",
+        ],
+        correctIndex: 2,
+        why: "Un usage déclaré peut être encadré. Un usage caché, non.",
+      },
+      {
+        prompt:
+          "Rédiger l'évaluation d'un collaborateur avec ses notes d'entretien dans une IA grand public ?",
+        choices: ["Non", "Oui, sans son nom", "Oui, si l'évaluation est positive"],
+        correctIndex: 0,
+        why: "Même sans le nom, les notes permettent de reconnaître la personne.",
+      },
+    ],
   },
   {
     id: "tech",
     title: "Tech, IT & développeurs",
-    duration: "3–5 min",
-    focus: "Code, logs, secrets, outils dans l'IDE.",
-    briefing:
-      "L'IA aide sur le code et les bugs — et peut emporter des secrets. Pas de configs, clés, logs clients ou code sensible dans un outil grand public.\n\nOutil autorisé, extrait nettoyé, relecture (y compris dépendances). Extension IDE : savoir où part le code avant de l'activer.",
-    casePrompt:
-      "Bug urgent : coller logs + extrait de code dans ChatGPT grand public ?",
-    caseOptions: [
-      { label: "Oui, c'est urgent et interne", correct: false },
-      {
-        label: "Non : outil autorisé, données nettoyées, puis relecture",
-        correct: true,
-      },
-      { label: "Oui si on retire seulement les mots de passe visibles", correct: false },
+    duration: "≈ 8 min",
+    focus: "Code, logs, secrets, assistants de code",
+    whyExposed:
+      "L'IA aide sur le code, les bugs et la documentation, et elle peut emporter des secrets. Une clé d'API ou un log client collé par erreur sort de l'entreprise. Et un assistant de code peut proposer des actions, ou des bibliothèques, qu'il faut vérifier.",
+    neverList: [
+      "Clés d'API, mots de passe, jetons d'accès",
+      "Fichiers de configuration et secrets (.env…)",
+      "Logs contenant des données clients (e-mails, adresses IP)",
+      "Code source propriétaire ou sensible",
+      "Bases de données réelles, même partielles",
+      "Failles de sécurité non corrigées",
     ],
-    caseCorrection:
-      "Non sans outil autorisé. Logs et code peuvent cacher secrets et données clients. Nettoyez, utilisez l'outil validé, relisez le correctif.",
-    aiTip:
-      "Expliquer un diff ou rédiger des tests dans l'outil autorisé, sur un extrait anonymisé.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Demander comment fonctionne une commande Git",
+        explanation: "Question générale, rien d'interne.",
+      },
+      {
+        level: "green",
+        situation:
+          "Expliquer un message d'erreur courant d'une bibliothèque publique",
+        explanation: "Aucun code ni donnée de l'entreprise.",
+      },
+      {
+        level: "orange",
+        situation: "Faire relire un extrait de code nettoyé",
+        explanation:
+          "Dans l'assistant de code autorisé, sans secret ni donnée réelle.",
+      },
+      {
+        level: "red",
+        situation: "Coller un fichier .env pour déboguer une connexion",
+        explanation: "Il contient des secrets : ils sortent de l'entreprise.",
+      },
+      {
+        level: "red",
+        situation: "Coller des logs de production pour analyser un incident",
+        explanation:
+          "Ils contiennent des données clients : jamais dans un outil grand public.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Bug urgent : vous voulez coller les logs et un extrait de code dans une IA grand public.",
+        answer:
+          "Non. Vous utilisez l'outil autorisé, vous nettoyez les données, puis vous relisez le correctif avant de l'appliquer.",
+      },
+      {
+        situation:
+          "Une extension IA pour votre éditeur de code promet d'aller deux fois plus vite.",
+        answer:
+          "Vous vérifiez où part votre code et vous demandez avant de l'installer.",
+      },
+      {
+        situation: "L'IA vous recommande une bibliothèque que vous ne connaissez pas.",
+        answer:
+          "Vous vérifiez qu'elle existe vraiment et qu'elle est fiable. L'IA peut inventer des noms de paquets, et des pirates en profitent.",
+      },
+    ],
+    tips: [
+      "Expliquer un diff ou rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé.",
+      "Rédiger la documentation d'une fonction.",
+      "Traduire un message d'erreur technique en explication simple pour un utilisateur.",
+    ],
+    quiz: [
+      {
+        prompt: "Une clé d'API dans un prompt…",
+        choices: [
+          "N'a jamais sa place",
+          "C'est possible si on la change après",
+          "C'est possible dans un outil payant",
+        ],
+        correctIndex: 0,
+        why: "Une fois envoyée, la clé est hors de votre contrôle.",
+      },
+      {
+        prompt: "L'IA recommande un paquet inconnu.",
+        choices: [
+          "Je l'installe",
+          "Je vérifie qu'il existe et qu'il est fiable",
+          "Je demande à l'IA s'il est sûr",
+        ],
+        correctIndex: 1,
+        why: "L'IA peut inventer un nom de paquet, et elle peut confirmer sa propre erreur.",
+      },
+      {
+        prompt: "Un agent IA propose de déployer en production.",
+        choices: [
+          "J'accepte : il a testé",
+          "J'accepte si les tests passent",
+          "Je relis et je valide moi-même",
+        ],
+        correctIndex: 2,
+        why: "Une action irréversible ne part pas sans validation humaine.",
+      },
+    ],
   },
   {
     id: "finance",
     title: "Finance & comptabilité",
-    duration: "3–5 min",
-    focus: "Paiements, factures, fraude, fichiers sensibles.",
-    briefing:
-      "L'IA accélère tableaux et relances — et invente des chiffres. Les fraudeurs le savent.\n\nMessage urgent du « DAF » pour un virement / IBAN : rappel sur le numéro habituel. IBAN, salaires, extraits : pas dans une IA grand public. L'IA prépare ; elle ne lance pas le paiement.",
-    casePrompt:
-      "Vocal du « DAF », voix crédible : changer l'IBAN d'un fournisseur avant midi. Que faites-vous ?",
-    caseOptions: [
-      { label: "Changer l'IBAN : la voix est la sienne", correct: false },
-      {
-        label: "Ne rien toucher ; rappeler sur le numéro habituel",
-        correct: true,
-      },
-      { label: "Répondre au vocal pour confirmer l'identité", correct: false },
+    duration: "≈ 8 min",
+    focus: "Paiements, factures, trésorerie, fraude",
+    whyExposed:
+      "L'IA accélère les tableaux, les analyses et les relances, et elle peut inventer des chiffres. Vous tenez aussi les virements : les fraudeurs le savent, et une fausse voix de dirigeant se fabrique en quelques minutes.",
+    neverList: [
+      "IBAN et coordonnées bancaires",
+      "Fichiers de paie",
+      "Relevés bancaires",
+      "Comptes et résultats non publiés",
+      "Prévisionnel de trésorerie",
+      "Contrats fournisseurs et conditions négociées",
     ],
-    caseCorrection:
-      "Vous ne touchez pas à l'IBAN. Rappel ou process interne. Une voix se fabrique ; répondre au vocal, c'est parler au fraudeur.",
-    aiTip:
-      "Reformuler une relance client sans IBAN ni fichier paie. Les montants viennent de votre système.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Reformuler une relance de facture générique",
+        explanation: "Sans nom ni montant réel : vous complétez ensuite.",
+      },
+      {
+        level: "green",
+        situation: "Expliquer une formule Excel",
+        explanation: "Aucune donnée de l'entreprise n'est nécessaire.",
+      },
+      {
+        level: "orange",
+        situation: "Commenter un tableau de dépenses agrégé",
+        explanation:
+          "Dans l'outil autorisé, sans nom de fournisseur ni de salarié.",
+      },
+      {
+        level: "red",
+        situation: "Coller le fichier de paie pour vérifier les cotisations",
+        explanation:
+          "Salaires, numéros de sécurité sociale, absences : jamais.",
+      },
+      {
+        level: "red",
+        situation:
+          "Faire commenter le prévisionnel de trésorerie par une IA grand public",
+        explanation: "Secret d'entreprise : il ne sort pas.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Message vocal du « DAF », voix crédible : changer l'IBAN d'un fournisseur avant midi.",
+        answer:
+          "Vous ne touchez à rien. Vous rappelez sur son numéro habituel ou vous suivez la procédure interne. Répondre au vocal, c'est parler au fraudeur.",
+      },
+      {
+        situation: "L'IA calcule une variation de marge dans un tableau.",
+        answer:
+          "Vous recalculez. L'IA peut se tromper sur des chiffres, avec un ton très sûr.",
+      },
+      {
+        situation: "L'IA propose de lancer le lot de paiements fournisseurs.",
+        answer:
+          "Vous vérifiez bénéficiaires et montants, puis c'est vous qui validez.",
+      },
+    ],
+    tips: [
+      "Reformuler une relance client, sans IBAN : les montants viennent de votre logiciel.",
+      "Rédiger le commentaire d'une analyse à partir de chiffres agrégés déjà validés.",
+      "Expliquer une formule ou une macro Excel.",
+    ],
+    quiz: [
+      {
+        prompt: "Un vocal du DAF demande un changement d'IBAN urgent.",
+        choices: [
+          "Je réponds au vocal pour confirmer",
+          "Je change : c'est sa voix",
+          "Je rappelle sur son numéro habituel",
+        ],
+        correctIndex: 2,
+        why: "Une voix se fabrique. Seul un canal que vous connaissez déjà est fiable.",
+      },
+      {
+        prompt: "L'IA donne un total dans un tableau.",
+        choices: [
+          "Je recalcule avant de l'utiliser",
+          "Je le reprends tel quel",
+          "Je le reprends s'il semble cohérent",
+        ],
+        correctIndex: 0,
+        why: "Une réponse probable n'est pas une réponse vraie, surtout pour un calcul.",
+      },
+      {
+        prompt: "Le fichier de paie dans une IA grand public ?",
+        choices: [
+          "Oui, sans les noms",
+          "Non, jamais",
+          "Oui, pour un contrôle rapide",
+        ],
+        correctIndex: 1,
+        why: "Il contient des données personnelles, et parfois de santé (absences). Retirer les noms ne suffit pas.",
+      },
+    ],
   },
   {
     id: "support",
     title: "Relation client & support",
-    duration: "3–5 min",
-    focus: "Tickets, appels, chatbots : données clients.",
-    briefing:
-      "Tickets et mails : noms, numéros, parfois IBAN. Outil autorisé, données inutiles retirées, réponse reluée.\n\nL'IA peut inventer un délai ou un geste commercial. Chatbot client : il se présente comme machine dès le début.",
-    casePrompt:
-      "Ticket avec nom, téléphone et litige : vous voulez une réponse IA. Avant ?",
-    caseOptions: [
-      { label: "Coller tout le ticket pour plus de contexte", correct: false },
-      {
-        label: "Outil autorisé, retirer le superflu, relire avant envoi",
-        correct: true,
-      },
-      { label: "Envoyer tel quel : l'IA gère le ton", correct: false },
+    duration: "≈ 8 min",
+    focus: "Tickets, appels, chatbots, données clients",
+    whyExposed:
+      "Tickets, appels et mails contiennent des noms, des numéros, parfois des informations de paiement ou de santé. Et l'IA peut promettre un délai ou un geste commercial qui n'existe pas : ce que vous envoyez engage l'entreprise.",
+    neverList: [
+      "Tickets complets avec coordonnées",
+      "Enregistrements et transcriptions d'appels",
+      "Moyens de paiement et IBAN",
+      "Informations de santé confiées par un client",
+      "Historiques de litiges nominatifs",
     ],
-    caseCorrection:
-      "Outil autorisé, téléphone et superflu retirés, relecture : pas de délai inventé ni de geste fantôme. Puis envoi.",
-    aiTip:
-      "Trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez. L'IA ne décide pas du geste.",
+    traffic: [
+      {
+        level: "green",
+        situation:
+          "Rédiger la réponse type à une question fréquente déjà publiée",
+        explanation: "Le contenu est public. Vous vérifiez qu'il est à jour.",
+      },
+      {
+        level: "green",
+        situation: "Corriger l'orthographe d'une réponse sans donnée client",
+        explanation: "Rien de personnel. Vous relisez avant d'envoyer.",
+      },
+      {
+        level: "orange",
+        situation: "Rédiger une réponse à partir d'un résumé du ticket",
+        explanation: "Dans l'outil autorisé, nom et téléphone retirés.",
+      },
+      {
+        level: "red",
+        situation:
+          "Coller un ticket où le client parle de sa maladie pour expliquer un retard de paiement",
+        explanation:
+          "Information de santé : jamais dans une IA grand public.",
+      },
+      {
+        level: "red",
+        situation: "Faire transcrire un appel client par une IA grand public",
+        explanation:
+          "La voix et le contenu de l'appel sont des données personnelles.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un ticket contient un nom, un téléphone et un litige. Vous voulez une réponse rédigée par l'IA.",
+        answer:
+          "Outil autorisé, superflu retiré, relecture avant envoi : pas de délai inventé, pas de geste commercial fantôme.",
+      },
+      {
+        situation: "L'IA a écrit « nous vous rembourserons sous 48 h ».",
+        answer:
+          "Vous vérifiez que c'est vrai et autorisé avant d'envoyer. Une promesse écrite engage l'entreprise.",
+      },
+      {
+        situation: "Un client demande quelles données l'entreprise a sur lui.",
+        answer:
+          "Vous transmettez tout de suite sa demande au DPO ou au référent, sans répondre seul.",
+      },
+    ],
+    tips: [
+      "Trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez ; l'IA ne décide pas du geste.",
+      "Mettre à jour la FAQ à partir des questions fréquentes, sans donnée client.",
+      "Résumer une procédure longue en cinq étapes pour un nouvel agent.",
+    ],
+    quiz: [
+      {
+        prompt: "L'IA promet un remboursement sous 48 h.",
+        choices: [
+          "J'envoie",
+          "Je vérifie que c'est vrai avant d'envoyer",
+          "J'envoie en ajoutant « sous réserve »",
+        ],
+        correctIndex: 1,
+        why: "L'IA peut inventer un délai. Une mention ne remplace pas la vérification.",
+      },
+      {
+        prompt: "Un client veut savoir quelles données vous avez sur lui.",
+        choices: [
+          "Je transmets au DPO ou au référent",
+          "Je lui envoie l'export du CRM",
+          "Je réponds que c'est impossible",
+        ],
+        correctIndex: 0,
+        why: "C'est son droit d'accès. L'entreprise a en général un mois pour répondre, et la réponse se prépare avec le DPO.",
+      },
+      {
+        prompt: "Le chatbot client…",
+        choices: [
+          "Peut se faire passer pour un agent",
+          "Le dit seulement si on lui demande",
+          "Se présente comme une IA dès le début",
+        ],
+        correctIndex: 2,
+        why: "Le client doit savoir qu'il échange avec une machine.",
+      },
+    ],
   },
   {
     id: "tous",
-    title: "Autres",
-    duration: "3–5 min",
-    focus: "Accueil, mails, atelier : réflexes du quotidien.",
-    briefing:
-      "Même hors cases : outil autorisé, minimum de données, relecture. Ce que vous renvoyez part au nom de l'entreprise.\n\nExtension IA « pour aller plus vite » : demander avant d'installer.",
-    casePrompt:
-      "Mail client (nom, téléphone, motif) : préparer un rappel avec l'IA. Avant ?",
-    caseOptions: [
-      { label: "Coller le mail entier pour être précis", correct: false },
-      {
-        label: "Outil autorisé, garder le utile, relire avant envoi",
-        correct: true,
-      },
-      { label: "Utiliser n'importe quelle IA : c'est juste un rappel", correct: false },
+    title: "Autres métiers",
+    duration: "≈ 8 min",
+    focus: "Accueil, administratif, terrain, atelier",
+    whyExposed:
+      "Même hors des cases, les mêmes réflexes s'appliquent : outil autorisé, minimum de données, relecture. Ce que vous envoyez part au nom de l'entreprise, et une extension « pour aller plus vite » peut emporter plus que prévu.",
+    neverList: [
+      "Carnet d'adresses et coordonnées clients",
+      "Photos de pièces d'identité",
+      "Plannings et badges nominatifs",
+      "Plans, procédés et savoir-faire de fabrication",
+      "Informations sur la santé d'un collègue",
     ],
-    caseCorrection:
-      "Outil autorisé. Retirez le téléphone (et le nom s'il ne sert pas). Relisez avant d'envoyer.",
-    aiTip:
-      "Créez une fois un modèle de mail de confirmation, puis réutilisez-le — sans coller le carnet d'adresses.",
+    traffic: [
+      {
+        level: "green",
+        situation: "Créer un modèle de mail de confirmation de rendez-vous",
+        explanation: "Un modèle sans nom, réutilisable.",
+      },
+      {
+        level: "green",
+        situation: "Traduire une consigne de sécurité générale pour un visiteur",
+        explanation:
+          "Rien de personnel. Vous faites vérifier la traduction si la consigne est importante.",
+      },
+      {
+        level: "orange",
+        situation: "Préparer un rappel client à partir de son message",
+        explanation: "Dans l'outil autorisé, avec seulement le motif.",
+      },
+      {
+        level: "red",
+        situation:
+          "Photographier la pièce d'identité d'un visiteur pour la faire lire par une IA",
+        explanation:
+          "Document d'identité : jamais dans une IA grand public.",
+      },
+      {
+        level: "red",
+        situation:
+          "Envoyer le plan d'une pièce fabriquée à l'atelier pour l'optimiser",
+        explanation: "Savoir-faire de l'entreprise : il ne sort pas.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un client vous envoie un mail avec son nom, son téléphone et sa demande. Vous voulez préparer un rappel avec l'IA.",
+        answer:
+          "Outil autorisé. Vous retirez le téléphone, et le nom s'il ne sert pas. Vous relisez avant d'envoyer.",
+      },
+      {
+        situation:
+          "Une extension IA « pour aller plus vite » s'installe en un clic sur votre navigateur.",
+        answer:
+          "Vous demandez avant de l'installer : certaines lisent tout ce qui s'affiche à l'écran.",
+      },
+      {
+        situation: "Vous avez collé par erreur une liste de clients dans une IA.",
+        answer:
+          "Vous prévenez tout de suite votre manager ou le référent. En cas de fuite, l'entreprise a parfois seulement 72 h pour agir.",
+      },
+    ],
+    tips: [
+      "Un modèle de mail de confirmation, créé une fois et réutilisé, sans coller le carnet d'adresses.",
+      "Traduire une consigne générale pour un collègue ou un visiteur.",
+      "Transformer des notes en procédure claire, sans secret de fabrication.",
+    ],
+    quiz: [
+      {
+        prompt: "Une extension IA promet de vous faire gagner du temps.",
+        choices: [
+          "Je demande avant de l'installer",
+          "Je l'installe : elle est gratuite",
+          "Je l'installe si un collègue l'utilise",
+        ],
+        correctIndex: 0,
+        why: "Gratuit ne veut pas dire autorisé. Certaines extensions lisent tout ce que vous voyez.",
+      },
+      {
+        prompt: "Vous avez collé par erreur une liste de clients dans une IA.",
+        choices: [
+          "J'efface l'historique",
+          "J'attends de voir",
+          "Je préviens tout de suite",
+        ],
+        correctIndex: 2,
+        why: "Plus l'entreprise est prévenue tôt, plus elle peut réagir à temps.",
+      },
+      {
+        prompt: "Pour préparer un rappel client, vous donnez à l'IA…",
+        choices: [
+          "Le mail entier",
+          "Seulement l'utile, sans téléphone",
+          "Tout, pour qu'elle soit précise",
+        ],
+        correctIndex: 1,
+        why: "On ne donne que ce qui sert à la tâche.",
+      },
+    ],
+  },
+  {
+    id: "expert-comptable",
+    title: "Expert-comptable",
+    duration: "≈ 8 min",
+    focus: "Données financières des clients, secret professionnel",
+    whyExposed:
+      "Vous manipulez ce qu'une entreprise a de plus confidentiel : sa banque, ses salaires, ses comptes. Et vous êtes tenu au secret professionnel. L'IA peut vous faire gagner des heures, à condition de ne rien lui confier qui sorte du cabinet.",
+    neverList: [
+      "Relevés bancaires et IBAN",
+      "Bulletins de paie et numéros de sécurité sociale",
+      "Arrêts maladie et mutuelle",
+      "Fichier des écritures comptables (FEC) et liasses fiscales",
+      "Dossiers de clients en difficulté",
+    ],
+    traffic: [
+      {
+        level: "green",
+        situation: "Rédiger un mail générique de rappel des échéances fiscales",
+        explanation:
+          "Sans nom ni montant. Vous vérifiez les dates sur la source officielle.",
+      },
+      {
+        level: "green",
+        situation: "Reformuler la plaquette du cabinet",
+        explanation: "Document public. Vous relisez avant publication.",
+      },
+      {
+        level: "orange",
+        situation: "Résumer le mail d'un client",
+        explanation: "Dans l'outil autorisé du cabinet, nom retiré.",
+      },
+      {
+        level: "red",
+        situation: "Coller un bulletin de paie pour vérifier un calcul",
+        explanation:
+          "Salaire, numéro de sécurité sociale, absences : jamais.",
+      },
+      {
+        level: "red",
+        situation:
+          "Envoyer le FEC d'un client pour détecter des anomalies",
+        explanation:
+          "Toute la comptabilité du client, couverte par le secret professionnel.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un client demande de catégoriser 300 lignes de son relevé bancaire. Vous collez tout dans ChatGPT ?",
+        answer:
+          "Non. Vous utilisez l'IA intégrée au logiciel comptable validé par le cabinet, ou rien.",
+      },
+      {
+        situation:
+          "L'IA rédige une note sur un seuil de TVA en citant un article du Code général des impôts.",
+        answer:
+          "Vous vérifiez sur Légifrance ou le BOFiP. Les seuils changent chaque année, et l'IA peut citer un article qui n'existe pas.",
+      },
+      {
+        situation:
+          "Message vocal du dirigeant d'un client : « Change l'IBAN pour le virement des salaires, c'est urgent. »",
+        answer:
+          "Vous rappelez sur son numéro habituel avant de toucher à quoi que ce soit.",
+      },
+    ],
+    tips: [
+      "Un modèle de mail de relance des pièces manquantes, créé une fois et réutilisé.",
+      "Vulgariser une nouveauté fiscale pour la newsletter clients, puis vérifier sur la source officielle.",
+      "Préparer une trame de checklist de clôture, relue par vous.",
+    ],
+    quiz: [
+      {
+        prompt: "Un bulletin de paie dans ChatGPT grand public ?",
+        choices: [
+          "Oui, si on retire le nom",
+          "Non, jamais",
+          "Oui, pour un calcul rapide",
+        ],
+        correctIndex: 1,
+        why: "Il reste un numéro de sécurité sociale, un salaire, des absences : la personne est reconnaissable.",
+      },
+      {
+        prompt: "L'IA cite un article du Code général des impôts. Vous…",
+        choices: [
+          "Le reprenez tel quel",
+          "Demandez à l'IA s'il existe",
+          "Vérifiez sur Légifrance ou le BOFiP",
+        ],
+        correctIndex: 2,
+        why: "L'IA peut inventer un article, et confirmer sa propre invention.",
+      },
+      {
+        prompt:
+          "L'IA classe et lettre vos factures automatiquement. Avant la déclaration de TVA…",
+        choices: [
+          "Je contrôle : c'est moi qui signe",
+          "Je fais confiance à l'outil",
+          "Je vérifie seulement si un client se plaint",
+        ],
+        correctIndex: 0,
+        why: "L'outil prépare. La responsabilité reste la vôtre.",
+      },
+    ],
+  },
+  {
+    id: "immobilier",
+    title: "Immobilier",
+    duration: "≈ 5 min",
+    focus: "Mandats, dossiers locataires, photos, négociations",
+    whyExposed:
+      "Vous manipulez des dossiers complets : identité, revenus, situation familiale, et parfois des secrets de négociation. Une IA grand public n'est pas un coffre-fort pour un bail ou un compromis. Ce que vous publiez (annonce, photo, description) engage l'agence.",
+    neverList: [
+      "Pièces d'identité et justificatifs de revenus complets",
+      "Dossiers locataires ou acquéreurs nominatifs",
+      "Compromis, promesses et avenants non signés",
+      "Coordonnées bancaires et IBAN de clients",
+      "Photos d'intérieur permettant d'identifier l'adresse sans accord",
+      "Notes de négociation et offres concurrentes non publiques",
+    ],
+    traffic: [
+      {
+        level: "green",
+        situation: "Reformuler une annonce déjà en ligne, sans donnée perso",
+        explanation:
+          "Le bien est public. Vous vérifiez surfaces, prix et mentions légales avant republication.",
+      },
+      {
+        level: "green",
+        situation: "Préparer une checklist de visite type pour un bien neuf",
+        explanation: "Une trame générique ne vise personne.",
+      },
+      {
+        level: "orange",
+        situation: "Résumer le mail d'un prospect pour préparer un rappel",
+        explanation:
+          "Dans l'outil autorisé, avec le minimum : prénom et type de bien, pas tout le dossier.",
+      },
+      {
+        level: "red",
+        situation:
+          "Coller un dossier locataire complet dans une IA grand public pour « pré-trier »",
+        explanation:
+          "Identité, revenus, situation familiale : données personnelles, parfois sensibles.",
+      },
+      {
+        level: "red",
+        situation:
+          "Faire analyser un compromis de vente non signé par une IA ouverte",
+        explanation:
+          "Secret de négociation et données des parties : il ne sort pas de l'agence.",
+      },
+    ],
+    cases: [
+      {
+        situation:
+          "Un collègue veut coller dix dossiers locataires dans ChatGPT pour classer les « meilleurs » profils.",
+        answer:
+          "Vous refusez hors outil autorisé. Proposez un tri sur critères écrits, ou l'outil validé par l'agence — la décision reste humaine.",
+      },
+      {
+        situation:
+          "L'IA propose une description d'annonce qui invente une surface et une vue mer.",
+        answer:
+          "Vous vérifiez chaque mention sur le mandat et les diagnostics. Une fausse info engage l'agence.",
+      },
+      {
+        situation:
+          "Un acquéreur envoie un vocal urgent : « Change l'IBAN du séquestre avant ce soir. »",
+        answer:
+          "Vous ne touchez à rien. Vous rappelez sur un numéro déjà connu ou vous suivez la procédure interne.",
+      },
+    ],
+    tips: [
+      "Cinq angles d'annonce à partir d'éléments déjà publics, sans dossier client.",
+      "Une FAQ visite / diagnostics, relue avant diffusion.",
+      "Un modèle de mail de confirmation de rendez-vous, réutilisable sans carnet d'adresses.",
+    ],
+    quiz: [
+      {
+        prompt: "Un dossier locataire dans une IA grand public ?",
+        choices: [
+          "Oui, si on retire le prénom",
+          "Non, jamais hors outil autorisé",
+          "Oui, pour aller plus vite",
+        ],
+        correctIndex: 1,
+        why: "Revenus, identité et situation personnelle restent reconnaissables.",
+      },
+      {
+        prompt: "L'IA invente une caractéristique dans une annonce. Vous…",
+        choices: [
+          "Publiez : le ton est bon",
+          "Vérifiez chaque fait sur le mandat",
+          "Publiez en ajoutant « sous réserve »",
+        ],
+        correctIndex: 1,
+        why: "Une mention inexacte engage l'agence. Relire ne suffit pas si on ne vérifie pas.",
+      },
+      {
+        prompt: "Un vocal demande de changer l'IBAN du séquestre.",
+        choices: [
+          "Je change : c'est urgent",
+          "Je réponds au vocal pour confirmer",
+          "Je rappelle sur un numéro déjà connu",
+        ],
+        correctIndex: 2,
+        why: "Une voix se fabrique. Seul un canal déjà connu est fiable.",
+      },
+    ],
   },
 ];

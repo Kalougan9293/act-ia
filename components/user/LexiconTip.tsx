@@ -229,7 +229,7 @@ export function FloatingLexiconFab() {
   return (
     <div
       ref={panelRef}
-      className="fixed right-4 z-50 bottom-[max(5.5rem,env(safe-area-inset-bottom))] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-6"
+      className="fixed right-4 z-50 bottom-[max(1.25rem,env(safe-area-inset-bottom))] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-6"
     >
       {open && (
         <div className="mb-3 w-[min(100vw-2rem,20rem)] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-600 dark:bg-slate-900">

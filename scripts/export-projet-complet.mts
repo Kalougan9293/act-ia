@@ -549,27 +549,47 @@ for (const [i, q] of SOCLE_QUESTION_BANK.entries()) {
 }
 
 out.push("#".repeat(60));
-out.push("PARCOURS MÉTIERS — question");
+out.push("PARCOURS MÉTIERS — gabarit 6 rubriques (~8 min)");
 out.push("#".repeat(60));
 out.push("");
-  out.push("Type: question — un texte, un cas à trancher, une idée d'usage IA.");
-  out.push("");
+out.push("1 Pourquoi exposé · 2 Jamais · 3 Feu tricolore · 4 Cas · 5 Usages · 6 Quiz");
+out.push("");
 for (const path of CAREER_PATHS) {
   out.push("-".repeat(50));
-  out.push(`${path.title}`);
-  out.push(`Type: question | Focus: ${path.focus}`);
+  out.push(`${path.title} (${path.duration})`);
+  out.push(`Focus: ${path.focus}`);
   out.push("-".repeat(50));
   out.push("");
-  out.push("Texte:");
-  out.push(path.briefing);
+  out.push("1. Pourquoi ce métier est exposé:");
+  out.push(path.whyExposed);
   out.push("");
-  out.push(`Cas pratique: ${path.casePrompt}`);
-  for (const option of path.caseOptions) {
-    out.push(`  - [${option.correct ? "OK" : "  "}] ${option.label}`);
+  out.push("2. Ce qui ne va jamais dans une IA grand public:");
+  for (const item of path.neverList) out.push(`  ✕ ${item}`);
+  out.push("");
+  out.push("3. Feu tricolore:");
+  for (const item of path.traffic) {
+    out.push(`  [${item.level}] ${item.situation}`);
+    out.push(`    → ${item.explanation}`);
   }
-  out.push(`Correction: ${path.caseCorrection}`);
   out.push("");
-  out.push(`Idée d'usage IA: ${path.aiTip}`);
+  out.push("4. Trois cas pratiques:");
+  path.cases.forEach((item, index) => {
+    out.push(`  Cas ${index + 1}: ${item.situation}`);
+    out.push(`    → ${item.answer}`);
+  });
+  out.push("");
+  out.push("5. Trois idées d'usage:");
+  for (const tip of path.tips) out.push(`  ✓ ${tip}`);
+  out.push("");
+  out.push("6. Quiz validé:");
+  path.quiz.forEach((q, index) => {
+    out.push(`  Q${index + 1}. ${q.prompt}`);
+    q.choices.forEach((choice, cIndex) => {
+      const mark = cIndex === q.correctIndex ? "✓" : " ";
+      out.push(`    ${String.fromCharCode(65 + cIndex)}. [${mark}] ${choice}`);
+    });
+    out.push(`    Pourquoi: ${q.why}`);
+  });
   out.push("");
 }
 
