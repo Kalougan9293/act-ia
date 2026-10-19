@@ -36,7 +36,7 @@ export const BLOCKS: Block[] = [
           kind: "video",
           format: "vidéo courte",
           script:
-            "Vous êtes ici parce que votre entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA, conformément à l'article 4 du règlement européen en vigueur depuis février 2025. Le but de cette formation n'est pas de vous faire passer un examen de droit, mais de vous aider à acquérir des réflexes simples, avec à la fin une attestation qui prouve que vous avez suivi le parcours.\n\nVous utilisez peut-être déjà ChatGPT, Copilot, ou une application qui crée des images. Si ce n'est pas votre cas, regardez autour de vous : beaucoup de collègues s'en servent déjà. L'IA peut vous faire gagner du temps. Elle peut rédiger, résumer, traduire ou chercher. Mais elle peut aussi se tromper, ou faire sortir une information qui devait rester dans l'entreprise.\n\nDans cette formation, on avance un sujet à la fois. D'abord, on explique comment l'outil écrit. Ensuite, on aborde ce que la loi exige. Et enfin, on voit comment utiliser l'outil, ce que vous pouvez y intégrer, et les informations qu'il faut garder pour vous.",
+            "Vous êtes ici parce que votre entreprise doit prendre des mesures pour soutenir la maîtrise de l'IA, conformément à l'article 4 du règlement européen en vigueur depuis février 2025 — pas pour « garantir » que chacun devient expert. Le but de cette formation n'est pas de vous faire passer un examen de droit, mais de vous aider à acquérir des réflexes simples, avec à la fin une attestation qui prouve que vous avez suivi le parcours.\n\nVous utilisez peut-être déjà ChatGPT, Copilot, ou une application qui crée des images. Si ce n'est pas votre cas, regardez autour de vous : beaucoup de collègues s'en servent déjà. L'IA peut vous faire gagner du temps. Elle peut rédiger, résumer, traduire ou chercher. Mais elle peut aussi se tromper, ou faire sortir une information qui devait rester dans l'entreprise.\n\nDans cette formation, on avance un sujet à la fois. D'abord, on explique comment l'outil écrit. Ensuite, on aborde ce que la loi exige. Et enfin, on voit comment utiliser l'outil, ce que vous pouvez y intégrer, et les informations qu'il faut garder pour vous.",
         },
       },
       {
@@ -286,13 +286,13 @@ export const BLOCKS: Block[] = [
           kind: "quiz",
           questions: [
             {
-              prompt: "Depuis quand l'entreprise doit-elle prendre des mesures pour que ses équipes sachent utiliser l'IA ?",
+              prompt: "Depuis quand l'entreprise doit-elle prendre des mesures pour soutenir la maîtrise de l'IA ?",
               choices: [
                 {
                   label: "Depuis le 2 février 2025",
                   correct: true,
                   explanation:
-                    "Exact. L'article 4 s'applique depuis cette date. La vidéo vous explique ce que ça change pour vous.",
+                    "Exact. L'article 4 s'applique depuis cette date (pas depuis août 2025). La vidéo vous explique ce que ça change pour vous.",
                 },
                 {
                   label: "Seulement en 2027",

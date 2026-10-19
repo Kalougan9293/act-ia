@@ -11,12 +11,12 @@ const steps = [
   {
     n: "2",
     title: "Vous envoyez un lien",
-    text: "Invitation permanente : vos salariés rejoignent leur parcours seuls.",
+    text: "Parcours toujours ouvert, vos salariés font leur parcours seuls.",
   },
   {
     n: "3",
     title: "Prêt en quelques minutes",
-    text: "Le RH suit l'avancement tout de suite. Pas de projet IT.",
+    text: "Le RH suit l'avancement tout de suite.",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function DeploySection() {
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-4xl gap-2.5 sm:grid-cols-3 sm:gap-8">
+        <div className="mx-auto grid max-w-4xl gap-6 sm:grid-cols-3 sm:gap-8">
           {steps.map((step, i) => (
             <motion.div
               key={step.n}
@@ -48,19 +48,19 @@ export default function DeploySection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="flex items-start gap-2.5 sm:mx-auto sm:max-w-xs sm:flex-col sm:items-center sm:gap-0 sm:text-center"
+              className="mx-auto w-full max-w-xs text-center"
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white sm:h-10 sm:w-10 sm:text-sm">
-                {step.n}
-              </span>
-              <div className="min-w-0 flex-1 sm:w-full sm:flex-none">
-                <h3 className="text-sm font-bold leading-snug text-slate-900 dark:text-white sm:mt-3 sm:text-center sm:text-base">
-                  {step.title}
-                </h3>
-                <p className="mt-0.5 text-xs leading-snug text-slate-600 dark:text-slate-300 sm:mt-2 sm:text-center sm:text-sm sm:leading-relaxed">
-                  {step.text}
-                </p>
+              <div className="mb-2 flex justify-center sm:mb-3">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white sm:h-10 sm:w-10 sm:text-sm">
+                  {step.n}
+                </span>
               </div>
+              <h3 className="text-center text-sm font-bold leading-snug text-slate-900 dark:text-white sm:text-base">
+                {step.title}
+              </h3>
+              <p className="mt-1 text-center text-xs leading-snug text-slate-600 dark:text-slate-300 sm:mt-2 sm:text-sm sm:leading-relaxed">
+                {step.text}
+              </p>
             </motion.div>
           ))}
         </div>

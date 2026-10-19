@@ -37,8 +37,7 @@ export default function CgvPage() {
           module (texte, cas pratique et idée d&apos;usage intégrés au parcours) ; une demande
           plus large est établie sur devis ; l&apos;atelier usages et automatisation (visio ou
           présentiel) est établi sur devis. La marque blanche pour un
-          organisme de formation ou un cabinet RH va de 2&nbsp;000 à 5&nbsp;000&nbsp;€ par an et
-          par partenaire, plus un montant par apprenant. Il n&apos;y a pas encore de paiement en
+          organisme de formation ou un cabinet RH est établie sur devis. Il n&apos;y a pas encore de paiement en
           ligne : la facture est envoyée par e-mail et se règle par virement ou par carte.
         </p>
         <p>Le prix est dû à réception de la facture. TVA non applicable, article 293 B du CGI.</p>

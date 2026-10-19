@@ -18,15 +18,21 @@ export default function AiActPage() {
         <p>
           Le règlement européen sur l&apos;intelligence artificielle (AI Act) encadre les systèmes
           d&apos;IA selon leur niveau de risque. L&apos;article 4, applicable depuis le{" "}
-          <strong>2 février 2025</strong>, demande aux organisations de prendre des mesures pour
-          développer une maîtrise suffisante de l&apos;IA chez les personnes qui l&apos;utilisent
+          <strong>2 février 2025</strong>, demande aux organisations de prendre des mesures pour{" "}
+          <strong>soutenir la maîtrise de l&apos;IA</strong> chez les personnes qui l&apos;utilisent
           pour le travail — y compris avec des outils grand public comme ChatGPT ou Copilot.
         </p>
         <p>
+          Depuis le règlement (UE) 2026/1744 (Omnibus), le texte précise qu&apos;il ne s&apos;agit
+          pas de <strong>garantir</strong> un niveau donné pour chaque individu, mais de favoriser
+          cette maîtrise, de façon proportionnée aux usages. Le barème d&apos;amendes de
+          l&apos;article 99 ne vise pas spécifiquement l&apos;article 4 : il n&apos;y a pas
+          d&apos;amende type « 15&nbsp;M€ ou 3&nbsp;% » attachée à cette obligation.
+        </p>
+        <p>
           Il n&apos;y a pas de seuil de taille d&apos;entreprise, ni de durée minimale imposée, ni
-          d&apos;organisme obligatoire. L&apos;effort doit être proportionné aux usages. En cas de
-          contrôle, d&apos;incident ou d&apos;audit client, pouvoir montrer que des mesures ont été
-          prises et suivies devient décisif.
+          d&apos;organisme obligatoire. En cas de contrôle, d&apos;incident ou d&apos;audit client,
+          pouvoir montrer que des mesures ont été prises et documentées devient décisif.
         </p>
       </section>
 

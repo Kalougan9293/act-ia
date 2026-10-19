@@ -38,13 +38,13 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     famille: "F01",
     prompt: "Pourquoi votre entreprise vous propose-t-elle cette formation ?",
     choices: [
-      "La loi lui demande de prendre des mesures pour que vous sachiez utiliser l'IA",
+      "La loi lui demande de prendre des mesures pour soutenir la maîtrise de l'IA",
       "Parce qu'un diplôme européen est obligatoire pour chaque salarié",
       "Parce que toute IA est interdite sans ce parcours",
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA. Cette formation en fait partie. L'attestation est la preuve du suivi.",
+      "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit soutenir la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Cette formation en fait partie. L'attestation est la preuve du suivi.",
   },
   {
     id: "q2",
@@ -125,12 +125,12 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     prompt: "Depuis quand l'article 4 s'applique ?",
     choices: [
       "2 février 2025",
+      "2 août 2025",
       "2 décembre 2027 seulement",
-      "Pas avant août 2028",
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis fév. 2025, l'entreprise doit déjà prendre des mesures de maîtrise de l'IA. 2027, c'est surtout le haut risque recrutement.",
+      "Pourquoi ? Depuis le 2 février 2025 — pas le 2 août 2025. L'entreprise doit déjà prendre des mesures pour soutenir la maîtrise de l'IA. Août 2025 concerne surtout d'autres règles (modèles à usage général). 2027, c'est surtout le haut risque recrutement.",
   },
   {
     id: "q8",

@@ -51,6 +51,12 @@ p.text-center {
   hyphens: manual;
 }
 
+#deploy p,
+#deploy h3 {
+  text-align: center !important;
+  hyphens: none;
+}
+
 #features li,
 #features h2,
 #features h3 {

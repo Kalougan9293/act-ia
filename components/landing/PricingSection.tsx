@@ -87,11 +87,11 @@ const addons = [
   {
     name: "Marque blanche",
     tag: "Partenaires",
-    price: "2 000 – 5 000 €",
-    detail: "/ an + par apprenant",
+    price: "Sur devis",
+    detail: "",
     featured: false,
     description:
-      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH. Fourchette indicative ; devis selon le volume.",
+      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH. Sur devis.",
   },
   {
     name: "Atelier usages & automatisation",

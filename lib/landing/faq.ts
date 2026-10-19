@@ -72,12 +72,12 @@ export const faqs = [
   {
     question: "Combien coûte StartIA ?",
     answer:
-      "390 € par an jusqu'à 5 salariés, 790 € jusqu'à 20, 1 290 € jusqu'à 50. Au-delà, l'offre est sur devis. En option : module métier sur mesure à 690 € le module, atelier usages & automatisation sur devis, marque blanche de 2 000 à 5 000 € par an et par partenaire (plus un montant par apprenant). La TVA ne s'applique pas.",
+      "390 € par an jusqu'à 5 salariés, 790 € jusqu'à 20, 1 290 € jusqu'à 50. Au-delà, l'offre est sur devis. En option : module métier sur mesure à 690 € le module, atelier usages & automatisation et marque blanche sur devis. La TVA ne s'applique pas.",
   },
   {
     question: "Qu'est-ce que l'option marque blanche ?",
     answer:
-      "Une version de la plateforme à l'image de votre entreprise : votre logo et vos couleurs. Vos équipes voient votre marque, le fonctionnement reste le même. Pour un organisme de formation ou un cabinet RH : de 2 000 à 5 000 € par an et par partenaire, plus un montant par apprenant, selon le volume.",
+      "Une version de la plateforme à l'image de votre entreprise : votre logo et vos couleurs. Vos équipes voient votre marque, le fonctionnement reste le même. Pour un organisme de formation ou un cabinet RH : sur devis.",
   },
   {
     question: "Un OPCO peut-il financer la formation ?",

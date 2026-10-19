@@ -204,9 +204,6 @@ export default function CareerScreen({
       <div className="text-center">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{path.title}</h1>
         <p className="mt-1 text-center text-sm text-slate-500">{path.focus}</p>
-        <p className="mt-2 text-center text-[11px] italic text-slate-400 dark:text-slate-500">
-          Liste non exhaustive
-        </p>
       </div>
 
       <section className="rounded-2xl border border-amber-200/80 bg-amber-50/60 px-5 py-4 dark:border-amber-800/60 dark:bg-amber-950/25">
@@ -221,6 +218,9 @@ export default function CareerScreen({
       <section className="rounded-2xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-900">
         <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
           2 · Ce qui ne va jamais dans une IA grand public
+        </p>
+        <p className="mt-1 text-center text-[11px] italic text-slate-400 dark:text-slate-500">
+          Liste non exhaustive
         </p>
         <ul className="mt-3 space-y-2">
           {path.neverList.map((item) => (

@@ -12,13 +12,13 @@ export const LEXICON: LexiconEntry[] = [
     id: "ai-act",
     term: "AI Act",
     definition: "La loi européenne qui encadre l'IA.",
-    example: "Elle demande des mesures pour que vous sachiez utiliser l'IA (Art. 4).",
+    example: "Elle demande des mesures pour soutenir la maîtrise de l'IA (Art. 4).",
   },
   {
     id: "art4",
     term: "Article 4",
     definition:
-      "Depuis fév. 2025 : l'entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA.",
+      "Depuis fév. 2025 : l'entreprise doit prendre des mesures pour soutenir la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Pas d'amende spécifique liée à cet article.",
     example: "Cette formation en fait partie. L'attestation prouve le suivi.",
   },
   {
@@ -118,7 +118,7 @@ export const LEXICON: LexiconEntry[] = [
     id: "omnibus",
     term: "Omnibus",
     definition:
-      "Texte européen qui a reporté certaines échéances de l'AI Act, dont les règles strictes sur le tri de CV.",
+      "Texte européen (2026) qui a clarifié l'article 4 (soutenir la maîtrise, pas « garantir ») et reporté certaines échéances, dont les règles strictes sur le tri de CV.",
     example: "Le geste du quotidien ne change pas : un humain garde la décision.",
   },
 ];

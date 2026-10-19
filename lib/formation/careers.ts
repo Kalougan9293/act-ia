@@ -40,7 +40,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "≈ 8 min",
     focus: "Cadre, outils autorisés, contrats, décisions humaines",
     whyExposed:
-      "Vous fixez le cadre : quels outils sont autorisés, ce que disent les contrats, qui est responsable. Sans ce cadre, chacun improvise et les informations sortent. Et c'est vous qui signez avec les éditeurs d'IA : ce qu'ils font de vos données se décide à ce moment-là.",
+      "C'est vous qui décidez quelles IA l'entreprise a le droit d'utiliser, et qui signe les contrats avec les éditeurs. Si ce cadre n'existe pas, chacun choisit son outil et des infos sensibles partent dehors. Ce que l'éditeur peut faire de vos données se joue au moment de la signature.",
     neverList: [
       "Business plan et projets stratégiques",
       "Projets de rachat, de cession ou de levée de fonds",
@@ -53,20 +53,20 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         level: "green",
         situation:
-          "Reformuler votre mot d'accueil pour la newsletter interne, sans chiffre non publié",
+          "Demander à une IA de reformuler votre mot d'accueil pour la newsletter interne, sans chiffre non publié",
         explanation:
           "Rien de secret, personne de reconnaissable. Vous relisez avant diffusion.",
       },
       {
         level: "green",
-        situation: "Préparer la trame d'un séminaire d'équipe",
+        situation: "Demander à une IA de préparer la trame d'un séminaire d'équipe",
         explanation: "Une structure générique ne révèle rien.",
       },
       {
         level: "orange",
-        situation: "Synthétiser le compte rendu d'un comité de direction",
+        situation: "Faire synthétiser par une IA le compte rendu d'un comité de direction",
         explanation:
-          "Seulement dans l'outil autorisé, noms et chiffres sensibles retirés.",
+          "Seulement dans l'outil IA autorisé, noms et chiffres sensibles retirés.",
       },
       {
         level: "red",
@@ -78,7 +78,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         level: "red",
         situation:
-          "Coller la grille des salaires pour préparer les augmentations",
+          "Coller la grille des salaires dans une IA pour préparer les augmentations",
         explanation:
           "Données personnelles et secret d'entreprise à la fois.",
       },
@@ -86,9 +86,9 @@ export const CAREER_PATHS: CareerPath[] = [
     cases: [
       {
         situation:
-          "Un éditeur veut vous faire signer une IA « productivité » cette semaine.",
+          "Un vendeur vous pousse à signer cette semaine pour une IA type ChatGPT destinée à toute l'entreprise.",
         answer:
-          "Vous vérifiez d'abord l'usage réel, ce que dit le contrat sur vos données (réutilisation, entraînement, lieu d'hébergement) et qui sera responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée.",
+          "Vous ne signez pas sous la pression. Vous vérifiez d'abord à quoi elle servira vraiment, ce que le contrat dit de vos données (réutilisation, entraînement, hébergement), et qui sera responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée.",
       },
       {
         situation:
@@ -104,9 +104,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Une grille « oui / non / à clarifier » pour évaluer chaque nouvel outil IA. Elle prépare, vous décidez.",
-      "Un premier brouillon de charte IA à partir de vos propres règles, relu avant diffusion.",
-      "La liste des questions à poser à un éditeur avant d'acheter.",
+      "Demander à une IA une grille « oui / non / à clarifier » pour évaluer un nouvel outil. Vous validez et vous décidez.",
+      "Faire rédiger par une IA un premier brouillon de charte à partir de vos règles, puis le relire avant diffusion.",
+      "Demander à une IA la liste des questions à poser à un éditeur avant d'acheter.",
     ],
     quiz: [
       {
@@ -149,7 +149,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "≈ 8 min",
     focus: "Recrutement, paie, dossiers salariés",
     whyExposed:
-      "CV, notes d'entretien, paie, arrêts maladie : vous manipulez les données personnelles de toute l'entreprise, et certaines sont sensibles. Une IA grand public n'est pas un coffre-fort. Et dès qu'un outil trie ou note des personnes, c'est un humain qui garde la décision.",
+      "CV, notes d'entretien, paie, arrêts maladie : vous manipulez les données personnelles de toute l'entreprise, et certaines sont sensibles. Une IA grand public n'est pas un coffre-fort. Par ailleurs, dès qu'un outil trie ou note des personnes, c'est un humain qui garde la décision.",
     neverList: [
       "CV et lettres de candidature complets",
       "Arrêts maladie, visites médicales, situations de handicap",
@@ -161,30 +161,32 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Reformuler une offre d'emploi pour un ton clair et inclusif",
+        situation:
+          "Demander à une IA de reformuler une offre d'emploi sur un ton clair et inclusif",
         explanation: "Aucun candidat concerné. Vous relisez avant publication.",
       },
       {
         level: "green",
-        situation: "Préparer un guide d'entretien pour un poste",
+        situation: "Demander à une IA de préparer un guide d'entretien pour un poste",
         explanation: "Une trame de questions ne vise personne.",
       },
       {
         level: "orange",
-        situation: "Résumer les compétences d'un CV",
+        situation: "Faire résumer par une IA les compétences d'un CV",
         explanation:
           "Seulement dans l'outil RH autorisé, sans adresse, téléphone ni date de naissance.",
       },
       {
         level: "red",
-        situation: "Rédiger un courrier en citant le motif médical d'un arrêt",
+        situation:
+          "Demander à une IA de rédiger un courrier en citant le motif médical d'un arrêt",
         explanation:
           "Donnée de santé : jamais dans une IA grand public, même sans le nom.",
       },
       {
         level: "red",
         situation:
-          "Faire analyser la vidéo d'un entretien pour mesurer la motivation du candidat",
+          "Faire analyser par une IA la vidéo d'un entretien pour mesurer la motivation du candidat",
         explanation:
           "Interdit : on ne déduit pas les émotions d'une personne avec une IA au travail, recrutement compris.",
       },
@@ -210,9 +212,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Reformuler une offre d'emploi : ton clair, inclusif, sans aucun dossier candidat.",
-      "Construire la trame du parcours d'intégration d'un nouveau poste.",
-      "Transformer une note RH en FAQ simple pour les salariés, vérifiée avant diffusion.",
+      "Demander à une IA de reformuler une offre d'emploi : ton clair, inclusif, sans aucun dossier candidat.",
+      "Demander à une IA de construire la trame du parcours d'intégration d'un nouveau poste.",
+      "Faire transformer par une IA une note RH en FAQ simple, puis la vérifier avant diffusion.",
     ],
     quiz: [
       {
@@ -266,21 +268,22 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Trouver cinq angles de posts LinkedIn sur un sujet public",
+        situation:
+          "Demander à une IA cinq angles de posts LinkedIn sur un sujet public",
         explanation:
           "Rien de secret. Vous choisissez et adaptez le ton de la marque.",
       },
       {
         level: "green",
-        situation: "Reformuler une fiche produit déjà en ligne",
+        situation: "Demander à une IA de reformuler une fiche produit déjà en ligne",
         explanation:
           "Le texte est public. Vous vérifiez que les caractéristiques restent exactes.",
       },
       {
         level: "orange",
-        situation: "Personnaliser un mail de prospection",
+        situation: "Faire personnaliser par une IA un mail de prospection",
         explanation:
-          "Dans l'outil autorisé, avec le minimum : prénom et secteur, pas tout l'historique.",
+          "Dans l'outil IA autorisé, avec le minimum : prénom et secteur, pas tout l'historique.",
       },
       {
         level: "red",
@@ -292,7 +295,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         level: "red",
         situation:
-          "Générer une vidéo d'un vrai client qui recommande votre produit, sans son accord",
+          "Générer avec une IA une vidéo d'un vrai client qui recommande votre produit, sans son accord",
         explanation:
           "Image utilisée sans accord et faux témoignage trompeur : on ne le fait pas.",
       },
@@ -317,9 +320,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Cinq angles de posts LinkedIn, sans fichier client. Vous choisissez le ton de la marque.",
-      "Décliner un texte validé en version courte, longue et newsletter.",
-      "Préparer les réponses aux objections fréquentes d'un argumentaire, sans donnée client.",
+      "Avant de publier une image, un logo ou une pub générés par IA : vérifier les droits, ne pas copier une marque ou une personne réelle, et indiquer clairement si le contenu est généré.",
+      "Faire décliner par une IA un texte validé en version courte, longue et newsletter.",
+      "Demander à une IA les réponses aux objections fréquentes d'un argumentaire, sans donnée client.",
     ],
     quiz: [
       {
@@ -333,14 +336,15 @@ export const CAREER_PATHS: CareerPath[] = [
         why: "La personne doit savoir qu'elle échange avec une machine, au moment de l'échange.",
       },
       {
-        prompt: "L'IA propose d'écrire vingt avis clients.",
+        prompt:
+          "Sur LinkedIn ou Instagram, vous publiez une pub générée par IA qui montre une personne qui n'existe pas.",
         choices: [
-          "C'est possible s'ils sont réalistes",
-          "Non : de faux avis trompent les clients",
-          "C'est possible si on en publie peu",
+          "On publie sans rien dire : c'est juste un visuel",
+          "On ajoute une mention claire « générée par IA »",
+          "On publie si la personne a l'air réelle",
         ],
         correctIndex: 1,
-        why: "Un avis doit venir d'un vrai client. Un faux avis est une pratique commerciale trompeuse.",
+        why: "Quand un contenu généré peut passer pour réel, la transparence compte — surtout sur les réseaux.",
       },
       {
         prompt: "Un visuel généré ressemble au logo d'une marque connue.",
@@ -360,7 +364,7 @@ export const CAREER_PATHS: CareerPath[] = [
     duration: "≈ 8 min",
     focus: "Équipe, outils déclarés, relecture des livrables",
     whyExposed:
-      "Vous faites le lien entre les règles et le terrain. Votre équipe vous demande si un outil est autorisé, et ce qu'elle envoie aux clients passe souvent par vous. Votre rôle : aider à déclarer, relire, et montrer l'exemple.",
+      "Vous êtes l'intermédiaire entre les règles et le terrain. C'est souvent vous qu'on interroge : « On peut utiliser cette IA ? » Et ce que votre équipe envoie aux clients passe souvent par votre validation. Si un outil non autorisé ou un chiffre inventé sort, le risque est pour l'entreprise. Votre rôle : faire déclarer les usages, relire avant envoi, et montrer l'exemple.",
     neverList: [
       "Entretiens annuels et évaluations individuelles",
       "Santé, vie privée ou situation familiale d'un collaborateur",
@@ -371,24 +375,24 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Préparer l'ordre du jour d'une réunion d'équipe",
+        situation: "Demander à une IA de préparer l'ordre du jour d'une réunion d'équipe",
         explanation: "Rien de personnel ni de secret.",
       },
       {
         level: "green",
-        situation: "Reformuler une consigne pour la rendre plus claire",
+        situation: "Demander à une IA de reformuler une consigne pour la rendre plus claire",
         explanation:
           "Vous relisez pour vérifier que le sens n'a pas changé.",
       },
       {
         level: "orange",
-        situation: "Résumer les retours de l'équipe sur un projet",
-        explanation: "Dans l'outil autorisé, prénoms retirés.",
+        situation: "Faire résumer par une IA les retours de l'équipe sur un projet",
+        explanation: "Dans l'outil IA autorisé, prénoms retirés.",
       },
       {
         level: "red",
         situation:
-          "Coller les notes d'entretien annuel d'un collaborateur pour rédiger son évaluation",
+          "Coller dans une IA les notes d'entretien annuel d'un collaborateur pour rédiger son évaluation",
         explanation:
           "Données personnelles sur une personne précise : jamais dans une IA grand public.",
       },
@@ -405,7 +409,7 @@ export const CAREER_PATHS: CareerPath[] = [
         situation:
           "Un rapport visiblement écrit par une IA, avec des chiffres sans source, doit partir chez un client.",
         answer:
-          "Vous bloquez l'envoi. Chaque chiffre a une source et a été vérifié. Règle d'équipe : rien ne sort sans relecture.",
+          "Vous bloquez l'envoi. Chaque chiffre doit avoir une source et doit être vérifié. Règle d'équipe : rien ne sort sans relecture.",
       },
       {
         situation:
@@ -416,13 +420,13 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         situation: "Un nouvel arrivant commence lundi.",
         answer:
-          "Vous lui montrez la liste des outils autorisés et les réflexes de base avant son premier copier-coller.",
+          "Vous lui montrez la liste des outils autorisés et les réflexes de base avant son premier usage de l'IA.",
       },
     ],
     tips: [
-      "Une checklist « avant envoi client » : chiffres, noms, promesses, ton.",
-      "Un compte rendu de réunion d'équipe à partir de vos notes, sans sujet personnel, relu avant envoi.",
-      "La trame d'accueil d'un nouvel arrivant.",
+      "Demander à une IA de reformuler un point d'avancement pour un client : vous vérifiez chaque chiffre et chaque promesse avant envoi.",
+      "Faire rédiger par une IA un compte rendu à partir de vos notes, sans sujet personnel, puis le relire.",
+      "Demander à une IA la trame d'accueil d'un nouvel arrivant.",
     ],
     quiz: [
       {
@@ -473,31 +477,31 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Demander comment fonctionne une commande Git",
+        situation: "Demander à une IA comment fonctionne une commande Git",
         explanation: "Question générale, rien d'interne.",
       },
       {
         level: "green",
         situation:
-          "Expliquer un message d'erreur courant d'une bibliothèque publique",
+          "Demander à une IA d'expliquer un message d'erreur courant d'une bibliothèque publique",
         explanation: "Aucun code ni donnée de l'entreprise.",
       },
       {
         level: "orange",
-        situation: "Faire relire un extrait de code nettoyé",
+        situation: "Faire relire par une IA un extrait de code nettoyé",
         explanation:
           "Dans l'assistant de code autorisé, sans secret ni donnée réelle.",
       },
       {
         level: "red",
-        situation: "Coller un fichier .env pour déboguer une connexion",
+        situation: "Coller un fichier .env dans une IA pour déboguer une connexion",
         explanation: "Il contient des secrets : ils sortent de l'entreprise.",
       },
       {
         level: "red",
-        situation: "Coller des logs de production pour analyser un incident",
+        situation: "Coller des logs de production dans une IA pour analyser un incident",
         explanation:
-          "Ils contiennent des données clients : jamais dans un outil grand public.",
+          "Ils contiennent des données clients : jamais dans une IA grand public.",
       },
     ],
     cases: [
@@ -520,9 +524,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Expliquer un diff ou rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé.",
-      "Rédiger la documentation d'une fonction.",
-      "Traduire un message d'erreur technique en explication simple pour un utilisateur.",
+      "Demander à une IA d'expliquer un diff ou de rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé.",
+      "Demander à une IA de rédiger la documentation d'une fonction.",
+      "Demander à une IA de traduire un message d'erreur technique en explication simple pour un utilisateur.",
     ],
     quiz: [
       {
@@ -575,23 +579,23 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Reformuler une relance de facture générique",
+        situation: "Demander à une IA de reformuler une relance de facture générique",
         explanation: "Sans nom ni montant réel : vous complétez ensuite.",
       },
       {
         level: "green",
-        situation: "Expliquer une formule Excel",
+        situation: "Demander à une IA d'expliquer une formule Excel",
         explanation: "Aucune donnée de l'entreprise n'est nécessaire.",
       },
       {
         level: "orange",
-        situation: "Commenter un tableau de dépenses agrégé",
+        situation: "Faire commenter par une IA un tableau de dépenses agrégé",
         explanation:
-          "Dans l'outil autorisé, sans nom de fournisseur ni de salarié.",
+          "Dans l'outil IA autorisé, sans nom de fournisseur ni de salarié.",
       },
       {
         level: "red",
-        situation: "Coller le fichier de paie pour vérifier les cotisations",
+        situation: "Coller le fichier de paie dans une IA pour vérifier les cotisations",
         explanation:
           "Salaires, numéros de sécurité sociale, absences : jamais.",
       },
@@ -621,9 +625,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Reformuler une relance client, sans IBAN : les montants viennent de votre logiciel.",
-      "Rédiger le commentaire d'une analyse à partir de chiffres agrégés déjà validés.",
-      "Expliquer une formule ou une macro Excel.",
+      "Demander à une IA de reformuler une relance client, sans IBAN : les montants viennent de votre logiciel.",
+      "Demander à une IA de rédiger le commentaire d'une analyse à partir de chiffres agrégés déjà validés.",
+      "Demander à une IA d'expliquer une formule ou une macro Excel.",
     ],
     quiz: [
       {
@@ -676,23 +680,24 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         level: "green",
         situation:
-          "Rédiger la réponse type à une question fréquente déjà publiée",
+          "Demander à une IA de rédiger la réponse type à une question fréquente déjà publiée",
         explanation: "Le contenu est public. Vous vérifiez qu'il est à jour.",
       },
       {
         level: "green",
-        situation: "Corriger l'orthographe d'une réponse sans donnée client",
+        situation:
+          "Demander à une IA de corriger l'orthographe d'une réponse sans donnée client",
         explanation: "Rien de personnel. Vous relisez avant d'envoyer.",
       },
       {
         level: "orange",
-        situation: "Rédiger une réponse à partir d'un résumé du ticket",
-        explanation: "Dans l'outil autorisé, nom et téléphone retirés.",
+        situation: "Demander à une IA de rédiger une réponse à partir d'un résumé du ticket",
+        explanation: "Dans l'outil IA autorisé, nom et téléphone retirés.",
       },
       {
         level: "red",
         situation:
-          "Coller un ticket où le client parle de sa maladie pour expliquer un retard de paiement",
+          "Coller dans une IA un ticket où le client parle de sa maladie pour expliquer un retard de paiement",
         explanation:
           "Information de santé : jamais dans une IA grand public.",
       },
@@ -722,9 +727,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez ; l'IA ne décide pas du geste.",
-      "Mettre à jour la FAQ à partir des questions fréquentes, sans donnée client.",
-      "Résumer une procédure longue en cinq étapes pour un nouvel agent.",
+      "Demander à une IA trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez ; l'IA ne décide pas du geste.",
+      "Demander à une IA de mettre à jour la FAQ à partir des questions fréquentes, sans donnée client.",
+      "Demander à une IA de résumer une procédure longue en cinq étapes pour un nouvel agent.",
     ],
     quiz: [
       {
@@ -776,19 +781,21 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Créer un modèle de mail de confirmation de rendez-vous",
+        situation:
+          "Demander à une IA de créer un modèle de mail de confirmation de rendez-vous",
         explanation: "Un modèle sans nom, réutilisable.",
       },
       {
         level: "green",
-        situation: "Traduire une consigne de sécurité générale pour un visiteur",
+        situation:
+          "Demander à une IA de traduire une consigne de sécurité générale pour un visiteur",
         explanation:
           "Rien de personnel. Vous faites vérifier la traduction si la consigne est importante.",
       },
       {
         level: "orange",
-        situation: "Préparer un rappel client à partir de son message",
-        explanation: "Dans l'outil autorisé, avec seulement le motif.",
+        situation: "Demander à une IA de préparer un rappel client à partir de son message",
+        explanation: "Dans l'outil IA autorisé, avec seulement le motif.",
       },
       {
         level: "red",
@@ -800,7 +807,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         level: "red",
         situation:
-          "Envoyer le plan d'une pièce fabriquée à l'atelier pour l'optimiser",
+          "Envoyer à une IA le plan d'une pièce fabriquée à l'atelier pour l'optimiser",
         explanation: "Savoir-faire de l'entreprise : il ne sort pas.",
       },
     ],
@@ -824,9 +831,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Un modèle de mail de confirmation, créé une fois et réutilisé, sans coller le carnet d'adresses.",
-      "Traduire une consigne générale pour un collègue ou un visiteur.",
-      "Transformer des notes en procédure claire, sans secret de fabrication.",
+      "Demander à une IA un modèle de mail de confirmation, créé une fois et réutilisé, sans coller le carnet d'adresses.",
+      "Demander à une IA de traduire une consigne générale pour un collègue ou un visiteur.",
+      "Demander à une IA de transformer des notes en procédure claire, sans secret de fabrication.",
     ],
     quiz: [
       {
@@ -878,30 +885,31 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Rédiger un mail générique de rappel des échéances fiscales",
+        situation:
+          "Demander à une IA de rédiger un mail générique de rappel des échéances fiscales",
         explanation:
           "Sans nom ni montant. Vous vérifiez les dates sur la source officielle.",
       },
       {
         level: "green",
-        situation: "Reformuler la plaquette du cabinet",
+        situation: "Demander à une IA de reformuler la plaquette du cabinet",
         explanation: "Document public. Vous relisez avant publication.",
       },
       {
         level: "orange",
-        situation: "Résumer le mail d'un client",
-        explanation: "Dans l'outil autorisé du cabinet, nom retiré.",
+        situation: "Faire résumer par une IA le mail d'un client",
+        explanation: "Dans l'outil IA autorisé du cabinet, nom retiré.",
       },
       {
         level: "red",
-        situation: "Coller un bulletin de paie pour vérifier un calcul",
+        situation: "Coller un bulletin de paie dans une IA pour vérifier un calcul",
         explanation:
           "Salaire, numéro de sécurité sociale, absences : jamais.",
       },
       {
         level: "red",
         situation:
-          "Envoyer le FEC d'un client pour détecter des anomalies",
+          "Envoyer le FEC d'un client à une IA pour détecter des anomalies",
         explanation:
           "Toute la comptabilité du client, couverte par le secret professionnel.",
       },
@@ -927,9 +935,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Un modèle de mail de relance des pièces manquantes, créé une fois et réutilisé.",
-      "Vulgariser une nouveauté fiscale pour la newsletter clients, puis vérifier sur la source officielle.",
-      "Préparer une trame de checklist de clôture, relue par vous.",
+      "Demander à une IA un modèle de mail de relance des pièces manquantes, créé une fois et réutilisé.",
+      "Demander à une IA de vulgariser une nouveauté fiscale pour la newsletter, puis vérifier sur la source officielle.",
+      "Demander à une IA une trame de checklist de clôture, que vous relisez.",
     ],
     quiz: [
       {
@@ -983,20 +991,23 @@ export const CAREER_PATHS: CareerPath[] = [
     traffic: [
       {
         level: "green",
-        situation: "Reformuler une annonce déjà en ligne, sans donnée perso",
+        situation:
+          "Demander à une IA de reformuler une annonce déjà en ligne, sans donnée perso",
         explanation:
           "Le bien est public. Vous vérifiez surfaces, prix et mentions légales avant republication.",
       },
       {
         level: "green",
-        situation: "Préparer une checklist de visite type pour un bien neuf",
+        situation:
+          "Demander à une IA de préparer une checklist de visite type pour un bien neuf",
         explanation: "Une trame générique ne vise personne.",
       },
       {
         level: "orange",
-        situation: "Résumer le mail d'un prospect pour préparer un rappel",
+        situation:
+          "Faire résumer par une IA le mail d'un prospect pour préparer un rappel",
         explanation:
-          "Dans l'outil autorisé, avec le minimum : prénom et type de bien, pas tout le dossier.",
+          "Dans l'outil IA autorisé, avec le minimum : prénom et type de bien, pas tout le dossier.",
       },
       {
         level: "red",
@@ -1034,9 +1045,9 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Cinq angles d'annonce à partir d'éléments déjà publics, sans dossier client.",
-      "Une FAQ visite / diagnostics, relue avant diffusion.",
-      "Un modèle de mail de confirmation de rendez-vous, réutilisable sans carnet d'adresses.",
+      "Demander à une IA cinq angles d'annonce à partir d'éléments déjà publics, sans dossier client.",
+      "Demander à une IA une FAQ visite / diagnostics, que vous relisez avant diffusion.",
+      "Demander à une IA un modèle de mail de confirmation de rendez-vous, réutilisable sans carnet d'adresses.",
     ],
     quiz: [
       {
