@@ -55,7 +55,11 @@ export default function ConfidentialitePage() {
           <li>
             Données des salariés : traitées pour le compte de l&apos;entreprise cliente. C&apos;est
             elle qui décide de la formation, au titre de ses propres obligations, notamment
-            l&apos;article 4 de l&apos;AI Act.
+            l&apos;article 4 de l&apos;AI Act. Ce rôle de sous-traitant est détaillé dans l&apos;
+            <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
+              accord de sous-traitance (DPA)
+            </a>
+            .
           </li>
           <li>Factures et pièces comptables : obligation légale.</li>
           <li>

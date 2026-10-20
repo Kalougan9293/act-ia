@@ -145,7 +145,12 @@ export default function CguPage() {
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/confidentialite">
             politique de confidentialité
           </a>
-          .
+          . Lorsque FITOPS AI traite des données de collaborateurs pour le compte de
+          l&apos;entreprise, l&apos;
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
+            accord de sous-traitance (DPA)
+          </a>{" "}
+          s&apos;applique.
         </p>
       </section>
 

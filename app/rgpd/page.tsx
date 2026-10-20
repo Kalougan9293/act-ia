@@ -25,6 +25,10 @@ export default function RgpdPage() {
           >
             politique de confidentialité
           </Link>
+          . Le cadre de sous-traitance avec l&apos;entreprise cliente est décrit dans le{" "}
+          <Link href="/dpa" className="text-blue-600 hover:underline dark:text-blue-400">
+            DPA
+          </Link>
           .
         </p>
         <p>

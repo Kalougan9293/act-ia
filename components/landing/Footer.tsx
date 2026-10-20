@@ -6,6 +6,7 @@ const legal = [
   { label: "Confidentialité", href: "/confidentialite" },
   { label: "CGU", href: "/cgu" },
   { label: "CGV", href: "/cgv" },
+  { label: "DPA", href: "/dpa" },
   { label: "Cookies", href: "/cookies" },
 ];
 
