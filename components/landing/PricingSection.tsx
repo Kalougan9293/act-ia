@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
@@ -74,7 +75,16 @@ const plans: Plan[] = [
   },
 ];
 
-const addons = [
+const addons: {
+  name: string;
+  tag: string;
+  price: string;
+  detail: string;
+  featured: boolean;
+  description: string;
+  href?: string;
+  cta?: string;
+}[] = [
   {
     name: "Module métier sur mesure",
     tag: "Option la plus demandée",
@@ -99,6 +109,8 @@ const addons = [
     price: "Sur devis",
     detail: "",
     featured: false,
+    href: "/interventions",
+    cta: "Voir l'accompagnement",
     description:
       "Session avec vos équipes (visio ou présentiel) : prioriser les usages, gagner du temps sur le quotidien, cadrer ce qui peut être automatisé. Hors abonnement, sur devis.",
   },
@@ -259,9 +271,29 @@ export default function PricingSection() {
                     Demander un module sur mesure
                   </a>
                 ) : null}
+                {addon.href && addon.cta ? (
+                  <Link
+                    href={addon.href}
+                    className="mt-4 inline-flex items-center justify-center rounded-xl border border-blue-600 px-4 py-2.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40"
+                  >
+                    {addon.cta}
+                  </Link>
+                ) : null}
               </div>
             ))}
           </div>
+
+          <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-300">
+            Besoin d&apos;un accompagnement personnalisé ou d&apos;automatiser vos
+            processus ?{" "}
+            <Link
+              href="/interventions"
+              className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              Découvrir l&apos;accompagnement
+            </Link>
+            .
+          </p>
         </motion.div>
       </div>
     </section>

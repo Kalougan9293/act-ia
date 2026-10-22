@@ -63,6 +63,70 @@ p.text-center {
   hyphens: none;
 }
 
+@keyframes circuit-glow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes circuit-trace {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.circuit-trace-anim {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: circuit-trace 1.15s ease-out forwards;
+}
+
+.circuit-glow-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.circuit-glow-frame::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 220deg,
+    #38bdf8 280deg,
+    #2563eb 320deg,
+    #ffffff 350deg,
+    transparent 360deg
+  );
+  animation: circuit-glow-spin 2.8s linear infinite;
+  z-index: -1;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.circuit-glow-frame::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: inherit;
+  background: radial-gradient(
+    closest-side,
+    rgba(37, 99, 235, 0.45),
+    transparent 72%
+  );
+  z-index: -2;
+  pointer-events: none;
+}
+
 @keyframes border-orbit {
   from {
     transform: translate(-50%, -50%) rotate(0deg);

@@ -7,6 +7,7 @@ import ProblemSection from "@/components/landing/ProblemSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import DeploySection from "@/components/landing/DeploySection";
 import PricingSection from "@/components/landing/PricingSection";
+import GoFurtherSection from "@/components/landing/GoFurtherSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
 import { faqJsonLd } from "@/lib/landing/faq";
@@ -30,6 +31,7 @@ export default function Home() {
       <FeaturesSection />
       <DeploySection />
       <PricingSection />
+      <GoFurtherSection />
       <FAQSection />
       <Footer />
     </main>

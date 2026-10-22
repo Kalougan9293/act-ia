@@ -182,6 +182,14 @@ service cloud.firestore {
             && resource.data.status == "pending");
     }
 
+    // Leads du formulaire /interventions — écriture via Admin SDK uniquement
+    match /contactLeads/{leadId} {
+      allow read: if isSuperAdmin();
+      allow update: if isSuperAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]);
+      allow create, delete: if false;
+    }
+
     match /users/{userId} {
       allow create: if signedIn() && (
         (request.auth.uid == userId

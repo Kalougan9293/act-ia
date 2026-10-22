@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import GlobalCandidateSearch from "@/components/admin/GlobalCandidateSearch";
+import ContactLeadsPanel from "@/components/admin/ContactLeadsPanel";
 import { formatDate } from "@/lib/admin/format";
 import { openStructureInvoice } from "@/lib/admin/invoice";
 import { structureGraduates } from "@/lib/admin/stats";
@@ -642,6 +643,8 @@ export default function AdminDashboard() {
         )}
 
         <GlobalCandidateSearch users={users} />
+
+        <ContactLeadsPanel />
 
         <div className="mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
           <button
