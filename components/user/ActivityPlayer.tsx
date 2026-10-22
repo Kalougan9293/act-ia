@@ -1500,9 +1500,13 @@ function TrueFakeActivity({
             key={current.mediaSrc}
             className="aspect-video w-full bg-black"
             controls
+            controlsList="nodownload noplaybackrate noremoteplayback"
+            disablePictureInPicture
+            disableRemotePlayback
             playsInline
             preload="metadata"
             src={current.mediaSrc}
+            onContextMenu={(event) => event.preventDefault()}
           >
             Votre navigateur ne lit pas la vidéo.
           </video>
@@ -1673,9 +1677,13 @@ function ScenarioActivity({
               key={current.mediaSrc}
               className="aspect-video w-full"
               controls
+              controlsList="nodownload noplaybackrate noremoteplayback"
+              disablePictureInPicture
+              disableRemotePlayback
               playsInline
               preload="metadata"
               src={current.mediaSrc}
+              onContextMenu={(event) => event.preventDefault()}
             >
               Votre navigateur ne lit pas la vidéo.
             </video>
@@ -4484,15 +4492,13 @@ export default function ActivityPlayer({
   const briefing = activityBriefing(activity);
   if (activity.kind === "video") {
     return (
-      <>
-        <VideoScript
-          format={activity.format}
-          duration={duration}
-          script={activity.script}
-          src={activity.src}
-        />
-        <ReadyOnce onReady={onReady} />
-      </>
+      <VideoScript
+        format={activity.format}
+        duration={duration}
+        script={activity.script}
+        src={activity.src}
+        onComplete={onReady}
+      />
     );
   }
   if (activity.kind === "text" || activity.kind === "fiche") {

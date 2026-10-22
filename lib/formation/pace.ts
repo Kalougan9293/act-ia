@@ -42,10 +42,8 @@ export function mountDwellMs(
   // Fiche des 7 réflexes : lecture rapide, pas plus de 5 s.
   if (chapterId === "6.1") return 5_000;
   const total = parseDurationMs(duration) || 60_000;
-  // Vidéo placeholder : court délai visible (le script se déroule), pas toute la durée.
-  if (kind === "video") {
-    return Math.min(6_000, Math.max(3_000, Math.round(total * 0.12)));
-  }
+  // Vidéo : le déblocage vient de la fin de lecture, pas d'un dwell.
+  if (kind === "video") return 0;
   // Alertes / textes très courts : juste un souffle, pas un examen.
   if (total <= 45_000) return Math.min(3_000, Math.max(1_500, Math.round(total * 0.4)));
   if (kind === "text") {

@@ -44,3 +44,8 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# local tooling / exports
+.tools/
+.cursor/
+exports/

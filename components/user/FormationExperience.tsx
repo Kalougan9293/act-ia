@@ -1407,9 +1407,9 @@ function ChapterScreen({
   const ackRequired = needsAck(kind, chapter.id, chapter.duration);
   const mountMs = mountDwellMs(kind, chapter.duration, chapter.id);
   const holdMs = feedbackHoldMs(kind);
-  // Vidéo / texte / fiche : prêts dès l'ouverture (le dwell gère l'attente)
-  const instantActivity =
-    kind === "video" || kind === "text" || kind === "fiche";
+  // Texte / fiche : prêts dès l'ouverture (le dwell gère l'attente).
+  // Vidéo : Continuer seulement à la fin (onReady / onComplete).
+  const instantActivity = kind === "text" || kind === "fiche";
   const [activityComplete, setActivityComplete] = useState(done || instantActivity);
   const [mountReady, setMountReady] = useState(done || mountMs <= 0);
   const [holdReady, setHoldReady] = useState(done || holdMs <= 0);
@@ -1422,8 +1422,7 @@ function ChapterScreen({
   useEffect(() => {
     const nextMount = mountDwellMs(kind, chapter.duration, chapter.id);
     const nextHold = feedbackHoldMs(kind);
-    const nextInstant =
-      kind === "video" || kind === "text" || kind === "fiche";
+    const nextInstant = kind === "text" || kind === "fiche";
     setActivityComplete(done || nextInstant);
     setHoldReady(done || nextHold <= 0);
     setAcked(done || !needsAck(kind, chapter.id, chapter.duration));
