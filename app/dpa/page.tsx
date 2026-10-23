@@ -66,8 +66,9 @@ export default function DpaPage() {
           </li>
           <li>
             <strong>Durée</strong> : pendant le contrat d&apos;abonnement, puis conservation des
-            preuves de formation pendant 12 mois après la fin du contrat (sauf obligation légale
-            plus longue pour les factures).
+            preuves de formation pendant l&apos;année civile de réalisation de l&apos;action et
+            les trois années civiles suivantes (sauf obligation légale plus longue pour les
+            factures).
           </li>
           <li>
             <strong>Nature</strong> : collecte, enregistrement, conservation, consultation,
@@ -99,7 +100,7 @@ export default function DpaPage() {
           <li>Mettre en œuvre des mesures de sécurité raisonnables (authentification, contrôle d&apos;accès par structure, hébergement Firestore en UE).</li>
           <li>Aider le client, dans la mesure du possible, à répondre aux demandes des personnes concernées.</li>
           <li>Informer le client sans délai injustifié en cas de violation de données personnelles affectant ses données.</li>
-          <li>À la fin du contrat : supprimer les données du client dans les délais prévus, sauf conservation légale (factures) ou preuves encore dues au client (12 mois).</li>
+          <li>À la fin du contrat : supprimer les données du client dans les délais prévus, sauf conservation légale (factures) ou preuves encore dues au client (année de formation + 3 années civiles).</li>
           <li>Mettre à disposition les informations nécessaires pour démontrer le respect du présent accord, sur demande écrite raisonnable.</li>
         </ul>
       </section>

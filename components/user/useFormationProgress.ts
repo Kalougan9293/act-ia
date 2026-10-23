@@ -1,11 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { allChapterIds } from "@/lib/formation/curriculum";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { allChapterIds, findChapter } from "@/lib/formation/curriculum";
 import {
   computeFormationPercent,
   emptyProgress,
+  upsertConnectionSession,
+  upsertModuleResult,
+  type ConnectionSession,
   type FormationProgress,
+  type SatisfactionFeedback,
 } from "@/lib/formation/proof";
 import {
   loadIssuedCertificate,
@@ -38,11 +42,17 @@ function writeLocal(uid: string, progress: FormationProgress) {
   }
 }
 
+function nowIso() {
+  return new Date().toISOString();
+}
+
 export function useFormationProgress(uid: string | null) {
   const [progress, setProgress] = useState<FormationProgress>(emptyProgress());
   const [certificate, setCertificate] = useState<IssuedCertificate | null>(null);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
 
   useEffect(() => {
     if (!uid) {
@@ -90,6 +100,7 @@ export function useFormationProgress(uid: string | null) {
   const persist = useCallback(
     async (next: FormationProgress) => {
       setProgress(next);
+      progressRef.current = next;
       if (!uid) return;
       writeLocal(uid, next);
       setSaving(true);
@@ -106,43 +117,128 @@ export function useFormationProgress(uid: string | null) {
   );
 
   const markIntroDone = useCallback(() => {
-    void persist({ ...progress, introDone: true });
-  }, [persist, progress]);
+    const base = { ...progressRef.current, introDone: true };
+    void persist(
+      upsertModuleResult(base, {
+        id: "intro",
+        label: "Introduction",
+        kind: "intro",
+        completedAt: nowIso(),
+        score: null,
+      }),
+    );
+  }, [persist]);
 
   const markPositioning = useCallback(
     (score: number) => {
-      void persist({ ...progress, positioningDone: true, positioningScore: score });
+      const base = {
+        ...progressRef.current,
+        positioningDone: true,
+        positioningScore: score,
+      };
+      void persist(
+        upsertModuleResult(base, {
+          id: "positioning",
+          label: "Test de positionnement",
+          kind: "positioning",
+          completedAt: nowIso(),
+          score,
+        }),
+      );
     },
-    [persist, progress],
+    [persist],
   );
 
   const markChapterDone = useCallback(
     (chapterId: string) => {
-      if (progress.completedChapters.includes(chapterId)) return;
-      void persist({
-        ...progress,
-        completedChapters: [...progress.completedChapters, chapterId],
-      });
+      if (progressRef.current.completedChapters.includes(chapterId)) return;
+      const found = findChapter(chapterId);
+      const base = {
+        ...progressRef.current,
+        completedChapters: [...progressRef.current.completedChapters, chapterId],
+      };
+      void persist(
+        upsertModuleResult(base, {
+          id: chapterId,
+          label: found?.chapter.title ?? chapterId,
+          kind: "chapter",
+          completedAt: nowIso(),
+          score: null,
+        }),
+      );
     },
-    [persist, progress],
+    [persist],
   );
 
   const markCompanyDone = useCallback(() => {
-    void persist({ ...progress, companyModuleDone: true });
-  }, [persist, progress]);
+    const base = { ...progressRef.current, companyModuleDone: true };
+    void persist(
+      upsertModuleResult(base, {
+        id: "company",
+        label: "Module entreprise",
+        kind: "company",
+        completedAt: nowIso(),
+        score: null,
+      }),
+    );
+  }, [persist]);
 
   const markQuiz = useCallback(
     (score: number, passed: boolean, quizAttempts: number) => {
-      void persist({ ...progress, quizScore: score, quizPassed: passed, quizAttempts });
+      const base = {
+        ...progressRef.current,
+        quizScore: score,
+        quizPassed: passed,
+        quizAttempts,
+      };
+      void persist(
+        upsertModuleResult(base, {
+          id: "quiz-final",
+          label: "Évaluation finale (QCM)",
+          kind: "quiz",
+          completedAt: nowIso(),
+          score,
+        }),
+      );
     },
-    [persist, progress],
+    [persist],
   );
 
   const markCareer = useCallback(
     (careerPathId: string) => {
-      void persist({ ...progress, careerPathId });
+      const base = { ...progressRef.current, careerPathId };
+      void persist(
+        upsertModuleResult(base, {
+          id: `career:${careerPathId}`,
+          label: "Fiche métier",
+          kind: "career",
+          completedAt: nowIso(),
+          score: null,
+        }),
+      );
     },
-    [persist, progress],
+    [persist],
+  );
+
+  const recordSession = useCallback(
+    (session: ConnectionSession) => {
+      const next = upsertConnectionSession(progressRef.current, session);
+      void persist(next);
+    },
+    [persist],
+  );
+
+  const markSatisfaction = useCallback(
+    (input: Omit<SatisfactionFeedback, "submittedAt">) => {
+      const satisfaction: SatisfactionFeedback = {
+        rating: input.rating,
+        comment: input.comment.trim(),
+        complaint: input.complaint.trim(),
+        submittedAt: nowIso(),
+      };
+      void persist({ ...progressRef.current, satisfaction });
+    },
+    [persist],
   );
 
   const totalChapters = allChapterIds().length;
@@ -163,5 +259,7 @@ export function useFormationProgress(uid: string | null) {
     markCompanyDone,
     markQuiz,
     markCareer,
+    recordSession,
+    markSatisfaction,
   };
 }

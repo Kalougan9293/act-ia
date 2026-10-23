@@ -167,15 +167,18 @@ function fadeUp(delay: number) {
 
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const [started, setStarted] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   function toggle() {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
+      video.muted = false;
       void video.play();
       setPlaying(true);
+      setStarted(true);
     } else {
       video.pause();
       setPlaying(false);
@@ -192,12 +195,13 @@ function HeroVideo() {
         ref={videoRef}
         src="/media/interventions-hero.mp4"
         className="aspect-video h-auto w-full object-cover"
-        autoPlay
-        muted
         loop
         playsInline
         preload="metadata"
-        onPlay={() => setPlaying(true)}
+        onPlay={() => {
+          setPlaying(true);
+          setStarted(true);
+        }}
         onPause={() => setPlaying(false)}
         aria-label="Accompagnement IA en entreprise"
       />
@@ -205,11 +209,14 @@ function HeroVideo() {
         type="button"
         onClick={toggle}
         className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300 ${
-          playing && !hovered ? "opacity-0" : "opacity-100"
+          !started || !playing || hovered ? "opacity-100" : "opacity-0"
         }`}
         aria-label={playing ? "Mettre en pause" : "Lire la vidéo"}
       >
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg ring-4 ring-white/80 sm:h-16 sm:w-16">
+        {!started && (
+          <div className="absolute inset-0 bg-slate-950/25 pointer-events-none" />
+        )}
+        <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg ring-4 ring-white/80 sm:h-16 sm:w-16">
           {playing ? (
             <Pause className="h-7 w-7" fill="currentColor" strokeWidth={0} />
           ) : (
@@ -362,10 +369,6 @@ export default function InterventionsContent() {
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
             Une tâche à automatiser, une équipe à former ?
           </h2>
-          <p className="mt-3 text-center text-base text-slate-600 dark:text-slate-300">
-            Décrivez votre contexte. On vous dit ce qui est réaliste — et par où
-            commencer.
-          </p>
           <a
             href={mailtoHref}
             className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-blue-700"

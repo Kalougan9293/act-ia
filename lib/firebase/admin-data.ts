@@ -90,6 +90,31 @@ export function mapUser(id: string, data: Record<string, unknown>): PlatformUser
       data.quizScore === null || data.quizScore === undefined
         ? null
         : Number(data.quizScore),
+    positioningScore:
+      data.positioningScore === null || data.positioningScore === undefined
+        ? null
+        : Number(data.positioningScore),
+    satisfactionRating:
+      data.satisfactionRating === null || data.satisfactionRating === undefined
+        ? null
+        : Number(data.satisfactionRating),
+    satisfactionComment: data.satisfactionComment
+      ? String(data.satisfactionComment)
+      : null,
+    satisfactionComplaint: data.satisfactionComplaint
+      ? String(data.satisfactionComplaint)
+      : null,
+    satisfactionAt: data.satisfactionAt ? toIsoDate(data.satisfactionAt) : null,
+    attestationTimeSpentSec:
+      data.attestationTimeSpentSec === null ||
+      data.attestationTimeSpentSec === undefined
+        ? null
+        : Number(data.attestationTimeSpentSec),
+    attestationModulesCompleted:
+      data.attestationModulesCompleted === null ||
+      data.attestationModulesCompleted === undefined
+        ? null
+        : Number(data.attestationModulesCompleted),
     formationEnrolled: Boolean(data.formationEnrolled),
   };
 }

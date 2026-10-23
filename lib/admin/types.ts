@@ -182,6 +182,18 @@ export interface PlatformUser {
   certifiedAt: string | null;
   /** Score quiz final — null si le parcours n'est pas validé */
   quizScore: number | null;
+  /** Score du test de positionnement (entrée) */
+  positioningScore?: number | null;
+  /** Note satisfaction à chaud (1–5) */
+  satisfactionRating?: number | null;
+  satisfactionComment?: string | null;
+  /** Réclamation éventuelle (texte libre) */
+  satisfactionComplaint?: string | null;
+  satisfactionAt?: string | null;
+  /** Temps de connexion figé à l'émission de l'attestation (secondes) */
+  attestationTimeSpentSec?: number | null;
+  /** Modules validés figés à l'émission de l'attestation */
+  attestationModulesCompleted?: number | null;
   /**
    * RH inscrit à la formation via le lien structure (consomme un accès).
    * Les collaborateurs sont toujours considérés inscrits.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
+import { ASSISTANCE } from "@/lib/formation/assistance";
 
 export const metadata: Metadata = {
   title: "CGU — StartIA",
@@ -45,6 +46,37 @@ export default function CguPage() {
           L&apos;abonnement est souscrit par l&apos;entreprise cliente. L&apos;accès des salariés est
           réservé aux personnes invitées ou rattachées à cette structure. Chacun est responsable
           de la confidentialité de ses identifiants.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Assistance pédagogique et technique
+        </h2>
+        <p>
+          Pendant le parcours à distance, une assistance nommée est disponible :{" "}
+          <strong>{ASSISTANCE.referentPedagogique.role}</strong> et{" "}
+          <strong>{ASSISTANCE.referentTechnique.role}</strong> —{" "}
+          {ASSISTANCE.referentPedagogique.name}. Contact :{" "}
+          <a
+            className="text-blue-600 hover:underline dark:text-blue-400"
+            href={`mailto:${ASSISTANCE.email}`}
+          >
+            {ASSISTANCE.email}
+          </a>
+          {" · "}
+          <a
+            className="text-blue-600 hover:underline dark:text-blue-400"
+            href={ASSISTANCE.phoneHref}
+          >
+            {ASSISTANCE.phone}
+          </a>
+          . Délai de réponse : {ASSISTANCE.responseDelay}. Les modalités FOAD (activités, durée
+          moyenne, évaluations) figurent dans les{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgv">
+            CGV
+          </a>
+          .
         </p>
       </section>
 
@@ -104,8 +136,9 @@ export default function CguPage() {
         <p>
           La suppression du compte se demande par e-mail au même contact. L&apos;entreprise demande
           la fermeture de sa structure. Un salarié demande la suppression de son accès. Les preuves
-          de formation restent disponibles pour l&apos;employeur pendant douze mois après la fin du
-          contrat, et les factures pendant dix ans.
+          de formation restent disponibles pour l&apos;employeur pendant l&apos;année civile de
+          réalisation de l&apos;action et les trois années civiles suivantes, et les factures
+          pendant dix ans.
         </p>
       </section>
 

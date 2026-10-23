@@ -52,27 +52,7 @@ export default function DemoApp() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm dark:border-blue-900 dark:bg-slate-900 dark:text-slate-200 sm:px-5">
-          <p className="font-semibold text-slate-900 dark:text-white">
-            Démo — ce que vous montrez à un prospect
-          </p>
-          <p className="mt-1 leading-relaxed">
-            {view === "rh" ? (
-              <>
-                Côté RH : suivez qui a terminé, invitez des sièges, éditez le module entreprise,
-                puis exportez le dossier de preuves (ZIP / JSON) pour documenter votre démarche
-                Article 4. Besoin d&apos;un cas propre à votre métier ? On rédige un module sur
-                mesure (690&nbsp;€) intégré en quelques jours — vos règles, vos usages.
-              </>
-            ) : (
-              <>
-                Côté collaborateur : parcours court (~1 h), quiz, attestation nominative de suivi.
-                Ce n&apos;est pas un diplôme — c&apos;est la preuve que la personne a suivi.
-              </>
-            )}
-          </p>
-        </div>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {view === "rh" ? <HrView demo initialEmployees={employees.slice(0, 4)} /> : <UserView />}
       </main>
     </div>

@@ -16,8 +16,10 @@ export const FORMATION_PROMISE =
   "Des réflexes concrets pour utiliser l'IA sans vous faire piéger ni mettre l'entreprise en danger — AI Act (art. 4) et bases du RGPD —, avec une attestation de suivi à la fin.";
 
 /** Durée pédagogique du socle (examen compris), reprise partout y compris sur l'attestation. */
-export const SOCLE_DURATION_LABEL = "1 h 00";
-export const FULL_PATH_DURATION_LABEL = "1 h 00";
+export const SOCLE_DURATION_LABEL = "1 h 15";
+export const FULL_PATH_DURATION_LABEL = "1 h 15";
+/** Equivalent décimal pour volumes d'heures (rapports RH). */
+export const SOCLE_DURATION_HOURS = 1.25;
 
 /** Intitulé officiel du parcours, aligné attestation PDF / aperçu. */
 export const ATTESTATION_COURSE_TITLE =

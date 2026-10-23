@@ -275,6 +275,11 @@ export async function acceptInvite(params: {
   return { role: invite.role };
 }
 
+export async function deleteInviteByToken(token: string): Promise<void> {
+  const db = requireDb();
+  await deleteDoc(doc(db, "invites", token));
+}
+
 export async function deleteInvitesForStructure(structureId: string): Promise<void> {
   const db = requireDb();
   const snap = await getDocs(

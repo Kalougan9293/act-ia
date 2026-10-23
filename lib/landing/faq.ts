@@ -42,7 +42,7 @@ export const faqs = [
   {
     question: "Combien de temps dure la formation ?",
     answer:
-      "Le socle tient 1 h 00, examen compris, en une fois ou en plusieurs sessions. Accessible sur téléphone, tablette ou ordinateur, sans rien installer. Des fiches métiers courtes s'ajoutent ensuite en bonus.",
+      "Le socle tient 1 h 15, examen compris, en une fois ou en plusieurs sessions. Accessible sur téléphone, tablette ou ordinateur, sans rien installer. Des fiches métiers courtes s'ajoutent ensuite en bonus.",
   },
   {
     question: "StartIA est-il un diplôme ou une certification ?",
@@ -52,7 +52,7 @@ export const faqs = [
   {
     question: "Que reçoit le DPO ou la direction ?",
     answer:
-      "Les attestations individuelles, l'avancement en temps réel, le suivi des parcours, et un rapport d'engagement quand le suivi est à jour. Tout est exportable en ZIP et JSON pour vos audits.",
+      "Les attestations individuelles, l'avancement en temps réel, les relevés de connexion (dates, temps passé, résultats par module), et un rapport d'engagement quand le suivi est à jour. Tout est exportable en ZIP et JSON pour vos audits.",
   },
   {
     question: "Comment voir qui n'a pas terminé ?",
@@ -82,7 +82,12 @@ export const faqs = [
   {
     question: "Un OPCO peut-il financer la formation ?",
     answer:
-      "Oui, une prise en charge est possible via un organisme de formation partenaire Qualiopi, selon votre éligibilité. StartIA peut s'inscrire dans ce montage pour alléger le reste à charge.",
+      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. La démarche Qualiopi de StartIA est en cours : aucune certification n'est revendiquée tant qu'elle n'est pas obtenue. Le détail figure dans la fiche programme.",
+  },
+  {
+    question: "Où trouver la fiche programme de la formation ?",
+    answer:
+      "La fiche programme (objectifs évaluables, public, prérequis, durée, méthodes, évaluation, accessibilité, tarif, déroulé et financements) est disponible sur la page /programme.",
   },
   {
     question: "Peut-on ajouter un module propre à notre métier ?",
@@ -95,6 +100,11 @@ export const faqs = [
       "Le module sur mesure est du contenu dans la plateforme : vos équipes le suivent en autonomie. L'atelier usages & automatisation est un accompagnement (visio ou présentiel) pour prioriser les usages et gagner du temps au quotidien. Les deux sont hors abonnement ; l'atelier est sur devis.",
   },
 
+  {
+    question: "Qui assure l'assistance pendant la formation ?",
+    answer:
+      "Jonathan Seroussi est le référent pédagogique et le référent technique. Contact : contact@lockin-web.online ou 06.62.28.86.56. Réponse sous 48 heures ouvrées. Le parcours à distance dure 1 h 15 ; l'évaluation finale est un QCM (seuil 80 %). Le détail figure dans les CGV.",
+  },
   {
     question: "Où sont hébergées les données ?",
     answer:

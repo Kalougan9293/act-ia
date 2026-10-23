@@ -53,6 +53,8 @@ function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
       certificateId: u.certificateId,
       certifiedAt: u.certifiedAt,
       quizScore: u.quizScore,
+      timeSpentSec: u.attestationTimeSpentSec ?? null,
+      modulesCompleted: u.attestationModulesCompleted ?? null,
       companyName,
     }));
 }

@@ -3,7 +3,11 @@ import {
   type CompanyModuleContent,
 } from "@/lib/admin/types";
 import type { Employee } from "@/components/demo/data";
-import { formatProofDate } from "@/lib/formation/proof";
+import {
+  formatDurationSec,
+  formatProofDate,
+  type FormationProgress,
+} from "@/lib/formation/proof";
 
 const CRC_TABLE = (() => {
   const table = new Uint32Array(256);
@@ -331,15 +335,73 @@ function attestationRows(employees: Employee[]) {
   }));
 }
 
-export function downloadProofZip(companyName: string, employees: Employee[], module: CompanyModuleContent) {
+function learnerProofRows(
+  employees: Employee[],
+  progressByUserId?: Map<string, FormationProgress>,
+) {
+  return employees.map((employee) => {
+    const progress = progressByUserId?.get(employee.id);
+    const sessions = (progress?.sessions ?? []).map((session) => {
+      const start = formatProofDate(session.startedAt);
+      const end = formatProofDate(session.endedAt);
+      return {
+        debut: `${start.date} ${start.time}`,
+        fin: `${end.date} ${end.time}`,
+        debutIso: session.startedAt,
+        finIso: session.endedAt,
+        dureeSec: session.durationSec,
+        duree: formatDurationSec(session.durationSec),
+      };
+    });
+    const modules = (progress?.moduleResults ?? []).map((row) => {
+      const when = formatProofDate(row.completedAt);
+      return {
+        moduleId: row.id,
+        module: row.label,
+        type: row.kind,
+        termineLe: `${when.date} ${when.time}`,
+        termineLeIso: row.completedAt,
+        score: row.score,
+        resultat:
+          row.score == null
+            ? "Validé"
+            : row.kind === "quiz"
+              ? row.score >= 80
+                ? `Réussi (${row.score} %)`
+                : `Échoué (${row.score} %)`
+              : `${row.score} %`,
+      };
+    });
+    const totalSec = progress?.totalTimeSpentSec ?? 0;
+    return {
+      apprenant: employee.name,
+      email: employee.email,
+      fonction: employee.role,
+      avancementPercent: employee.percent,
+      attestation: employee.certificateId ?? null,
+      tempsConnexionSec: totalSec,
+      tempsConnexion: formatDurationSec(totalSec),
+      sessions,
+      resultatsModules: modules,
+    };
+  });
+}
+
+export function downloadProofZip(
+  companyName: string,
+  employees: Employee[],
+  module: CompanyModuleContent,
+  progressByUserId?: Map<string, FormationProgress>,
+) {
   const exportedAt = new Date().toISOString();
   const attestations = attestationRows(employees);
+  const releves = learnerProofRows(employees, progressByUserId);
   const dossier = {
     entreprise: companyName,
     exporteLe: exportedAt,
     mention:
       "Dossier d'aide à la documentation. Il ne constitue pas un conseil juridique et ne garantit pas à lui seul la conformité.",
-    dureePedagogique: "1 h 00",
+    dureePedagogique: "1 h 15",
     moduleEntreprise: {
       outils: module.tools,
       charte: module.charter,
@@ -351,6 +413,7 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
       statut: AI_USE_CASE_STATUS_LABELS[row.status],
     })),
     attestations,
+    relevesConnexion: releves,
     historique: module.revisions,
   };
 
@@ -359,7 +422,7 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
     companyName,
     `Export : ${exportedAt}`,
     "Aide a la documentation. Ne constitue pas un conseil juridique.",
-    "Duree pedagogique prevue : 1 h 00",
+    "Duree pedagogique prevue : 1 h 15",
     "",
     "Attestations de suivi",
     ...attestations.map(
@@ -367,6 +430,21 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
         `${row.nom} — ${row.attestation ?? "sans attestation"} — ${row.emisLe ?? "—"} — score ${row.scoreQcm ?? "—"}`,
     ),
     "",
+    "Releves de connexion par apprenant (FOAD)",
+    ...releves.flatMap((row) => [
+      `${row.apprenant} (${row.email}) — temps cumule ${row.tempsConnexion} — avancement ${row.avancementPercent} %`,
+      ...(row.sessions.length
+        ? row.sessions.map(
+            (session) =>
+              `  Session ${session.debut} -> ${session.fin} (${session.duree})`,
+          )
+        : ["  Aucune session enregistree."]),
+      ...row.resultatsModules.map(
+        (mod) =>
+          `  Module ${mod.module} — ${mod.termineLe} — ${mod.resultat}`,
+      ),
+      "",
+    ]),
     "Registre des usages IA",
     ...(module.useCases.length
       ? module.useCases.map(
@@ -386,6 +464,24 @@ export function downloadProofZip(companyName: string, employees: Employee[], mod
     { name: "dossier.json", data: encoder.encode(JSON.stringify(dossier, null, 2)) },
     { name: "registre.json", data: encoder.encode(JSON.stringify(dossier.registre, null, 2)) },
     { name: "attestations.json", data: encoder.encode(JSON.stringify(attestations, null, 2)) },
+    {
+      name: "releves-connexion.json",
+      data: encoder.encode(JSON.stringify(releves, null, 2)),
+    },
+    {
+      name: "resultats-modules.json",
+      data: encoder.encode(
+        JSON.stringify(
+          releves.map((row) => ({
+            apprenant: row.apprenant,
+            email: row.email,
+            resultatsModules: row.resultatsModules,
+          })),
+          null,
+          2,
+        ),
+      ),
+    },
     { name: "historique.json", data: encoder.encode(JSON.stringify(module.revisions, null, 2)) },
     { name: "dossier.pdf", data: buildSimplePdf(pdfLines) },
   ]);

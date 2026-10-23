@@ -16,7 +16,6 @@ export default function Navbar() {
   const links = [
     { label: "Accompagnement", href: "/interventions" },
     { label: "Tarifs", href: onHome ? "#pricing" : "/#pricing" },
-    { label: "Démo", href: "/demo" },
     {
       label: "Contact",
       href: "mailto:contact@lockin-web.online?subject=StartIA%20-%20contact",

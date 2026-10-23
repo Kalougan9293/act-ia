@@ -41,7 +41,7 @@ export default function AiActPage() {
           Ce que StartIA fournit
         </h2>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Un parcours de sensibilisation (~1 h) adapté aux usages au travail</li>
+          <li>Un parcours de sensibilisation (1 h 15) adapté aux usages au travail</li>
           <li>Des attestations nominatives de suivi (qui, quand, résultat)</li>
           <li>Un tableau de bord RH et un export de preuves (ZIP / JSON)</li>
           <li>Des fiches métiers et un module entreprise (charte, outils, registre)</li>

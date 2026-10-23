@@ -19,12 +19,14 @@ import {
 import ActivityPlayer from "@/components/user/ActivityPlayer";
 import CareerScreen from "@/components/user/CareerScreen";
 import LexiconBar from "@/components/user/LexiconTip";
+import { useConnectionLog } from "@/components/user/useConnectionLog";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
 import type { IssuedCertificate } from "@/lib/firebase/formation-progress";
 import { formatProofDate } from "@/lib/formation/proof";
 import { CAREER_PATHS } from "@/lib/formation/careers";
+import { ASSISTANCE } from "@/lib/formation/assistance";
 import {
   BLOCKS,
   FORMATION_PROMISE,
@@ -65,6 +67,7 @@ type Screen =
   | { kind: "chapter"; chapterId: string }
   | { kind: "company" }
   | { kind: "quiz" }
+  | { kind: "satisfaction" }
   | { kind: "career" };
 
 type ShuffledQuestion = {
@@ -119,7 +122,11 @@ export default function FormationExperience({
     markCompanyDone,
     markQuiz,
     markCareer,
+    recordSession,
+    markSatisfaction,
   } = useFormationProgress(uid);
+
+  useConnectionLog(ready && Boolean(uid), recordSession);
 
   const [screen, setScreen] = useState<Screen | null>(null);
   const [positioningRound] = useState(() =>
@@ -216,6 +223,8 @@ export default function FormationExperience({
         onOpenCompany={() => setScreen({ kind: "company" })}
         onOpenQuiz={() => openFinalQuiz("intro")}
         onOpenCareer={() => setScreen({ kind: "career" })}
+        needsSatisfaction={progress.quizPassed && !progress.satisfaction}
+        onOpenSatisfaction={() => setScreen({ kind: "satisfaction" })}
       />,
     );
   }
@@ -280,6 +289,7 @@ export default function FormationExperience({
         onOpenCompany={() => setScreen({ kind: "company" })}
         onOpenQuiz={() => openFinalQuiz("hub")}
         onOpenCareer={() => setScreen({ kind: "career" })}
+        onOpenSatisfaction={() => setScreen({ kind: "satisfaction" })}
       />,
     );
   }
@@ -385,11 +395,49 @@ export default function FormationExperience({
           setQuizBriefed(false);
           setLastScore(null);
         }}
-        onContinueCareer={() => setScreen({ kind: "career" })}
+        onContinueCareer={() => {
+          const passed =
+            progress.quizPassed ||
+            (lastScore != null && lastScore >= QUIZ_PASS_PERCENT);
+          if (passed && !progress.satisfaction) {
+            setScreen({ kind: "satisfaction" });
+            return;
+          }
+          setScreen({ kind: "career" });
+        }}
         continueCareerLabel="Bonus : l'IA dans mon métier"
         continueCareerHint="Bravo ! Vous savez utiliser l'IA sans vous faire piéger. Attestation Art. 4 disponible. Les bonus restent facultatifs."
-        onOpenCompany={() => setScreen({ kind: "company" })}
-        onFinish={() => setScreen({ kind: quizReturn })}
+        onOpenCompany={() => {
+          const passed =
+            progress.quizPassed ||
+            (lastScore != null && lastScore >= QUIZ_PASS_PERCENT);
+          if (passed && !progress.satisfaction) {
+            setScreen({ kind: "satisfaction" });
+            return;
+          }
+          setScreen({ kind: "company" });
+        }}
+        onFinish={() => {
+          const passed =
+            progress.quizPassed ||
+            (lastScore != null && lastScore >= QUIZ_PASS_PERCENT);
+          if (passed && !progress.satisfaction) {
+            setScreen({ kind: "satisfaction" });
+            return;
+          }
+          setScreen({ kind: quizReturn });
+        }}
+      />,
+    );
+  }
+
+  if (active.kind === "satisfaction") {
+    return withDesign(
+      <SatisfactionScreen
+        onSubmit={(payload) => {
+          markSatisfaction(payload);
+          setScreen({ kind: "intro" });
+        }}
       />,
     );
   }
@@ -543,6 +591,8 @@ function IntroScreen({
   onOpenCompany,
   onOpenQuiz,
   onOpenCareer,
+  needsSatisfaction,
+  onOpenSatisfaction,
 }: {
   firstName: string;
   fullName: string;
@@ -561,6 +611,8 @@ function IntroScreen({
   onOpenCompany: () => void;
   onOpenQuiz: () => void;
   onOpenCareer: () => void;
+  needsSatisfaction: boolean;
+  onOpenSatisfaction: () => void;
 }) {
   const [deniedId, setDeniedId] = useState<string | null>(null);
   const chaptersDone = BLOCKS.every((block) =>
@@ -621,6 +673,25 @@ function IntroScreen({
           Parcours pour <span className="font-semibold text-slate-700 dark:text-slate-200">{companyName}</span>
         </p>
       </div>
+
+      {needsSatisfaction && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-800 dark:bg-amber-950/30">
+          <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
+            Questionnaire de satisfaction
+          </p>
+          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">
+            Donnez votre avis à chaud — et une réclamation si besoin.
+          </p>
+          <button
+            type="button"
+            onClick={onOpenSatisfaction}
+            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+          >
+            Répondre
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {certificate && (
         <LearnerAttestation
@@ -811,12 +882,135 @@ function IntroScreen({
             Compatible téléphone
           </span>
         </p>
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+          <p className="font-semibold text-slate-800 dark:text-slate-100">
+            Assistance pendant le parcours
+          </p>
+          <p className="mt-1">
+            {ASSISTANCE.referentPedagogique.role} et {ASSISTANCE.referentTechnique.role} :{" "}
+            {ASSISTANCE.referentPedagogique.name}. Réponse {ASSISTANCE.responseDelay}.
+          </p>
+          <p className="mt-1">
+            <a
+              href={`mailto:${ASSISTANCE.email}`}
+              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+            >
+              {ASSISTANCE.email}
+            </a>
+            {" · "}
+            <a
+              href={ASSISTANCE.phoneHref}
+              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+            >
+              {ASSISTANCE.phone}
+            </a>
+          </p>
+        </div>
       </div>
       {careerPathId && (
         <p className="text-center text-sm text-slate-600 dark:text-slate-300">
           On peut évidemment aller très loin en IA, n&apos;hésitez pas à vous renseigner.
         </p>
       )}
+    </div>
+  );
+}
+
+function SatisfactionScreen({
+  onSubmit,
+}: {
+  onSubmit: (payload: {
+    rating: number;
+    comment: string;
+    complaint: string;
+  }) => void;
+}) {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [complaint, setComplaint] = useState("");
+
+  return (
+    <div className="mx-auto max-w-lg space-y-6 text-center">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          Votre avis à chaud
+        </h1>
+        <p className="text-sm text-slate-500">
+          Merci d&apos;évaluer le parcours. Vous pouvez aussi signaler une
+          réclamation — réponse {ASSISTANCE.responseDelay}.
+        </p>
+      </div>
+
+      <div className="flex justify-center gap-2">
+        {[1, 2, 3, 4, 5].map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setRating(value)}
+            className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition ${
+              rating >= value
+                ? "bg-blue-600 text-white"
+                : "border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300"
+            }`}
+            aria-label={`${value} sur 5`}
+          >
+            {value}
+          </button>
+        ))}
+      </div>
+
+      <label className="block space-y-1 text-left">
+        <span className="text-xs font-medium text-slate-500">
+          Commentaire (optionnel)
+        </span>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          rows={3}
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950"
+          placeholder="Ce qui vous a aidé, ce qui manque…"
+        />
+      </label>
+
+      <label className="block space-y-1 text-left">
+        <span className="text-xs font-medium text-slate-500">
+          Réclamation (optionnel)
+        </span>
+        <textarea
+          value={complaint}
+          onChange={(e) => setComplaint(e.target.value)}
+          rows={3}
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950"
+          placeholder="Décrivez le problème rencontré…"
+        />
+      </label>
+
+      <p className="text-xs text-slate-400">
+        Canal réclamations :{" "}
+        <a
+          href={`mailto:${ASSISTANCE.email}?subject=${encodeURIComponent("Réclamation formation StartIA")}`}
+          className="text-blue-600 hover:underline dark:text-blue-400"
+        >
+          {ASSISTANCE.email}
+        </a>
+        {" · "}
+        <a
+          href={ASSISTANCE.phoneHref}
+          className="text-blue-600 hover:underline dark:text-blue-400"
+        >
+          {ASSISTANCE.phone}
+        </a>
+      </p>
+
+      <button
+        type="button"
+        disabled={rating < 1}
+        onClick={() => onSubmit({ rating, comment, complaint })}
+        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
+      >
+        Envoyer
+        <ArrowRight className="h-4 w-4" />
+      </button>
     </div>
   );
 }
@@ -857,6 +1051,8 @@ function LearnerAttestation({
       issuedAt: certificate.issuedAt,
       dateLabel: date,
       timeLabel: time,
+      timeSpentSec: certificate.timeSpentSec,
+      modulesCompleted: certificate.modulesCompleted,
     });
   }
 
@@ -905,7 +1101,11 @@ function LearnerAttestation({
             companyName,
           }}
           companyName={companyName}
-          proof={proof}
+          proof={{
+            ...proof,
+            timeSpentSec: certificate.timeSpentSec,
+            modulesCompleted: certificate.modulesCompleted,
+          }}
           onClose={() => setOpen(false)}
         />
       )}
@@ -926,6 +1126,7 @@ function HubScreen({
   onOpenCompany,
   onOpenQuiz,
   onOpenCareer,
+  onOpenSatisfaction,
 }: {
   firstName: string;
   fullName: string;
@@ -939,6 +1140,7 @@ function HubScreen({
   onOpenCompany: () => void;
   onOpenQuiz: () => void;
   onOpenCareer: () => void;
+  onOpenSatisfaction: () => void;
 }) {
   const blocksReady = doneChapters >= totalChapters;
 
@@ -958,6 +1160,26 @@ function HubScreen({
           />
         </div>
       </div>
+
+      {progress.quizPassed && !progress.satisfaction && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-800 dark:bg-amber-950/30">
+          <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
+            Questionnaire de satisfaction
+          </p>
+          <p className="mt-1 text-xs text-amber-900/80 dark:text-amber-200/80">
+            Avant de poursuivre, merci de donner votre avis à chaud (et une
+            réclamation si besoin).
+          </p>
+          <button
+            type="button"
+            onClick={onOpenSatisfaction}
+            className="mt-3 inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+          >
+            Répondre
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {certificate && (
         <LearnerAttestation

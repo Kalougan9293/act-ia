@@ -3,17 +3,19 @@ import {
   certificateFingerprint,
   createCertificateId,
   CURRICULUM_LABEL,
+  formatDurationSec,
   formatProofDate,
   formatProofDateUtc,
 } from "@/lib/formation/proof";
 import {
   ATTESTATION_COURSE_TITLE,
+  SOCLE_DURATION_HOURS,
   SOCLE_DURATION_LABEL,
 } from "@/lib/formation/curriculum";
 import { buildSimplePdf, downloadBytes, slug } from "@/lib/export/proof-zip";
 
 /** Durée pédagogique du socle (heures), reprise sur l'attestation / registre. */
-export const TRAINING_HOURS_EACH = 1;
+export const TRAINING_HOURS_EACH = SOCLE_DURATION_HOURS;
 
 export type LearnerAttestationInput = {
   fullName: string;
@@ -26,6 +28,10 @@ export type LearnerAttestationInput = {
   dateLabel: string;
   timeLabel: string;
   specimen?: boolean;
+  /** Temps de connexion mesuré (secondes) — figé à l'émission. */
+  timeSpentSec?: number | null;
+  /** Nombre de modules / étapes validés. */
+  modulesCompleted?: number | null;
 };
 
 export function registryIdForCompany(companyName: string) {
@@ -75,6 +81,12 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
     "",
     "03 — Validation",
     `Durée pédagogique prévue : ${SOCLE_DURATION_LABEL}`,
+    ...(input.timeSpentSec != null && input.timeSpentSec > 0
+      ? [`Temps de connexion mesuré : ${formatDurationSec(input.timeSpentSec)}`]
+      : []),
+    ...(input.modulesCompleted != null && input.modulesCompleted > 0
+      ? [`Modules / étapes validés : ${input.modulesCompleted}`]
+      : []),
     "Parcours complété : 100 %",
     `Évaluation finale : ${input.quizScore} / 100`,
     "Seuil de réussite : 80 / 100",

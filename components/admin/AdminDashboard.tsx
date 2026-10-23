@@ -9,18 +9,26 @@ import {
   Archive,
   Award,
   Building2,
+  Download,
   GraduationCap,
   FileText,
   Pencil,
   Plus,
   RotateCcw,
+  Search,
   Trash2,
   Users,
   X,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
-import GlobalCandidateSearch from "@/components/admin/GlobalCandidateSearch";
-import ContactLeadsPanel from "@/components/admin/ContactLeadsPanel";
+import AdminCertificatePreview from "@/components/admin/AdminCertificatePreview";
+import {
+  attestationsCsv,
+  downloadAdminReportZip,
+  downloadCsv,
+  structuresCsv,
+  usersCsv,
+} from "@/lib/admin/export-csv";
 import { formatDate } from "@/lib/admin/format";
 import { openStructureInvoice } from "@/lib/admin/invoice";
 import { structureGraduates } from "@/lib/admin/stats";
@@ -46,6 +54,7 @@ import { getFirebaseDb } from "@/lib/firebase/client";
 import { syncStructureInviteSeats } from "@/lib/firebase/seats";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import {
+  deleteInviteByToken,
   deleteInvitesForStructure,
   inviteToPlatformUser,
   listPendingInvites,
@@ -209,12 +218,26 @@ export default function AdminDashboard() {
   const [modalMode, setModalMode] = useState<ModalMode>("create");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<StructureFormValues>(emptyForm());
-  const [view, setView] = useState<"active" | "archived" | "users">("active");
+  const [view, setView] = useState<"active" | "archived" | "users" | "attestations">(
+    "active",
+  );
   const [graduatesStructureId, setGraduatesStructureId] = useState<string | null>(null);
+  const [previewCertificateUser, setPreviewCertificateUser] =
+    useState<PlatformUser | null>(null);
+  const [structureQuery, setStructureQuery] = useState("");
+  const [userQuery, setUserQuery] = useState("");
+  const [attestationQuery, setAttestationQuery] = useState("");
+  const [attestationPage, setAttestationPage] = useState(0);
   const [userSort, setUserSort] = useState<{
-    key: "name" | "company" | "progress" | "lastLogin";
+    key: "name" | "company" | "progress" | "satisfaction" | "lastLogin";
     dir: "asc" | "desc";
   }>({ key: "name", dir: "asc" });
+  const [attestationSort, setAttestationSort] = useState<{
+    key: "name" | "email" | "company" | "certificate" | "certifiedAt";
+    dir: "asc" | "desc";
+  }>({ key: "certifiedAt", dir: "desc" });
+
+  const ATTESTATIONS_PAGE_SIZE = 20;
 
   useEffect(() => {
     let cancelled = false;
@@ -311,7 +334,19 @@ export default function AdminDashboard() {
 
   const filtered = useMemo(() => {
     const source = view === "archived" ? archivedStructures : activeStructures;
-    return [...source].sort((a, b) => {
+    const q = structureQuery.trim().toLowerCase();
+    const list = q
+      ? source.filter((s) => {
+          const email = structureEmail(s, users).toLowerCase();
+          return (
+            s.name.toLowerCase().includes(q) ||
+            email.includes(q) ||
+            s.billing.billingEmail.toLowerCase().includes(q) ||
+            s.billing.siret.toLowerCase().includes(q)
+          );
+        })
+      : source;
+    return [...list].sort((a, b) => {
       let result = 0;
       if (sort.key === "name") result = a.name.localeCompare(b.name, "fr");
       else if (sort.key === "email") {
@@ -328,14 +363,28 @@ export default function AdminDashboard() {
       }
       return sort.dir === "asc" ? result : -result;
     });
-  }, [activeStructures, archivedStructures, users, sort, view]);
+  }, [activeStructures, archivedStructures, users, sort, view, structureQuery]);
 
   const allPlatformUsers = useMemo(() => {
-    const list = users.filter(
-      (u) =>
-        (u.role === "employee" || (u.role === "rh" && u.formationEnrolled)) &&
-        (!u.structureId || activeStructureIds.has(u.structureId)),
-    );
+    const q = userQuery.trim().toLowerCase();
+    const list = users.filter((u) => {
+      if (
+        !(u.role === "employee" || (u.role === "rh" && u.formationEnrolled)) ||
+        (u.structureId && !activeStructureIds.has(u.structureId))
+      ) {
+        return false;
+      }
+      if (!q) return true;
+      const company = u.structureId
+        ? structureNameById.get(u.structureId) ?? ""
+        : "";
+      return (
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        company.toLowerCase().includes(q) ||
+        (u.certificateId ?? "").toLowerCase().includes(q)
+      );
+    });
     return [...list].sort((a, b) => {
       const companyA = a.structureId
         ? structureNameById.get(a.structureId) ?? "—"
@@ -348,19 +397,93 @@ export default function AdminDashboard() {
       else if (userSort.key === "company") result = companyA.localeCompare(companyB, "fr");
       else if (userSort.key === "progress") {
         result = (a.progressPercent ?? -1) - (b.progressPercent ?? -1);
+      } else if (userSort.key === "satisfaction") {
+        result = (a.satisfactionRating ?? -1) - (b.satisfactionRating ?? -1);
       } else {
         result = isoDateValue(a.lastLoginAt ?? "") - isoDateValue(b.lastLoginAt ?? "");
       }
       return userSort.dir === "asc" ? result : -result;
     });
-  }, [users, activeStructureIds, structureNameById, userSort]);
+  }, [users, activeStructureIds, structureNameById, userSort, userQuery]);
 
-  function toggleUserSort(key: "name" | "company" | "progress" | "lastLogin") {
+  const allAttestations = useMemo(() => {
+    return users.filter(
+      (u) =>
+        isFormationUser(u) &&
+        u.progressPercent === 100 &&
+        (!u.structureId || activeStructureIds.has(u.structureId)),
+    );
+  }, [users, activeStructureIds]);
+
+  const filteredAttestations = useMemo(() => {
+    const q = attestationQuery.trim().toLowerCase();
+    const list = q
+      ? allAttestations.filter((u) => {
+          const company = u.structureId
+            ? structureNameById.get(u.structureId) ?? ""
+            : "";
+          return (
+            u.name.toLowerCase().includes(q) ||
+            u.email.toLowerCase().includes(q) ||
+            company.toLowerCase().includes(q) ||
+            (u.certificateId ?? "").toLowerCase().includes(q)
+          );
+        })
+      : allAttestations;
+    return [...list].sort((a, b) => {
+      const companyA = a.structureId
+        ? structureNameById.get(a.structureId) ?? "—"
+        : "—";
+      const companyB = b.structureId
+        ? structureNameById.get(b.structureId) ?? "—"
+        : "—";
+      let result = 0;
+      if (attestationSort.key === "name") {
+        result = a.name.localeCompare(b.name, "fr");
+      } else if (attestationSort.key === "email") {
+        result = a.email.localeCompare(b.email, "fr");
+      } else if (attestationSort.key === "company") {
+        result = companyA.localeCompare(companyB, "fr");
+      } else if (attestationSort.key === "certificate") {
+        result = (a.certificateId ?? "").localeCompare(b.certificateId ?? "", "fr");
+      } else {
+        result =
+          isoDateValue(a.certifiedAt ?? "") - isoDateValue(b.certifiedAt ?? "");
+      }
+      if (result === 0) result = a.name.localeCompare(b.name, "fr");
+      return attestationSort.dir === "asc" ? result : -result;
+    });
+  }, [allAttestations, attestationQuery, structureNameById, attestationSort]);
+
+  const attestationPageCount = Math.max(
+    1,
+    Math.ceil(filteredAttestations.length / ATTESTATIONS_PAGE_SIZE),
+  );
+  const attestationPageSafe = Math.min(attestationPage, attestationPageCount - 1);
+  const pagedAttestations = filteredAttestations.slice(
+    attestationPageSafe * ATTESTATIONS_PAGE_SIZE,
+    attestationPageSafe * ATTESTATIONS_PAGE_SIZE + ATTESTATIONS_PAGE_SIZE,
+  );
+
+  function toggleUserSort(
+    key: "name" | "company" | "progress" | "satisfaction" | "lastLogin",
+  ) {
     setUserSort((current) =>
       current.key === key
         ? { key, dir: current.dir === "asc" ? "desc" : "asc" }
         : { key, dir: "asc" },
     );
+  }
+
+  function toggleAttestationSort(
+    key: "name" | "email" | "company" | "certificate" | "certifiedAt",
+  ) {
+    setAttestationSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: key === "certifiedAt" ? "desc" : "asc" },
+    );
+    setAttestationPage(0);
   }
 
   function toggleSort(key: SortKey) {
@@ -589,6 +712,70 @@ export default function AdminDashboard() {
     }
   }
 
+  async function deletePlatformUser(user: PlatformUser) {
+    const ok = window.confirm(
+      `Supprimer définitivement « ${user.name} » (${user.email}) ? Irréversible.`,
+    );
+    if (!ok) return;
+    try {
+      if (user.id.startsWith("invite:")) {
+        await deleteInviteByToken(user.id.slice("invite:".length));
+      } else {
+        await deleteUser(user.id);
+      }
+      setUsers((current) => current.filter((u) => u.id !== user.id));
+      if (user.structureId) {
+        const structure = structures.find((s) => s.id === user.structureId);
+        if (structure) {
+          await syncStructureInviteSeats(structure, { recountUsed: true }).catch(
+            () => undefined,
+          );
+        }
+      }
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Suppression impossible");
+    }
+  }
+
+  function exportCurrentViewCsv() {
+    const day = new Date().toISOString().slice(0, 10);
+    if (view === "users") {
+      downloadCsv(`utilisateurs-${day}.csv`, usersCsv(allPlatformUsers, structures));
+      return;
+    }
+    if (view === "attestations") {
+      downloadCsv(
+        `attestations-${day}.csv`,
+        attestationsCsv(filteredAttestations, structures),
+      );
+      return;
+    }
+    if (view === "archived") {
+      downloadCsv(
+        `structures-archivees-${day}.csv`,
+        structuresCsv(filtered, users),
+      );
+      return;
+    }
+    downloadCsv(`structures-actives-${day}.csv`, structuresCsv(filtered, users));
+  }
+
+  function exportFullReport() {
+    const formationUsers = users.filter(
+      (u) =>
+        isFormationUser(u) &&
+        (!u.structureId || activeStructureIds.has(u.structureId)),
+    );
+    const graduated = formationUsers.filter((u) => u.progressPercent === 100);
+    downloadAdminReportZip({
+      activeStructures,
+      archivedStructures,
+      users,
+      formationUsers,
+      graduatedUsers: graduated,
+    });
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
@@ -622,7 +809,7 @@ export default function AdminDashboard() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 space-y-3 text-center">
-        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-3">
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3">
           <h1 className="text-xl font-bold tracking-tight">Pilotage plateforme</h1>
           <button
             type="button"
@@ -633,6 +820,26 @@ export default function AdminDashboard() {
             <Plus className="h-4 w-4" />
             Ajouter
           </button>
+          <button
+            type="button"
+            onClick={exportCurrentViewCsv}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            title="Exporter la vue affichée en CSV"
+          >
+            <Download className="h-4 w-4" />
+            CSV (vue)
+          </button>
+          <button
+            type="button"
+            onClick={exportFullReport}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-800 shadow-sm hover:bg-blue-100 disabled:opacity-50 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200 dark:hover:bg-blue-950/70"
+            title="Rapport complet : 4 CSV dans un ZIP"
+          >
+            <Download className="h-4 w-4" />
+            Rapport complet (ZIP)
+          </button>
         </div>
 
         {loadError && (
@@ -642,14 +849,13 @@ export default function AdminDashboard() {
           <p className="text-sm text-slate-500">Chargement Firestore…</p>
         )}
 
-        <GlobalCandidateSearch users={users} />
-
-        <ContactLeadsPanel />
-
         <div className="mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
           <button
             type="button"
-            onClick={() => setView("active")}
+            onClick={() => {
+              setView("active");
+              setStructureQuery("");
+            }}
             className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
               view === "active"
                 ? "border-blue-300 bg-blue-50 dark:border-blue-500/40 dark:bg-blue-500/10"
@@ -664,7 +870,10 @@ export default function AdminDashboard() {
           </button>
           <button
             type="button"
-            onClick={() => setView("users")}
+            onClick={() => {
+              setView("users");
+              setUserQuery("");
+            }}
             className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
               view === "users"
                 ? "border-blue-300 bg-blue-50 dark:border-blue-500/40 dark:bg-blue-500/10"
@@ -677,7 +886,18 @@ export default function AdminDashboard() {
             </div>
             <div className="mt-0.5 text-2xl font-bold tabular-nums">{totalUsers}</div>
           </button>
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 shadow-sm">
+          <button
+            type="button"
+            onClick={() => {
+              setView("attestations");
+              setAttestationPage(0);
+            }}
+            className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
+              view === "attestations"
+                ? "border-blue-300 bg-blue-50 dark:border-blue-500/40 dark:bg-blue-500/10"
+                : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+            }`}
+          >
             <div className="flex items-center justify-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
               <Award className="h-3.5 w-3.5" />
               Attestations
@@ -686,10 +906,13 @@ export default function AdminDashboard() {
               {graduatedUsers}
               <span className="text-sm font-semibold text-slate-400">/{totalUsers}</span>
             </div>
-          </div>
+          </button>
           <button
             type="button"
-            onClick={() => setView("archived")}
+            onClick={() => {
+              setView("archived");
+              setStructureQuery("");
+            }}
             className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
               view === "archived"
                 ? "border-amber-300 bg-amber-50 dark:border-amber-500/40 dark:bg-amber-500/10"
@@ -706,14 +929,35 @@ export default function AdminDashboard() {
 
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
           {view === "users" ? (
-          <div className="overflow-x-auto">
+          <div>
+            <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-2.5">
+              <div className="relative mx-auto max-w-md">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="search"
+                  value={userQuery}
+                  onChange={(e) => setUserQuery(e.target.value)}
+                  placeholder="Nom, e-mail, entreprise ou n° attestation"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-slate-500">
+                {allPlatformUsers.length} utilisateur
+                {allPlatformUsers.length !== 1 ? "s" : ""}
+                {userQuery.trim() ? " trouvé(s)" : ""}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
-                <col className="w-[22%]" />
-                <col className="w-[24%]" />
-                <col className="w-[22%]" />
                 <col className="w-[16%]" />
                 <col className="w-[16%]" />
+                <col className="w-[14%]" />
+                <col className="w-[10%]" />
+                <col className="w-[10%]" />
+                <col className="w-[10%]" />
+                <col className="w-[14%]" />
+                <col className="w-[10%]" />
               </colgroup>
               <thead className="text-slate-500 dark:text-slate-400">
                 <tr>
@@ -731,17 +975,22 @@ export default function AdminDashboard() {
                     onClick={() => toggleUserSort("company")}
                   />
                   <SortHeader
-                    label="Avancement"
+                    label="%"
                     active={userSort.key === "progress"}
                     dir={userSort.dir}
                     onClick={() => toggleUserSort("progress")}
                   />
+                  <th className="px-2 py-1.5 font-medium text-xs" title="Positionnement → QCM">
+                    Avant/Après
+                  </th>
                   <SortHeader
-                    label="Dernière connexion"
-                    active={userSort.key === "lastLogin"}
+                    label="Sat."
+                    active={userSort.key === "satisfaction"}
                     dir={userSort.dir}
-                    onClick={() => toggleUserSort("lastLogin")}
+                    onClick={() => toggleUserSort("satisfaction")}
                   />
+                  <th className="px-2 py-1.5 font-medium text-xs">Réclamation</th>
+                  <th className="px-2 py-1.5 font-medium"> </th>
                 </tr>
               </thead>
               <tbody>
@@ -749,6 +998,9 @@ export default function AdminDashboard() {
                   const company = user.structureId
                     ? structureNameById.get(user.structureId) ?? "—"
                     : "—";
+                  const before =
+                    user.positioningScore != null ? `${user.positioningScore}` : "—";
+                  const after = user.quizScore != null ? `${user.quizScore}` : "—";
                   return (
                     <tr
                       key={user.id}
@@ -778,24 +1030,233 @@ export default function AdminDashboard() {
                           ? `${user.progressPercent ?? 0} %`
                           : "—"}
                       </td>
-                      <td className="px-2 py-1.5 whitespace-nowrap text-xs">
-                        {user.lastLoginAt ? formatDate(user.lastLoginAt) : "—"}
+                      <td className="px-2 py-1.5 tabular-nums text-xs">
+                        {before} → {after}
+                      </td>
+                      <td className="px-2 py-1.5 tabular-nums text-xs">
+                        {user.satisfactionRating != null
+                          ? `${user.satisfactionRating}/5`
+                          : "—"}
+                      </td>
+                      <td
+                        className="px-2 py-1.5 truncate text-xs"
+                        title={user.satisfactionComplaint ?? undefined}
+                      >
+                        {user.satisfactionComplaint ? (
+                          <span className="font-semibold text-amber-700 dark:text-amber-300">
+                            Oui
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="px-2 py-1.5">
+                        <button
+                          type="button"
+                          aria-label="Supprimer définitivement"
+                          title="Supprimer définitivement"
+                          onClick={() => deletePlatformUser(user)}
+                          className="rounded-md p-1 text-slate-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       </td>
                     </tr>
                   );
                 })}
                 {allPlatformUsers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-sm text-slate-500">
-                      Aucun utilisateur
+                    <td colSpan={8} className="px-4 py-8 text-sm text-slate-500">
+                      {userQuery.trim()
+                        ? "Aucun utilisateur trouvé"
+                        : "Aucun utilisateur"}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+            </div>
+          </div>
+          ) : view === "attestations" ? (
+          <div>
+            <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-2.5">
+              <div className="relative mx-auto max-w-md">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="search"
+                  value={attestationQuery}
+                  onChange={(e) => {
+                    setAttestationQuery(e.target.value);
+                    setAttestationPage(0);
+                  }}
+                  placeholder="Nom, e-mail, entreprise ou n° attestation"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-slate-500">
+                {filteredAttestations.length} attestation
+                {filteredAttestations.length !== 1 ? "s" : ""}
+                {attestationQuery.trim() ? " trouvée(s)" : ""}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full table-fixed text-sm text-center">
+                <colgroup>
+                  <col className="w-[20%]" />
+                  <col className="w-[22%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[22%]" />
+                  <col className="w-[18%]" />
+                </colgroup>
+                <thead className="text-slate-500 dark:text-slate-400">
+                  <tr>
+                    <SortHeader
+                      label="Utilisateur"
+                      active={attestationSort.key === "name"}
+                      dir={attestationSort.dir}
+                      onClick={() => toggleAttestationSort("name")}
+                    />
+                    <SortHeader
+                      label="E-mail"
+                      active={attestationSort.key === "email"}
+                      dir={attestationSort.dir}
+                      onClick={() => toggleAttestationSort("email")}
+                    />
+                    <SortHeader
+                      label="Entreprise"
+                      active={attestationSort.key === "company"}
+                      dir={attestationSort.dir}
+                      onClick={() => toggleAttestationSort("company")}
+                    />
+                    <SortHeader
+                      label="N° attestation"
+                      active={attestationSort.key === "certificate"}
+                      dir={attestationSort.dir}
+                      onClick={() => toggleAttestationSort("certificate")}
+                    />
+                    <SortHeader
+                      label="Émise le"
+                      active={attestationSort.key === "certifiedAt"}
+                      dir={attestationSort.dir}
+                      onClick={() => toggleAttestationSort("certifiedAt")}
+                    />
+                  </tr>
+                </thead>
+                <tbody>
+                  {pagedAttestations.map((user) => {
+                    const company = user.structureId
+                      ? structureNameById.get(user.structureId) ?? "—"
+                      : "—";
+                    return (
+                      <tr
+                        key={user.id}
+                        className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                      >
+                        <td className="px-2 py-1.5 font-medium truncate" title={user.name}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!user.id.startsWith("invite:")) {
+                                router.push(`/admin/candidats/${user.id}`);
+                              }
+                            }}
+                            className="hover:text-blue-600 dark:hover:text-blue-400"
+                          >
+                            {user.name}
+                          </button>
+                        </td>
+                        <td
+                          className="px-2 py-1.5 truncate text-xs sm:text-sm"
+                          title={user.email}
+                        >
+                          {user.email}
+                        </td>
+                        <td
+                          className="px-2 py-1.5 truncate text-xs sm:text-sm"
+                          title={company}
+                        >
+                          {company}
+                        </td>
+                        <td className="px-2 py-1.5 font-mono text-[11px] truncate">
+                          {user.certificateId ? (
+                            <button
+                              type="button"
+                              onClick={() => setPreviewCertificateUser(user)}
+                              className="text-blue-600 hover:underline dark:text-blue-400"
+                              title="Voir l'attestation"
+                            >
+                              {user.certificateId}
+                            </button>
+                          ) : (
+                            <span className="text-slate-400">Non émise</span>
+                          )}
+                        </td>
+                        <td className="px-2 py-1.5 whitespace-nowrap text-xs">
+                          {user.certifiedAt ? formatDate(user.certifiedAt) : "—"}
+                          {user.quizScore != null ? ` · ${user.quizScore} %` : ""}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {pagedAttestations.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-sm text-slate-500">
+                        {attestationQuery.trim()
+                          ? "Aucune attestation trouvée"
+                          : "Aucune attestation"}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {filteredAttestations.length > ATTESTATIONS_PAGE_SIZE && (
+              <div className="flex items-center justify-center gap-3 border-t border-slate-100 dark:border-slate-800 px-3 py-2.5">
+                <button
+                  type="button"
+                  disabled={attestationPageSafe <= 0}
+                  onClick={() => setAttestationPage(Math.max(0, attestationPageSafe - 1))}
+                  className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1 text-xs font-semibold disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Précédent
+                </button>
+                <span className="text-xs tabular-nums text-slate-500">
+                  Page {attestationPageSafe + 1} / {attestationPageCount}
+                </span>
+                <button
+                  type="button"
+                  disabled={attestationPageSafe >= attestationPageCount - 1}
+                  onClick={() =>
+                    setAttestationPage(
+                      Math.min(attestationPageCount - 1, attestationPageSafe + 1),
+                    )
+                  }
+                  className="rounded-lg border border-slate-200 dark:border-slate-600 px-3 py-1 text-xs font-semibold disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                  Suivant
+                </button>
+              </div>
+            )}
           </div>
           ) : (
-          <div className="overflow-x-auto">
+          <div>
+            <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-2.5">
+              <div className="relative mx-auto max-w-md">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="search"
+                  value={structureQuery}
+                  onChange={(e) => setStructureQuery(e.target.value)}
+                  placeholder="Nom, e-mail ou SIRET"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-slate-500">
+                {filtered.length} structure{filtered.length !== 1 ? "s" : ""}
+                {structureQuery.trim() ? " trouvée(s)" : ""}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
                 <col className="w-[22%]" />
@@ -942,18 +1403,34 @@ export default function AdminDashboard() {
                 {filtered.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-6 text-slate-500">
-                      {view === "archived"
-                        ? "Aucune structure archivée"
-                        : "Aucune structure trouvée"}
+                      {structureQuery.trim()
+                        ? "Aucune structure trouvée"
+                        : view === "archived"
+                          ? "Aucune structure archivée"
+                          : "Aucune structure trouvée"}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           )}
         </section>
       </main>
+
+      {previewCertificateUser && (
+        <AdminCertificatePreview
+          user={previewCertificateUser}
+          structure={
+            previewCertificateUser.structureId
+              ? structures.find((s) => s.id === previewCertificateUser.structureId) ??
+                null
+              : null
+          }
+          onClose={() => setPreviewCertificateUser(null)}
+        />
+      )}
 
       {graduatesStructure && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-3 sm:p-4">

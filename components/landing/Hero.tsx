@@ -63,7 +63,7 @@ export default function Hero() {
               className="text-base sm:text-[1.0625rem] text-slate-700 dark:text-slate-200 leading-relaxed text-justify hyphens-auto"
             >
               Depuis le 2 février 2025, l&apos;article 4 demande des mesures
-              documentées. Formez vos équipes en ~1&nbsp;h, suivez l&apos;avancement
+              documentées. Formez vos équipes en 1&nbsp;h&nbsp;15, suivez l&apos;avancement
               RH et gardez des attestations + preuves exportables.
             </motion.p>
 

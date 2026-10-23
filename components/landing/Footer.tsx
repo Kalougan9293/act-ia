@@ -12,6 +12,7 @@ const legal = [
 
 const conformity = [
   { label: "Accompagnement", href: "/interventions" },
+  { label: "Fiche programme", href: "/programme" },
   { label: "AI Act", href: "/ai-act" },
   { label: "RGPD", href: "/rgpd" },
 ];

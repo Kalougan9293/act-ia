@@ -27,11 +27,11 @@ const plans: Plan[] = [
       "Socle commun et fiches métiers incluses",
       "Module entreprise (charte, outils, référent)",
       "Attestations nominatives",
-      "Preuves conservées 12 mois après le contrat",
-      "Tableau de bord RH, suivi et export",
+      "Preuves conservées : année de formation + 3 ans",
+      "Tableau de bord RH, relevés de connexion et export",
       "Veille incluse : le parcours suit l'actualité",
       "Renouvellement : nouveaux arrivants + mises à jour",
-      "Support par email",
+      "Référents pédagogique & technique nommés (48 h)",
     ],
     cta: "Démarrer maintenant",
   },
@@ -44,7 +44,7 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Support prioritaire",
+      "Assistance prioritaire (mêmes référents)",
     ],
     cta: "Démarrer maintenant",
   },
@@ -69,7 +69,7 @@ const plans: Plan[] = [
       "Plus de 50 accès",
       "Tout le plan PME inclus",
       "Intégrations sur devis",
-      "Contrat et support dédié",
+      "Assistance dédiée (référents nommés)",
     ],
     cta: "Démarrer maintenant",
   },
@@ -133,10 +133,17 @@ export default function PricingSection() {
           </h2>
         </motion.div>
 
-        <p className="mx-auto mb-4 max-w-6xl text-center text-xl font-semibold tracking-tight text-slate-900 dark:text-white sm:whitespace-nowrap sm:text-2xl">
+        <p className="mx-auto mb-4 max-w-6xl text-center text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
           Prise en charge{" "}
           <span className="text-blue-600 dark:text-blue-400">OPCO</span> possible
-          via un organisme de formation partenaire Qualiopi, selon éligibilité.
+          sous réserve d&apos;éligibilité{" "}
+          <span className="font-normal text-slate-600 dark:text-slate-300">
+            (démarche Qualiopi en cours ·{" "}
+            <a href="/programme" className="underline hover:text-blue-600 dark:hover:text-blue-400">
+              fiche programme
+            </a>
+            )
+          </span>
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">

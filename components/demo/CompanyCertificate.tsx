@@ -118,7 +118,7 @@ export default function CompanyCertificate({
                 <div>
                   <dt className="text-xs uppercase tracking-wider text-slate-500">Volume d&apos;heures</dt>
                   <dd>
-                    {Number.isInteger(hours) ? hours : hours.toLocaleString("fr-FR")} h — 1 h 00 par
+                    {Number.isInteger(hours) ? hours : hours.toLocaleString("fr-FR")} h — 1 h 15 par
                     collaborateur au parcours validé (100 %).
                   </dd>
                 </div>

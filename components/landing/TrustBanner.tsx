@@ -22,7 +22,7 @@ const stats = [
   },
   {
     value: "Alternative aux formations externes",
-    label: "1 h, suivi RH, preuves exportables — 100 % SaaS",
+    label: "1 h 15, suivi RH, preuves exportables — 100 % SaaS",
   },
   {
     value: "Veille réglementaire",

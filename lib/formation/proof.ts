@@ -1,5 +1,29 @@
 import { allChapterIds } from "@/lib/formation/curriculum";
 
+/** Résultat horodaté d'un module / étape (export Qualiopi / FOAD). */
+export type ModuleResult = {
+  id: string;
+  label: string;
+  kind: "intro" | "positioning" | "chapter" | "company" | "quiz" | "career";
+  completedAt: string;
+  score: number | null;
+};
+
+/** Session de connexion / présence sur le parcours à distance. */
+export type ConnectionSession = {
+  id: string;
+  startedAt: string;
+  endedAt: string;
+  durationSec: number;
+};
+
+export type SatisfactionFeedback = {
+  rating: number;
+  comment: string;
+  complaint: string;
+  submittedAt: string;
+};
+
 export type FormationProgress = {
   introDone: boolean;
   /** Test de positionnement (non éliminatoire). N'entre pas dans la validation. */
@@ -11,10 +35,19 @@ export type FormationProgress = {
   quizPassed: boolean;
   quizAttempts: number;
   careerPathId: string | null;
+  /** Dates + scores par module (complète completedChapters). */
+  moduleResults: ModuleResult[];
+  /** Relevés de connexion (sessions). */
+  sessions: ConnectionSession[];
+  /** Temps cumulé mesuré sur la plateforme (secondes). */
+  totalTimeSpentSec: number;
+  /** Questionnaire de satisfaction à chaud (+ réclamation éventuelle). */
+  satisfaction: SatisfactionFeedback | null;
 };
 
 export const CURRICULUM_VERSION = "V1.0";
 export const CURRICULUM_LABEL = "V1.0";
+const MAX_SESSIONS = 200;
 
 export function emptyProgress(): FormationProgress {
   return {
@@ -27,7 +60,52 @@ export function emptyProgress(): FormationProgress {
     quizPassed: false,
     quizAttempts: 0,
     careerPathId: null,
+    moduleResults: [],
+    sessions: [],
+    totalTimeSpentSec: 0,
+    satisfaction: null,
   };
+}
+
+export function upsertModuleResult(
+  progress: FormationProgress,
+  result: ModuleResult,
+): FormationProgress {
+  const moduleResults = [
+    ...progress.moduleResults.filter((row) => row.id !== result.id),
+    result,
+  ].sort((a, b) => a.completedAt.localeCompare(b.completedAt));
+  return { ...progress, moduleResults };
+}
+
+/** Met à jour une session en cours ; n'ajoute au total que le delta de durée. */
+export function upsertConnectionSession(
+  progress: FormationProgress,
+  session: ConnectionSession,
+): FormationProgress {
+  const prev = progress.sessions.find((row) => row.id === session.id);
+  const delta = Math.max(0, session.durationSec - (prev?.durationSec ?? 0));
+  const sessions = [
+    ...progress.sessions.filter((row) => row.id !== session.id),
+    session,
+  ]
+    .sort((a, b) => a.startedAt.localeCompare(b.startedAt))
+    .slice(-MAX_SESSIONS);
+  return {
+    ...progress,
+    sessions,
+    totalTimeSpentSec: progress.totalTimeSpentSec + delta,
+  };
+}
+
+export function formatDurationSec(totalSec: number): string {
+  const sec = Math.max(0, Math.floor(totalSec));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  if (h > 0) return `${h} h ${String(m).padStart(2, "0")} min`;
+  if (m > 0) return `${m} min ${String(s).padStart(2, "0")} s`;
+  return `${s} s`;
 }
 
 /**

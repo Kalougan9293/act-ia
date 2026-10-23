@@ -4,7 +4,12 @@ import { Download, X } from "lucide-react";
 import type { Employee } from "./data";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
 import { ATTESTATION_COURSE_TITLE, SOCLE_DURATION_LABEL } from "@/lib/formation/curriculum";
-import { certificateFingerprint, CURRICULUM_LABEL, formatProofDateUtc } from "@/lib/formation/proof";
+import {
+  certificateFingerprint,
+  CURRICULUM_LABEL,
+  formatDurationSec,
+  formatProofDateUtc,
+} from "@/lib/formation/proof";
 
 const demoProofs: Record<string, { score: number; date: string; time: string; serial: string }> = {
   "2": { score: 94, date: "28/09/2026", time: "16:42", serial: "M4K2L" },
@@ -21,6 +26,8 @@ export type CertificateProof = {
   specimen?: boolean;
   /** ISO, pour le horodatage UTC du PDF. */
   issuedAt?: string | null;
+  timeSpentSec?: number | null;
+  modulesCompleted?: number | null;
 };
 
 function FakeQr() {
@@ -88,6 +95,8 @@ export default function CertificatePreview({
       dateLabel: proof.date,
       timeLabel: proof.time,
       specimen,
+      timeSpentSec: proof.timeSpentSec,
+      modulesCompleted: proof.modulesCompleted,
     });
   }
 
@@ -164,6 +173,22 @@ export default function CertificatePreview({
               <tbody>
                 {[
                   ["Durée pédagogique prévue", SOCLE_DURATION_LABEL],
+                  ...(proof.timeSpentSec != null && proof.timeSpentSec > 0
+                    ? ([
+                        [
+                          "Temps de connexion mesuré",
+                          formatDurationSec(proof.timeSpentSec),
+                        ],
+                      ] as [string, string][])
+                    : []),
+                  ...(proof.modulesCompleted != null && proof.modulesCompleted > 0
+                    ? ([
+                        [
+                          "Modules / étapes validés",
+                          String(proof.modulesCompleted),
+                        ],
+                      ] as [string, string][])
+                    : []),
                   ["Parcours complété", "100 %"],
                   ["Évaluation finale", `${proof.score} / 100`],
                   ["Seuil de réussite", "80 / 100"],

@@ -3,6 +3,8 @@
 import { X } from "lucide-react";
 import type { PlatformUser, Structure } from "@/lib/admin/types";
 import { formatDate } from "@/lib/admin/format";
+import { formatDurationSec } from "@/lib/formation/proof";
+import { SOCLE_DURATION_LABEL } from "@/lib/formation/curriculum";
 
 function FakeQr() {
   const cells = [
@@ -94,6 +96,27 @@ export default function AdminCertificatePreview({
             <p className="text-sm text-slate-700">
               Score obtenu : <span className="font-semibold">{score} %</span>
             </p>
+            <p className="text-sm text-slate-700">
+              Durée pédagogique prévue : {SOCLE_DURATION_LABEL}
+            </p>
+            {user.attestationTimeSpentSec != null &&
+            user.attestationTimeSpentSec > 0 ? (
+              <p className="text-sm text-slate-700">
+                Temps de connexion mesuré :{" "}
+                <span className="font-semibold">
+                  {formatDurationSec(user.attestationTimeSpentSec)}
+                </span>
+              </p>
+            ) : null}
+            {user.attestationModulesCompleted != null &&
+            user.attestationModulesCompleted > 0 ? (
+              <p className="text-sm text-slate-700">
+                Modules / étapes validés :{" "}
+                <span className="font-semibold">
+                  {user.attestationModulesCompleted}
+                </span>
+              </p>
+            ) : null}
             <p className="text-sm text-slate-700">Délivrée le {issuedAt}</p>
           </section>
 

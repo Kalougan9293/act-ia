@@ -74,7 +74,8 @@ export default function ConfidentialitePage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Pendant le contrat : compte, progression, registre et attestations restent disponibles.</li>
           <li>
-            Après la fin du contrat : les preuves de formation sont conservées 12 mois, puis
+            Preuves de formation : conservées pendant l&apos;année civile de réalisation de
+            l&apos;action de formation et les trois années civiles suivantes, puis
             supprimées, sauf obligation légale plus longue.
           </li>
           <li>Factures : 10 ans, durée comptable.</li>

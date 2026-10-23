@@ -164,6 +164,30 @@ export default function CandidateProfile({ userId }: { userId: string }) {
               </dd>
             </div>
             <div>
+              <dt className="text-slate-500">Positionnement → QCM</dt>
+              <dd className="mt-0.5 font-medium">
+                {user.positioningScore != null ? `${user.positioningScore}` : "—"}
+                {" → "}
+                {user.quizScore != null ? `${user.quizScore}` : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Satisfaction</dt>
+              <dd className="mt-0.5 font-medium">
+                {user.satisfactionRating != null
+                  ? `${user.satisfactionRating} / 5`
+                  : "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Réclamation</dt>
+              <dd className="mt-0.5 font-medium text-left">
+                {user.satisfactionComplaint?.trim()
+                  ? user.satisfactionComplaint
+                  : "—"}
+              </dd>
+            </div>
+            <div>
               <dt className="text-slate-500">Structure</dt>
               <dd className="mt-0.5 font-medium flex items-center justify-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5 text-slate-400" />

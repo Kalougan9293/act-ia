@@ -29,6 +29,7 @@ import {
 } from "@/lib/admin/types";
 import { downloadCompanyReport } from "@/lib/export/attestations";
 import { downloadProofZip } from "@/lib/export/proof-zip";
+import { loadFormationProgressMany } from "@/lib/firebase/formation-progress";
 import { provisionTenantUser } from "@/lib/firebase/provision-user";
 import type { FormEvent } from "react";
 import { PlainText } from "@/lib/format/plain-text";
@@ -220,6 +221,7 @@ export default function HrView({
   );
   const [moduleSaving, setModuleSaving] = useState(false);
   const [moduleError, setModuleError] = useState<string | null>(null);
+  const [exportBusy, setExportBusy] = useState(false);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "name", dir: "asc" });
 
   useEffect(() => {
@@ -452,12 +454,29 @@ export default function HrView({
         </button>
         <button
           type="button"
-          disabled={demo}
-          onClick={() => downloadProofZip(companyName, active, moduleSaved)}
+          disabled={demo || exportBusy}
+          onClick={() => {
+            void (async () => {
+              setExportBusy(true);
+              try {
+                const progressByUserId = await loadFormationProgressMany(
+                  active.map((employee) => employee.id),
+                );
+                downloadProofZip(
+                  companyName,
+                  active,
+                  moduleSaved,
+                  progressByUserId,
+                );
+              } finally {
+                setExportBusy(false);
+              }
+            })();
+          }}
           className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
         >
           <Download className="h-4 w-4" />
-          Exporter le dossier (ZIP)
+          {exportBusy ? "Export…" : "Exporter le dossier (ZIP)"}
         </button>
       </div>
 
@@ -609,6 +628,8 @@ export default function HrView({
                   serial: selected.certificateId.replace(/^CONF-\d+-/, ""),
                   certificateId: selected.certificateId,
                   specimen: false,
+                  timeSpentSec: selected.timeSpentSec,
+                  modulesCompleted: selected.modulesCompleted,
                 }
               : undefined
           }

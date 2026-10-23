@@ -12,7 +12,10 @@ import {
   CURRICULUM_VERSION,
   emptyProgress,
   isFormationComplete,
+  type ConnectionSession,
   type FormationProgress,
+  type ModuleResult,
+  type SatisfactionFeedback,
 } from "@/lib/formation/proof";
 
 function requireDb() {
@@ -26,7 +29,73 @@ export type IssuedCertificate = {
   issuedAt: string;
   quizScore: number | null;
   careerPathId: string | null;
+  /** Temps de connexion mesuré au moment de l'émission (secondes). */
+  timeSpentSec: number | null;
+  /** Nombre de modules / étapes horodatées au moment de l'émission. */
+  modulesCompleted: number | null;
 };
+
+function parseModuleResults(raw: unknown): ModuleResult[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const data = row as Record<string, unknown>;
+      const id = data.id ? String(data.id) : "";
+      if (!id) return null;
+      const kind = String(data.kind ?? "chapter");
+      const allowed = new Set([
+        "intro",
+        "positioning",
+        "chapter",
+        "company",
+        "quiz",
+        "career",
+      ]);
+      return {
+        id,
+        label: String(data.label ?? id),
+        kind: (allowed.has(kind) ? kind : "chapter") as ModuleResult["kind"],
+        completedAt: String(data.completedAt ?? ""),
+        score:
+          data.score === null || data.score === undefined
+            ? null
+            : Number(data.score),
+      } satisfies ModuleResult;
+    })
+    .filter((row): row is ModuleResult => Boolean(row?.completedAt));
+}
+
+function parseSessions(raw: unknown): ConnectionSession[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const data = row as Record<string, unknown>;
+      const id = data.id ? String(data.id) : "";
+      if (!id) return null;
+      return {
+        id,
+        startedAt: String(data.startedAt ?? ""),
+        endedAt: String(data.endedAt ?? ""),
+        durationSec: Math.max(0, Number(data.durationSec ?? 0) || 0),
+      } satisfies ConnectionSession;
+    })
+    .filter((row): row is ConnectionSession => Boolean(row?.startedAt));
+}
+
+function parseSatisfaction(raw: unknown): SatisfactionFeedback | null {
+  if (!raw || typeof raw !== "object") return null;
+  const data = raw as Record<string, unknown>;
+  const rating = Number(data.rating ?? 0);
+  if (!Number.isFinite(rating) || rating < 1 || rating > 5) return null;
+  return {
+    rating,
+    comment: String(data.comment ?? "").trim(),
+    complaint: String(data.complaint ?? "").trim(),
+    submittedAt: String(data.submittedAt ?? ""),
+  };
+}
 
 function parseProgress(data: Record<string, unknown> | undefined): FormationProgress {
   if (!data) return emptyProgress();
@@ -49,6 +118,10 @@ function parseProgress(data: Record<string, unknown> | undefined): FormationProg
     quizPassed: Boolean(data.quizPassed),
     quizAttempts: Number(data.quizAttempts ?? 0) || 0,
     careerPathId: data.careerPathId ? String(data.careerPathId) : null,
+    moduleResults: parseModuleResults(data.moduleResults),
+    sessions: parseSessions(data.sessions),
+    totalTimeSpentSec: Math.max(0, Number(data.totalTimeSpentSec ?? 0) || 0),
+    satisfaction: parseSatisfaction(data.satisfaction),
   };
 }
 
@@ -67,12 +140,35 @@ export async function loadFormationProgress(uid: string): Promise<FormationProgr
   return parseProgress(snap.data() as Record<string, unknown>);
 }
 
+/** Charge les progressions de plusieurs apprenants (export RH / preuves). */
+export async function loadFormationProgressMany(
+  uids: string[],
+): Promise<Map<string, FormationProgress>> {
+  const unique = [...new Set(uids.filter(Boolean))];
+  const entries = await Promise.all(
+    unique.map(async (uid) => {
+      try {
+        return [uid, await loadFormationProgress(uid)] as const;
+      } catch {
+        return [uid, emptyProgress()] as const;
+      }
+    }),
+  );
+  return new Map(entries);
+}
+
 export async function loadIssuedCertificate(uid: string): Promise<IssuedCertificate | null> {
   const db = requireDb();
   const snap = await getDoc(doc(db, "users", uid));
   if (!snap.exists()) return null;
   const data = snap.data() as Record<string, unknown>;
   if (!data.certificateId) return null;
+  const certSnap = await getDoc(
+    doc(db, "users", uid, "certificates", String(data.certificateId)),
+  );
+  const cert = certSnap.exists()
+    ? (certSnap.data() as Record<string, unknown>)
+    : null;
   return {
     id: String(data.certificateId),
     issuedAt: data.certifiedAt ? toIso(data.certifiedAt) : new Date().toISOString(),
@@ -81,6 +177,20 @@ export async function loadIssuedCertificate(uid: string): Promise<IssuedCertific
         ? null
         : Number(data.quizScore),
     careerPathId: null,
+    timeSpentSec:
+      cert?.timeSpentSec === null || cert?.timeSpentSec === undefined
+        ? data.attestationTimeSpentSec === null ||
+          data.attestationTimeSpentSec === undefined
+          ? null
+          : Number(data.attestationTimeSpentSec)
+        : Number(cert.timeSpentSec),
+    modulesCompleted:
+      cert?.modulesCompleted === null || cert?.modulesCompleted === undefined
+        ? data.attestationModulesCompleted === null ||
+          data.attestationModulesCompleted === undefined
+          ? null
+          : Number(data.attestationModulesCompleted)
+        : Number(cert.modulesCompleted),
   };
 }
 
@@ -112,6 +222,12 @@ export async function saveFormationProgress(
   const patch: Record<string, unknown> = {
     progressPercent: percent,
     quizScore: progress.quizScore,
+    positioningScore: progress.positioningScore,
+    totalTimeSpentSec: progress.totalTimeSpentSec,
+    satisfactionRating: progress.satisfaction?.rating ?? null,
+    satisfactionComment: progress.satisfaction?.comment ?? null,
+    satisfactionComplaint: progress.satisfaction?.complaint || null,
+    satisfactionAt: progress.satisfaction?.submittedAt ?? null,
   };
 
   let certificate: IssuedCertificate | null = null;
@@ -122,6 +238,9 @@ export async function saveFormationProgress(
     const certId = createCertificateId(`${uid}-${Date.now()}`);
     const issuedAt = new Date().toISOString();
 
+    const timeSpentSec = progress.totalTimeSpentSec;
+    const modulesCompleted = progress.moduleResults.length;
+
     await setDoc(doc(db, "users", uid, "certificates", certId), {
       id: certId,
       userId: uid,
@@ -131,6 +250,10 @@ export async function saveFormationProgress(
       quizScore: progress.quizScore,
       careerPathId: progress.careerPathId,
       completedChapters: progress.completedChapters,
+      moduleResults: progress.moduleResults,
+      sessions: progress.sessions,
+      timeSpentSec,
+      modulesCompleted,
       curriculumVersion: CURRICULUM_VERSION,
       kind: "attestation_suivi",
       issuedAt,
@@ -139,18 +262,25 @@ export async function saveFormationProgress(
 
     patch.certificateId = certId;
     patch.certifiedAt = issuedAt;
+    patch.attestationTimeSpentSec = timeSpentSec;
+    patch.attestationModulesCompleted = modulesCompleted;
     certificate = {
       id: certId,
       issuedAt,
       quizScore: progress.quizScore,
       careerPathId: progress.careerPathId,
+      timeSpentSec,
+      modulesCompleted,
     };
   } else if (existingCert) {
+    const existing = await loadIssuedCertificate(uid);
     certificate = {
       id: existingCert,
       issuedAt: userData.certifiedAt ? toIso(userData.certifiedAt) : new Date().toISOString(),
       quizScore: progress.quizScore,
       careerPathId: progress.careerPathId,
+      timeSpentSec: existing?.timeSpentSec ?? progress.totalTimeSpentSec,
+      modulesCompleted: existing?.modulesCompleted ?? progress.moduleResults.length,
     };
   }
 

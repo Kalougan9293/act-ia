@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
+import { ASSISTANCE } from "@/lib/formation/assistance";
 
 export const metadata: Metadata = {
   title: "CGV — StartIA",
@@ -79,13 +80,68 @@ export default function CgvPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Accès à la plateforme selon le nombre de sièges de l&apos;offre.</li>
           <li>Parcours de formation socle, attestations de suivi et espace RH de pilotage.</li>
-          <li>Support par e-mail aux contacts RH, jours ouvrés, délai de réponse raisonnable.</li>
+          <li>
+            Assistance pédagogique et technique nommée (voir ci-dessous), délai de réponse{" "}
+            {ASSISTANCE.responseDelay}.
+          </li>
         </ul>
         <p>
           Sauf mention contraire sur devis : StartIA ne fournit pas de conseil juridique, d&apos;audit
           de conformité, ni de certification officielle de l&apos;entreprise. L&apos;attestation
           documente le parcours suivi ; elle ne constitue ni diplôme ni certification.
         </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Modalités de formation à distance (FOAD)
+        </h2>
+        <p>
+          Le parcours StartIA est dispensé à distance, en asynchrone. Conformément au Code du
+          travail, les modalités suivantes s&apos;appliquent. La{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/programme">
+            fiche programme
+          </a>{" "}
+          détaille objectifs, public, prérequis, déroulé, accessibilité et tarifs.
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <strong>Activités à distance</strong> : {ASSISTANCE.remoteActivities}
+          </li>
+          <li>
+            <strong>Durée moyenne</strong> : {ASSISTANCE.averageDuration} (socle).
+          </li>
+          <li>
+            <strong>Évaluations</strong> : {ASSISTANCE.evaluation}
+          </li>
+          <li>
+            <strong>{ASSISTANCE.referentPedagogique.role}</strong> :{" "}
+            {ASSISTANCE.referentPedagogique.name} — {ASSISTANCE.referentPedagogique.mission}
+          </li>
+          <li>
+            <strong>{ASSISTANCE.referentTechnique.role}</strong> :{" "}
+            {ASSISTANCE.referentTechnique.name} — {ASSISTANCE.referentTechnique.mission}
+          </li>
+          <li>
+            <strong>Contact</strong> :{" "}
+            <a
+              className="text-blue-600 hover:underline dark:text-blue-400"
+              href={`mailto:${ASSISTANCE.email}`}
+            >
+              {ASSISTANCE.email}
+            </a>
+            {" · "}
+            <a
+              className="text-blue-600 hover:underline dark:text-blue-400"
+              href={ASSISTANCE.phoneHref}
+            >
+              {ASSISTANCE.phone}
+            </a>
+          </li>
+          <li>
+            <strong>Délai de réponse</strong> : {ASSISTANCE.responseDelay}.
+          </li>
+        </ul>
       </section>
 
       <section className="space-y-2">
@@ -126,10 +182,11 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Fin de contrat</h2>
         <p>
-          À l&apos;échéance, les accès sont fermés. Les preuves de formation sont conservées douze
-          mois pour l&apos;entreprise cliente, puis supprimées. Les factures sont conservées dix
-          ans. La fermeture anticipée se demande par e-mail ; la période déjà payée n&apos;est pas
-          remboursée.
+          À l&apos;échéance, les accès sont fermés. Les preuves de formation restent disponibles
+          pour l&apos;entreprise cliente pendant l&apos;année civile de réalisation de
+          l&apos;action et les trois années civiles suivantes, puis sont supprimées. Les
+          factures sont conservées dix ans. La fermeture anticipée se demande par e-mail ; la
+          période déjà payée n&apos;est pas remboursée.
         </p>
       </section>
 

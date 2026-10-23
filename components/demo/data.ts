@@ -15,6 +15,8 @@ export interface Employee {
   certificateId?: string | null;
   certifiedAt?: string | null;
   quizScore?: number | null;
+  timeSpentSec?: number | null;
+  modulesCompleted?: number | null;
   companyName?: string;
 }
 
