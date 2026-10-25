@@ -82,7 +82,7 @@ export const faqs = [
   {
     question: "Un OPCO peut-il financer la formation ?",
     answer:
-      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. La démarche Qualiopi de StartIA est en cours : aucune certification n'est revendiquée tant qu'elle n'est pas obtenue. Le détail figure dans la fiche programme.",
+      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. StartIA prépare son dossier Qualiopi (référentiel et preuves FOAD) : aucune date d'audit n'est fixée, aucune certification ni numéro de déclaration d'activité n'est revendiqué. Le détail figure dans la fiche programme.",
   },
   {
     question: "Où trouver la fiche programme de la formation ?",
@@ -108,7 +108,7 @@ export const faqs = [
   {
     question: "Où sont hébergées les données ?",
     answer:
-      "Les comptes, la formation et le suivi sont stockés dans l'Union européenne. Vos données restent sous cadre européen ; le détail figure dans la politique de confidentialité.",
+      "Les comptes, la formation et le suivi (Firestore, authentification Firebase) sont stockés dans l'Union européenne (région eur3). L'affichage du site passe par Vercel (États-Unis), encadré par un DPA et les clauses contractuelles types. Le détail figure dans la politique de confidentialité.",
   },
 ] as const;
 

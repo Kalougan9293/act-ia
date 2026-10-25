@@ -24,7 +24,11 @@ import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
 import type { IssuedCertificate } from "@/lib/firebase/formation-progress";
-import { formatProofDate } from "@/lib/formation/proof";
+import {
+  certificateSerialFromId,
+  formatProofDate,
+  type FormationProgress,
+} from "@/lib/formation/proof";
 import { CAREER_PATHS } from "@/lib/formation/careers";
 import { ASSISTANCE } from "@/lib/formation/assistance";
 import {
@@ -102,12 +106,17 @@ export default function FormationExperience({
   fullName,
   companyName,
   companyModule = emptyCompanyModule(),
+  demo = false,
+  demoSeed,
 }: {
   uid: string;
   firstName: string;
   fullName: string;
   companyName: string;
   companyModule?: CompanyModuleContent;
+  /** Mode démo publique : pas de Firestore, progression seedée. */
+  demo?: boolean;
+  demoSeed?: FormationProgress;
 }) {
   const {
     ready,
@@ -124,9 +133,12 @@ export default function FormationExperience({
     markCareer,
     recordSession,
     markSatisfaction,
-  } = useFormationProgress(uid);
+  } = useFormationProgress(uid, {
+    localOnly: demo,
+    seed: demoSeed,
+  });
 
-  useConnectionLog(ready && Boolean(uid), recordSession);
+  useConnectionLog(ready && Boolean(uid) && !demo, recordSession);
 
   const [screen, setScreen] = useState<Screen | null>(null);
   const [positioningRound] = useState(() =>
@@ -149,12 +161,14 @@ export default function FormationExperience({
   const [lastScore, setLastScore] = useState<number | null>(null);
   const [shownAttempts, setShownAttempts] = useState(0);
   const [quizReturn, setQuizReturn] = useState<"intro" | "hub">("intro");
-  /** Encadré d’accueil : masqué dès l’ouverture du module 1.1 (ou s’il est déjà terminé). */
+  /** Encadré d’accueil : masqué dès « Faisons connaissance » terminé (ou module 1.1). */
   const [firstModuleLaunched, setFirstModuleLaunched] = useState(false);
 
   const active: Screen = screen ?? { kind: "intro" };
   const hideWelcomePitch =
-    firstModuleLaunched || progress.completedChapters.includes("1.1");
+    progress.positioningDone ||
+    firstModuleLaunched ||
+    progress.completedChapters.includes("1.1");
 
   function openChapter(chapterId: string) {
     if (chapterId === "1.1") setFirstModuleLaunched(true);
@@ -874,38 +888,31 @@ function IntroScreen({
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-xl pt-6 text-center">
-        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-slate-400">
+      <div className="mx-auto w-full max-w-xl space-y-1.5 pt-6 text-center text-xs text-slate-400">
+        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
           <span>À faire en une ou plusieurs fois · {SOCLE_DURATION_LABEL}</span>
           <span className="inline-flex items-center gap-1">
             <Smartphone className="h-4 w-4 shrink-0" aria-hidden />
             Compatible téléphone
           </span>
         </p>
-        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
-          <p className="font-semibold text-slate-800 dark:text-slate-100">
-            Assistance pendant le parcours
-          </p>
-          <p className="mt-1">
-            {ASSISTANCE.referentPedagogique.role} et {ASSISTANCE.referentTechnique.role} :{" "}
-            {ASSISTANCE.referentPedagogique.name}. Réponse {ASSISTANCE.responseDelay}.
-          </p>
-          <p className="mt-1">
-            <a
-              href={`mailto:${ASSISTANCE.email}`}
-              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
-            >
-              {ASSISTANCE.email}
-            </a>
-            {" · "}
-            <a
-              href={ASSISTANCE.phoneHref}
-              className="font-medium text-blue-600 hover:underline dark:text-blue-400"
-            >
-              {ASSISTANCE.phone}
-            </a>
-          </p>
-        </div>
+        <p className="mx-auto max-w-md text-center leading-relaxed">
+          Assistance : {ASSISTANCE.referentPedagogique.name} (péda & technique) ·
+          réponse {ASSISTANCE.responseDelay} ·{" "}
+          <a
+            href={`mailto:${ASSISTANCE.email}`}
+            className="underline decoration-slate-300 underline-offset-2 hover:text-slate-500 dark:decoration-slate-600 dark:hover:text-slate-300"
+          >
+            {ASSISTANCE.email}
+          </a>
+          {" · "}
+          <a
+            href={ASSISTANCE.phoneHref}
+            className="underline decoration-slate-300 underline-offset-2 hover:text-slate-500 dark:decoration-slate-600 dark:hover:text-slate-300"
+          >
+            {ASSISTANCE.phone}
+          </a>
+        </p>
       </div>
       {careerPathId && (
         <p className="text-center text-sm text-slate-600 dark:text-slate-300">
@@ -1034,7 +1041,7 @@ function LearnerAttestation({
     score: certificate.quizScore ?? quizScore ?? 80,
     date,
     time,
-    serial: certificate.id.replace(/^CONF-\d+-/, ""),
+    serial: certificateSerialFromId(certificate.id),
     certificateId: certificate.id,
     specimen: false as const,
     issuedAt: certificate.issuedAt,

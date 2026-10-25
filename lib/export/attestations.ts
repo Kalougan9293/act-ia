@@ -1,6 +1,7 @@
 import type { Employee } from "@/components/demo/data";
 import {
   certificateFingerprint,
+  certificateSerialFromId,
   createCertificateId,
   CURRICULUM_LABEL,
   formatDurationSec,
@@ -57,7 +58,7 @@ function stampLines(issuedAt: string | null | undefined, dateLabel: string, time
 
 export function downloadLearnerAttestation(input: LearnerAttestationInput) {
   const { first, last } = splitPersonName(input.fullName);
-  const serial = input.certificateId.replace(/^CONF-\d+-/, "");
+  const serial = certificateSerialFromId(input.certificateId);
   const hash = certificateFingerprint(serial);
   const { paris, utc } = stampLines(input.issuedAt, input.dateLabel, input.timeLabel);
   const lines = [
@@ -131,7 +132,7 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
   const paris = formatProofDate(issuedAt);
   const utc = formatProofDateUtc(issuedAt);
   const registryId = registryIdForCompany(companyName);
-  const serial = registryId.replace(/^REG-CONF-\d+-/, "");
+  const serial = certificateSerialFromId(registryId);
   const hash = certificateFingerprint(serial);
   const complete = stats.total > 0 && stats.certified === stats.total;
 

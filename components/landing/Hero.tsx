@@ -64,7 +64,7 @@ export default function Hero() {
             >
               Depuis le 2 février 2025, l&apos;article 4 demande des mesures
               documentées. Formez vos équipes en 1&nbsp;h&nbsp;15, suivez l&apos;avancement
-              RH et gardez des attestations + preuves exportables.
+              RH et conservez des attestations de suivi exportables.
             </motion.p>
 
             {/* CTAs */}

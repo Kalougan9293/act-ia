@@ -182,11 +182,13 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Fin de contrat</h2>
         <p>
-          À l&apos;échéance, les accès sont fermés. Les preuves de formation restent disponibles
+          À l&apos;échéance, les accès sont fermés. Les preuves de formation (attestations,
+          résultats par module, relevés de connexion liés au parcours) restent disponibles
           pour l&apos;entreprise cliente pendant l&apos;année civile de réalisation de
-          l&apos;action et les trois années civiles suivantes, puis sont supprimées. Les
-          factures sont conservées dix ans. La fermeture anticipée se demande par e-mail ; la
-          période déjà payée n&apos;est pas remboursée.
+          l&apos;action et les trois années civiles suivantes, puis sont supprimées. Un
+          rappel est adressé avant reconduction tacite. Les factures sont conservées dix ans.
+          La fermeture anticipée se demande par e-mail ; la période déjà payée n&apos;est pas
+          remboursée.
         </p>
       </section>
 

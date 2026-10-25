@@ -48,7 +48,7 @@ const features = [
 ];
 
 const previewRows = [
-  { name: "Camille Bernard", percent: 40 },
+  { name: "Camille Bernard", percent: 25 },
   { name: "Inès Bernard", percent: 86 },
   { name: "Marc Lefèvre", percent: 100 },
   { name: "Paul Garnier", percent: 0 },

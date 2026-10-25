@@ -46,8 +46,23 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-export function useFormationProgress(uid: string | null) {
-  const [progress, setProgress] = useState<FormationProgress>(emptyProgress());
+export type FormationProgressOptions = {
+  /** Ne pas lire/écrire Firestore (démo publique). */
+  localOnly?: boolean;
+  /** Progression initiale (ex. démo : bloc 1 terminé). */
+  seed?: FormationProgress;
+};
+
+export function useFormationProgress(
+  uid: string | null,
+  options?: FormationProgressOptions,
+) {
+  const localOnly = Boolean(options?.localOnly);
+  const seedRef = useRef(options?.seed);
+  seedRef.current = options?.seed;
+  const [progress, setProgress] = useState<FormationProgress>(
+    () => options?.seed ?? emptyProgress(),
+  );
   const [certificate, setCertificate] = useState<IssuedCertificate | null>(null);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -56,7 +71,7 @@ export function useFormationProgress(uid: string | null) {
 
   useEffect(() => {
     if (!uid) {
-      setProgress(emptyProgress());
+      setProgress(seedRef.current ?? emptyProgress());
       setCertificate(null);
       setReady(true);
       return;
@@ -64,6 +79,16 @@ export function useFormationProgress(uid: string | null) {
 
     let cancelled = false;
     setReady(false);
+
+    if (localOnly) {
+      // Démo : toujours repartir du seed pour un aperçu stable.
+      const next = seedRef.current ?? emptyProgress();
+      setProgress(next);
+      writeLocal(uid, next);
+      setCertificate(null);
+      setReady(true);
+      return;
+    }
 
     (async () => {
       try {
@@ -95,7 +120,7 @@ export function useFormationProgress(uid: string | null) {
     return () => {
       cancelled = true;
     };
-  }, [uid]);
+  }, [uid, localOnly]);
 
   const persist = useCallback(
     async (next: FormationProgress) => {
@@ -103,6 +128,7 @@ export function useFormationProgress(uid: string | null) {
       progressRef.current = next;
       if (!uid) return;
       writeLocal(uid, next);
+      if (localOnly) return;
       setSaving(true);
       try {
         const result = await saveFormationProgress(uid, next);
@@ -113,7 +139,7 @@ export function useFormationProgress(uid: string | null) {
         setSaving(false);
       }
     },
-    [uid],
+    [uid, localOnly],
   );
 
   const markIntroDone = useCallback(() => {

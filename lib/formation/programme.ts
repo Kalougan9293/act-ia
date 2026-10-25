@@ -11,7 +11,7 @@ export const PROGRAMME = {
   contact: ASSISTANCE.email,
   phone: ASSISTANCE.phone,
   statutQualiopi:
-    "Démarche Qualiopi en cours. StartIA n'est pas présenté comme un organisme certifié Qualiopi tant que la certification n'est pas obtenue.",
+    "Dossier Qualiopi en préparation (référentiel et preuves FOAD) — état au 25/10/2026 : aucune date d'audit fixée, aucun numéro de déclaration d'activité revendiqué. StartIA n'est pas présenté comme un organisme certifié Qualiopi tant que la certification n'est pas obtenue.",
   objectifs: [
     {
       label: "Comprendre le fonctionnement de l'IA générative et ses limites",
@@ -80,8 +80,8 @@ export const PROGRAMME = {
     "TVA non applicable, art. 293 B du CGI.",
   ],
   financements: [
-    "Démarche Qualiopi en cours — aucune certification Qualiopi n'est revendiquée à ce stade.",
-    "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise et, le cas échéant, via un organisme de formation partenaire certifié Qualiopi.",
+    "Dossier Qualiopi en préparation — aucune certification Qualiopi ni numéro de déclaration d'activité n'est revendiqué à ce stade.",
+    "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise et, le cas échéant, via un organisme de formation partenaire certifié Qualiopi (émetteur de l'attestation / certificat de réalisation à définir contractuellement).",
     "Aucun financement n'est garanti. Les modalités exactes seront confirmées après obtention éventuelle de la certification / montage avec partenaire.",
   ],
   deroule: [

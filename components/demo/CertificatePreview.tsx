@@ -75,10 +75,10 @@ export default function CertificatePreview({
   };
   const proof: CertificateProof = proofProp ?? {
     ...demo,
-    certificateId: employee.certificateId ?? `CONF-2026-${demo.serial}`,
+    certificateId: employee.certificateId ?? `SIA-2026-${demo.serial}`,
     specimen: !employee.certificateId,
   };
-  const certificateId = proof.certificateId ?? `CONF-2026-${proof.serial}`;
+  const certificateId = proof.certificateId ?? `SIA-2026-${proof.serial}`;
   const hash = certificateFingerprint(proof.serial);
   const issuedAt = `${proof.date} à ${proof.time} (Europe/Paris)`;
   const utc = proof.issuedAt ? formatProofDateUtc(proof.issuedAt) : null;

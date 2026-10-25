@@ -74,12 +74,18 @@ export default function ConfidentialitePage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Pendant le contrat : compte, progression, registre et attestations restent disponibles.</li>
           <li>
-            Preuves de formation : conservées pendant l&apos;année civile de réalisation de
+            Preuves de formation (attestations, résultats par module, relevés de connexion
+            liés au parcours) : conservées pendant l&apos;année civile de réalisation de
             l&apos;action de formation et les trois années civiles suivantes, puis
-            supprimées, sauf obligation légale plus longue.
+            supprimées, sauf obligation légale plus longue. La même durée s&apos;applique
+            lorsqu&apos;un accès salarié est retiré : les preuves restent archivées pour
+            l&apos;employeur.
           </li>
           <li>Factures : 10 ans, durée comptable.</li>
-          <li>Journaux techniques : 12 mois, puis suppression.</li>
+          <li>
+            Journaux techniques de sécurité (erreurs, supervision infrastructure) : 12 mois,
+            puis suppression — distincts des relevés de connexion pédagogiques ci-dessus.
+          </li>
         </ul>
         <p>
           La suppression d&apos;un compte se demande par e-mail à{" "}
@@ -88,7 +94,8 @@ export default function ConfidentialitePage() {
           </a>
           . L&apos;entreprise demande la fermeture de sa structure. Un salarié demande la
           suppression de son accès. Les preuves encore dues à l&apos;employeur et les factures sont
-          conservées dans les durées ci-dessus.
+          conservées dans les durées ci-dessus (pas d&apos;effacement définitif des preuves
+          pendant la période de rétention).
         </p>
       </section>
 

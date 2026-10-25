@@ -17,7 +17,7 @@ import {
 import { employees, type Employee } from "./data";
 import CertificatePreview from "./CertificatePreview";
 import CompanyCertificate from "./CompanyCertificate";
-import { formatProofDate } from "@/lib/formation/proof";
+import { certificateSerialFromId, formatProofDate } from "@/lib/formation/proof";
 import {
   AI_USE_CASE_STATUS_LABELS,
   emptyAiUseCase,
@@ -625,7 +625,7 @@ export default function HrView({
                   score: selected.quizScore ?? 80,
                   ...formatProofDate(selected.certifiedAt ?? new Date().toISOString()),
                   issuedAt: selected.certifiedAt ?? null,
-                  serial: selected.certificateId.replace(/^CONF-\d+-/, ""),
+                  serial: certificateSerialFromId(selected.certificateId),
                   certificateId: selected.certificateId,
                   specimen: false,
                   timeSpentSec: selected.timeSpentSec,

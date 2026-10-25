@@ -120,8 +120,8 @@ function ChoiceList({
   const [picked, setPicked] = useState<number | null>(null);
   const reveal = picked !== null;
   return (
-    <div className="space-y-2.5">
-      <ul className="mx-auto grid w-full max-w-2xl gap-3">
+    <div className="mx-auto w-full max-w-2xl space-y-2.5">
+      <ul className="grid w-full gap-3">
         {choices.map((choice, index) => (
           <li key={choice.label}>
             <button

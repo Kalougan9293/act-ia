@@ -21,7 +21,7 @@ export interface Employee {
 }
 
 export const employees: Employee[] = [
-  { id: "1", name: "Camille Bernard", email: "camille.bernard@atelier-lumiere.fr", role: "Commerce", path: "Socle IA", status: "progress", percent: 40, lastSeen: "30/09/2026", dueDate: "15/10/2026" },
+  { id: "1", name: "Camille Bernard", email: "camille.bernard@atelier-lumiere.fr", role: "Commerce", path: "Socle IA", status: "progress", percent: 25, lastSeen: "30/09/2026", dueDate: "15/10/2026" },
   { id: "2", name: "Marc Lefèvre", email: "marc.lefevre@atelier-lumiere.fr", role: "Atelier", path: "Socle IA", status: "done", percent: 100, lastSeen: "28/09/2026" },
   { id: "3", name: "Inès Bernard", email: "ines.bernard@atelier-lumiere.fr", role: "Comptabilité", path: "Socle IA", status: "progress", percent: 86, lastSeen: "22/09/2026", dueDate: "15/10/2026" },
   { id: "4", name: "Paul Garnier", email: "paul.garnier@atelier-lumiere.fr", role: "Commerce", path: "Socle IA", status: "todo", percent: 0, lastSeen: "04/08/2026", dueDate: "15/10/2026" },

@@ -9,7 +9,11 @@ import {
   registryIdForCompany,
   TRAINING_HOURS_EACH,
 } from "@/lib/export/attestations";
-import { certificateFingerprint, formatProofDateUtc } from "@/lib/formation/proof";
+import {
+  certificateFingerprint,
+  certificateSerialFromId,
+  formatProofDateUtc,
+} from "@/lib/formation/proof";
 
 function Seal() {
   return (
@@ -42,7 +46,7 @@ export default function CompanyCertificate({
   const time = issued.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
   const utc = formatProofDateUtc(issuedIso);
   const registryId = registryIdForCompany(company);
-  const fingerprint = certificateFingerprint(registryId.replace(/^REG-CONF-\d+-/, ""));
+  const fingerprint = certificateFingerprint(certificateSerialFromId(registryId));
   const stats = companyTrainingStats(employees.length ? employees : []);
   const hours = employees.length ? stats.hours : done * TRAINING_HOURS_EACH;
   const certified = employees.length ? stats.certified : unlocked ? total : 0;

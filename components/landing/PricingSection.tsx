@@ -27,7 +27,7 @@ const plans: Plan[] = [
       "Socle commun et fiches métiers incluses",
       "Module entreprise (charte, outils, référent)",
       "Attestations nominatives",
-      "Preuves conservées : année de formation + 3 ans",
+      "Preuves (attestations + relevés) : année + 3 ans",
       "Tableau de bord RH, relevés de connexion et export",
       "Veille incluse : le parcours suit l'actualité",
       "Renouvellement : nouveaux arrivants + mises à jour",
@@ -44,7 +44,7 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Assistance prioritaire (mêmes référents)",
+      "Assistance prioritaire : réponse sous 24 h ouvrées (mêmes référents)",
     ],
     cta: "Démarrer maintenant",
   },
@@ -138,7 +138,7 @@ export default function PricingSection() {
           <span className="text-blue-600 dark:text-blue-400">OPCO</span> possible
           sous réserve d&apos;éligibilité{" "}
           <span className="font-normal text-slate-600 dark:text-slate-300">
-            (démarche Qualiopi en cours ·{" "}
+            (dossier Qualiopi en préparation, sans certification revendiquée ·{" "}
             <a href="/programme" className="underline hover:text-blue-600 dark:hover:text-blue-400">
               fiche programme
             </a>

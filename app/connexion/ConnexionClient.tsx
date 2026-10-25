@@ -12,6 +12,7 @@ import type { UserRole } from "@/lib/admin/types";
 import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { completeFirstConnection } from "@/lib/firebase/first-connection";
+import { sendResetPassword } from "@/lib/firebase/auth";
 
 function authErrorCode(error: unknown) {
   return error && typeof error === "object" && "code" in error
@@ -78,10 +79,11 @@ export default function ConnexionClient() {
   const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [mode, setMode] = useState<"login" | "first">("login");
+  const [mode, setMode] = useState<"login" | "first" | "reset">("login");
   const [busy, setBusy] = useState(false);
   const [holdRedirect, setHoldRedirect] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     if (holdRedirect || !ready || !user || !profile) return;
@@ -102,6 +104,7 @@ export default function ConnexionClient() {
   function showLogin() {
     setMode("login");
     setLocalError(null);
+    setResetSent(false);
     setPassword("");
     setConfirm("");
     setShowPassword(false);
@@ -111,10 +114,47 @@ export default function ConnexionClient() {
   function showFirst() {
     setMode("first");
     setLocalError(null);
+    setResetSent(false);
     setPassword("");
     setConfirm("");
     setShowPassword(false);
     setShowConfirm(false);
+  }
+
+  function showReset() {
+    setMode("reset");
+    setLocalError(null);
+    setResetSent(false);
+    setPassword("");
+    setConfirm("");
+  }
+
+  async function onResetPassword(event: FormEvent) {
+    event.preventDefault();
+    setLocalError(null);
+    setResetSent(false);
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setLocalError("Indiquez votre e-mail.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await sendResetPassword(trimmed);
+      setResetSent(true);
+    } catch (e) {
+      const code = authErrorCode(e);
+      if (code === "auth/invalid-email") {
+        setLocalError("E-mail invalide.");
+      } else if (code === "auth/too-many-requests") {
+        setLocalError("Trop de tentatives. Réessayez dans quelques minutes.");
+      } else {
+        // Ne pas révéler si l'e-mail existe
+        setResetSent(true);
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function onSubmit(event: FormEvent) {
@@ -196,16 +236,20 @@ export default function ConnexionClient() {
           <h1 className="text-2xl font-bold tracking-tight">
             {mode === "first"
               ? "Première connexion"
-              : nextParam?.startsWith("/rh")
-                ? "Connexion espace RH"
-                : "Connexion"}
+              : mode === "reset"
+                ? "Mot de passe oublié"
+                : nextParam?.startsWith("/rh")
+                  ? "Connexion espace RH"
+                  : "Connexion"}
           </h1>
           <p className="mt-2 text-sm text-slate-500 text-center">
             {!configured
               ? "Firebase non configuré (.env.local manquant)"
               : mode === "first"
                 ? "Indiquez votre e-mail et le mot de passe que vous choisissez."
-                : "E-mail et mot de passe"}
+                : mode === "reset"
+                  ? "Nous vous enverrons un lien de réinitialisation par e-mail."
+                  : "E-mail et mot de passe"}
           </p>
         </div>
 
@@ -213,7 +257,13 @@ export default function ConnexionClient() {
           <p className="text-sm text-slate-500">Chargement…</p>
         ) : (
           <form
-            onSubmit={mode === "first" ? onFirstConnection : onSubmit}
+            onSubmit={
+              mode === "first"
+                ? onFirstConnection
+                : mode === "reset"
+                  ? onResetPassword
+                  : onSubmit
+            }
             className="space-y-3 text-center"
           >
             <label className="block space-y-1">
@@ -228,83 +278,93 @@ export default function ConnexionClient() {
                 autoComplete="email"
               />
             </label>
-            <label className="block space-y-1">
-              <span className="text-xs font-medium text-slate-500">
-                {mode === "first" ? "Mot de passe à choisir" : "Mot de passe"}
-              </span>
-              <div className="relative">
-                <input
-                  required
-                  type={showPassword ? "text" : "password"}
-                  minLength={mode === "first" ? 8 : 6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2.5 pr-10 text-sm text-center"
-                  placeholder="••••••••"
-                  autoComplete={mode === "first" ? "new-password" : "current-password"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </label>
-            {mode === "first" && (
-              <ul className="mx-auto w-fit space-y-1.5 text-left">
-                {passwordRules(password).map((rule) => (
-                  <li
-                    key={rule.label}
-                    className={`flex items-center gap-2 text-xs transition-colors duration-200 ${
-                      rule.ok
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-slate-400 dark:text-slate-500"
-                    }`}
-                  >
-                    <span
-                      className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${
-                        rule.ok
-                          ? "border-blue-600 bg-blue-600 text-white dark:border-blue-400 dark:bg-blue-400 dark:text-slate-950"
-                          : "border-slate-300 bg-transparent dark:border-slate-600"
-                      }`}
+            {mode !== "reset" && (
+              <>
+                <label className="block space-y-1">
+                  <span className="text-xs font-medium text-slate-500">
+                    {mode === "first" ? "Mot de passe à choisir" : "Mot de passe"}
+                  </span>
+                  <div className="relative">
+                    <input
+                      required
+                      type={showPassword ? "text" : "password"}
+                      minLength={mode === "first" ? 8 : 6}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2.5 pr-10 text-sm text-center"
+                      placeholder="••••••••"
+                      autoComplete={mode === "first" ? "new-password" : "current-password"}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     >
-                      <Check
-                        className={`h-2.5 w-2.5 transition-opacity duration-200 ${rule.ok ? "opacity-100" : "opacity-0"}`}
-                        strokeWidth={3}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </label>
+                {mode === "first" && (
+                  <ul className="mx-auto w-fit space-y-1.5 text-left">
+                    {passwordRules(password).map((rule) => (
+                      <li
+                        key={rule.label}
+                        className={`flex items-center gap-2 text-xs transition-colors duration-200 ${
+                          rule.ok
+                            ? "text-blue-600 dark:text-blue-400"
+                            : "text-slate-400 dark:text-slate-500"
+                        }`}
+                      >
+                        <span
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${
+                            rule.ok
+                              ? "border-blue-600 bg-blue-600 text-white dark:border-blue-400 dark:bg-blue-400 dark:text-slate-950"
+                              : "border-slate-300 bg-transparent dark:border-slate-600"
+                          }`}
+                        >
+                          <Check
+                            className={`h-2.5 w-2.5 transition-opacity duration-200 ${rule.ok ? "opacity-100" : "opacity-0"}`}
+                            strokeWidth={3}
+                          />
+                        </span>
+                        {rule.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {mode === "first" && (
+                  <label className="block space-y-1">
+                    <span className="text-xs font-medium text-slate-500">Confirmer le mot de passe</span>
+                    <div className="relative">
+                      <input
+                        required
+                        type={showConfirm ? "text" : "password"}
+                        minLength={8}
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2.5 pr-10 text-sm text-center"
+                        placeholder="••••••••"
+                        autoComplete="new-password"
                       />
-                    </span>
-                    {rule.label}
-                  </li>
-                ))}
-              </ul>
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirm((value) => !value)}
+                        aria-label={showConfirm ? "Masquer la confirmation" : "Afficher la confirmation"}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                      >
+                        {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </label>
+                )}
+              </>
             )}
-            {mode === "first" && (
-              <label className="block space-y-1">
-                <span className="text-xs font-medium text-slate-500">Confirmer le mot de passe</span>
-                <div className="relative">
-                  <input
-                    required
-                    type={showConfirm ? "text" : "password"}
-                    minLength={8}
-                    value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-2.5 pr-10 text-sm text-center"
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirm((value) => !value)}
-                    aria-label={showConfirm ? "Masquer la confirmation" : "Afficher la confirmation"}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                  >
-                    {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </label>
+
+            {resetSent && (
+              <p className="text-sm text-emerald-700 dark:text-emerald-400">
+                Si un compte existe pour cet e-mail, un lien de réinitialisation a été envoyé.
+              </p>
             )}
 
             {(localError || error) && (
@@ -332,26 +392,41 @@ export default function ConnexionClient() {
               disabled={busy || !configured}
               className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              {busy ? "…" : mode === "first" ? "Activer mon compte" : "Se connecter"}
+              {busy
+                ? "…"
+                : mode === "first"
+                  ? "Activer mon compte"
+                  : mode === "reset"
+                    ? "Envoyer le lien"
+                    : "Se connecter"}
             </button>
 
             {mode === "login" ? (
-              superAdminLogin ? null : (
-              <button
-                type="button"
-                onClick={showFirst}
-                className="text-sm font-semibold text-blue-600 hover:underline"
-              >
-                Première connexion ?
-              </button>
-              )
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={showReset}
+                  className="text-sm font-semibold text-blue-600 hover:underline"
+                >
+                  Mot de passe oublié ?
+                </button>
+                {superAdminLogin ? null : (
+                  <button
+                    type="button"
+                    onClick={showFirst}
+                    className="text-sm font-semibold text-blue-600 hover:underline"
+                  >
+                    Première connexion ?
+                  </button>
+                )}
+              </div>
             ) : (
               <button
                 type="button"
                 onClick={showLogin}
                 className="text-sm font-semibold text-blue-600 hover:underline"
               >
-                Déjà un mot de passe ? Se connecter
+                Retour à la connexion
               </button>
             )}
           </form>

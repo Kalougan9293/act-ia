@@ -693,7 +693,7 @@ export default function AdminDashboard() {
 
   async function deleteStructureForever(structure: Structure) {
     const ok = window.confirm(
-      `Supprimer définitivement « ${structure.name} » et tous les comptes liés ? Irréversible.`,
+      `Retirer les comptes de « ${structure.name} » ? Les preuves de formation restent archivées (année + 3 ans). La structure passe en archivée.`,
     );
     if (!ok) return;
     const linked = users.filter(
@@ -705,7 +705,14 @@ export default function AdminDashboard() {
         structure.id,
         linked.map((u) => u.id),
       );
-      setStructures((current) => current.filter((s) => s.id !== structure.id));
+      const archivedAt = new Date().toISOString().slice(0, 10);
+      setStructures((current) =>
+        current.map((s) =>
+          s.id === structure.id
+            ? { ...s, status: "suspended", archivedAt }
+            : s,
+        ),
+      );
       setUsers((current) => current.filter((u) => u.structureId !== structure.id));
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Suppression impossible");
@@ -714,7 +721,7 @@ export default function AdminDashboard() {
 
   async function deletePlatformUser(user: PlatformUser) {
     const ok = window.confirm(
-      `Supprimer définitivement « ${user.name} » (${user.email}) ? Irréversible.`,
+      `Retirer « ${user.name} » (${user.email}) ? Les preuves de formation restent archivées pour la structure (année + 3 ans).`,
     );
     if (!ok) return;
     try {

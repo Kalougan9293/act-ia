@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
+import { archiveUserProofs } from "@/lib/firebase/archive-proofs";
 import type { ModuleRevision, PlatformUser, Structure } from "@/lib/admin/types";
 import { emptyCompanyModule, normalizeAiUseCase } from "@/lib/admin/types";
 
@@ -193,6 +194,27 @@ export async function deleteStructureAndUsers(
 ): Promise<void> {
   const db = requireDb();
 
+  // Archiver les preuves FOAD avant effacement des comptes
+  for (const userId of userIds) {
+    const snap = await getDoc(doc(db, "users", userId));
+    if (!snap.exists()) continue;
+    const data = snap.data() as Record<string, unknown>;
+    await archiveUserProofs({
+      userId,
+      structureId,
+      email: String(data.email ?? ""),
+      name: String(data.name ?? ""),
+      role: String(data.role ?? ""),
+      certificateId:
+        data.certificateId != null ? String(data.certificateId) : null,
+      certifiedAt: data.certifiedAt != null ? String(data.certifiedAt) : null,
+      quizScore: typeof data.quizScore === "number" ? data.quizScore : null,
+      progressPercent:
+        typeof data.progressPercent === "number" ? data.progressPercent : null,
+      reason: "admin_delete_structure",
+    });
+  }
+
   // Auth d'abord (profils encore présents pour l'autorisation serveur)
   for (const userId of userIds) {
     const snap = await getDoc(doc(db, "users", userId));
@@ -204,8 +226,18 @@ export async function deleteStructureAndUsers(
     await deleteAuthAccount({ uid: userId, email });
   }
 
+  // La structure n'est pas effacée durement : archivée pour conserver archivedProofs
+  await setDoc(
+    doc(db, "structures", structureId),
+    {
+      status: "suspended",
+      archivedAt: new Date().toISOString().slice(0, 10),
+      deletedUsersAt: new Date().toISOString(),
+    },
+    { merge: true },
+  );
+
   const batch = writeBatch(db);
-  batch.delete(doc(db, "structures", structureId));
   for (const userId of userIds) {
     batch.delete(doc(db, "users", userId));
   }
@@ -220,6 +252,28 @@ export async function deleteUser(userId: string): Promise<void> {
         .trim()
         .toLowerCase()
     : "";
+  if (snap.exists()) {
+    const data = snap.data() as Record<string, unknown>;
+    const structureId = String(data.structureId ?? "");
+    if (structureId) {
+      await archiveUserProofs({
+        userId,
+        structureId,
+        email,
+        name: String(data.name ?? ""),
+        role: String(data.role ?? ""),
+        certificateId:
+          data.certificateId != null ? String(data.certificateId) : null,
+        certifiedAt: data.certifiedAt != null ? String(data.certifiedAt) : null,
+        quizScore: typeof data.quizScore === "number" ? data.quizScore : null,
+        progressPercent:
+          typeof data.progressPercent === "number"
+            ? data.progressPercent
+            : null,
+        reason: "admin_delete_user",
+      });
+    }
+  }
   await deleteAuthAccount({ uid: userId, email });
   await deleteDoc(doc(db, "users", userId));
 }

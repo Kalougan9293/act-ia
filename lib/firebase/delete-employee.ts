@@ -13,6 +13,7 @@ import {
   deleteAuthAccount,
   isProvisionalUserId,
 } from "@/lib/firebase/delete-auth-account";
+import { archiveUserProofs } from "@/lib/firebase/archive-proofs";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -47,10 +48,33 @@ export async function deleteEmployeeAsRh(params: {
     getStructure(params.structureId),
   ]);
 
+  const email = String(data.email ?? "").trim().toLowerCase();
+  const name = String(data.name ?? "");
+  const certificateId =
+    data.certificateId != null ? String(data.certificateId) : null;
+  const certifiedAt =
+    data.certifiedAt != null ? String(data.certifiedAt) : null;
+  const quizScore =
+    typeof data.quizScore === "number" ? data.quizScore : null;
+  const progressPercent =
+    typeof data.progressPercent === "number" ? data.progressPercent : null;
+
   if (role === "rh") {
     if (!formationEnrolled) {
       throw new Error("Le compte RH n'est pas inscrit à la formation");
     }
+    await archiveUserProofs({
+      userId: params.userId,
+      structureId: params.structureId,
+      email,
+      name,
+      role,
+      certificateId,
+      certifiedAt,
+      quizScore,
+      progressPercent,
+      reason: "rh_unenroll_formation",
+    });
     const batch = writeBatch(db);
     for (const d of progressSnap.docs) batch.delete(d.ref);
     for (const d of certsSnap.docs) batch.delete(d.ref);
@@ -71,7 +95,19 @@ export async function deleteEmployeeAsRh(params: {
     throw new Error("Suppression impossible pour ce type de compte");
   }
 
-  const email = String(data.email ?? "").trim().toLowerCase();
+  await archiveUserProofs({
+    userId: params.userId,
+    structureId: params.structureId,
+    email,
+    name,
+    role,
+    certificateId,
+    certifiedAt,
+    quizScore,
+    progressPercent,
+    reason: "rh_remove_employee",
+  });
+
   // Auth avant Firestore : sinon le compte Auth orphelin bloque une future 1ʳᵉ connexion.
   // Comptes encore « pending_* » : pas d'Auth réel — nettoyage e-mail best-effort.
   if (isProvisionalUserId(params.userId)) {

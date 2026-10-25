@@ -164,6 +164,15 @@ service cloud.firestore {
             && request.resource.data.diff(resource.data).affectedKeys()
                 .hasOnly(["inviteToken", "companyModule"]));
       allow delete: if isSuperAdmin();
+
+      // Preuves FOAD archivées (rétention année + 3) après retrait d'un accès
+      match /archivedProofs/{userId} {
+        allow read: if isSuperAdmin()
+          || (isRh() && sameStructure(structureId));
+        allow create, update: if isSuperAdmin()
+          || (isRh() && sameStructure(structureId));
+        allow delete: if isSuperAdmin();
+      }
     }
 
     match /invites/{token} {
