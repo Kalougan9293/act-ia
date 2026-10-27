@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
-import ReviewsSection from "@/components/landing/ReviewsSection";
 import TrustBanner from "@/components/landing/TrustBanner";
 import ProblemSection from "@/components/landing/ProblemSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
@@ -25,7 +24,6 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <Navbar />
       <Hero />
-      <ReviewsSection />
       <TrustBanner />
       <ProblemSection />
       <FeaturesSection />

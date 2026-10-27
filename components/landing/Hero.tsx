@@ -68,31 +68,37 @@ export default function Hero() {
             </motion.p>
 
             {/* CTAs */}
-            <motion.div {...fadeUp(0.3)} className="flex flex-wrap items-center gap-4 pt-1">
-              <motion.div
-                whileHover={{ scale: 1.08, y: -8 }}
-                transition={{ type: "spring", stiffness: 380, damping: 15 }}
-              >
-                <a
-                  href="mailto:contact@lockin-web.online?subject=Demande%20LockinIA"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.85)] transition-shadow duration-300 group"
+            <motion.div {...fadeUp(0.3)} className="space-y-3 pt-1">
+              <div className="flex flex-wrap items-center gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.08, y: -8 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 15 }}
                 >
-                  Demander un accès
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-                </a>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.08, y: -8 }}
-                transition={{ type: "spring", stiffness: 380, damping: 15 }}
-              >
-                <Link
-                  href="/demo"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-white dark:bg-slate-900 border border-blue-600 rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.55)] transition-shadow duration-300"
+                  <a
+                    href="mailto:contact@lockin-web.online?subject=Demande%20LockinIA"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.85)] transition-shadow duration-300 group"
+                  >
+                    Demander un accès
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+                  </a>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.08, y: -8 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 15 }}
                 >
-                  <Play className="w-4 h-4" fill="currentColor" />
-                  Tester la démo
-                </Link>
-              </motion.div>
+                  <Link
+                    href="/demo"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-white dark:bg-slate-900 border border-blue-600 rounded-xl shadow-md hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.55)] transition-shadow duration-300"
+                  >
+                    <Play className="w-4 h-4" fill="currentColor" />
+                    Tester la démo
+                  </Link>
+                </motion.div>
+              </div>
+              <p className="max-w-md text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                Contenu conçu et relu avec un formateur agréé et un juriste AI Act / RGPD.
+                Les retours des premières sessions seront bientôt publiés.
+              </p>
             </motion.div>
           </div>
 
