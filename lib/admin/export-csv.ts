@@ -47,6 +47,7 @@ export function structuresCsv(
 ): string {
   const headers = [
     "Structure",
+    "Identifiant suivi",
     "SIRET",
     "E-mail",
     "Téléphone",
@@ -68,6 +69,7 @@ export function structuresCsv(
       const grads = structureGraduates(s.id, users);
       return [
         s.name,
+        s.registryId,
         s.billing.siret,
         structureEmail(s, users),
         s.billing.phone,
@@ -240,7 +242,7 @@ export function downloadAdminReportZip(input: {
     },
   ]);
   downloadBytes(
-    `startia-rapport-admin-${day}.zip`,
+    `lockinia-rapport-admin-${day}.zip`,
     zip,
     "application/zip",
   );

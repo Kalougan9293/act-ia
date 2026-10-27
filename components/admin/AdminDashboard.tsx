@@ -10,7 +10,6 @@ import {
   Award,
   Building2,
   Download,
-  GraduationCap,
   FileText,
   Pencil,
   Plus,
@@ -20,6 +19,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import AdminCertificatePreview from "@/components/admin/AdminCertificatePreview";
 import {
@@ -45,11 +45,13 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import {
   deleteStructureAndUsers,
   deleteUser,
+  ensureStructureRegistryId,
   listStructures,
   listUsers,
   saveStructure,
   saveUser,
 } from "@/lib/firebase/admin-data";
+import { createRegistryId } from "@/lib/export/attestations";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import { syncStructureInviteSeats } from "@/lib/firebase/seats";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -245,11 +247,14 @@ export default function AdminDashboard() {
       setLoading(true);
       setLoadError(null);
       try {
-        const [nextStructures, nextUsers, pendingInvites] = await Promise.all([
+        const [listedStructures, nextUsers, pendingInvites] = await Promise.all([
           listStructures(),
           listUsers(),
           listPendingInvites(),
         ]);
+        const nextStructures = await Promise.all(
+          listedStructures.map((structure) => ensureStructureRegistryId(structure)),
+        );
         if (!cancelled) {
           setStructures(nextStructures);
           // Invitations perso collaborateur abandonnées — on ne les compte plus.
@@ -557,6 +562,7 @@ export default function AdminDashboard() {
           status: "active",
           archivedAt: null,
           inviteToken,
+          registryId: createRegistryId(id),
           companyModule: emptyCompanyModule(),
           billing: {
             companyName: form.name.trim(),
@@ -789,8 +795,8 @@ export default function AdminDashboard() {
         <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
             <a href="/" className="flex items-center gap-1.5 font-bold text-base tracking-tight">
-              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
-              <GraduationCap className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <BrandMark className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              Lockin<span className="text-blue-600 dark:text-blue-400">IA</span>
             </a>
             <span className="hidden sm:inline-flex rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
               Super admin
@@ -1266,12 +1272,13 @@ export default function AdminDashboard() {
             <div className="overflow-x-auto">
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
-                <col className="w-[22%]" />
-                <col className="w-[26%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
+                <col className="w-[16%]" />
+                <col className="w-[10%]" />
+                <col className="w-[12%]" />
                 <col className="w-[12%]" />
                 <col className="w-[14%]" />
-                <col className="w-[14%]" />
-                <col className="w-[12%]" />
               </colgroup>
               <thead className="text-slate-500 dark:text-slate-400">
                 <tr>
@@ -1287,6 +1294,9 @@ export default function AdminDashboard() {
                     dir={sort.dir}
                     onClick={() => toggleSort("email")}
                   />
+                  <th className="px-2 py-1.5 font-medium text-xs" title="Identifiant de suivi Article 4">
+                    Suivi
+                  </th>
                   <SortHeader
                     label="Attestations"
                     active={sort.key === "graduates"}
@@ -1324,6 +1334,12 @@ export default function AdminDashboard() {
                       title={structureEmail(structure, users)}
                     >
                       {structureEmail(structure, users)}
+                    </td>
+                    <td
+                      className="px-2 py-1.5 truncate font-mono text-[11px] text-slate-600 dark:text-slate-300"
+                      title={structure.registryId}
+                    >
+                      {structure.registryId}
                     </td>
                     <td className="px-2 py-1.5 tabular-nums">
                       <button

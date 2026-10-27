@@ -3,7 +3,7 @@ import RhApp from "@/components/rh/RhApp";
 import RequireAuth from "@/components/auth/RequireAuth";
 
 export const metadata: Metadata = {
-  title: "Espace RH — StartIA",
+  title: "Espace RH — LockinIA",
   description: "Pilotage RH : collaborateurs, suivi AI Act & RGPD, attestations.",
 };
 

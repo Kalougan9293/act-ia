@@ -33,8 +33,8 @@ export default function VideoPlaceholder() {
       >
         <video
           ref={videoRef}
-          src="/startia-demo.mp4"
-          poster="/startia-cover.jpg"
+          src="/lockinia-demo.mp4"
+          poster="/lockinia-cover.jpg"
           className="absolute inset-0 h-full w-full object-cover bg-white"
           playsInline
           preload="metadata"

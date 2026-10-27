@@ -20,9 +20,11 @@ import CompanyCertificate from "./CompanyCertificate";
 import { certificateSerialFromId, formatProofDate } from "@/lib/formation/proof";
 import {
   AI_USE_CASE_STATUS_LABELS,
+  defaultCompanyModuleMinimum,
   emptyAiUseCase,
   emptyCompanyModule,
   isAiUseCaseFilled,
+  isCompanyModuleFilled,
   normalizeAiUseCase,
   type AiUseCaseEntry,
   type CompanyModuleContent,
@@ -63,6 +65,7 @@ function normalizeModule(module?: CompanyModuleContent | null): CompanyModuleCon
   return {
     ...base,
     ...module,
+    visible: Boolean(module.visible),
     useCases: Array.isArray(module.useCases)
       ? module.useCases.map((row, index) => normalizeAiUseCase(row, index))
       : [],
@@ -81,7 +84,7 @@ function trimUseCase(row: AiUseCaseEntry): AiUseCaseEntry {
   return next;
 }
 
-type SortKey = "name" | "email" | "percent" | "lastSeen";
+type SortKey = "name" | "email" | "percent" | "rating" | "lastSeen";
 
 function dateValue(value: string) {
   const [day, month, year] = value.split("/").map(Number);
@@ -102,14 +105,14 @@ function SortHeader({
 }) {
   const Icon = !active ? ArrowUpDown : dir === "asc" ? ArrowUp : ArrowDown;
   return (
-    <th className="px-4 py-3 font-medium">
+    <th className="px-4 py-3 text-center font-medium">
       <button
         type="button"
         onClick={onClick}
-        className="inline-flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white"
+        className="relative mx-auto inline-block hover:text-slate-900 dark:hover:text-white"
       >
         {label}
-        <Icon className="h-3.5 w-3.5 opacity-60" />
+        <Icon className="absolute left-full top-1/2 ml-1.5 h-3.5 w-3.5 -translate-y-1/2 opacity-60" />
       </button>
     </th>
   );
@@ -179,6 +182,7 @@ export default function HrView({
   companyName = "Atelier Lumière",
   structureId,
   structureInviteLink,
+  structureRegistryId,
   seatsMax = 5,
   seatsUsed = 0,
   companyModule: companyModuleProp,
@@ -190,6 +194,7 @@ export default function HrView({
   companyName?: string;
   structureId?: string;
   structureInviteLink?: string | null;
+  structureRegistryId?: string | null;
   seatsMax?: number;
   seatsUsed?: number;
   companyModule?: CompanyModuleContent;
@@ -222,6 +227,7 @@ export default function HrView({
   const [moduleSaving, setModuleSaving] = useState(false);
   const [moduleError, setModuleError] = useState<string | null>(null);
   const [exportBusy, setExportBusy] = useState(false);
+  const [avisDetailId, setAvisDetailId] = useState<string | null>(null);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "name", dir: "asc" });
 
   useEffect(() => {
@@ -248,15 +254,15 @@ export default function HrView({
           ? a.email.localeCompare(b.email, "fr")
           : sort.key === "percent"
             ? a.percent - b.percent
-            : dateValue(a.lastSeen) - dateValue(b.lastSeen);
+            : sort.key === "rating"
+              ? (a.satisfactionRating ?? -1) - (b.satisfactionRating ?? -1)
+              : dateValue(a.lastSeen) - dateValue(b.lastSeen);
     return sort.dir === "asc" ? result : -result;
   });
   const done = active.filter((employee) => employee.percent >= 100).length;
-  const certified = active.filter((employee) => Boolean(employee.certificateId)).length;
   const rate = active.length === 0 ? 0 : Math.round((done / active.length) * 100);
-  /** Dossier de preuve : tout le monde a une attestation (après entreprise + métier) */
-  const companyReady = active.length > 0 && certified === active.length;
   const selected = roster.find((employee) => employee.id === preview) ?? null;
+  const avisDetail = roster.find((employee) => employee.id === avisDetailId) ?? null;
   const seatsFull = seatsUsed >= seatsMax;
 
   function toggleSort(key: SortKey) {
@@ -398,6 +404,7 @@ export default function HrView({
       if (moduleDraft.contacts.trim() !== moduleSaved.contacts) summaryParts.push("référent");
       if (moduleDraft.declaration.trim() !== moduleSaved.declaration) summaryParts.push("déclaration");
       const next: CompanyModuleContent = {
+        visible: Boolean(moduleDraft.visible),
         tools: moduleDraft.tools.trim(),
         charter: moduleDraft.charter.trim(),
         contacts: moduleDraft.contacts.trim(),
@@ -405,7 +412,13 @@ export default function HrView({
         useCases,
         revisions: [
           ...moduleSaved.revisions,
-          { at: new Date().toISOString(), summary: summaryParts.join(" · ") },
+          {
+            at: new Date().toISOString(),
+            summary: [
+              moduleDraft.visible ? "visible" : "masqué",
+              ...summaryParts,
+            ].join(" · "),
+          },
         ].slice(-80),
       };
       if (onSaveCompanyModule) await onSaveCompanyModule(next);
@@ -419,21 +432,18 @@ export default function HrView({
   }
 
   return (
-    <div className="space-y-8 text-center">
-      <div>
+    <div className={`text-center ${demo ? "space-y-10" : "space-y-8"}`}>
+      <div className="flex w-full flex-col items-center text-center">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Pilotage RH</h1>
-        <p className="mt-1 text-center text-sm text-blue-700/70 dark:text-blue-300/70">{companyName}</p>
+        <p className="mt-1 w-full text-center text-sm text-blue-700/70 dark:text-blue-300/70">
+          {companyName}
+        </p>
+        {demo ? (
+          <p className="mt-2 w-full text-center text-xs font-medium text-slate-400 dark:text-slate-500">
+            Aperçu démonstration — sans compte
+          </p>
+        ) : null}
       </div>
-
-      {companyReady && (
-        <button
-          type="button"
-          onClick={() => setShowCompany(true)}
-          className="mx-auto block w-full max-w-2xl rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100 dark:hover:bg-emerald-950/50"
-        >
-          Registre à jour !
-        </button>
-      )}
 
       <div className="flex flex-wrap items-center justify-center gap-3">
         <button
@@ -443,44 +453,49 @@ export default function HrView({
         >
           Rapport Article 4
         </button>
-        <button
-          type="button"
-          disabled={demo}
-          onClick={() => downloadCompanyReport(companyName, active)}
-          className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-emerald-200"
-        >
-          <Download className="h-4 w-4" />
-          Télécharger le rapport (PDF)
-        </button>
-        <button
-          type="button"
-          disabled={demo || exportBusy}
-          onClick={() => {
-            void (async () => {
-              setExportBusy(true);
-              try {
-                const progressByUserId = await loadFormationProgressMany(
-                  active.map((employee) => employee.id),
-                );
-                downloadProofZip(
-                  companyName,
-                  active,
-                  moduleSaved,
-                  progressByUserId,
-                );
-              } finally {
-                setExportBusy(false);
-              }
-            })();
-          }}
-          className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-        >
-          <Download className="h-4 w-4" />
-          {exportBusy ? "Export…" : "Exporter le dossier (ZIP)"}
-        </button>
+        {!demo ? (
+          <>
+            <button
+              type="button"
+              onClick={() => downloadCompanyReport(companyName, active, structureRegistryId)}
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-900 dark:text-emerald-200"
+            >
+              <Download className="h-4 w-4" />
+              Télécharger le rapport (PDF)
+            </button>
+            <button
+              type="button"
+              disabled={exportBusy}
+              onClick={() => {
+                void (async () => {
+                  setExportBusy(true);
+                  try {
+                    const progressByUserId = await loadFormationProgressMany(
+                      active.map((employee) => employee.id),
+                    );
+                    downloadProofZip(
+                      companyName,
+                      active,
+                      moduleSaved,
+                      progressByUserId,
+                    );
+                  } finally {
+                    setExportBusy(false);
+                  }
+                })();
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <Download className="h-4 w-4" />
+              {exportBusy ? "Export…" : "Exporter le dossier (ZIP)"}
+            </button>
+          </>
+        ) : null}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        className={`grid gap-4 ${demo ? "mx-auto max-w-3xl grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}`}
+      >
         <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
           <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{done}/{active.length}</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Salariés formés</div>
@@ -489,10 +504,12 @@ export default function HrView({
           <div className="text-2xl font-bold text-sky-700 dark:text-sky-300">{rate} %</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de suivi</div>
         </div>
-        <div className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
-          <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
-        </div>
+        {!demo ? (
+          <div className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+            <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
+            <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
+          </div>
+        ) : null}
         <button
           type="button"
           onClick={openModuleEditor}
@@ -504,6 +521,15 @@ export default function HrView({
           <div className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
             Module entreprise
           </div>
+          <div
+            className={`mt-1 text-[11px] font-medium ${
+              moduleSaved.visible
+                ? "text-emerald-700 dark:text-emerald-300"
+                : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            {moduleSaved.visible ? "Visible aux collaborateurs" : "Masqué (par défaut)"}
+          </div>
         </button>
       </div>
 
@@ -512,23 +538,24 @@ export default function HrView({
       )}
 
       {(demo || structureInviteLink) && (
-        <div className="flex justify-center px-2">
-          <div className="flex w-full max-w-lg flex-col items-center gap-2.5 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/60 to-white px-5 py-4 text-center shadow-sm dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-900">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
-              Lien de connexion
-            </p>
-            <p className="w-full break-all text-sm font-medium leading-relaxed text-blue-600 dark:text-blue-400">
-              {permanentLink}
-            </p>
-            <button
-              type="button"
-              onClick={() => void copyPermanentLink()}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
-            >
-              {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              {copiedPermanent ? "Copié" : "Copier"}
-            </button>
-          </div>
+        <div className="flex w-full items-center gap-3 rounded-xl border border-blue-100/80 bg-gradient-to-r from-blue-50/60 to-white px-4 py-2.5 shadow-sm dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-900">
+          <p className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
+            Lien de connexion
+          </p>
+          <p
+            className="min-w-0 flex-1 truncate text-sm font-medium text-blue-600 dark:text-blue-400"
+            title={permanentLink}
+          >
+            {permanentLink}
+          </p>
+          <button
+            type="button"
+            onClick={() => void copyPermanentLink()}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
+          >
+            {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copiedPermanent ? "Copié" : "Copier"}
+          </button>
         </div>
       )}
 
@@ -562,6 +589,7 @@ export default function HrView({
                 <SortHeader label="Collaborateur" active={sort.key === "name"} dir={sort.dir} onClick={() => toggleSort("name")} />
                 <SortHeader label="E-mail" active={sort.key === "email"} dir={sort.dir} onClick={() => toggleSort("email")} />
                 <SortHeader label="Avancement" active={sort.key === "percent"} dir={sort.dir} onClick={() => toggleSort("percent")} />
+                <SortHeader label="Avis" active={sort.key === "rating"} dir={sort.dir} onClick={() => toggleSort("rating")} />
                 <SortHeader label="Dernière connexion" active={sort.key === "lastSeen"} dir={sort.dir} onClick={() => toggleSort("lastSeen")} />
               </tr>
             </thead>
@@ -586,18 +614,34 @@ export default function HrView({
                       }
                     />
                   </td>
+                  <td className="px-4 py-3 text-center align-middle">
+                    {employee.satisfactionRating != null ? (
+                      <button
+                        type="button"
+                        onClick={() => setAvisDetailId(employee.id)}
+                        className="mx-auto block text-sm font-semibold tabular-nums text-blue-700 underline-offset-2 hover:underline dark:text-blue-300"
+                        title="Voir le commentaire"
+                      >
+                        {employee.satisfactionRating}/5
+                      </button>
+                    ) : (
+                      <span className="inline-block text-slate-400">—</span>
+                    )}
+                  </td>
                   <td className="relative px-4 py-3 text-slate-600 dark:text-slate-300 whitespace-nowrap">
                     {employee.lastSeen}
-                    <button
-                      type="button"
-                      disabled={Boolean(deletingId) || demo}
-                      onClick={() => void removeCollaborator(employee)}
-                      aria-label={`Effacer ${employee.name}`}
-                      title="Effacer — perte définitive du suivi"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-100 transition-opacity hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {!demo ? (
+                      <button
+                        type="button"
+                        disabled={Boolean(deletingId)}
+                        onClick={() => void removeCollaborator(employee)}
+                        aria-label={`Effacer ${employee.name}`}
+                        title="Effacer — perte définitive du suivi"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-100 transition-opacity hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}
@@ -606,19 +650,61 @@ export default function HrView({
         </div>
       </div>
 
-      <div className="flex items-start justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-        <p className="text-center max-w-2xl">
-          Supprimer un collaborateur est définitif : progression et attestation sont effacées, et l&apos;accès est
-          libéré pour un autre salarié. Cela permet de rester dans la capacité de votre offre et de garder le
-          registre à jour.
-        </p>
-      </div>
+      {!demo ? (
+        <div className="flex items-start justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <Info className="w-4 h-4 shrink-0 mt-0.5" />
+          <p className="text-center max-w-2xl">
+            Supprimer un collaborateur est définitif : progression et attestation sont effacées, et l&apos;accès est
+            libéré pour un autre salarié. Cela permet de rester dans la capacité de votre offre et de garder le
+            registre à jour.
+          </p>
+        </div>
+      ) : null}
+
+      {avisDetail && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4"
+          onClick={() => setAvisDetailId(null)}
+        >
+          <div
+            className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setAvisDetailId(null)}
+              className="absolute right-3 top-3 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              aria-label="Fermer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="pr-8 text-sm font-semibold text-slate-900 dark:text-white">
+              Avis — {avisDetail.name}
+            </p>
+            <p className="mt-1 text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+              {avisDetail.satisfactionRating}/5
+            </p>
+            {avisDetail.satisfactionComment?.trim() ? (
+              <p className="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                « {avisDetail.satisfactionComment.trim()} »
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-slate-400">Sans commentaire</p>
+            )}
+            {avisDetail.satisfactionComplaint?.trim() ? (
+              <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-sm leading-relaxed text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+                Réclamation : {avisDetail.satisfactionComplaint.trim()}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      )}
 
       {selected && (
         <CertificatePreview
           employee={selected}
           companyName={companyName}
+          canDownload={!demo}
           proof={
             selected.certificateId
               ? {
@@ -642,6 +728,7 @@ export default function HrView({
           done={done}
           total={active.length}
           employees={active}
+          registryId={structureRegistryId}
           canDownload={!demo}
           onClose={() => setShowCompany(false)}
         />
@@ -754,7 +841,37 @@ export default function HrView({
         </div>
       )}
 
-      {showModuleEditor && (
+      {showModuleEditor && demo ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+          onClick={() => setShowModuleEditor(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-xl dark:border-slate-700 dark:bg-slate-900"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+              <Building2 className="h-6 w-6" strokeWidth={2} />
+            </div>
+            <h2 className="mt-4 text-lg font-bold text-slate-900 dark:text-white">
+              Module entreprise
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              C&apos;est ici que vous déclarez vos vrais usages d&apos;IA : outils autorisés, règles
+              internes et contacts. Vos collaborateurs les voient ensuite dans le parcours.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowModuleEditor(false)}
+              className="mt-6 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Compris
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {showModuleEditor && !demo ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-xl dark:border-slate-700 dark:bg-slate-900 sm:p-6">
             <div className="flex items-start justify-between gap-3">
@@ -763,7 +880,8 @@ export default function HrView({
                   Module « Votre entreprise »
                 </h2>
                 <p className="mt-1 text-xs text-slate-500">
-                  Visible dans le parcours collaborateurs. Écrivez en texte simple — le rendu se met en forme tout seul.
+                  Masqué par défaut. Cochez pour l&apos;afficher aux collaborateurs — une base minimale
+                  se préremplit si les champs sont vides.
                 </p>
               </div>
               <button
@@ -776,12 +894,44 @@ export default function HrView({
               </button>
             </div>
 
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 dark:border-slate-700 dark:bg-slate-950/50">
+              <input
+                type="checkbox"
+                checked={Boolean(moduleDraft.visible)}
+                onChange={(event) => {
+                  const checked = event.target.checked;
+                  setModuleDraft((current) => {
+                    if (!checked) return { ...current, visible: false };
+                    if (isCompanyModuleFilled(current)) {
+                      return { ...current, visible: true };
+                    }
+                    return {
+                      ...defaultCompanyModuleMinimum(),
+                      revisions: current.revisions,
+                    };
+                  });
+                }}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-left">
+                <span className="block text-sm font-semibold text-slate-900 dark:text-white">
+                  Afficher aux collaborateurs
+                </span>
+                <span className="mt-0.5 block text-xs text-slate-500">
+                  Décoché = module invisible dans le parcours. Coché = visible, avec un minimum
+                  prérempli si besoin.
+                </span>
+              </span>
+            </label>
+
             <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/80 px-3.5 py-3 text-xs leading-relaxed text-blue-900 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-100">
               <p className="font-semibold">Astuces de saisie</p>
               <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
                 <li>
-                  Une ligne qui commence par <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">-</code> ou{" "}
-                  <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">1.</code> devient une liste.
+                  Une ligne qui commence par{" "}
+                  <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">-</code> ou{" "}
+                  <code className="rounded bg-white/70 px-1 dark:bg-slate-900/60">1.</code> devient
+                  une liste.
                 </li>
                 <li>Laissez une ligne vide entre deux paragraphes.</li>
                 <li>Les e-mails et liens (https://…) deviennent cliquables automatiquement.</li>
@@ -987,7 +1137,7 @@ export default function HrView({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

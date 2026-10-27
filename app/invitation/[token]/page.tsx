@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Check, Eye, EyeOff, GraduationCap } from "lucide-react";
+import { Check, Eye, EyeOff } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import { validatePassword } from "@/lib/auth/password";
 import { acceptInvite, getInvite, type InviteRecord } from "@/lib/firebase/invites";
@@ -78,8 +79,8 @@ export default function InvitationPage() {
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-1.5 font-bold text-lg tracking-tight">
-            Start<span className="text-blue-600 dark:text-blue-400">IA</span>
-            <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <BrandMark className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            Lockin<span className="text-blue-600 dark:text-blue-400">IA</span>
           </Link>
           <ThemeToggle />
         </div>

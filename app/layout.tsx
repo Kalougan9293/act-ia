@@ -20,9 +20,12 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "StartIA — Formation EU AI Act & RGPD pour les entreprises",
+  title: "LockinIA — Formation EU AI Act & RGPD pour les entreprises",
   description:
     "Formez les équipes qui utilisent l'IA. Attestations de suivi et tableau de bord pour la direction et les RH.",
+  icons: {
+    icon: "/lockinia-mark.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

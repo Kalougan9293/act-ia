@@ -68,7 +68,7 @@ export default function AdminCertificatePreview({
 
         <div className="px-8 sm:px-12 py-10 space-y-8">
           <header className="text-center space-y-2 border-b border-slate-200 pb-6">
-            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">StartIA</div>
+            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">LockinIA</div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
               Attestation de suivi de formation et de sensibilisation
             </h2>

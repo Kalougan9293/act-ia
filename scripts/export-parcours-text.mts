@@ -280,7 +280,7 @@ function formatActivity(activity: Activity): string {
 
 const out: string[] = [];
 
-out.push("StartIA — PARCOURS UTILISATEUR");
+out.push("LockinIA — PARCOURS UTILISATEUR");
 out.push("=".repeat(60));
 out.push("");
 out.push(`Promesse: ${FORMATION_PROMISE}`);

@@ -3,9 +3,9 @@ import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "RGPD — StartIA",
+  title: "RGPD — LockinIA",
   description:
-    "RGPD et IA au travail : ce que traite StartIA, et ce que le parcours enseigne aux équipes.",
+    "RGPD et IA au travail : ce que traite LockinIA, et ce que le parcours enseigne aux équipes.",
 };
 
 export default function RgpdPage() {
@@ -16,7 +16,7 @@ export default function RgpdPage() {
           Deux sujets distincts
         </h2>
         <p>
-          <strong>1. StartIA en tant que prestataire</strong> — nous traitons des données de compte
+          <strong>1. LockinIA en tant que prestataire</strong> — nous traitons des données de compte
           et de formation (identité, e-mail, progression, attestations) pour délivrer le service.
           Les finalités, durées de conservation et droits figurent dans la{" "}
           <Link

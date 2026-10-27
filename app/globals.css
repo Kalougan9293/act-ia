@@ -431,6 +431,165 @@ p.text-center {
   animation: traffic-cloud-drift 12s ease-in-out infinite alternate-reverse;
 }
 
+@keyframes traffic-smoke-puff {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(0.45);
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-14px, -36px) scale(1.55);
+  }
+}
+
+@keyframes traffic-breakdown-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-2px) rotate(-0.8deg);
+  }
+  40% {
+    transform: translateX(2px) rotate(0.8deg);
+  }
+  60% {
+    transform: translateX(-1.5px) rotate(-0.5deg);
+  }
+  80% {
+    transform: translateX(1.5px) rotate(0.5deg);
+  }
+}
+
+.traffic-smoke-puff {
+  animation: traffic-smoke-puff 1.35s ease-out infinite;
+}
+
+.traffic-breakdown-shake {
+  animation: traffic-breakdown-shake 0.55s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traffic-smoke-puff,
+  .traffic-breakdown-shake {
+    animation: none;
+  }
+}
+
+@keyframes rate-pulse-soft {
+  0%,
+  100% {
+    transform: scaleY(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scaleY(1.04);
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes rate-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.03);
+  }
+}
+
+@keyframes rate-glow {
+  0%,
+  100% {
+    filter: brightness(1);
+    box-shadow: 0 0 8px rgb(245 158 11 / 0.35);
+  }
+  50% {
+    filter: brightness(1.12);
+    box-shadow: 0 0 18px rgb(245 158 11 / 0.55);
+  }
+}
+
+@keyframes rate-fire {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.06);
+    filter: brightness(1) saturate(1.15);
+    box-shadow:
+      0 0 12px rgb(249 115 22 / 0.55),
+      0 -6px 20px rgb(239 68 68 / 0.35);
+  }
+  33% {
+    transform: translateY(-4px) scale(1.1);
+    filter: brightness(1.2) saturate(1.3);
+    box-shadow:
+      0 0 22px rgb(249 115 22 / 0.75),
+      0 -10px 28px rgb(239 68 68 / 0.5);
+  }
+  66% {
+    transform: translateY(-2px) scale(1.08) rotate(-0.6deg);
+    filter: brightness(1.15) saturate(1.25);
+    box-shadow:
+      0 0 18px rgb(234 179 8 / 0.65),
+      0 -8px 24px rgb(249 115 22 / 0.45);
+  }
+}
+
+@keyframes rate-flame {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: translateY(0) scaleY(1) scaleX(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px) scaleY(1.2) scaleX(0.9);
+  }
+}
+
+.rate-anim-1 {
+  animation: rate-pulse-soft 1.8s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.rate-anim-2 {
+  animation: rate-pulse-soft 1.4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.rate-anim-3 {
+  animation: rate-bounce 1.1s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.rate-anim-4 {
+  animation: rate-glow 0.95s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.rate-anim-5 {
+  animation: rate-fire 0.7s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.rate-flame {
+  animation: rate-flame 0.55s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rate-anim-1,
+  .rate-anim-2,
+  .rate-anim-3,
+  .rate-anim-4,
+  .rate-anim-5,
+  .rate-flame {
+    animation: none;
+  }
+}
+
 @keyframes cube-nudge {
   0%,
   100% {

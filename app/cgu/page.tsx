@@ -3,7 +3,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { ASSISTANCE } from "@/lib/formation/assistance";
 
 export const metadata: Metadata = {
-  title: "CGU — StartIA",
+  title: "CGU — LockinIA",
 };
 
 export default function CguPage() {
@@ -12,7 +12,7 @@ export default function CguPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Éditeur</h2>
         <p>
-          StartIA est édité par FITOPS AI, 119 rue Jules Parent, Rueil-Malmaison (92500),
+          LockinIA est édité par FITOPS AI, 119 rue Jules Parent, Rueil-Malmaison (92500),
           SIRET 853 780 906 00063.
         </p>
         <p>
@@ -35,7 +35,7 @@ export default function CguPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Objet</h2>
         <p>
-          Les présentes CGU régissent l&apos;accès à StartIA : formation, attestations de suivi et
+          Les présentes CGU régissent l&apos;accès à LockinIA : formation, attestations de suivi et
           outils de pilotage RH associés.
         </p>
       </section>
@@ -100,7 +100,7 @@ export default function CguPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Propriété</h2>
         <p>
-          Les contenus pédagogiques, la marque StartIA et l&apos;interface appartiennent à FITOPS
+          Les contenus pédagogiques, la marque LockinIA et l&apos;interface appartiennent à FITOPS
           AI. L&apos;entreprise cliente reste propriétaire de ses données : liste des salariés,
           registre des usages et attestations. FITOPS AI ne les revend pas et ne les réutilise pas
           pour un autre client.
@@ -156,14 +156,14 @@ export default function CguPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Responsabilité</h2>
         <p>
-          StartIA est tenue à une obligation de moyens dans la fourniture de ses services de
+          LockinIA est tenue à une obligation de moyens dans la fourniture de ses services de
           sensibilisation, de cartographie et d&apos;aide à la documentation. Ces services ne
           constituent pas un conseil juridique et ne garantissent pas à eux seuls la conformité
           réglementaire. Chaque fiche d&apos;usage doit être validée par le DPO ou le référent
           juridique de l&apos;entreprise.
         </p>
         <p>
-          La responsabilité globale de StartIA au titre de ces services est plafonnée aux
+          La responsabilité globale de LockinIA au titre de ces services est plafonnée aux
           montants effectivement versés par l&apos;entreprise cliente au cours des douze (12)
           derniers mois, sauf en cas de faute lourde ou de dol. L&apos;entreprise cliente demeure
           responsable de ses décisions, de ses validations et de la mise en œuvre des obligations

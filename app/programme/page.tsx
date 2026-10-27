@@ -5,14 +5,14 @@ import { CONTENT_CHANGELOG } from "@/lib/formation/content-changelog";
 import { PROGRAMME } from "@/lib/formation/programme";
 
 export const metadata: Metadata = {
-  title: "Fiche programme — StartIA",
+  title: "Fiche programme — LockinIA",
   description:
-    "Fiche programme de la formation StartIA : objectifs, public, prérequis, durée, méthodes, évaluation, accessibilité, tarif et déroulé.",
+    "Fiche programme de la formation LockinIA : objectifs, public, prérequis, durée, méthodes, évaluation, accessibilité, tarif et déroulé.",
 };
 
 export default function ProgrammePage() {
   return (
-    <LegalShell title="Fiche programme — formation StartIA">
+    <LegalShell title="Fiche programme — formation LockinIA">
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">
           Identification

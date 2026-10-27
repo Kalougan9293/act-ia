@@ -12,6 +12,7 @@ import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
 import { archiveUserProofs } from "@/lib/firebase/archive-proofs";
 import type { ModuleRevision, PlatformUser, Structure } from "@/lib/admin/types";
 import { emptyCompanyModule, normalizeAiUseCase } from "@/lib/admin/types";
+import { registryIdForCompany } from "@/lib/export/attestations";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -40,15 +41,21 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
       return { at: String(item.at ?? ""), summary: String(item.summary ?? "") };
     })
     .filter((row) => row.at && row.summary);
+  const name = String(data.name ?? "");
+  const registryId = data.registryId
+    ? String(data.registryId)
+    : registryIdForCompany(name || id);
   return {
     id,
-    name: String(data.name ?? ""),
+    name,
     createdAt: toIsoDate(data.createdAt),
     status: (data.status as Structure["status"]) ?? "active",
     archivedAt: data.archivedAt ? toIsoDate(data.archivedAt) : null,
     inviteToken: data.inviteToken ? String(data.inviteToken) : null,
+    registryId,
     companyModule: {
       ...emptyCompanyModule(),
+      visible: Boolean(company.visible),
       tools: String(company.tools ?? ""),
       charter: String(company.charter ?? ""),
       contacts: String(company.contacts ?? ""),
@@ -156,11 +163,26 @@ export async function saveStructure(structure: Structure): Promise<void> {
       status: structure.status,
       archivedAt: structure.archivedAt,
       inviteToken: structure.inviteToken,
+      registryId: structure.registryId,
       billing: structure.billing,
       companyModule: structure.companyModule,
     },
     { merge: true },
   );
+}
+
+/** Persiste l'identifiant de suivi s'il manquait encore en base (structures historiques). */
+export async function ensureStructureRegistryId(structure: Structure): Promise<Structure> {
+  const db = requireDb();
+  const snap = await getDoc(doc(db, "structures", structure.id));
+  const raw = snap.exists() ? (snap.data() as Record<string, unknown>) : {};
+  if (typeof raw.registryId === "string" && raw.registryId.trim()) {
+    return { ...structure, registryId: raw.registryId.trim() };
+  }
+  const registryId = registryIdForCompany(structure.name || structure.id);
+  const next = { ...structure, registryId };
+  await saveStructure(next);
+  return next;
 }
 
 export async function saveUser(user: PlatformUser): Promise<void> {

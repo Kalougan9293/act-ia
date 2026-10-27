@@ -28,6 +28,7 @@ export default function CompanyCertificate({
   done,
   total,
   employees = [],
+  registryId: registryIdProp,
   canDownload = true,
   onClose,
 }: {
@@ -35,6 +36,8 @@ export default function CompanyCertificate({
   done: number;
   total: number;
   employees?: Employee[];
+  /** Identifiant figé de la structure (REG-LIA-…). */
+  registryId?: string | null;
   canDownload?: boolean;
   onClose: () => void;
 }) {
@@ -45,12 +48,12 @@ export default function CompanyCertificate({
   const date = issued.toLocaleDateString("fr-FR");
   const time = issued.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
   const utc = formatProofDateUtc(issuedIso);
-  const registryId = registryIdForCompany(company);
+  const registryId = registryIdProp?.trim() || registryIdForCompany(company);
   const fingerprint = certificateFingerprint(certificateSerialFromId(registryId));
   const stats = companyTrainingStats(employees.length ? employees : []);
   const hours = employees.length ? stats.hours : done * TRAINING_HOURS_EACH;
   const certified = employees.length ? stats.certified : unlocked ? total : 0;
-  const badgeText = `${company} — attestations de suivi à jour pour l'article 4. Suivi StartIA ${registryId}.`;
+  const badgeText = `${company} — attestations de suivi à jour pour l'article 4. Suivi LockinIA ${registryId}.`;
 
   async function copyBadge() {
     try {
@@ -75,7 +78,7 @@ export default function CompanyCertificate({
 
         <article className="overflow-hidden rounded-sm bg-[#fbf8f1] text-slate-900 shadow-2xl">
           <div className="bg-emerald-800 px-8 py-3 text-center text-xs font-semibold tracking-[0.28em] text-emerald-50">
-            StartIA · REGISTRE 2026
+            LockinIA · REGISTRE 2026
           </div>
           <div className="border-[10px] border-emerald-800/90 px-6 py-8 sm:px-10">
             <div className="border border-emerald-700/30 px-6 py-8 text-center">
@@ -138,7 +141,7 @@ export default function CompanyCertificate({
               </dl>
 
               <p className="mx-auto mt-8 max-w-md text-center text-xs leading-relaxed text-slate-500">
-                Document émis par StartIA et conservé dans le suivi des parcours. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique. Le récapitulatif nominatif horodaté est dans le PDF.
+                Document émis par LockinIA et conservé dans le suivi des parcours. Il consigne les attestations de suivi des collaborateurs. Il ne certifie pas l&apos;entreprise et ne constitue pas un conseil juridique. Le récapitulatif nominatif horodaté est dans le PDF.
               </p>
             </div>
           </div>

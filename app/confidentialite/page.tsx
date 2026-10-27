@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "Confidentialité — StartIA",
+  title: "Confidentialité — LockinIA",
 };
 
 export default function ConfidentialitePage() {
@@ -12,7 +12,7 @@ export default function ConfidentialitePage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Responsable</h2>
         <p>
           Les données sont traitées par FITOPS AI, 119 rue Jules Parent, Rueil-Malmaison (92500),
-          SIRET 853 780 906 00063, éditeur de la plateforme StartIA.
+          SIRET 853 780 906 00063, éditeur de la plateforme LockinIA.
         </p>
         <p>
           Contact : Jonathan Seroussi,{" "}

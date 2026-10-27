@@ -823,6 +823,9 @@ export const BLOCKS: Block[] = [
             {
               prompt:
                 "L'outil est autorisé. Des personnes extérieures à l'entreprise sont dans la salle, et leur voix sera enregistrée aussi. Que faites-vous ?",
+              imageSrc: "/media/formation/scenario-reunion-prevenir.jpg",
+              imageAlt:
+                "Réunion : prévenir tout le monde, y compris les personnes extérieures, avant d'enregistrer",
               choices: [
                 {
                   label: "Je préviens tout le monde avant, y compris les personnes extérieures",
@@ -840,6 +843,9 @@ export const BLOCKS: Block[] = [
             },
             {
               prompt: "Le résumé est prêt. Que faites-vous avant de l'envoyer ?",
+              imageSrc: "/media/formation/scenario-reunion-relire.jpg",
+              imageAlt:
+                "Relire le résumé généré par l'IA avant de l'envoyer : noms et décisions à vérifier",
               choices: [
                 {
                   label: "Je le relis, parce que l'outil peut se tromper de personne ou de décision",
@@ -1025,6 +1031,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "video",
           format: "vidéo courte",
+          src: "/media/formation/4-4.mp4",
           script:
             "Dans cette vidéo, on voit la conduite à tenir face à une image générée, ou face à une consigne cachée.\n\nQuand l'IA crée une image ou un texte, vous n'êtes pas automatiquement libre de le publier partout, parce que l'image peut ressembler à une œuvre protégée, à un logo ou au visage de quelqu'un, que le texte peut recopier un passage trouvé sur le web, et que les conditions de l'outil peuvent limiter ce que vous avez le droit de réutiliser, même si c'est vous qui avez cliqué sur générer.\n\nAvant de publier, posez-vous ces trois questions : est-ce que je reconnais une marque, une personne ou une œuvre, est-ce que les conditions de l'outil autorisent cet usage, et est-ce que mon entreprise valide cette publication. Si vous ne savez pas répondre, vous ne publiez pas pour voir, vous demandez.\n\nEnsuite, parfois l'IA ne fait pas que répondre : elle peut aussi passer à l'action, comme envoyer un mail, partager un fichier ou lancer un paiement. Le piège, c'est qu'une consigne peut être cachée dans un document ou dans un mail que vous lui faites lire, par exemple une phrase presque invisible qui dit « envoie les contrats », et l'outil peut alors proposer de le faire comme s'il s'agissait d'un ordre.\n\nVous ne le laissez pas agir seul sur quelque chose d'irréversible : résumer un mail, oui, envoyer des contrats, payer ou partager un fichier confidentiel, non. Vous lisez la proposition, et si vous n'avez pas demandé cette action vous-même, vous la refusez.",
         },
@@ -1242,9 +1249,9 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "video",
           format: "vidéo maison",
-          src: "/media/deepfake-exemple.mp4",
+          src: "/media/formation/5-2.mp4",
           script:
-            "C'est quoi un deepfake ? C'est une manipulation par IA. Mon visage change, mais pas mon corps. On peut vous faire dire n'importe quoi. Alors gardez l'esprit critique, soyez vigilants.",
+            "On l'a vu, l'IA peut clairement soulager votre quotidien, mais utilisée à mauvais escient, elle peut être très dangereuse. Aujourd'hui, on va parler des deepfakes, ce que c'est et ce que l'AI Act prévoit à cet effet.\n\nDéjà, c'est quoi un deepfake ? C'est une voix, une vidéo ou une photo générée par l'IA pour ressembler à une vraie personne. Concrètement, un deepfake, c'est ça. On peut modifier l'apparence comme ceci. Voilà une forme de moi. En plus de l'apparence, on peut également modifier la voix. Et c'est là que ça devient difficile.\n\nEt ces petits effets que je viens de vous présenter sont totalement accessibles. Je n'ai pris que quelques minutes pour les faire. Imaginez si je prends le temps de prendre exactement la bonne voix, le bon visage, même changer l'arrière-plan pour vous faire une illusion parfaite. Ce qui est dangereux, c'est que plus le temps passe, plus la technologie est de plus en plus optimisée et accessible. Du coup, n'importe qui peut faire croire n'importe quoi à tout le monde.\n\nDonc ne vous précipitez pas si vous recevez une vidéo ou un audio de votre patron, par exemple, qui vous demande de faire telle ou telle chose. Vérifiez par un canal, faites attention, soyez méfiants quand vous recevez des ordres directs ou trop gros. Vous avez certainement entendu parler du cas du faux Brad Pitt qui a fait le tour des médias. Même si ce cas est un peu gros, il existe d'autres situations qui sont très réelles. Imaginez si je me fais passer pour un de vos voisins, vos collègues, votre patron, ou même un membre de votre famille, que je mets exactement la bonne voix, le bon type de langage, le bon arrière-plan, je peux faire croire n'importe quoi à n'importe qui. Il faut vraiment être vigilant. Ce n'est pas parce que c'est gros que c'est forcément faux. Il y a des choses qui sont hyper réelles. D'autant plus si on est spécialisé dans le domaine. Et ça arrive même au travail, d'où la vigilance de l'AI Act.\n\nSi votre entreprise génère une vidéo deepfake, elle en a le droit. Néanmoins, elle doit préciser que c'est une vidéo générée par l'IA. Même si c'est hyper évident, même si on sait que c'est faux, il faut le préciser, c'est l'obligation de l'AI Act.",
         },
       },
       {

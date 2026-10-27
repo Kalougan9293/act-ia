@@ -1,4 +1,4 @@
-"""Génère un PDF A–Z du site StartIA (accueil, parcours, FOAD, offre, technique)."""
+"""Génère un PDF A–Z du site LockinIA (accueil, parcours, FOAD, offre, technique)."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ pdfmetrics.registerFont(TTFont("Arial", r"C:\Windows\Fonts\arial.ttf"))
 pdfmetrics.registerFont(TTFont("Arial-Bold", r"C:\Windows\Fonts\arialbd.ttf"))
 
 OUT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "docs", "StartIA-resume-projet.pdf")
+    os.path.join(os.path.dirname(__file__), "..", "docs", "LockinIA-resume-projet.pdf")
 )
 
 W, H = A4
@@ -42,7 +42,7 @@ class Doc:
         self.c = canvas.Canvas(path, pagesize=A4)
         self.page = 0
         self.y = 0
-        self.c.setTitle("StartIA — Dossier complet du site & parcours")
+        self.c.setTitle("LockinIA — Dossier complet du site & parcours")
         self.c.setAuthor("FITOPS AI")
         self.c.setSubject(
             "Synthèse A–Z : page d'accueil, parcours utilisateurs, FOAD, offre, technique"
@@ -60,7 +60,7 @@ class Doc:
         self.c.rect(0, H - 18 * mm, 3.5 * mm, 18 * mm, fill=1, stroke=0)
         self.c.setFillColor(white)
         self.c.setFont(FONT_B, 14)
-        self.c.drawString(MARGIN, H - 8.5 * mm, "StartIA")
+        self.c.drawString(MARGIN, H - 8.5 * mm, "LockinIA")
         self.c.setFont(FONT, 8)
         self.c.drawString(
             MARGIN + 28 * mm, H - 8.2 * mm, "— dossier complet (accueil & parcours)"
@@ -263,7 +263,7 @@ def build():
     # ——— 1. Pitch ———
     d.h1("1. Pitch & positionnement")
     d.para(
-        "StartIA est une plateforme SaaS B2B (FITOPS AI) pour former les salariés à l'IA "
+        "LockinIA est une plateforme SaaS B2B (FITOPS AI) pour former les salariés à l'IA "
         "et aux bons usages des données au travail, au titre de l'article 4 de l'AI Act "
         "(depuis le 2 février 2025 ; Omnibus 2026 : soutenir la maîtrise de l'IA). "
         "Objectif : parcours prêt, attestations nominatives, suivi RH et preuves "
@@ -320,7 +320,7 @@ def build():
     )
     d.h2("CTA principaux landing")
     for t in [
-        "Demander un accès → mailto (sujet Demande StartIA)",
+        "Demander un accès → mailto (sujet Demande LockinIA)",
         "Tester la démo → /demo",
         "Tarifs → #pricing ; Accompagnement → /interventions",
         "Fiche programme / OPCO → /programme",
@@ -429,7 +429,7 @@ def build():
         "Validation attestation : intro + tous les chapitres socle + QCM réussi",
         "% barre RH : intro + chapitres + quiz (max 99 % jusqu'à QCM OK) ; "
         "module entreprise / métier n'impactent pas le 100 %",
-        "Attestation PDF téléchargeable (ID type SIA-YYYY-XXXXX ; anciens CONF- encore lus)",
+        "Attestation PDF téléchargeable (ID type LIA-YYYY-XXXXX ; anciens SIA-/CONF- encore lus)",
         "Assistance visible : Jonathan Seroussi, e-mail + téléphone, 48 h ouvrées",
     ]:
         d.bullet(t)
@@ -563,7 +563,7 @@ def build():
     d.h1("10. Accompagnement (/interventions)")
     d.para(
         "Hors abonnement SaaS. Hero : « Ne testez pas l'IA. Faites-en un outil de "
-        "travail. » Vidéo plein écran. CTA mailto sujet « Accompagnement IA — StartIA »."
+        "travail. » Vidéo plein écran. CTA mailto sujet « Accompagnement IA — LockinIA »."
     )
     for t in [
         "Former — ateliers pratiques (usages, données, prompts)",
@@ -632,7 +632,7 @@ def build():
     d.box(
         "Statut Qualiopi (wording site)",
         [
-            "« Démarche Qualiopi en cours. StartIA n'est pas présenté comme un organisme "
+            "« Démarche Qualiopi en cours. LockinIA n'est pas présenté comme un organisme "
             "certifié Qualiopi tant que la certification n'est pas obtenue. »",
             "OPCO : possible sous réserve d'éligibilité et, le cas échéant, via un OF "
             "partenaire Qualiopi. Aucun financement n'est garanti.",
@@ -651,7 +651,7 @@ def build():
             ["Éval. + seuil 80 %", "OK", "—"],
             ["Satisfaction / réclamations", "OK post-QCM", "Process OF à brancher"],
             ["Relevés connexion", "OK sessions + modules", "Exporter avant audit"],
-            ["Attestations", "OK SIA-YYYY-…", "Qui émet « OF » vs StartIA"],
+            ["Attestations", "OK LIA-YYYY-…", "Qui émet « OF » vs LockinIA"],
             ["Conservation +3 ans", "OK + archive accès", "Aligner contrat OF"],
             ["Veille datée", "OK changelog", "Mettre à jour à chaque maj"],
             ["Qualiopi", "Démarche en cours", "Pas revendiqué comme certifié"],

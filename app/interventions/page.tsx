@@ -4,7 +4,7 @@ import Footer from "@/components/landing/Footer";
 import InterventionsContent from "@/components/landing/InterventionsContent";
 
 export const metadata: Metadata = {
-  title: "Accompagnement IA — StartIA",
+  title: "Accompagnement IA — LockinIA",
   description:
     "Faites de l'IA un outil de travail : former vos équipes, automatiser les tâches répétitives et intégrer l'IA dans vos processus.",
 };

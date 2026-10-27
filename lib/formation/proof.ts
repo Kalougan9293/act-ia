@@ -137,10 +137,10 @@ export function isFormationComplete(progress: FormationProgress): boolean {
   return progress.introDone && allChaptersDone && progress.quizPassed;
 }
 
-/** Préfixe StartIA. Les ids historiques CONF-YYYY-XXXXX restent valides en lecture. */
-export const CERTIFICATE_ID_PREFIX = "SIA";
+/** Préfixe LockinIA. Les ids historiques SIA-/CONF- restent valides en lecture. */
+export const CERTIFICATE_ID_PREFIX = "LIA";
 
-/** Identifiant attestation : SIA-YYYY-XXXXX */
+/** Identifiant attestation : LIA-YYYY-XXXXX */
 export function createCertificateId(seed?: string): string {
   const year = new Date().getFullYear();
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -159,10 +159,10 @@ export function createCertificateId(seed?: string): string {
   return `${CERTIFICATE_ID_PREFIX}-${year}-${serial}`;
 }
 
-/** Extrait le serial d'un id SIA-…, CONF-… ou REG-SIA-/REG-CONF-… */
+/** Extrait le serial d'un id LIA-…, SIA-…, CONF-… ou REG-… */
 export function certificateSerialFromId(id: string): string {
   const cleaned = id.replace(/^REG-/, "");
-  const match = cleaned.match(/^(?:SIA|CONF)-\d+-(.+)$/i);
+  const match = cleaned.match(/^(?:LIA|SIA|CONF)-\d+-(.+)$/i);
   return match?.[1] ?? cleaned;
 }
 

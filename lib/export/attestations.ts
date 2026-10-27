@@ -35,8 +35,14 @@ export type LearnerAttestationInput = {
   modulesCompleted?: number | null;
 };
 
+/** Identifiant de suivi structure : REG-LIA-YYYY-XXXXX */
+export function createRegistryId(seed?: string) {
+  return `REG-${createCertificateId(seed)}`;
+}
+
+/** @deprecated Préférer createRegistryId / Structure.registryId (figé). Conservé pour rétrocompat. */
 export function registryIdForCompany(companyName: string) {
-  return `REG-${createCertificateId(companyName.trim().toLowerCase() || "entreprise")}`;
+  return createRegistryId(companyName.trim().toLowerCase() || "entreprise");
 }
 
 export function splitPersonName(fullName: string) {
@@ -62,7 +68,7 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
   const hash = certificateFingerprint(serial);
   const { paris, utc } = stampLines(input.issuedAt, input.dateLabel, input.timeLabel);
   const lines = [
-    "StartIA",
+    "LockinIA",
     "Attestation de suivi de formation et de sensibilisation",
     "Maîtrise de l'IA — Article 4 (AI Act)",
     "",
@@ -126,12 +132,17 @@ export function companyTrainingStats(employees: Employee[]) {
   };
 }
 
-export function downloadCompanyReport(companyName: string, employees: Employee[]) {
+export function downloadCompanyReport(
+  companyName: string,
+  employees: Employee[],
+  registryIdOverride?: string | null,
+) {
   const stats = companyTrainingStats(employees);
   const issuedAt = new Date().toISOString();
   const paris = formatProofDate(issuedAt);
   const utc = formatProofDateUtc(issuedAt);
-  const registryId = registryIdForCompany(companyName);
+  const registryId =
+    registryIdOverride?.trim() || registryIdForCompany(companyName);
   const serial = certificateSerialFromId(registryId);
   const hash = certificateFingerprint(serial);
   const complete = stats.total > 0 && stats.certified === stats.total;
@@ -146,7 +157,7 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
   });
 
   const lines = [
-    "StartIA",
+    "LockinIA",
     "Rapport d'engagement et de suivi — Article 4",
     "Attestations de suivi · AI Act (article 4) et RGPD",
     "",
@@ -167,7 +178,7 @@ export function downloadCompanyReport(companyName: string, employees: Employee[]
     "Récapitulatif horodaté — archive audit",
     ...(people.length ? people : ["Aucun collaborateur."]),
     "",
-    "Document émis par StartIA et conservé dans le suivi des parcours.",
+    "Document émis par LockinIA et conservé dans le suivi des parcours.",
     "Il consigne les attestations de suivi des collaborateurs.",
     "Il ne certifie pas l'entreprise et ne constitue pas un conseil juridique.",
   ];

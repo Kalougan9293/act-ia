@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
-  title: "DPA — StartIA",
+  title: "DPA — LockinIA",
   description:
     "Accord de sous-traitance (article 28 du RGPD) entre l'entreprise cliente et FITOPS AI.",
 };
@@ -15,7 +15,7 @@ export default function DpaPage() {
         <p>
           Le présent accord encadre le traitement de données personnelles confié par
           l&apos;entreprise cliente («&nbsp;responsable de traitement&nbsp;») à FITOPS AI
-          («&nbsp;sous-traitant&nbsp;»), éditeur de StartIA, au titre de l&apos;article 28 du
+          («&nbsp;sous-traitant&nbsp;»), éditeur de LockinIA, au titre de l&apos;article 28 du
           RGPD. Il complète les{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgv">
             CGV
@@ -31,7 +31,7 @@ export default function DpaPage() {
           .
         </p>
         <p>
-          En souscrivant un abonnement StartIA ou en utilisant la plateforme pour former ses
+          En souscrivant un abonnement LockinIA ou en utilisant la plateforme pour former ses
           collaborateurs, l&apos;entreprise accepte le présent accord.
         </p>
       </section>
@@ -40,7 +40,7 @@ export default function DpaPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Parties</h2>
         <p>
           <strong>Responsable de traitement</strong> : l&apos;entreprise cliente qui souscrit
-          StartIA et décide des finalités (formation de ses salariés, suivi RH, registre des
+          LockinIA et décide des finalités (formation de ses salariés, suivi RH, registre des
           usages).
         </p>
         <p>
@@ -61,7 +61,7 @@ export default function DpaPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Traitement confié</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>
-            <strong>Objet</strong> : hébergement et mise à disposition de la plateforme StartIA
+            <strong>Objet</strong> : hébergement et mise à disposition de la plateforme LockinIA
             (comptes, formation, attestations, espace RH, registre des usages).
           </li>
           <li>
@@ -75,7 +75,7 @@ export default function DpaPage() {
             extraction (export RH), suppression.
           </li>
           <li>
-            <strong>Finalité</strong> : exécution du service StartIA pour le compte du client ;
+            <strong>Finalité</strong> : exécution du service LockinIA pour le compte du client ;
             FITOPS AI ne réutilise pas ces données pour un autre client ni pour du marketing.
           </li>
           <li>
@@ -111,7 +111,7 @@ export default function DpaPage() {
         </h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>Déterminer les finalités et la base légale du traitement (notamment formation au titre de l&apos;article 4 de l&apos;AI Act).</li>
-          <li>Informer ses collaborateurs de l&apos;usage de StartIA et de leurs droits.</li>
+          <li>Informer ses collaborateurs de l&apos;usage de LockinIA et de leurs droits.</li>
           <li>Ne fournir que les données nécessaires (nom, e-mail, rôle) et s&apos;assurer qu&apos;il est en droit de les transmettre.</li>
           <li>Gérer les accès RH et les invitations de manière sécurisée.</li>
         </ul>
@@ -163,7 +163,7 @@ export default function DpaPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Durée et fin</h2>
         <p>
-          Le présent accord s&apos;applique pendant toute la durée du contrat StartIA. Il prend
+          Le présent accord s&apos;applique pendant toute la durée du contrat LockinIA. Il prend
           fin avec la suppression des données du client, sous réserve des conservations légales
           et des preuves encore dues.
         </p>

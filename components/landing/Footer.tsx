@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 
 const legal = [
   { label: "Mentions légales", href: "/mentions-legales" },
@@ -55,8 +55,8 @@ export default function Footer() {
             href="/"
             className="flex shrink-0 items-center gap-1.5 justify-self-start text-lg font-bold tracking-tight text-white"
           >
-            Start<span className="text-blue-400">IA</span>
-            <GraduationCap className="h-5 w-5 text-blue-400" strokeWidth={2} aria-hidden="true" />
+            <BrandMark className="h-5 w-5 text-blue-400" />
+            Lockin<span className="text-blue-400">IA</span>
           </Link>
           <LinkLine items={legal} />
           <div className="lg:justify-self-end">
@@ -64,7 +64,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-3 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} StartIA. Tous droits réservés.
+          © {new Date().getFullYear()} LockinIA. Tous droits réservés.
         </div>
       </div>
     </footer>

@@ -118,6 +118,7 @@ export default function FormationExperience({
   demo?: boolean;
   demoSeed?: FormationProgress;
 }) {
+  const companyVisible = Boolean(companyModule.visible);
   const {
     ready,
     progress,
@@ -222,6 +223,7 @@ export default function FormationExperience({
         positioningDone={progress.positioningDone}
         quizPassed={progress.quizPassed}
         companyDone={progress.companyModuleDone}
+        companyVisible={companyVisible}
         careerPathId={progress.careerPathId}
         positioningCount={positioningRound.length}
         showWelcomePitch={!hideWelcomePitch}
@@ -299,6 +301,7 @@ export default function FormationExperience({
         totalChapters={totalChapters}
         progress={progress}
         certificate={certificate}
+        companyVisible={companyVisible}
         onOpenBlock={(blockId) => setScreen({ kind: "block", blockId })}
         onOpenCompany={() => setScreen({ kind: "company" })}
         onOpenQuiz={() => openFinalQuiz("hub")}
@@ -342,6 +345,20 @@ export default function FormationExperience({
   }
 
   if (active.kind === "company") {
+    if (!companyVisible) {
+      return withDesign(
+        <div className="mx-auto max-w-lg space-y-4 py-12 text-center">
+          <p className="text-sm text-slate-500">Ce module n&apos;est pas activé pour votre entreprise.</p>
+          <button
+            type="button"
+            onClick={() => setScreen({ kind: "intro" })}
+            className="text-sm font-medium text-blue-600 hover:underline"
+          >
+            Retour au parcours
+          </button>
+        </div>,
+      );
+    }
     return withDesign(
       <CompanyScreen
         companyName={companyName}
@@ -421,16 +438,20 @@ export default function FormationExperience({
         }}
         continueCareerLabel="Bonus : l'IA dans mon métier"
         continueCareerHint="Bravo ! Vous savez utiliser l'IA sans vous faire piéger. Attestation Art. 4 disponible. Les bonus restent facultatifs."
-        onOpenCompany={() => {
-          const passed =
-            progress.quizPassed ||
-            (lastScore != null && lastScore >= QUIZ_PASS_PERCENT);
-          if (passed && !progress.satisfaction) {
-            setScreen({ kind: "satisfaction" });
-            return;
-          }
-          setScreen({ kind: "company" });
-        }}
+        onOpenCompany={
+          companyVisible
+            ? () => {
+                const passed =
+                  progress.quizPassed ||
+                  (lastScore != null && lastScore >= QUIZ_PASS_PERCENT);
+                if (passed && !progress.satisfaction) {
+                  setScreen({ kind: "satisfaction" });
+                  return;
+                }
+                setScreen({ kind: "company" });
+              }
+            : undefined
+        }
         onFinish={() => {
           const passed =
             progress.quizPassed ||
@@ -597,6 +618,7 @@ function IntroScreen({
   positioningDone,
   quizPassed,
   companyDone,
+  companyVisible = false,
   careerPathId,
   positioningCount,
   showWelcomePitch,
@@ -617,6 +639,7 @@ function IntroScreen({
   positioningDone: boolean;
   quizPassed: boolean;
   companyDone: boolean;
+  companyVisible?: boolean;
   careerPathId: string | null;
   positioningCount: number;
   showWelcomePitch: boolean;
@@ -663,7 +686,7 @@ function IntroScreen({
     <div className="mx-auto max-w-3xl space-y-7 py-6 text-center sm:space-y-8">
       <div className="space-y-4 sm:space-y-5">
         <p className="formation-kicker text-center text-xs font-semibold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400 sm:text-sm">
-          StartIA Academy
+          LockinIA Academy
         </p>
         <h1 className="formation-title text-center text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Bienvenue{firstName ? `, ${firstName}` : ""}
@@ -864,17 +887,23 @@ function IntroScreen({
           </div>
         </button>
 
-        <div className="mx-auto mt-4 grid w-full max-w-xl gap-2.5 sm:grid-cols-2">
-          <PathCard
-            label="Bonus"
-            title="Votre entreprise"
-            meta={companyDone ? "Consulté" : "Optionnel"}
-            state={companyState}
-            denied={deniedId === "company"}
-            onClick={() => openOrDeny("company", companyState === "locked", onOpenCompany)}
-            lockedHint="Disponible après l'attestation"
-            doneHint="Module consulté"
-          />
+        <div
+          className={`mx-auto mt-4 grid w-full max-w-xl gap-2.5 ${
+            companyVisible ? "sm:grid-cols-2" : ""
+          }`}
+        >
+          {companyVisible && (
+            <PathCard
+              label="Bonus"
+              title="Votre entreprise"
+              meta={companyDone ? "Consulté" : "Optionnel"}
+              state={companyState}
+              denied={deniedId === "company"}
+              onClick={() => openOrDeny("company", companyState === "locked", onOpenCompany)}
+              lockedHint="Disponible après l'attestation"
+              doneHint="Module consulté"
+            />
+          )}
           <PathCard
             label="Bonus"
             title="Fiche métier"
@@ -923,6 +952,64 @@ function IntroScreen({
   );
 }
 
+const SATISFACTION_LEVELS = [
+  {
+    value: 1,
+    label: "Tiède",
+    height: "h-10",
+    idle: "border-slate-300 bg-slate-200 group-hover:border-slate-400 group-hover:bg-slate-300 dark:border-slate-600 dark:bg-slate-700",
+    fill: "border-slate-500 bg-gradient-to-t from-slate-500 to-slate-300 dark:border-slate-400 dark:from-slate-500 dark:to-slate-300",
+    exact:
+      "border-slate-600 bg-gradient-to-t from-slate-600 to-slate-300 shadow-md shadow-slate-400/30 dark:border-slate-300",
+    text: "text-slate-600 dark:text-slate-300",
+    anim: "rate-anim-1",
+  },
+  {
+    value: 2,
+    label: "Correct",
+    height: "h-14",
+    idle: "border-sky-200 bg-sky-50 group-hover:border-sky-300 group-hover:bg-sky-100 dark:border-sky-900 dark:bg-sky-950/40",
+    fill: "border-sky-400 bg-gradient-to-t from-sky-600 to-sky-300 dark:border-sky-400",
+    exact:
+      "border-sky-600 bg-gradient-to-t from-sky-700 to-sky-300 shadow-md shadow-sky-400/30 dark:border-sky-300",
+    text: "text-sky-700 dark:text-sky-300",
+    anim: "rate-anim-2",
+  },
+  {
+    value: 3,
+    label: "Bien",
+    height: "h-[4.5rem]",
+    idle: "border-emerald-200 bg-emerald-50 group-hover:border-emerald-300 group-hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/40",
+    fill: "border-emerald-400 bg-gradient-to-t from-emerald-600 to-emerald-300 dark:border-emerald-400",
+    exact:
+      "border-emerald-600 bg-gradient-to-t from-emerald-700 to-emerald-300 shadow-md shadow-emerald-400/35 dark:border-emerald-300",
+    text: "text-emerald-700 dark:text-emerald-300",
+    anim: "rate-anim-3",
+  },
+  {
+    value: 4,
+    label: "Très bien",
+    height: "h-24",
+    idle: "border-amber-200 bg-amber-50 group-hover:border-amber-300 group-hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/40",
+    fill: "border-amber-400 bg-gradient-to-t from-amber-600 to-amber-300 dark:border-amber-400",
+    exact:
+      "border-amber-500 bg-gradient-to-t from-amber-600 to-yellow-300 shadow-md shadow-amber-400/40 dark:border-amber-300",
+    text: "text-amber-700 dark:text-amber-300",
+    anim: "rate-anim-4",
+  },
+  {
+    value: 5,
+    label: "Au top",
+    height: "h-28",
+    idle: "border-orange-200 bg-orange-50 group-hover:border-orange-300 group-hover:bg-orange-100 dark:border-orange-900 dark:bg-orange-950/40",
+    fill: "border-orange-500 bg-gradient-to-t from-red-600 via-orange-500 to-yellow-300 dark:border-orange-400",
+    exact:
+      "border-orange-400 bg-gradient-to-t from-red-600 via-orange-500 to-yellow-300 shadow-lg shadow-orange-500/50 dark:border-yellow-300",
+    text: "text-orange-600 dark:text-orange-300",
+    anim: "rate-anim-5",
+  },
+] as const;
+
 function SatisfactionScreen({
   onSubmit,
 }: {
@@ -935,67 +1022,111 @@ function SatisfactionScreen({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [complaint, setComplaint] = useState("");
+  const selected = SATISFACTION_LEVELS.find((level) => level.value === rating);
 
   return (
     <div className="mx-auto max-w-lg space-y-6 text-center">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Votre avis à chaud
-        </h1>
-        <p className="text-sm text-slate-500">
-          Merci d&apos;évaluer le parcours. Vous pouvez aussi signaler une
-          réclamation — réponse {ASSISTANCE.responseDelay}.
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        Votre avis à chaud
+      </h1>
+
+      <div className="mx-auto flex w-full max-w-md flex-col items-center space-y-3 text-center">
+        <div
+          className="flex w-full items-end justify-center gap-2.5 sm:gap-3"
+          role="radiogroup"
+          aria-label="Note de 1 à 5"
+        >
+          {SATISFACTION_LEVELS.map((level) => {
+            const active = rating >= level.value;
+            const exact = rating === level.value;
+            return (
+              <button
+                key={level.value}
+                type="button"
+                role="radio"
+                aria-checked={exact}
+                aria-label={`${level.value} sur 5 — ${level.label}`}
+                onClick={() => setRating(level.value)}
+                className="group relative flex w-12 flex-col items-center gap-2 sm:w-14"
+              >
+                <span className="relative w-full">
+                  {exact && level.value === 5 && (
+                    <span className="pointer-events-none absolute inset-x-0 -top-4 z-10 flex justify-center gap-0.5" aria-hidden>
+                      <span
+                        className="rate-flame h-4 w-2.5 rounded-full bg-gradient-to-t from-red-600 via-orange-500 to-yellow-300"
+                        style={{ animationDelay: "0ms" }}
+                      />
+                      <span
+                        className="rate-flame h-5 w-3 rounded-full bg-gradient-to-t from-red-500 via-orange-400 to-yellow-200"
+                        style={{ animationDelay: "90ms" }}
+                      />
+                      <span
+                        className="rate-flame h-3.5 w-2 rounded-full bg-gradient-to-t from-orange-600 via-amber-400 to-yellow-200"
+                        style={{ animationDelay: "160ms" }}
+                      />
+                    </span>
+                  )}
+                  <span
+                    className={`relative block w-full rounded-t-xl rounded-b-md border-2 transition duration-300 ${level.height} ${
+                      active ? (exact ? level.exact : level.fill) : level.idle
+                    } ${exact ? level.anim : ""}`}
+                  />
+                </span>
+                <span
+                  className={`text-[11px] font-bold tabular-nums transition ${
+                    exact
+                      ? level.text
+                      : active
+                        ? "text-slate-600 dark:text-slate-300"
+                        : "text-slate-400 dark:text-slate-500"
+                  }`}
+                >
+                  {level.value}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p
+          className={`mx-auto min-h-[1.25rem] w-full text-center text-sm font-semibold transition ${
+            selected ? selected.text : "text-transparent"
+          }`}
+          aria-live="polite"
+        >
+          {selected?.label ?? "Choisissez"}
         </p>
       </div>
 
-      <div className="flex justify-center gap-2">
-        {[1, 2, 3, 4, 5].map((value) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setRating(value)}
-            className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition ${
-              rating >= value
-                ? "bg-blue-600 text-white"
-                : "border border-slate-200 bg-white text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300"
-            }`}
-            aria-label={`${value} sur 5`}
-          >
-            {value}
-          </button>
-        ))}
-      </div>
-
-      <label className="block space-y-1 text-left">
-        <span className="text-xs font-medium text-slate-500">
+      <label className="mx-auto block w-full max-w-md space-y-1.5 text-center">
+        <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
           Commentaire (optionnel)
         </span>
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={3}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950"
+          className="w-full rounded-xl border-2 border-slate-300 bg-white px-3 py-2.5 text-center text-sm font-medium text-slate-900 placeholder:text-slate-500 dark:border-slate-500 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-400"
           placeholder="Ce qui vous a aidé, ce qui manque…"
         />
       </label>
 
-      <label className="block space-y-1 text-left">
-        <span className="text-xs font-medium text-slate-500">
+      <label className="mx-auto block w-full max-w-md space-y-1.5 text-center">
+        <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
           Réclamation (optionnel)
         </span>
         <textarea
           value={complaint}
           onChange={(e) => setComplaint(e.target.value)}
           rows={3}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950"
+          className="w-full rounded-xl border-2 border-slate-300 bg-white px-3 py-2.5 text-center text-sm font-medium text-slate-900 placeholder:text-slate-500 dark:border-slate-500 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-400"
           placeholder="Décrivez le problème rencontré…"
         />
       </label>
 
-      <p className="text-xs text-slate-400">
+      <p className="text-center text-xs text-slate-400">
         Canal réclamations :{" "}
         <a
-          href={`mailto:${ASSISTANCE.email}?subject=${encodeURIComponent("Réclamation formation StartIA")}`}
+          href={`mailto:${ASSISTANCE.email}?subject=${encodeURIComponent("Réclamation formation LockinIA")}`}
           className="text-blue-600 hover:underline dark:text-blue-400"
         >
           {ASSISTANCE.email}
@@ -1009,15 +1140,17 @@ function SatisfactionScreen({
         </a>
       </p>
 
-      <button
-        type="button"
-        disabled={rating < 1}
-        onClick={() => onSubmit({ rating, comment, complaint })}
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
-      >
-        Envoyer
-        <ArrowRight className="h-4 w-4" />
-      </button>
+      <div className="flex justify-center">
+        <button
+          type="button"
+          disabled={rating < 1}
+          onClick={() => onSubmit({ rating, comment, complaint })}
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
+        >
+          Envoyer
+          <ArrowRight className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -1129,6 +1262,7 @@ function HubScreen({
   totalChapters,
   progress,
   certificate,
+  companyVisible = false,
   onOpenBlock,
   onOpenCompany,
   onOpenQuiz,
@@ -1143,6 +1277,7 @@ function HubScreen({
   totalChapters: number;
   progress: ReturnType<typeof useFormationProgress>["progress"];
   certificate: IssuedCertificate | null;
+  companyVisible?: boolean;
   onOpenBlock: (id: string) => void;
   onOpenCompany: () => void;
   onOpenQuiz: () => void;
@@ -1236,7 +1371,9 @@ function HubScreen({
         })}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div
+        className={`grid gap-3 ${companyVisible ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+      >
         <HubAction
           icon={<ClipboardList className="h-5 w-5" />}
           title="QCM final"
@@ -1253,20 +1390,22 @@ function HubScreen({
           disabled={!blocksReady}
           onClick={onOpenQuiz}
         />
-        <HubAction
-          icon={<Building2 className="h-5 w-5" />}
-          title="Votre entreprise"
-          subtitle={
-            progress.companyModuleDone
-              ? "Consulté"
-              : progress.quizPassed
-                ? "Optionnel"
-                : "Après le quiz"
-          }
-          done={progress.companyModuleDone}
-          disabled={!progress.quizPassed}
-          onClick={onOpenCompany}
-        />
+        {companyVisible && (
+          <HubAction
+            icon={<Building2 className="h-5 w-5" />}
+            title="Votre entreprise"
+            subtitle={
+              progress.companyModuleDone
+                ? "Consulté"
+                : progress.quizPassed
+                  ? "Optionnel"
+                  : "Après le quiz"
+            }
+            done={progress.companyModuleDone}
+            disabled={!progress.quizPassed}
+            onClick={onOpenCompany}
+          />
+        )}
         <HubAction
           icon={<GraduationCap className="h-5 w-5" />}
           title="Fiche métier"
@@ -1606,7 +1745,7 @@ function printReflexSheet() {
   doc.open();
   doc.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Les 7 réflexes IA</title>
     <style>body{font-family:Georgia,serif;max-width:640px;margin:2.5rem auto;color:#0f172a;padding:0 1.5rem;text-align:center}h1{font-size:1.35rem}h2{font-size:1.05rem;margin-top:1.6rem}p,li{line-height:1.45}ol{list-style:none;padding:0;margin:0}</style>
-    </head><body><p>StartIA · AI Act Art. 4</p><h1>Les 7 réflexes</h1>
+    </head><body><p>LockinIA · AI Act Art. 4</p><h1>Les 7 réflexes</h1>
     <h2>Avant d'écrire à l'IA</h2><ol>${before}</ol>
     <h2>Après la réponse de l'IA</h2><ol>${after}</ol>
     <p><strong>Un doute ?</strong> Je ne devine pas. Je demande à mon manager ou au référent IA.</p></body></html>`);
@@ -2088,12 +2227,12 @@ function QuizScreen({
           {score ?? "—"} %
         </p>
         <p className="mx-auto max-w-md text-center text-sm text-slate-500">{nextHint}</p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
           {onOpenCompany && (
             <button
               type="button"
               onClick={onOpenCompany}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+              className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
             >
               <p className="text-sm font-semibold text-slate-900 dark:text-white">
                 Bonus : règles de votre entreprise
@@ -2105,7 +2244,7 @@ function QuizScreen({
             <button
               type="button"
               onClick={onContinueCareer}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+              className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
             >
               <p className="text-sm font-semibold text-slate-900 dark:text-white">{nextLabel}</p>
               <p className="mt-1 text-xs text-slate-500">Facultatif</p>
@@ -2169,12 +2308,12 @@ function QuizScreen({
                 } Il en faut ${QUIZ_PASS_COUNT} sur ${QUIZ_DRAW_SIZE}. Revoyez un ou deux blocs, puis retentez : les questions seront différentes.`}
         </p>
         {passed && (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             {onOpenCompany && (
               <button
                 type="button"
                 onClick={onOpenCompany}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   Bonus : règles de votre entreprise
@@ -2186,7 +2325,7 @@ function QuizScreen({
               <button
                 type="button"
                 onClick={onContinueCareer}
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
               >
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">{nextLabel}</p>
                 <p className="mt-1 text-xs text-slate-500">Facultatif</p>

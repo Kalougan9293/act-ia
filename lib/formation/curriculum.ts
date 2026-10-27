@@ -1,4 +1,4 @@
-/** Contenu pédagogique Layer 1 — StartIA. L'accueil lit les blocs ; les activités sont dans le socle. */
+/** Contenu pédagogique Layer 1 — LockinIA. L'accueil lit les blocs ; les activités sont dans le socle. */
 
 import {
   BLOCKS as SOCLE_BLOCKS,

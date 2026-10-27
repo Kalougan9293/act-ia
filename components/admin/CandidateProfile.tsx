@@ -7,9 +7,9 @@ import {
   Award,
   Building2,
   FileText,
-  GraduationCap,
   Mail,
 } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import AdminCertificatePreview from "@/components/admin/AdminCertificatePreview";
 import { formatDate } from "@/lib/admin/format";
@@ -98,8 +98,8 @@ export default function CandidateProfile({ userId }: { userId: string }) {
             </Link>
             <span className="hidden sm:inline text-slate-300">|</span>
             <span className="hidden sm:inline-flex items-center gap-1.5 font-bold text-lg tracking-tight">
-              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
-              <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <BrandMark className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              Lockin<span className="text-blue-600 dark:text-blue-400">IA</span>
             </span>
           </div>
           <ThemeToggle />

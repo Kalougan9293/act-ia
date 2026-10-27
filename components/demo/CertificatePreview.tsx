@@ -59,11 +59,14 @@ export default function CertificatePreview({
   onClose,
   companyName = "Atelier Lumière",
   proof: proofProp,
+  canDownload = true,
 }: {
   employee: Employee;
   onClose: () => void;
   companyName?: string;
   proof?: CertificateProof;
+  /** Désactiver en démo publique. */
+  canDownload?: boolean;
 }) {
   const [first, ...rest] = employee.name.split(" ");
   const last = rest.join(" ");
@@ -75,10 +78,10 @@ export default function CertificatePreview({
   };
   const proof: CertificateProof = proofProp ?? {
     ...demo,
-    certificateId: employee.certificateId ?? `SIA-2026-${demo.serial}`,
+    certificateId: employee.certificateId ?? `LIA-2026-${demo.serial}`,
     specimen: !employee.certificateId,
   };
-  const certificateId = proof.certificateId ?? `SIA-2026-${proof.serial}`;
+  const certificateId = proof.certificateId ?? `LIA-2026-${proof.serial}`;
   const hash = certificateFingerprint(proof.serial);
   const issuedAt = `${proof.date} à ${proof.time} (Europe/Paris)`;
   const utc = proof.issuedAt ? formatProofDateUtc(proof.issuedAt) : null;
@@ -115,7 +118,7 @@ export default function CertificatePreview({
 
         <div className="px-8 sm:px-12 py-10 space-y-8">
           <header className="text-center space-y-2 border-b border-slate-200 pb-6">
-            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">StartIA</div>
+            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">LockinIA</div>
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
               Attestation de suivi de formation et de sensibilisation
             </h2>
@@ -148,7 +151,7 @@ export default function CertificatePreview({
           <section className="space-y-3">
             <h3 className="text-xs font-bold tracking-widest text-blue-700">02 — Parcours suivi</h3>
             <p className="text-left text-sm leading-relaxed">
-              Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation proposé par la plateforme StartIA et a satisfait aux conditions de validation définies pour ce parcours.
+              Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation proposé par la plateforme LockinIA et a satisfait aux conditions de validation définies pour ce parcours.
             </p>
             <div className="text-sm">
               <div className="text-xs text-slate-500">Intitulé du parcours</div>
@@ -210,7 +213,7 @@ export default function CertificatePreview({
           <section className="space-y-3">
             <h3 className="text-xs font-bold tracking-widest text-blue-700">04 — Traçabilité</h3>
             <p className="text-left text-sm leading-relaxed">
-              Attestation générée automatiquement par StartIA à partir des données de suivi enregistrées.
+              Attestation générée automatiquement par LockinIA à partir des données de suivi enregistrées.
             </p>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 text-sm">
               <div className="space-y-2">
@@ -237,7 +240,7 @@ export default function CertificatePreview({
 
           <footer className="border-t border-slate-200 pt-6 space-y-3 text-sm">
             <div>
-              <div className="font-semibold">StartIA</div>
+              <div className="font-semibold">LockinIA</div>
               <div className="text-slate-600">
                 {specimen ? "Émetteur — spécimen de démonstration" : "Émetteur — attestation de suivi"}
               </div>
@@ -251,16 +254,18 @@ export default function CertificatePreview({
           </footer>
         </div>
       </div>
-      <div className="mt-4 flex justify-center">
-        <button
-          type="button"
-          onClick={download}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
-        >
-          <Download className="h-4 w-4" />
-          Télécharger l&apos;attestation (PDF)
-        </button>
-      </div>
+      {canDownload ? (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={download}
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
+          >
+            <Download className="h-4 w-4" />
+            Télécharger l&apos;attestation (PDF)
+          </button>
+        </div>
+      ) : null}
       </div>
     </div>
   );

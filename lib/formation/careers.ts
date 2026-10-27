@@ -1,4 +1,4 @@
-/** Fiches métiers — gabarit 6 rubriques (~8 min), StartIA. */
+/** Fiches métiers — gabarit 6 rubriques (~8 min), LockinIA. */
 
 export type CareerTrafficLevel = "green" | "orange" | "red";
 

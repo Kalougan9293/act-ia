@@ -86,6 +86,8 @@ const USE_CASE_TEXT_KEYS = [
 
 /** Contenu du module « Votre entreprise » vu par les collaborateurs */
 export type CompanyModuleContent = {
+  /** Affiché aux collaborateurs. Défaut : masqué. */
+  visible: boolean;
   tools: string;
   charter: string;
   contacts: string;
@@ -97,7 +99,32 @@ export type CompanyModuleContent = {
 };
 
 export function emptyCompanyModule(): CompanyModuleContent {
-  return { tools: "", charter: "", contacts: "", declaration: "", useCases: [], revisions: [] };
+  return {
+    visible: false,
+    tools: "",
+    charter: "",
+    contacts: "",
+    declaration: "",
+    useCases: [],
+    revisions: [],
+  };
+}
+
+/** Base minimale affichée quand le RH active le module. */
+export function defaultCompanyModuleMinimum(): CompanyModuleContent {
+  return {
+    visible: true,
+    tools:
+      "Outils courants (à adapter par votre RH) :\n- ChatGPT / Copilot : usage pro sans données personnelles ni secrets\n\nInterdit :\n- Coller CV, salaires, données clients ou secrets dans une IA grand public\n- Extensions navigateur non validées",
+    charter:
+      "Règles d'usage :\n1. Je n'y mets jamais de données personnelles ou confidentielles sans validation.\n2. Je vérifie toujours le résultat avant de l'envoyer.\n3. Je reste responsable de ce que je publie ou décide.\n4. En cas de doute, je demande au référent IA.",
+    contacts:
+      "Référent IA : à compléter par votre RH\nEn cas de doute : contactez votre manager ou le service RH.",
+    declaration:
+      "Pour déclarer un nouvel outil ou usage IA :\n1. En informer le référent IA / RH\n2. Attendre le feu vert avant un usage large\n3. Ne pas brancher d'extension non validée",
+    useCases: [],
+    revisions: [],
+  };
 }
 
 export function emptyAiUseCase(): AiUseCaseEntry {
@@ -159,6 +186,8 @@ export interface Structure {
   archivedAt: string | null;
   /** Lien permanent d'invitation collaborateurs */
   inviteToken: string | null;
+  /** Identifiant de suivi Article 4 (REG-LIA-YYYY-XXXXX) — figé à la création */
+  registryId: string;
   /** Module entreprise renseigné par le RH */
   companyModule: CompanyModuleContent;
 }

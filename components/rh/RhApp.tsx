@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { GraduationCap } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import HrView from "@/components/demo/HrView";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { Employee, EmployeeStatus } from "@/components/demo/data";
 import type { CompanyModuleContent, PlatformUser, Structure } from "@/lib/admin/types";
+import { ensureStructureRegistryId } from "@/lib/firebase/admin-data";
 import { getStructure, listUsersByStructure, saveCompanyModule } from "@/lib/firebase/tenant-data";
 import {
   ensureStructureInviteToken,
@@ -56,6 +57,10 @@ function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
       timeSpentSec: u.attestationTimeSpentSec ?? null,
       modulesCompleted: u.attestationModulesCompleted ?? null,
       companyName,
+      satisfactionRating: u.satisfactionRating ?? null,
+      satisfactionComment: u.satisfactionComment ?? null,
+      satisfactionComplaint: u.satisfactionComplaint ?? null,
+      satisfactionAt: u.satisfactionAt ?? null,
     }));
 }
 
@@ -89,6 +94,7 @@ export default function RhApp() {
         let structureReady = nextStructure;
         if (structureReady) {
           structureReady = await ensureStructureInviteToken(structureReady);
+          structureReady = await ensureStructureRegistryId(structureReady);
         }
         if (cancelled) return;
         const seats = await getStructureSeatStatus(session.structureId!);
@@ -143,12 +149,8 @@ export default function RhApp() {
               href="/"
               className="flex shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
             >
-              Start<span className="text-blue-600 dark:text-blue-400">IA</span>
-              <GraduationCap
-                className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                strokeWidth={2}
-                aria-hidden="true"
-              />
+              <BrandMark className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              Lockin<span className="text-blue-600 dark:text-blue-400">IA</span>
             </Link>
             <span className="hidden sm:inline-flex rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
               Espace RH
@@ -190,6 +192,7 @@ export default function RhApp() {
             companyName={structure?.name ?? "Entreprise"}
             structureId={session.structureId}
             structureInviteLink={inviteLink}
+            structureRegistryId={structure?.registryId}
             seatsMax={seatsMax}
             seatsUsed={seatsUsed}
             companyModule={structure?.companyModule}

@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -18,7 +19,7 @@ export default function Navbar() {
     { label: "Tarifs", href: onHome ? "#pricing" : "/#pricing" },
     {
       label: "Contact",
-      href: "mailto:contact@lockin-web.online?subject=StartIA%20-%20contact",
+      href: "mailto:contact@lockin-web.online?subject=LockinIA%20-%20contact",
     },
   ];
 
@@ -46,12 +47,8 @@ export default function Navbar() {
           href="/"
           className="flex items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
         >
-          Start<span className="text-blue-600 dark:text-blue-400">IA</span>
-          <GraduationCap
-            className="h-5 w-5 text-blue-600 dark:text-blue-400"
-            strokeWidth={2}
-            aria-hidden="true"
-          />
+          <BrandMark className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          Lockin<span className="text-blue-600 dark:text-blue-400">IA</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

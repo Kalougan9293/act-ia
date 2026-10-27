@@ -3,7 +3,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { ASSISTANCE } from "@/lib/formation/assistance";
 
 export const metadata: Metadata = {
-  title: "CGV — StartIA",
+  title: "CGV — LockinIA",
 };
 
 export default function CgvPage() {
@@ -12,7 +12,7 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Vendeur</h2>
         <p>
-          Les abonnements StartIA sont vendus par FITOPS AI, micro-entreprise, 119 rue Jules
+          Les abonnements LockinIA sont vendus par FITOPS AI, micro-entreprise, 119 rue Jules
           Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063. TVA non applicable, article
           293 B du CGI.
         </p>
@@ -33,7 +33,7 @@ export default function CgvPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Champ d&apos;application</h2>
         <p>
           Les présentes CGV s&apos;appliquent à toute commande d&apos;abonnement ou de prestation
-          StartIA passée par une entreprise (professionnel). Elles prévalent sur tout document du
+          LockinIA passée par une entreprise (professionnel). Elles prévalent sur tout document du
           client, sauf accord écrit contraire. Les{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgu">
             CGU
@@ -86,7 +86,7 @@ export default function CgvPage() {
           </li>
         </ul>
         <p>
-          Sauf mention contraire sur devis : StartIA ne fournit pas de conseil juridique, d&apos;audit
+          Sauf mention contraire sur devis : LockinIA ne fournit pas de conseil juridique, d&apos;audit
           de conformité, ni de certification officielle de l&apos;entreprise. L&apos;attestation
           documente le parcours suivi ; elle ne constitue ni diplôme ni certification.
         </p>
@@ -97,7 +97,7 @@ export default function CgvPage() {
           Modalités de formation à distance (FOAD)
         </h2>
         <p>
-          Le parcours StartIA est dispensé à distance, en asynchrone. Conformément au Code du
+          Le parcours LockinIA est dispensé à distance, en asynchrone. Conformément au Code du
           travail, les modalités suivantes s&apos;appliquent. La{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/programme">
             fiche programme
@@ -209,7 +209,7 @@ export default function CgvPage() {
         <p>
           FITOPS AI est tenu à une obligation de moyens. Sa responsabilité globale au titre d&apos;un
           abonnement ou d&apos;une prestation est plafonnée aux montants effectivement versés par
-          le client au cours des douze derniers mois, sauf faute lourde ou dol. StartIA ne
+          le client au cours des douze derniers mois, sauf faute lourde ou dol. LockinIA ne
           garantit pas à elle seule la conformité réglementaire de l&apos;entreprise.
         </p>
       </section>

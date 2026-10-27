@@ -1,4 +1,4 @@
-# Firebase — StartIA
+# Firebase — LockinIA
 
 ## Isolation des données
 

@@ -1,4 +1,4 @@
-"""Convertit exports/startia-projet-complet.txt en PDF."""
+"""Convertit exports/lockinia-projet-complet.txt en PDF."""
 from pathlib import Path
 
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
@@ -10,8 +10,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
 ROOT = Path(__file__).resolve().parents[1]
-TXT = ROOT / "exports" / "startia-projet-complet.txt"
-PDF = ROOT / "exports" / "startia-projet-complet.pdf"
+TXT = ROOT / "exports" / "lockinia-projet-complet.txt"
+PDF = ROOT / "exports" / "lockinia-projet-complet.pdf"
 
 pdfmetrics.registerFont(TTFont("ArialFR", r"C:\Windows\Fonts\arial.ttf"))
 pdfmetrics.registerFont(TTFont("ArialFR-Bold", r"C:\Windows\Fonts\arialbd.ttf"))
@@ -82,8 +82,8 @@ def main() -> None:
         rightMargin=1.6 * cm,
         topMargin=1.4 * cm,
         bottomMargin=1.4 * cm,
-        title="StartIA — Résumé projet complet",
-        author="StartIA",
+        title="LockinIA — Résumé projet complet",
+        author="LockinIA",
     )
 
     story = []
@@ -92,7 +92,7 @@ def main() -> None:
         if not s:
             story.append(Spacer(1, 4))
             continue
-        if i == 0 or s.startswith("StartIA") or s.startswith("CONFORMAI"):
+        if i == 0 or s.startswith("LockinIA") or s.startswith("LOCKINIA"):
             story.append(Paragraph(esc(s), title))
             continue
         if (

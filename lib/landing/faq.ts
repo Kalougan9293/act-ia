@@ -7,7 +7,7 @@ export const faqs = [
   {
     question: "Quel lien entre l'IA et le RGPD dans la formation ?",
     answer:
-      "Dès qu'un salarié colle un nom, un e-mail, une voix ou un fichier client dans ChatGPT, Copilot ou un outil similaire, le RGPD s'applique. Le parcours StartIA rappelle les réflexes concrets : quoi saisir ou ne pas saisir, données personnelles, secrets d'entreprise, et quand alerter le DPO ou le référent. Ce n'est pas un audit RGPD de votre organisation : c'est la sensibilisation utile au quotidien face à l'IA.",
+      "Dès qu'un salarié colle un nom, un e-mail, une voix ou un fichier client dans ChatGPT, Copilot ou un outil similaire, le RGPD s'applique. Le parcours LockinIA rappelle les réflexes concrets : quoi saisir ou ne pas saisir, données personnelles, secrets d'entreprise, et quand alerter le DPO ou le référent. Ce n'est pas un audit RGPD de votre organisation : c'est la sensibilisation utile au quotidien face à l'IA.",
   },
   {
     question: "Faut-il garantir que chaque salarié « maîtrise » l'IA ?",
@@ -17,7 +17,7 @@ export const faqs = [
   {
     question: "Que se passe-t-il si on n'a rien documenté ?",
     answer:
-      "En cas d'audit client, d'incident ou de demande d'assurance, il devient très difficile de prouver que vous avez agi. StartIA constitue pour vous un suivi clair : attestations nominatives et avancement des parcours, pour documenter concrètement votre démarche Article 4.",
+      "En cas d'audit client, d'incident ou de demande d'assurance, il devient très difficile de prouver que vous avez agi. LockinIA constitue pour vous un suivi clair : attestations nominatives et avancement des parcours, pour documenter concrètement votre démarche Article 4.",
   },
   {
     question: "Faut-il former tous les salariés ?",
@@ -27,12 +27,12 @@ export const faqs = [
   {
     question: "Un parcours en ligne suffit-il ?",
     answer:
-      "Oui, si le parcours est adapté aux usages et documenté. Une vidéo générique seule ne suffit pas. StartIA combine un socle commun, des modules selon le métier et des preuves de suivi, pour vous aider à sensibiliser vos équipes et à documenter votre démarche Article 4.",
+      "Oui, si le parcours est adapté aux usages et documenté. Une vidéo générique seule ne suffit pas. LockinIA combine un socle commun, des modules selon le métier et des preuves de suivi, pour vous aider à sensibiliser vos équipes et à documenter votre démarche Article 4.",
   },
   {
     question: "Pourquoi pas seulement les guides gratuits CNIL ou France Num ?",
     answer:
-      "Ces ressources sont utiles pour s'informer. Elles ne délivrent pas d'attestations nominatives, ni de suivi RH de qui a terminé, ni d'export de preuves pour un contrôle ou un audit. StartIA fait gagner du temps : parcours prêt, suivi dans la durée, et traces exploitables pour la direction.",
+      "Ces ressources sont utiles pour s'informer. Elles ne délivrent pas d'attestations nominatives, ni de suivi RH de qui a terminé, ni d'export de preuves pour un contrôle ou un audit. LockinIA fait gagner du temps : parcours prêt, suivi dans la durée, et traces exploitables pour la direction.",
   },
   {
     question: "Faut-il un organisme certifié ou un volume d'heures imposé ?",
@@ -45,7 +45,7 @@ export const faqs = [
       "Le socle tient 1 h 15, examen compris, en une fois ou en plusieurs sessions. Accessible sur téléphone, tablette ou ordinateur, sans rien installer. Des fiches métiers courtes s'ajoutent ensuite en bonus.",
   },
   {
-    question: "StartIA est-il un diplôme ou une certification ?",
+    question: "LockinIA est-il un diplôme ou une certification ?",
     answer:
       "Non. C'est une attestation nominative de suivi : qui a suivi le parcours, quand, avec quel résultat. Elle documente votre démarche Article 4. Ce n'est ni un diplôme, ni une certification officielle de conformité à l'AI Act.",
   },
@@ -57,7 +57,7 @@ export const faqs = [
   {
     question: "Comment voir qui n'a pas terminé ?",
     answer:
-      "Le tableau de bord met en évidence chaque personne en retard. La direction sait immédiatement qui doit encore suivre le parcours, sans relancer à l'aveugle.",
+      "Le tableau de bord RH montre l'avancement de chaque collaborateur (0 à 100 %) et les attestations émises. Vous voyez tout de suite qui n'a pas fini, sans relancer à l'aveugle.",
   },
   {
     question: "La formation est-elle mise à jour si la loi change ?",
@@ -70,7 +70,7 @@ export const faqs = [
       "Pour former les nouveaux arrivants, garder le parcours à jour quand la loi ou les usages évoluent, et conserver le suivi RH avec attestations et exports de preuves. Ce n'est pas seulement « refaire la même heure » : c'est maintenir une démarche documentée dans le temps.",
   },
   {
-    question: "Combien coûte StartIA ?",
+    question: "Combien coûte LockinIA ?",
     answer:
       "390 € par an jusqu'à 5 salariés, 790 € jusqu'à 20, 1 290 € jusqu'à 50. Au-delà, l'offre est sur devis. En option : module métier sur mesure à 690 € le module, atelier usages & automatisation et marque blanche sur devis. La TVA ne s'applique pas.",
   },
@@ -82,7 +82,7 @@ export const faqs = [
   {
     question: "Un OPCO peut-il financer la formation ?",
     answer:
-      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. StartIA prépare son dossier Qualiopi (référentiel et preuves FOAD) : aucune date d'audit n'est fixée, aucune certification ni numéro de déclaration d'activité n'est revendiqué. Le détail figure dans la fiche programme.",
+      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. LockinIA prépare son dossier Qualiopi (référentiel et preuves FOAD) : aucune date d'audit n'est fixée, aucune certification ni numéro de déclaration d'activité n'est revendiqué. Le détail figure dans la fiche programme.",
   },
   {
     question: "Où trouver la fiche programme de la formation ?",
@@ -92,7 +92,7 @@ export const faqs = [
   {
     question: "Peut-on ajouter un module propre à notre métier ?",
     answer:
-      "Oui. Les fiches métiers incluses sont dans l'abonnement. Un module sur mesure au format standard (texte, cas pratique, idée d'usage) est facturé 690 €, puis intégré à votre parcours StartIA. Pour une demande plus large — plusieurs métiers ou contenus longs — le montant est établi sur devis.",
+      "Oui. Les fiches métiers incluses sont dans l'abonnement. Un module sur mesure au format standard (texte, cas pratique, idée d'usage) est facturé 690 €, puis intégré à votre parcours LockinIA. Pour une demande plus large — plusieurs métiers ou contenus longs — le montant est établi sur devis.",
   },
   {
     question: "Quelle différence entre le module sur mesure et l'atelier ?",

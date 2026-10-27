@@ -1,7 +1,7 @@
 rules_version = '2';
 
 /**
- * Isolation multi-tenant StartIA
+ * Isolation multi-tenant LockinIA
  * Super admin = uniquement jonathan.seroussi.92100@gmail.com
  */
 service cloud.firestore {

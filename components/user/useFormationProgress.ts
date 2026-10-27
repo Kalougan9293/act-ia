@@ -21,7 +21,7 @@ import {
 export type { FormationProgress };
 
 function storageKey(uid: string) {
-  return `startia:formation:${uid}`;
+  return `lockinia:formation:${uid}`;
 }
 
 function readLocal(uid: string): FormationProgress | null {

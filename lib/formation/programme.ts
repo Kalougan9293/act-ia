@@ -2,16 +2,16 @@ import { BLOCKS, ATTESTATION_COURSE_TITLE, SOCLE_DURATION_LABEL } from "@/lib/fo
 import { ASSISTANCE } from "@/lib/formation/assistance";
 import { QUIZ_PASS_PERCENT } from "@/lib/formation/evaluation";
 
-/** Fiche programme formelle — action de formation StartIA (socle). */
+/** Fiche programme formelle — action de formation LockinIA (socle). */
 export const PROGRAMME = {
   intitule: ATTESTATION_COURSE_TITLE,
   version: "V1.0",
   modalite: "Formation à distance asynchrone (FOAD)",
-  organisme: "FITOPS AI — plateforme StartIA",
+  organisme: "FITOPS AI — plateforme LockinIA",
   contact: ASSISTANCE.email,
   phone: ASSISTANCE.phone,
   statutQualiopi:
-    "Dossier Qualiopi en préparation (référentiel et preuves FOAD) — état au 25/10/2026 : aucune date d'audit fixée, aucun numéro de déclaration d'activité revendiqué. StartIA n'est pas présenté comme un organisme certifié Qualiopi tant que la certification n'est pas obtenue.",
+    "Dossier Qualiopi en préparation (référentiel et preuves FOAD) — état au 25/10/2026 : aucune date d'audit fixée, aucun numéro de déclaration d'activité revendiqué. LockinIA n'est pas présenté comme un organisme certifié Qualiopi tant que la certification n'est pas obtenue.",
   objectifs: [
     {
       label: "Comprendre le fonctionnement de l'IA générative et ses limites",
@@ -55,7 +55,7 @@ export const PROGRAMME = {
   dureeDetail:
     "Durée moyenne indicative du socle (activités + évaluation finale). Le parcours peut être suivi en une ou plusieurs sessions.",
   methodes: [
-    "FOAD asynchrone sur plateforme StartIA",
+    "FOAD asynchrone sur plateforme LockinIA",
     "Vidéos courtes et textes pédagogiques",
     "Activités interactives (tri, quiz formatifs, mises en situation)",
     "Test de positionnement non éliminatoire en début de parcours",
@@ -75,7 +75,7 @@ export const PROGRAMME = {
     `Délai de réponse : ${ASSISTANCE.responseDelay}.`,
   ],
   tarifs: [
-    "Abonnement annuel StartIA (accès plateforme + parcours + suivi RH + attestations) : Micro 390 € (1–5 accès), TPE 790 € (6–20), PME 1 290 € (21–50), ETI sur devis.",
+    "Abonnement annuel LockinIA (accès plateforme + parcours + suivi RH + attestations) : Micro 390 € (1–5 accès), TPE 790 € (6–20), PME 1 290 € (21–50), ETI sur devis.",
     "Options hors abonnement : module métier sur mesure 690 € (format standard) ; atelier usages & automatisation sur devis ; marque blanche sur devis.",
     "TVA non applicable, art. 293 B du CGI.",
   ],

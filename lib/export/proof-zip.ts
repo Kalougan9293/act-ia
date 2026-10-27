@@ -418,7 +418,7 @@ export function downloadProofZip(
   };
 
   const pdfLines = [
-    "StartIA — Preuves de parcours",
+    "LockinIA — Preuves de parcours",
     companyName,
     `Export : ${exportedAt}`,
     "Aide a la documentation. Ne constitue pas un conseil juridique.",

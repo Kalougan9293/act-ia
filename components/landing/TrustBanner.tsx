@@ -5,28 +5,28 @@ import { CheckCircle } from "lucide-react";
 
 const stats = [
   {
-    value: "Traces de suivi documentées",
-    label: "Attestations nominatives et exports pour documenter vos mesures",
+    value: "Dossier de preuves",
+    label: "Attestations nominatives et exports prêts pour un contrôle ou un audit",
   },
   {
-    value: "Contenu formateur certifié",
-    label: "Parcours réalisé avec un formateur certifié RS6776 et RS6601",
+    value: "Contenu expert",
+    label: "Parcours conçu avec un formateur certifié RS6776 et RS6601",
   },
   {
     value: "Attestation de suivi",
-    label: "Nominative et horodatée — pas un diplôme ni une conformité",
+    label: "Nominative, horodatée, prête à verser au dossier",
   },
   {
-    value: "Suivi RH",
-    label: "Qui a suivi quoi, et qui est en retard",
+    value: "Pilotage RH",
+    label: "Avancement de chaque collaborateur, en temps réel",
   },
   {
-    value: "Alternative aux formations externes",
-    label: "1 h 15, suivi RH, preuves exportables — 100 % SaaS",
+    value: "100 % en ligne",
+    label: "1 h 15, sans déplacement — alternative aux formations externes",
   },
   {
-    value: "Veille réglementaire",
-    label: "Vous êtes informés des évolutions de l'AI Act. Le parcours suit l'actualité.",
+    value: "Veille AI Act",
+    label: "Vous êtes informés des évolutions ; le parcours reste à jour",
   },
 ];
 

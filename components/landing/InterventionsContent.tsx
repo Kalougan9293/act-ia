@@ -14,7 +14,7 @@ import Badge from "@/components/ui/Badge";
 
 const CONTACT_EMAIL = "contact@lockin-web.online";
 const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-  "Accompagnement IA — StartIA",
+  "Accompagnement IA — LockinIA",
 )}`;
 
 const offerings = [

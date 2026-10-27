@@ -74,7 +74,7 @@ export default function Hero() {
                 transition={{ type: "spring", stiffness: 380, damping: 15 }}
               >
                 <a
-                  href="mailto:contact@lockin-web.online?subject=Demande%20StartIA"
+                  href="mailto:contact@lockin-web.online?subject=Demande%20LockinIA"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.85)] transition-shadow duration-300 group"
                 >
                   Demander un accès

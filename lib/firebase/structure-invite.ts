@@ -53,6 +53,7 @@ export async function ensureStructureInviteToken(
           status: structure.status,
           archivedAt: structure.archivedAt,
           inviteToken: token,
+          registryId: structure.registryId,
           billing: structure.billing,
           companyModule: structure.companyModule,
         },

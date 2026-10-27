@@ -202,8 +202,8 @@ export default function PricingSection() {
                 <a
                   href={
                     plan.name === "ETI"
-                      ? "mailto:contact@lockin-web.online?subject=StartIA%20ETI%20-%20devis"
-                      : "mailto:contact@lockin-web.online?subject=StartIA%20-%20demarrer"
+                      ? "mailto:contact@lockin-web.online?subject=LockinIA%20ETI%20-%20devis"
+                      : "mailto:contact@lockin-web.online?subject=LockinIA%20-%20demarrer"
                   }
                   className={`w-full text-center px-5 py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
                     plan.highlight
@@ -272,7 +272,7 @@ export default function PricingSection() {
                 </p>
                 {addon.featured ? (
                   <a
-                    href="mailto:contact@lockin-web.online?subject=StartIA%20-%20module%20metier%20sur%20mesure"
+                    href="mailto:contact@lockin-web.online?subject=LockinIA%20-%20module%20metier%20sur%20mesure"
                     className="mt-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
                   >
                     Demander un module sur mesure

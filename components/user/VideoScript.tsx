@@ -35,12 +35,15 @@ export default function VideoScript({
   script,
   src,
   onComplete,
+  /** Coupe la lecture avant la fin du fichier (0–1), ex. extrait démo. */
+  endRatio,
 }: {
   format: string;
   duration?: string;
   script: string;
   src?: string;
   onComplete?: () => void;
+  endRatio?: number;
 }) {
   const [charIndex, setCharIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -108,16 +111,29 @@ export default function VideoScript({
     setPlaying(false);
     paintProgress(0);
 
+    const clipRatio =
+      typeof endRatio === "number" && endRatio > 0 && endRatio < 1 ? endRatio : 1;
+
     const syncFromVideo = (video: HTMLVideoElement) => {
       const videoDuration = video.duration;
       if (!videoDuration || !Number.isFinite(videoDuration) || videoDuration <= 0) return;
+      const clipEnd = videoDuration * clipRatio;
       // Bloque le seek avant (clavier / gestes) : on n'autorise pas d'avancer
       if (video.currentTime > lastTimeRef.current + 0.35) {
         video.currentTime = lastTimeRef.current;
       } else {
         lastTimeRef.current = video.currentTime;
       }
-      applyProgress(video.currentTime / videoDuration);
+      if (video.currentTime >= clipEnd - 0.05) {
+        video.pause();
+        video.currentTime = clipEnd;
+        lastTimeRef.current = clipEnd;
+        applyProgress(1);
+        markComplete();
+        setPlaying(false);
+        return;
+      }
+      applyProgress(video.currentTime / clipEnd);
       const isPlaying = !video.paused && !video.ended;
       setPlaying((prev) => (prev === isPlaying ? prev : isPlaying));
     };
@@ -138,7 +154,7 @@ export default function VideoScript({
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [script, src, duration, totalChars]);
+  }, [script, src, duration, totalChars, endRatio]);
 
   // Cadre script = hauteur vidéo en desktop ; plafond fixe en mobile (ne s'allonge jamais).
   useEffect(() => {

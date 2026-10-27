@@ -328,10 +328,10 @@ const plans = [
 const addons = [
   {
     name: "Module métier sur mesure",
-    tag: "Dans StartIA",
+    tag: "Dans LockinIA",
     price: "690 € / module",
     description:
-      "Un module conçu au cas par cas, selon votre métier, vos usages et vos demandes — rédigé et intégré à votre parcours StartIA.",
+      "Un module conçu au cas par cas, selon votre métier, vos usages et vos demandes — rédigé et intégré à votre parcours LockinIA.",
   },
   {
     name: "Marque blanche",
@@ -351,7 +351,7 @@ const addons = [
 
 const out: string[] = [];
 
-out.push("StartIA — RÉSUMÉ PROJET COMPLET");
+out.push("LockinIA — RÉSUMÉ PROJET COMPLET");
 out.push("=".repeat(60));
 out.push("");
 out.push("Contenu: page d'accueil + parcours utilisateur (salarié).");
@@ -595,7 +595,7 @@ for (const path of CAREER_PATHS) {
 
 const dir = join(process.cwd(), "exports");
 mkdirSync(dir, { recursive: true });
-const textPath = join(dir, "startia-projet-complet.txt");
+const textPath = join(dir, "lockinia-projet-complet.txt");
 writeFileSync(textPath, out.join("\n"), "utf8");
 console.log(`OK texte: ${textPath}`);
 console.log(`Lignes: ${out.length}`);

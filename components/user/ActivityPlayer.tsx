@@ -1632,7 +1632,8 @@ function ScenarioActivity({
   const skin = scenarioSkin(current.prompt);
   const promptLower = current.prompt.toLowerCase();
   const isChatbot = promptLower.includes("chatbot");
-  const isMeetingRec = promptLower.includes("enregistre") || promptLower.includes("résume la réunion");
+  const isMeetingRec =
+    promptLower.includes("enregistre") || promptLower.includes("résume la réunion");
   const isHiddenOrder = promptLower.includes("envoie les contrats");
   const gallery = current.imageSrcs?.length
     ? current.imageSrcs
@@ -1640,6 +1641,11 @@ function ScenarioActivity({
       ? [current.imageSrc]
       : [];
   const hasMedia = Boolean(current.mediaSrc || gallery.length);
+  /** Même emprise visuelle que l'aperçu « Enregistrement » du 3.7. */
+  const meetingCardSize =
+    isMeetingRec ||
+    gallery.some((src) => src.includes("reunion")) ||
+    promptLower.includes("résumé est prêt");
 
   return (
     <div className="space-y-5">
@@ -1669,7 +1675,7 @@ function ScenarioActivity({
         hideIcon={isChatbot || isMeetingRec || isHiddenOrder || hasMedia}
       >
         {isChatbot && <ChatbotLivePreview />}
-        {isMeetingRec && <MeetingRecPreview />}
+        {isMeetingRec && !hasMedia && <MeetingRecPreview />}
         {isHiddenOrder && <HiddenInstructionPreview />}
         {current.mediaSrc && (
           <div className="relative mx-auto mb-5 w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-black shadow-sm dark:border-slate-700">
@@ -1698,7 +1704,9 @@ function ScenarioActivity({
           <div
             className={
               gallery.length === 1
-                ? "mx-auto mb-5 w-full max-w-[240px] space-y-2 sm:max-w-[280px]"
+                ? meetingCardSize
+                  ? "mx-auto mb-5 w-full max-w-sm space-y-2"
+                  : "mx-auto mb-5 w-full max-w-[240px] space-y-2 sm:max-w-[280px]"
                 : "mx-auto mb-5 w-full max-w-[260px] space-y-1.5 sm:max-w-[280px]"
             }
           >
@@ -1712,12 +1720,16 @@ function ScenarioActivity({
                     src={src}
                     alt={
                       current.imageAlt
-                        ? `${current.imageAlt} (${imageIndex + 1})`
+                        ? gallery.length === 1
+                          ? current.imageAlt
+                          : `${current.imageAlt} (${imageIndex + 1})`
                         : `Illustration ${imageIndex + 1}`
                     }
                     className={
                       gallery.length === 1
-                        ? "max-h-44 w-full object-contain bg-white sm:max-h-52"
+                        ? meetingCardSize
+                          ? "aspect-[16/9] w-full object-cover bg-white"
+                          : "max-h-44 w-full object-contain bg-white sm:max-h-52"
                         : "aspect-square w-full bg-white object-contain p-1"
                     }
                   />
@@ -2214,6 +2226,7 @@ const TRAFFIC_LANE =
   "M -5 72 C 15 62, 28 82, 42 70 S 62 52, 72 68 S 88 84, 105 64";
 const TRAFFIC_ARRIVE_MS = 1850;
 const TRAFFIC_LEAVE_MS = 1200;
+const TRAFFIC_REVERSE_MS = 1450;
 /** Stop avant le feu (feu ≈ 54–55 % de largeur). */
 const TRAFFIC_STOP_X = 44;
 /** Empattement approximatif (centres des roues) selon la largeur CSS de la voiture. */
@@ -2297,10 +2310,17 @@ function TrafficActivity({
       return;
     }
 
+    // Feu rouge STOP : la voiture cale et recule (interdit de passer).
+    const reverseLeave = phase === "leave" && items[cursor]?.level === "red";
     const from = phase === "leave" ? stopDist : 0;
     const maxRear = Math.max(0, total - total * 0.02);
-    const to = phase === "leave" ? maxRear : stopDist;
-    const duration = phase === "leave" ? TRAFFIC_LEAVE_MS : TRAFFIC_ARRIVE_MS;
+    const to = phase === "leave" ? (reverseLeave ? 0 : maxRear) : stopDist;
+    const duration =
+      phase === "leave"
+        ? reverseLeave
+          ? TRAFFIC_REVERSE_MS
+          : TRAFFIC_LEAVE_MS
+        : TRAFFIC_ARRIVE_MS;
     let frame = 0;
     const t0 = performance.now();
 
@@ -2309,7 +2329,12 @@ function TrafficActivity({
 
     function tick(now: number) {
       const t = Math.min(1, (now - t0) / duration);
-      const eased = phase === "arrive" ? 1 - (1 - t) ** 2.2 : t;
+      const eased =
+        phase === "arrive"
+          ? 1 - (1 - t) ** 2.2
+          : reverseLeave
+            ? t * t
+            : t;
       setPose(poseAt(from + (to - from) * eased));
       if (t < 1) {
         frame = requestAnimationFrame(tick);
@@ -2335,7 +2360,7 @@ function TrafficActivity({
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [phase, cursor]);
+  }, [phase, cursor, items]);
 
   function pick(levelId: string) {
     if (phase !== "choose" || picked !== null || finished) return;
@@ -2350,6 +2375,8 @@ function TrafficActivity({
 
   if (!item) return null;
 
+  const stopBreakdown =
+    item.level === "red" && (phase === "result" || phase === "leave");
   const carTone =
     phase === "result" || phase === "leave"
       ? right
@@ -2482,7 +2509,31 @@ function TrafficActivity({
             transformOrigin: "50% 100%",
           }}
         >
-          <div className="relative w-28 sm:w-32">
+          <div
+            className={`relative w-28 sm:w-32 ${
+              stopBreakdown && phase === "result" ? "traffic-breakdown-shake" : ""
+            }`}
+          >
+            {stopBreakdown && (
+              <div
+                className="pointer-events-none absolute -left-1 top-0 z-20 h-10 w-14"
+                aria-hidden
+              >
+                {[0, 1, 2, 3].map((i) => (
+                  <span
+                    key={i}
+                    className="traffic-smoke-puff absolute rounded-full bg-slate-500/70 blur-[1px] dark:bg-slate-300/55"
+                    style={{
+                      left: `${10 + i * 7}px`,
+                      top: `${2 + (i % 2) * 4}px`,
+                      width: `${10 + i * 2}px`,
+                      height: `${10 + i * 2}px`,
+                      animationDelay: `${i * 0.22}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
             {(phase === "result" || phase === "leave") && (
               <span className="absolute -top-2.5 left-1/2 z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-white shadow">
                 {right ? (
@@ -3248,6 +3299,8 @@ const TETRIS_ROWS = 12;
 const TETRIS_FALL_MS = 1100;
 const TETRIS_CELL_MAX = 28;
 const TETRIS_CELL_MIN = 22;
+/** 1 essai + 2 reprises ; au 3ᵉ, on valide même en échec. */
+const TETRIS_MAX_ATTEMPTS = 3;
 
 /** Les 7 tétrominos classiques, un par réflexe */
 const TETRIS_SHAPES: number[][][] = [
@@ -3350,6 +3403,42 @@ function emptyBoard(): (TetrisCell | null)[][] {
   return Array.from({ length: TETRIS_ROWS }, () => Array.from({ length: TETRIS_COLS }, () => null));
 }
 
+/** Briques grises déjà posées en bas — obstacles, pas des réflexes. */
+const TETRIS_SEED: { x: number; y: number }[] = [
+  // rangée du bas
+  { x: 0, y: 11 },
+  { x: 1, y: 11 },
+  { x: 2, y: 11 },
+  { x: 5, y: 11 },
+  { x: 6, y: 11 },
+  // au-dessus
+  { x: 0, y: 10 },
+  { x: 1, y: 10 },
+  { x: 4, y: 10 },
+  { x: 5, y: 10 },
+  { x: 6, y: 10 },
+  { x: 1, y: 9 },
+  { x: 2, y: 9 },
+  { x: 6, y: 9 },
+  { x: 7, y: 9 },
+  { x: 0, y: 8 },
+  { x: 7, y: 8 },
+];
+
+function seedBoard(): (TetrisCell | null)[][] {
+  const board = emptyBoard();
+  for (const { x, y } of TETRIS_SEED) {
+    if (y < 0 || y >= TETRIS_ROWS || x < 0 || x >= TETRIS_COLS) continue;
+    board[y]![x] = {
+      tone: 0,
+      label: "",
+      id: `seed-${x}-${y}`,
+      neutral: true,
+    };
+  }
+  return board;
+}
+
 function collides(piece: TetrisPiece, board: (TetrisCell | null)[][]) {
   return pieceCells(piece).some(
     (cell) =>
@@ -3409,17 +3498,23 @@ function TetrisActivity({
   const [lockedIds, setLockedIds] = useState<string[]>([]);
   const [sideLabels, setSideLabels] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(1);
 
   const boardRef = useRef(board);
   const currentRef = useRef(current);
   const cursorRef = useRef(cursor);
   const finishedRef = useRef(finished);
+  const failedRef = useRef(failed);
+  const attemptRef = useRef(attempt);
   const lockedRef = useRef(lockedIds);
   const startedRef = useRef(started);
   boardRef.current = board;
   currentRef.current = current;
   cursorRef.current = cursor;
   finishedRef.current = finished;
+  failedRef.current = failed;
+  attemptRef.current = attempt;
   lockedRef.current = lockedIds;
   startedRef.current = started;
   const onReadyRef = useRef(onReady);
@@ -3440,6 +3535,34 @@ function TetrisActivity({
       x: Math.max(0, Math.floor((TETRIS_COLS - (shape[0]?.length ?? 1)) / 2)),
       y: 0,
     };
+  }
+
+  function finishSuccess() {
+    setFailed(false);
+    failedRef.current = false;
+    setCurrent(null);
+    currentRef.current = null;
+    setFinished(true);
+    finishedRef.current = true;
+    onReadyRef.current();
+  }
+
+  function finishFail() {
+    setCurrent(null);
+    currentRef.current = null;
+    failedRef.current = true;
+    setFailed(true);
+    // 3ᵉ essai : on valide même si le plateau est bloqué, et on affiche les 7 réflexes.
+    if (attemptRef.current >= TETRIS_MAX_ATTEMPTS) {
+      setSideLabels(reflexes.map((block) => block.label));
+      setLockedIds(reflexes.map((block) => block.id));
+      lockedRef.current = reflexes.map((block) => block.id);
+      setFinished(true);
+      finishedRef.current = true;
+      onReadyRef.current();
+      return;
+    }
+    finishedRef.current = true;
   }
 
   function lockPiece(piece: TetrisPiece) {
@@ -3468,10 +3591,7 @@ function TetrisActivity({
 
     const nextIndex = cursorRef.current + 1;
     if (nextIndex >= drops.length) {
-      setCurrent(null);
-      currentRef.current = null;
-      setFinished(true);
-      onReadyRef.current();
+      finishSuccess();
       return;
     }
 
@@ -3479,36 +3599,43 @@ function TetrisActivity({
     cursorRef.current = nextIndex;
     const spawned = makePiece(nextIndex);
     if (!spawned || collides(spawned, nextBoard)) {
-      setCurrent(null);
-      currentRef.current = null;
-      setFinished(true);
-      onReadyRef.current();
+      finishFail();
       return;
     }
     setCurrent(spawned);
     currentRef.current = spawned;
   }
 
-  function startGame() {
+  function startGame(nextAttempt = attempt) {
     const first = makePiece(0);
+    const initial = seedBoard();
     setStarted(true);
     startedRef.current = true;
+    setAttempt(nextAttempt);
+    attemptRef.current = nextAttempt;
     setCursor(0);
     cursorRef.current = 0;
-    setBoard(emptyBoard());
-    boardRef.current = emptyBoard();
+    setBoard(initial);
+    boardRef.current = initial;
     setLockedIds([]);
     lockedRef.current = [];
     setSideLabels([]);
+    setFailed(false);
+    failedRef.current = false;
     setFinished(false);
     finishedRef.current = false;
     setCurrent(first);
     currentRef.current = first;
   }
 
+  function retryGame() {
+    if (attemptRef.current >= TETRIS_MAX_ATTEMPTS) return;
+    startGame(attemptRef.current + 1);
+  }
+
   function tryMove(dx: number, dy: number) {
     const piece = currentRef.current;
-    if (!startedRef.current || !piece || finishedRef.current) return;
+    if (!startedRef.current || !piece || finishedRef.current || failedRef.current) return;
     const next = { ...piece, x: piece.x + dx, y: piece.y + dy };
     if (collides(next, boardRef.current)) {
       if (dy > 0) lockPiece(piece);
@@ -3520,7 +3647,7 @@ function TetrisActivity({
 
   function tryRotate() {
     const piece = currentRef.current;
-    if (!startedRef.current || !piece || finishedRef.current) return;
+    if (!startedRef.current || !piece || finishedRef.current || failedRef.current) return;
     const shape = rotateShape(piece.shape);
     const kicks = [0, -1, 1, -2, 2];
     for (const kick of kicks) {
@@ -3544,14 +3671,14 @@ function TetrisActivity({
   }, [cell, started]);
 
   useEffect(() => {
-    if (!started || finished) return;
+    if (!started || finished || failed) return;
     const timer = window.setInterval(() => tryMove(0, 1), TETRIS_FALL_MS);
     return () => window.clearInterval(timer);
-  }, [started, finished, cursor]);
+  }, [started, finished, failed, cursor]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if (!startedRef.current || finishedRef.current) return;
+      if (!startedRef.current || finishedRef.current || failedRef.current) return;
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         tryMove(-1, 0);
@@ -3653,7 +3780,7 @@ function TetrisActivity({
         <div className="flex justify-center pb-2">
           <button
             type="button"
-            onClick={startGame}
+            onClick={() => startGame(1)}
             className="w-full max-w-xs touch-manipulation rounded-xl bg-blue-600 px-8 py-4 text-base font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98] sm:w-auto sm:py-3.5 sm:text-sm"
           >
             Départ
@@ -3668,8 +3795,16 @@ function TetrisActivity({
   const playWidth = frameWidth || TETRIS_COLS * cell + 16;
   const lastSlot = reflexes.length - 1;
   const showSides = !narrow;
+  const forcePassed = finished && failed;
+  const canRetry = failed && !finished && attempt < TETRIS_MAX_ATTEMPTS;
   const showEndList = narrow && finished;
-  const endLabels = sideLabels.length > 0 ? sideLabels : reflexes.map((block) => block.label);
+  /** À la fin (réussite ou 3ᵉ échec), toujours les 7 réflexes. */
+  const displayLabels = finished
+    ? reflexes.map((block) => block.label)
+    : sideLabels.length > 0
+      ? sideLabels
+      : reflexes.map((block) => block.label);
+  const endLabels = displayLabels;
 
   function sideStyle(index: number) {
     const top = lastSlot <= 0 ? 0 : (index / lastSlot) * 100;
@@ -3695,8 +3830,33 @@ function TetrisActivity({
         ))}
       </div>
 
+      <div className="flex w-full items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400" style={{ width: playWidth }}>
+        <span>
+          Essai {attempt} / {TETRIS_MAX_ATTEMPTS}
+        </span>
+      </div>
+
       <div className="h-[4.75rem]" style={{ width: playWidth }}>
-        {current && !current.neutral && !finished && (
+        {canRetry ? (
+          <div className="flex h-full flex-col items-center justify-center rounded-2xl border-2 border-amber-400 bg-amber-50 px-3 text-center shadow-sm dark:border-amber-700 dark:bg-amber-950/40">
+            <p className="text-center text-[13px] font-bold leading-snug text-amber-950 dark:text-amber-100">
+              Plateau bloqué
+            </p>
+            <p className="mt-0.5 text-center text-[11px] text-amber-800/80 dark:text-amber-200/80">
+              Recommencez — encore {TETRIS_MAX_ATTEMPTS - attempt} essai
+              {TETRIS_MAX_ATTEMPTS - attempt > 1 ? "s" : ""}
+            </p>
+          </div>
+        ) : forcePassed ? (
+          <div className="flex h-full flex-col items-center justify-center rounded-2xl border-2 border-slate-300 bg-slate-100 px-3 text-center shadow-sm dark:border-slate-600 dark:bg-slate-900">
+            <p className="text-center text-[13px] font-bold leading-snug text-slate-900 dark:text-white">
+              3 essais atteints
+            </p>
+            <p className="mt-0.5 text-center text-[11px] text-slate-600 dark:text-slate-300">
+              Vous pouvez continuer
+            </p>
+          </div>
+        ) : current && !current.neutral && !finished && !failed ? (
           <div
             className={`flex h-full flex-col items-center justify-center rounded-2xl border-2 px-3 text-center shadow-sm ${TETRIS_TONES[current.tone]!}`}
           >
@@ -3705,7 +3865,7 @@ function TetrisActivity({
             </p>
             <p className="mt-1 text-center text-[13px] font-bold leading-snug text-slate-950 sm:text-sm">{current.label}</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div
@@ -3717,7 +3877,7 @@ function TetrisActivity({
       >
         {showSides && (
           <ul className="relative h-full min-w-0">
-            {sideLabels.map((label, index) =>
+            {displayLabels.map((label, index) =>
               index % 2 === 0 ? (
                 <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
                   <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
@@ -3783,7 +3943,7 @@ function TetrisActivity({
 
         {showSides && (
           <ul className="relative h-full min-w-0">
-            {sideLabels.map((label, index) =>
+            {displayLabels.map((label, index) =>
               index % 2 === 1 ? (
                 <li key={label} className={`${sideItem} absolute inset-x-0`} style={sideStyle(index)}>
                   <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
@@ -3795,7 +3955,16 @@ function TetrisActivity({
         )}
       </div>
 
-      {!finished && (
+      {canRetry ? (
+        <button
+          type="button"
+          onClick={retryGame}
+          className="w-full max-w-xs touch-manipulation rounded-xl bg-blue-600 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
+          style={{ width: playWidth }}
+        >
+          Recommencer ({attempt + 1} / {TETRIS_MAX_ATTEMPTS})
+        </button>
+      ) : !finished && !failed ? (
         <div className="grid grid-cols-3 gap-1.5" style={{ width: playWidth }}>
           <button type="button" onClick={() => tryMove(-1, 0)} className={controlBtn} aria-label="Gauche">
             <ArrowLeft className="h-5 w-5" />
@@ -3807,7 +3976,7 @@ function TetrisActivity({
             <ArrowRight className="h-5 w-5" />
           </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -4484,10 +4653,13 @@ export default function ActivityPlayer({
   activity,
   duration,
   onReady,
+  videoEndRatio,
 }: {
   activity: Activity;
   duration: string;
   onReady: () => void;
+  /** Coupe une vidéo avant la fin (extrait démo). */
+  videoEndRatio?: number;
 }) {
   const briefing = activityBriefing(activity);
   if (activity.kind === "video") {
@@ -4498,6 +4670,7 @@ export default function ActivityPlayer({
         script={activity.script}
         src={activity.src}
         onComplete={onReady}
+        endRatio={videoEndRatio}
       />
     );
   }
