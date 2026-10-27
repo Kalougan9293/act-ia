@@ -58,7 +58,7 @@ export function inviteToPlatformUser(invite: InviteRecord): PlatformUser {
 export function inviteLink(token: string, origin?: string) {
   const base =
     origin ||
-    (typeof window !== "undefined" ? window.location.origin : "https://act-ia-khaki.vercel.app");
+    (typeof window !== "undefined" ? window.location.origin : "https://www.lockin-ia.fr");
   return `${base}/invitation/${token}`;
 }
 
