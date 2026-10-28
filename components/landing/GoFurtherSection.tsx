@@ -25,8 +25,8 @@ export default function GoFurtherSection() {
             <span className="text-blue-600 dark:text-blue-400">plus loin</span> ?
           </h2>
           <p className="mx-auto max-w-xl text-center text-base leading-relaxed text-slate-700 dark:text-slate-200">
-            Ateliers, automatisation, process : faites de l&apos;IA un vrai outil de
-            travail pour vos équipes.
+            Ateliers, automatisation, assistant IA interne : faites de l&apos;IA un
+            vrai outil de travail pour vos équipes.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link

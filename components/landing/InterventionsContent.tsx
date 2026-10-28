@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   GraduationCap,
+  MessageSquare,
   Pause,
   Play,
   ShieldCheck,
@@ -42,49 +43,85 @@ const offerings = [
       "Cas d’usage, règles, validations humaines : on ancre l’IA dans le quotidien pour qu’elle tienne dans la durée.",
     side: "left" as const,
   },
+  {
+    label: "Canal IA",
+    icon: MessageSquare,
+    title: "Un ChatGPT interne, sous vos règles",
+    summary:
+      "Un chat IA sur mesure en interne pour vos équipes, sans données clients dans ChatGPT grand public. Outils validés, accès contrôlés, sur devis.",
+    side: "right" as const,
+  },
 ];
 
-function GlowLabel({ label }: { label: string }) {
+const ease = [0.22, 1, 0.36, 1] as const;
+
+function GlowLabel({ label, step }: { label: string; step: number }) {
   return (
-    <div className="relative flex h-[5.5rem] w-full max-w-[15rem] flex-col items-center justify-center rounded-2xl bg-slate-950 px-5 text-center sm:h-[6rem]">
-      {/* Contour lumineux (statique) */}
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 380, damping: 22 }}
+      className="group relative flex h-[5.5rem] w-full max-w-[15rem] flex-col items-center justify-center rounded-2xl bg-slate-950/90 px-5 text-center sm:h-[6rem]"
+    >
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-blue-400/80"
+        className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-blue-400/80 transition-[box-shadow] duration-500 group-hover:ring-blue-300"
         style={{
           boxShadow:
             "0 0 0 1px rgba(147,197,253,0.35), 0 0 18px 2px rgba(37,99,235,0.75), 0 0 42px 6px rgba(56,189,248,0.35), inset 0 0 20px rgba(37,99,235,0.25)",
         }}
       />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-60 blur-[1px]"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(56,189,248,0.22), transparent 65%)",
+        }}
+      />
+      <span className="relative mb-1 text-[0.65rem] font-bold tracking-[0.28em] text-blue-300/80">
+        {String(step).padStart(2, "0")}
+      </span>
       <span className="relative text-lg font-black uppercase tracking-[0.14em] text-white sm:text-xl">
         {label}
       </span>
-    </div>
+    </motion.div>
   );
 }
 
 function DetailCard({ item }: { item: (typeof offerings)[number] }) {
   const Icon = item.icon;
   return (
-    <div className="relative w-full rounded-2xl border border-blue-500/25 bg-white p-5 shadow-[0_16px_40px_-18px_rgba(37,99,235,0.5)] dark:border-blue-400/20 dark:bg-slate-900 sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/35">
+    <motion.div
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 360, damping: 24 }}
+      className="group relative w-full overflow-hidden rounded-2xl border border-blue-400/25 bg-slate-900/80 p-5 shadow-[0_16px_40px_-18px_rgba(37,99,235,0.55)] backdrop-blur-sm sm:p-6"
+    >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(ellipse at 0% 0%, rgba(37,99,235,0.22), transparent 55%)",
+        }}
+      />
+      <div className="relative flex items-start gap-3">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/40 transition-transform duration-300 group-hover:scale-105">
           <Icon className="h-5 w-5" strokeWidth={2.2} />
         </span>
         <div className="min-w-0 text-left">
-          <h3 className="text-base font-extrabold leading-snug text-slate-900 dark:text-white sm:text-lg">
+          <h3 className="text-base font-extrabold leading-snug text-white sm:text-lg">
             {item.title}
           </h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-300">
             {item.summary}
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-/** Trace horizontale propre : pad → jog PCB → flèche */
+/** Trace horizontale : draw + pulse de courant */
 function CircuitHorizontal({ reverse = false }: { reverse?: boolean }) {
   return (
     <div
@@ -98,25 +135,46 @@ function CircuitHorizontal({ reverse = false }: { reverse?: boolean }) {
         className="h-8 w-full max-w-[6rem] text-blue-400"
         fill="none"
       >
-        {/* ligne principale avec un seul décrochement */}
-        <path
+        <motion.path
           d="M6 16 H34 V10 H62 V16 H82"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="square"
           strokeLinejoin="miter"
+          initial={{ pathLength: 0, opacity: 0.35 }}
+          whileInView={{ pathLength: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease }}
+        />
+        <motion.path
+          d="M6 16 H34 V10 H62 V16 H82"
+          stroke="rgb(125,211,252)"
+          strokeWidth="2"
+          strokeLinecap="square"
+          strokeLinejoin="miter"
+          strokeDasharray="10 28"
+          initial={{ strokeDashoffset: 0 }}
+          animate={{ strokeDashoffset: -38 }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
+          opacity={0.85}
         />
         <circle cx="6" cy="16" r="3" fill="currentColor" />
         <circle cx="34" cy="10" r="2" fill="currentColor" opacity="0.65" />
         <circle cx="62" cy="16" r="2" fill="currentColor" opacity="0.65" />
-        {/* pointe de flèche nette */}
-        <path d="M90 16 L80 10.5 V21.5 Z" fill="currentColor" />
+        <motion.path
+          d="M90 16 L80 10.5 V21.5 Z"
+          fill="currentColor"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.55, duration: 0.25 }}
+        />
       </svg>
     </div>
   );
 }
 
-/** Trace verticale : pointe collée au haut du titre suivant */
+/** Trace verticale animée vers l’étape suivante */
 function CircuitDown({ toSide }: { toSide: "left" | "right" }) {
   return (
     <div
@@ -138,24 +196,59 @@ function CircuitDown({ toSide }: { toSide: "left" | "right" }) {
           preserveAspectRatio="xMidYMax meet"
           fill="none"
         >
-          <path
+          <motion.path
             d="M16 2 V24 H22 V38 H16 V50"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="square"
             strokeLinejoin="miter"
+            initial={{ pathLength: 0, opacity: 0.35 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease }}
+          />
+          <motion.path
+            d="M16 2 V24 H22 V38 H16 V50"
+            stroke="rgb(125,211,252)"
+            strokeWidth="2"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
+            strokeDasharray="8 22"
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: -30 }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
+            opacity={0.8}
           />
           <circle cx="16" cy="2" r="2.5" fill="currentColor" />
           <circle cx="22" cy="24" r="1.8" fill="currentColor" opacity="0.65" />
-          {/* Pointe jusqu'au bord bas du SVG = touche le titre */}
-          <path d="M16 64 L9 50 H23 Z" fill="currentColor" />
+          <motion.path
+            d="M16 64 L9 50 H23 Z"
+            fill="currentColor"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.25 }}
+          />
         </svg>
       </div>
     </div>
   );
 }
 
-const ease = [0.22, 1, 0.36, 1] as const;
+/** Connecteur mobile : rail vertical avec pulse */
+function MobileRail() {
+  return (
+    <div className="flex justify-center py-1 lg:hidden" aria-hidden="true">
+      <div className="relative h-10 w-px overflow-hidden bg-blue-500/30">
+        <motion.span
+          className="absolute left-0 top-0 h-4 w-px bg-sky-300"
+          animate={{ y: ["-100%", "250%"] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
+    </div>
+  );
+}
 
 function fadeUp(delay: number) {
   return {
@@ -288,7 +381,7 @@ export default function InterventionsContent() {
         </div>
       </section>
 
-      {/* Parcours zigzag aligné */}
+      {/* Parcours zigzag PCB */}
       <section className="relative overflow-hidden bg-slate-950 py-16 text-white sm:py-20">
         <div className="pointer-events-none absolute inset-0 opacity-40">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_20%_10%,rgba(37,99,235,0.45),transparent)]" />
@@ -308,22 +401,25 @@ export default function InterventionsContent() {
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-12 text-center text-xs font-bold uppercase tracking-[0.35em] text-blue-300/90"
+            className="mb-12 text-center text-xs font-bold uppercase tracking-[0.35em] text-blue-300/90 sm:mb-14"
           >
             Ce que l&apos;on livre
           </motion.p>
-          <h2 className="sr-only">Formation, Automatisation, Intégration</h2>
+          <h2 className="sr-only">
+            Formation, Automatisation, Intégration, Canal IA
+          </h2>
 
           <div className="flex flex-col">
             {offerings.map((item, i) => {
               const labelLeft = item.side === "left";
+              const fromX = labelLeft ? -18 : 18;
               return (
                 <div key={item.label}>
                   <motion.div
-                    initial={{ opacity: 0, y: 18 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.5, delay: 0.04, ease }}
+                    initial={{ opacity: 0, y: 22, x: fromX }}
+                    whileInView={{ opacity: 1, y: 0, x: 0 }}
+                    viewport={{ once: true, margin: "-48px" }}
+                    transition={{ duration: 0.55, delay: 0.05, ease }}
                     className={
                       labelLeft
                         ? "grid items-center gap-3 lg:grid-cols-[15rem_5.5rem_minmax(0,1fr)] lg:gap-0"
@@ -333,7 +429,7 @@ export default function InterventionsContent() {
                     {labelLeft ? (
                       <>
                         <div className="flex justify-center lg:justify-start">
-                          <GlowLabel label={item.label} />
+                          <GlowLabel label={item.label} step={i + 1} />
                         </div>
                         <CircuitHorizontal />
                         <DetailCard item={item} />
@@ -341,7 +437,7 @@ export default function InterventionsContent() {
                     ) : (
                       <>
                         <div className="order-1 flex justify-center lg:order-3 lg:justify-end">
-                          <GlowLabel label={item.label} />
+                          <GlowLabel label={item.label} step={i + 1} />
                         </div>
                         <div className="order-2 hidden lg:order-2 lg:block">
                           <CircuitHorizontal reverse />
@@ -354,7 +450,12 @@ export default function InterventionsContent() {
                   </motion.div>
 
                   {i < offerings.length - 1 ? (
-                    <CircuitDown toSide={offerings[i + 1]!.side} />
+                    <>
+                      <div className="hidden lg:block">
+                        <CircuitDown toSide={offerings[i + 1]!.side} />
+                      </div>
+                      <MobileRail />
+                    </>
                   ) : null}
                 </div>
               );
