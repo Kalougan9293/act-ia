@@ -29,19 +29,29 @@ export default function ConfidentialitePage() {
           Aucun délégué à la protection des données n&apos;est désigné pour le moment. Les demandes
           se font à ce contact.
         </p>
+        <p>
+          Pour les données des collaborateurs formés via LockinIA, FITOPS AI agit en{" "}
+          <strong>sous-traitant</strong> pour le compte de l&apos;entreprise cliente (et, le cas
+          échéant, dans le cadre d&apos;un partenariat avec un organisme de formation). Voir l&apos;
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
+            accord de sous-traitance (DPA)
+          </a>
+          .
+        </p>
       </section>
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Données traitées</h2>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Compte : nom, e-mail, mot de passe (hashé), rôle, structure.</li>
-          <li>Formation : progression, scores, attestation de suivi.</li>
-          <li>Espace RH / admin : liste des collaborateurs et indicateurs de suivi.</li>
+          <li>Compte : nom, e-mail, mot de passe (hashé), rôle, structure, partenaire le cas échéant.</li>
+          <li>Formation : progression, scores, attestation de suivi, temps de parcours.</li>
+          <li>Espace RH / admin / partenaire : listes et indicateurs de suivi selon le rôle.</li>
+          <li>Quotas et sièges (consommation d&apos;accès).</li>
           <li>Registre des usages d&apos;IA renseigné par l&apos;employeur.</li>
         </ul>
         <p>
           Lorsqu&apos;un salarié est invité, son nom et son e-mail sont d&apos;abord fournis par
-          son employeur.
+          son employeur (ou, le cas échéant, préparés via le partenaire / le RH).
         </p>
       </section>
 
@@ -50,21 +60,53 @@ export default function ConfidentialitePage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             Compte de l&apos;entreprise, accès, formation, attestations et registre : exécution du
-            contrat d&apos;abonnement.
+            contrat d&apos;abonnement ou de partenariat.
           </li>
           <li>
             Données des salariés : traitées pour le compte de l&apos;entreprise cliente. C&apos;est
             elle qui décide de la formation, au titre de ses propres obligations, notamment
-            l&apos;article 4 de l&apos;AI Act. Ce rôle de sous-traitant est détaillé dans l&apos;
+            l&apos;article 4 de l&apos;AI Act. Cadre détaillé dans le{" "}
             <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
-              accord de sous-traitance (DPA)
+              DPA
             </a>
             .
           </li>
           <li>Factures et pièces comptables : obligation légale.</li>
           <li>
+            Pilotage technique (volumes, sièges, disponibilité) et support : intérêt légitime /
+            exécution du contrat, limité à ces finalités.
+          </li>
+          <li>
             Journaux techniques (connexions, erreurs, sécurité) : intérêt légitime, limité à la
             protection du service.
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Hébergement mutualisé et qui voit quoi
+        </h2>
+        <p>
+          LockinIA est hébergée de façon mutualisée sur l&apos;infrastructure de FITOPS AI. Les
+          données de chaque entreprise (et de chaque partenaire) sont isolées logiquement.
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <strong>Apprenant</strong> : son compte et son parcours.
+          </li>
+          <li>
+            <strong>RH</strong> : les collaborateurs et le registre de sa structure uniquement.
+          </li>
+          <li>
+            <strong>Partenaire</strong> : ses entreprises clientes, quotas, statistiques
+            agrégées et contacts RH nécessaires au déploiement — pas d&apos;usage commercial du
+            détail nominatif de tous les apprenants hors cadre du service.
+          </li>
+          <li>
+            <strong>FITOPS AI (super-admin)</strong> : indicateurs agrégés pour le pilotage ;
+            accès nominatif limité au support, à la sécurité, à la facturation, aux obligations
+            légales et à la maintenance. Pas de revente ni de marketing sur ces données.
           </li>
         </ul>
       </section>
@@ -106,16 +148,18 @@ export default function ConfidentialitePage() {
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="mailto:contact@lockin-web.online">
             contact@lockin-web.online
           </a>
-          . Vous pouvez aussi saisir la CNIL.
+          . Vous pouvez aussi saisir la CNIL. Pour les données traitées pour le compte de votre
+          employeur, certaines demandes peuvent être réorientées vers lui.
         </p>
       </section>
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Destinataires</h2>
         <p>
-          L&apos;employeur (espace RH de la structure) accède aux données de formation et au
-          registre. Sous-traitants : Vercel, pour l&apos;affichage du site, et Google Firebase /
-          Google Cloud, pour l&apos;authentification et la base Firestore.
+          Selon le rôle : employeur (espace RH), partenaire (espace partenaire, périmètre de ses
+          clients), et FITOPS AI dans les limites décrites ci-dessus. Sous-traitants
+          techniques : Vercel (affichage du site) et Google Firebase / Google Cloud
+          (authentification et Firestore).
         </p>
         <p>
           Les données de compte, de formation et de registre sont stockées dans l&apos;Union

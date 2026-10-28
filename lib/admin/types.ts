@@ -1,5 +1,22 @@
 /** Rôles plateforme — mappés plus tard sur Firebase Auth custom claims */
-export type UserRole = "super_admin" | "rh" | "employee";
+export type UserRole = "super_admin" | "partner" | "rh" | "employee";
+
+/** Organisme de formation / partenaire revendeur */
+export interface Partner {
+  id: string;
+  name: string;
+  /** E-mail de contact / facturation partenaire */
+  email: string;
+  siret: string;
+  status: AccountStatus;
+  createdAt: string;
+  /** Quota global d'accès stagiaires allouables à ses entreprises */
+  seatsMax: number;
+  /** Fin de licence partenaire (AAAA-MM-JJ), null = pas de date */
+  licenseExpiresAt: string | null;
+  /** Notes internes admin */
+  notes?: string | null;
+}
 
 export type AccountStatus = "active" | "invited" | "suspended";
 
@@ -190,6 +207,8 @@ export interface Structure {
   registryId: string;
   /** Module entreprise renseigné par le RH */
   companyModule: CompanyModuleContent;
+  /** Partenaire OF propriétaire — null = client direct LockinIA */
+  partnerId: string | null;
 }
 
 export interface PlatformUser {
@@ -198,6 +217,8 @@ export interface PlatformUser {
   name: string;
   role: UserRole;
   structureId: string | null;
+  /** Compte partenaire OF — null sauf role === "partner" */
+  partnerId: string | null;
   status: AccountStatus;
   /** Fonction métier (Commerce, RH…) — distincte du rôle plateforme */
   jobTitle?: string | null;
@@ -267,6 +288,7 @@ export const PLAN_SEATS: Record<PlanId, number> = {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   super_admin: "Super admin",
+  partner: "Partenaire",
   rh: "RH",
   employee: "Collaborateur",
 };

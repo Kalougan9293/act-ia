@@ -32,9 +32,10 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Champ d&apos;application</h2>
         <p>
-          Les présentes CGV s&apos;appliquent à toute commande d&apos;abonnement ou de prestation
-          LockinIA passée par une entreprise (professionnel). Elles prévalent sur tout document du
-          client, sauf accord écrit contraire. Les{" "}
+          Les présentes CGV s&apos;appliquent à toute commande d&apos;abonnement, de partenariat
+          (organisme de formation / revendeur) ou de prestation LockinIA passée par un
+          professionnel. Elles prévalent sur tout document du client, sauf accord écrit contraire.
+          Les{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgu">
             CGU
           </a>{" "}
@@ -51,8 +52,27 @@ export default function CgvPage() {
         <p>
           La commande se forme par e-mail, devis accepté ou confirmation écrite (y compris après
           un échange téléphonique). FITOPS AI confirme la mise en service et ouvre les accès
-          (compte RH, invitations, sièges selon l&apos;offre). Le client garantit l&apos;exactitude
-          des informations de facturation fournies.
+          (compte RH, espace partenaire le cas échéant, invitations, sièges selon l&apos;offre).
+          Le client garantit l&apos;exactitude des informations de facturation fournies.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Partenariats (OF / revendeurs)
+        </h2>
+        <p>
+          Les modalités partenaires (tarif partenaire, marque blanche, quota de sièges, durée de
+          licence) sont fixées par devis ou conditions particulières. Le partenaire peut créer
+          des entreprises clientes dans la limite de son quota. Les stagiaires et suivis restent
+          hébergés sur la plateforme LockinIA opérée par FITOPS AI. Sauf cession écrite du
+          contenu, le partenaire reçoit une licence d&apos;usage / de commercialisation, sans
+          transfert de propriété intellectuelle sur le parcours.
+        </p>
+        <p>
+          Le partenaire reste responsable de sa relation avec ses clients finaux et, le cas
+          échéant, de son statut d&apos;organisme de formation. FITOPS AI fournit la plateforme,
+          le contenu pédagogique sous licence et l&apos;hébergement technique.
         </p>
       </section>
 
@@ -64,8 +84,8 @@ export default function CgvPage() {
           abonnement : le module métier sur mesure au format standard est facturé 690 € par
           module (texte, cas pratique et idée d&apos;usage intégrés au parcours) ; une demande
           plus large est établie sur devis ; l&apos;atelier usages et automatisation (visio ou
-          présentiel) est établi sur devis. La marque blanche pour un organisme de formation ou
-          un cabinet RH est établie sur devis.
+          présentiel) est établi sur devis. La marque blanche et les partenariats organismes de
+          formation / cabinets RH sont établis sur devis (forfait et/ou sièges).
         </p>
         <p>
           Il n&apos;y a pas encore de paiement en ligne : la facture est envoyée par e-mail et se
@@ -230,12 +250,19 @@ export default function CgvPage() {
           Données personnelles
         </h2>
         <p>
-          Le traitement des données des collaborateurs pour le compte du client est encadré par
-          l&apos;
+          Les données sont hébergées de façon mutualisée chez FITOPS AI, avec isolation logique
+          par entreprise et, le cas échéant, par partenaire. FITOPS AI agit en sous-traitant :
+          pas de revente ni d&apos;usage marketing des données clients. Les indicateurs agrégés
+          (volumes, sièges, complétion) sont consultables pour le pilotage ; l&apos;accès
+          nominatif par FITOPS AI est limité au support, à la sécurité, à la facturation, aux
+          obligations légales et à la maintenance.
+        </p>
+        <p>
+          Ce cadre est détaillé dans l&apos;
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
             accord de sous-traitance (DPA)
-          </a>
-          . Le détail des traitements figure aussi dans la{" "}
+          </a>{" "}
+          et la{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/confidentialite">
             politique de confidentialité
           </a>

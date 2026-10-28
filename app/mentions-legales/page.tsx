@@ -45,9 +45,18 @@ export default function MentionsLegalesPage() {
           États-Unis.
         </p>
         <p>
-          Les données de la plateforme (comptes, formation, registre) sont hébergées par Google
-          Firebase / Google Cloud. La base Firestore est située dans l&apos;Union européenne
-          (région eur3).
+          Les données de la plateforme (comptes, formation, registre) sont hébergées de façon
+          mutualisée par Google Firebase / Google Cloud pour le compte de FITOPS AI. La base
+          Firestore est située dans l&apos;Union européenne (région eur3). Le détail des
+          traitements et des rôles (entreprise, partenaire, FITOPS AI) figure dans la{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/confidentialite">
+            politique de confidentialité
+          </a>{" "}
+          et le{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
+            DPA
+          </a>
+          .
         </p>
       </section>
 

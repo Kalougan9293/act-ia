@@ -20,7 +20,7 @@ export type InviteRecord = {
   token: string;
   email: string;
   name: string;
-  role: Exclude<UserRole, "super_admin">;
+  role: Exclude<UserRole, "super_admin" | "partner">;
   structureId: string;
   jobTitle: string | null;
   status: "pending" | "used";
@@ -44,6 +44,7 @@ export function inviteToPlatformUser(invite: InviteRecord): PlatformUser {
     name: invite.name,
     role: invite.role,
     structureId: invite.structureId,
+    partnerId: null,
     status: "invited",
     jobTitle: invite.jobTitle,
     lastLoginAt: null,
@@ -65,7 +66,7 @@ export function inviteLink(token: string, origin?: string) {
 export async function createInvite(params: {
   email: string;
   name: string;
-  role: Exclude<UserRole, "super_admin">;
+  role: Exclude<UserRole, "super_admin" | "partner">;
   structureId: string;
   jobTitle?: string;
 }): Promise<{ invite: InviteRecord; link: string }> {
@@ -238,6 +239,7 @@ export async function acceptInvite(params: {
       name: invite.name,
       role: invite.role,
       structureId: invite.structureId,
+      partnerId: null,
       jobTitle: invite.jobTitle,
       status: "active",
       lastLoginAt: serverTimestamp(),

@@ -32,12 +32,30 @@ service cloud.firestore {
       return hasProfile() && userDoc().role == "rh";
     }
 
+    function isPartner() {
+      return hasProfile()
+        && userDoc().role == "partner"
+        && userDoc().partnerId is string
+        && userDoc().partnerId.size() > 0;
+    }
+
+    function myPartnerId() {
+      return userDoc().partnerId;
+    }
+
     function myStructureId() {
       return userDoc().structureId;
     }
 
     function sameStructure(structureId) {
       return myStructureId() != null && myStructureId() == structureId;
+    }
+
+    function structureOwnedByPartner(structureId) {
+      return structureId is string
+        && exists(/databases/$(database)/documents/structures/$(structureId))
+        && get(/databases/$(database)/documents/structures/$(structureId)).data
+            .get("partnerId", null) == myPartnerId();
     }
 
     function bootstrapOpen() {
@@ -105,6 +123,13 @@ service cloud.firestore {
       allow update, delete: if isSuperAdmin();
     }
 
+    // Isolation OF : chaque partenaire ne lit que SON document (pas les autres OF)
+    match /partners/{partnerId} {
+      allow read: if isSuperAdmin()
+        || (isPartner() && partnerId == myPartnerId());
+      allow create, update, delete: if isSuperAdmin();
+    }
+
     match /firstLogin/{email} {
       // Lu avant toute connexion : sinon « Première connexion » échoue tout de suite.
       allow get: if true;
@@ -113,15 +138,36 @@ service cloud.firestore {
             && request.resource.data.structureId == myStructureId()
             && request.resource.data.role == "employee"
             && request.resource.data.status == "pending"
-            && request.resource.data.email == email);
+            && request.resource.data.email == email)
+        || (isPartner()
+            && request.resource.data.status == "pending"
+            && request.resource.data.email == email
+            && (
+              (request.resource.data.role == "rh"
+                && request.resource.data.structureId is string
+                && structureOwnedByPartner(request.resource.data.structureId))
+              || (request.resource.data.role == "employee"
+                && request.resource.data.structureId is string
+                && structureOwnedByPartner(request.resource.data.structureId))
+            ));
       allow delete: if isSuperAdmin()
         || (signedIn() && request.auth.token.email == email)
-        || (isRh() && resource.data.structureId == myStructureId());
+        || (isRh() && resource.data.structureId == myStructureId())
+        || (isPartner()
+            && resource.data.structureId is string
+            && structureOwnedByPartner(resource.data.structureId));
     }
 
     match /structureInvites/{token} {
       allow get: if true;
       allow create: if isSuperAdmin()
+        || (isPartner()
+            && request.resource.data.structureId is string
+            && structureOwnedByPartner(request.resource.data.structureId)
+            && isNumber(request.resource.data.seatsMax)
+            && isNumber(request.resource.data.seatsUsed)
+            && request.resource.data.seatsUsed >= 0
+            && request.resource.data.seatsUsed <= request.resource.data.seatsMax)
         || (isRh()
             && request.resource.data.structureId == myStructureId()
             && isNumber(request.resource.data.seatsMax)
@@ -137,6 +183,9 @@ service cloud.firestore {
             && isNumber(request.resource.data.seatsMax)
             && request.resource.data.seatsMax == seatCap(myStructureId(), token)
             && request.resource.data.seatsUsed == resource.data.seatsUsed)
+        || (isPartner()
+            && structureOwnedByPartner(resource.data.structureId)
+            && request.resource.data.structureId == resource.data.structureId)
         // Inscription collaborateur / RH via lien : +1 siège
         || (signedIn()
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
@@ -155,22 +204,33 @@ service cloud.firestore {
       allow delete: if isSuperAdmin();
     }
 
+    // Isolation OF : structures uniquement si partnerId == mon OF (pas les clients d'un autre OF)
     match /structures/{structureId} {
-      allow read: if isSuperAdmin() || (hasProfile() && sameStructure(structureId));
-      allow create: if isSuperAdmin();
+      allow read: if isSuperAdmin()
+        || (hasProfile() && sameStructure(structureId))
+        || (isPartner() && resource.data.get("partnerId", null) == myPartnerId());
+      allow create: if isSuperAdmin()
+        || (isPartner()
+            && request.resource.data.partnerId == myPartnerId()
+            && request.resource.data.status == "active");
       allow update: if isSuperAdmin()
         || (isRh()
             && sameStructure(structureId)
             && request.resource.data.diff(resource.data).affectedKeys()
-                .hasOnly(["inviteToken", "companyModule"]));
+                .hasOnly(["inviteToken", "companyModule"]))
+        || (isPartner()
+            && resource.data.partnerId == myPartnerId()
+            && request.resource.data.partnerId == myPartnerId());
       allow delete: if isSuperAdmin();
 
       // Preuves FOAD archivées (rétention année + 3) après retrait d'un accès
       match /archivedProofs/{userId} {
         allow read: if isSuperAdmin()
-          || (isRh() && sameStructure(structureId));
+          || (isRh() && sameStructure(structureId))
+          || (isPartner() && structureOwnedByPartner(structureId));
         allow create, update: if isSuperAdmin()
-          || (isRh() && sameStructure(structureId));
+          || (isRh() && sameStructure(structureId))
+          || (isPartner() && structureOwnedByPartner(structureId));
         allow delete: if isSuperAdmin();
       }
     }
@@ -214,7 +274,7 @@ service cloud.firestore {
             && validInviteClaim())
         // Plus d'auto-inscription libre via /rejoindre : seul le RH crée les accès (firstLogin)
         || (isSuperAdmin()
-            && request.resource.data.role in ["rh", "employee"]
+            && request.resource.data.role in ["rh", "employee", "partner"]
             && request.resource.data.email is string)
         || (signedIn()
             && request.auth.uid == userId
@@ -234,23 +294,56 @@ service cloud.firestore {
             && request.resource.data.role == "employee"
             && request.resource.data.email is string
             && structureHasOpenSeat(myStructureId()))
+        || (isPartner()
+            && request.resource.data.role in ["rh", "employee"]
+            && request.resource.data.structureId is string
+            && structureOwnedByPartner(request.resource.data.structureId)
+            && request.resource.data.email is string
+            && (request.resource.data.role == "rh"
+                || structureHasOpenSeat(request.resource.data.structureId)))
+        // Activation compte partenaire (firstLogin)
+        || (signedIn()
+            && request.auth.uid == userId
+            && request.resource.data.email == request.auth.token.email
+            && request.resource.data.role == "partner"
+            && request.resource.data.partnerId is string
+            && request.resource.data.status == "active"
+            && exists(/databases/$(database)/documents/firstLogin/$(request.auth.token.email))
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.status == "pending"
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.role == "partner"
+            && get(/databases/$(database)/documents/firstLogin/$(request.auth.token.email)).data.partnerId
+              == request.resource.data.partnerId)
       );
 
+      // Isolation OF : users seulement via structures rattachées à mon partnerId
       allow read: if isSuperAdmin()
         || (signedIn() && request.auth.uid == userId)
-        || (isRh() && resource.data.structureId == myStructureId());
+        || (isRh() && resource.data.structureId == myStructureId())
+        || (isPartner()
+            && resource.data.structureId is string
+            && structureOwnedByPartner(resource.data.structureId));
 
       allow update: if isSuperAdmin()
-        || (signedIn() && request.auth.uid == userId
-            && request.resource.data.role == resource.data.role
-            && request.resource.data.structureId == resource.data.structureId)
+        // Auto-update (progression, attestation…) : pas de changement de rôle / rattachement
+        || (signedIn()
+            && request.auth.uid == userId
+            && !request.resource.data.diff(resource.data).affectedKeys()
+                .hasAny(["role", "structureId", "partnerId"]))
         || (isRh()
             && resource.data.structureId == myStructureId()
             && request.resource.data.structureId == myStructureId()
+            && request.resource.data.role in ["employee", "rh"])
+        || (isPartner()
+            && resource.data.structureId is string
+            && structureOwnedByPartner(resource.data.structureId)
+            && request.resource.data.structureId == resource.data.structureId
             && request.resource.data.role in ["employee", "rh"]);
 
       allow delete: if isSuperAdmin()
         || (isRh() && resource.data.structureId == myStructureId())
+        || (isPartner()
+            && resource.data.structureId is string
+            && structureOwnedByPartner(resource.data.structureId))
         || (signedIn()
             && userId != request.auth.uid
             && resource.data.email == request.auth.token.email
@@ -259,27 +352,43 @@ service cloud.firestore {
       match /progress/{docId} {
         allow read: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId)
-          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId())
+          || (isPartner()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId is string
+              && structureOwnedByPartner(
+                get(/databases/$(database)/documents/users/$(userId)).data.structureId));
 
         allow create, update: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId);
 
         allow delete: if isSuperAdmin()
           || (isRh()
-              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId())
+          || (isPartner()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId is string
+              && structureOwnedByPartner(
+                get(/databases/$(database)/documents/users/$(userId)).data.structureId));
       }
 
       match /certificates/{certId} {
         allow read: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId)
-          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+          || (isRh() && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId())
+          || (isPartner()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId is string
+              && structureOwnedByPartner(
+                get(/databases/$(database)/documents/users/$(userId)).data.structureId));
 
         allow create: if isSuperAdmin()
           || (signedIn() && request.auth.uid == userId);
 
         allow update, delete: if isSuperAdmin()
           || (isRh()
-              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId());
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId())
+          || (isPartner()
+              && get(/databases/$(database)/documents/users/$(userId)).data.structureId is string
+              && structureOwnedByPartner(
+                get(/databases/$(database)/documents/users/$(userId)).data.structureId));
       }
     }
   }

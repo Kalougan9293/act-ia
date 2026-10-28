@@ -16,16 +16,19 @@ export default function RgpdPage() {
           Deux sujets distincts
         </h2>
         <p>
-          <strong>1. LockinIA en tant que prestataire</strong> — nous traitons des données de compte
-          et de formation (identité, e-mail, progression, attestations) pour délivrer le service.
-          Les finalités, durées de conservation et droits figurent dans la{" "}
+          <strong>1. LockinIA en tant que prestataire</strong> — nous hébergeons de façon
+          mutualisée des données de compte et de formation (identité, e-mail, progression,
+          attestations) pour délivrer le service, avec isolation par entreprise / partenaire.
+          FITOPS AI agit en sous-traitant : indicateurs agrégés pour le pilotage ; accès
+          nominatif limité au support, à la sécurité, à la facturation et aux obligations
+          légales. Les finalités, durées et droits figurent dans la{" "}
           <Link
             href="/confidentialite"
             className="text-blue-600 hover:underline dark:text-blue-400"
           >
             politique de confidentialité
           </Link>
-          . Le cadre de sous-traitance avec l&apos;entreprise cliente est décrit dans le{" "}
+          . Le cadre de sous-traitance est décrit dans le{" "}
           <Link href="/dpa" className="text-blue-600 hover:underline dark:text-blue-400">
             DPA
           </Link>
@@ -58,8 +61,10 @@ export default function RgpdPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Hébergement</h2>
         <p>
-          Les comptes, la formation et le suivi sont stockés dans l&apos;Union européenne. Le détail
-          des sous-traitants figure dans la politique de confidentialité.
+          Les comptes, la formation et le suivi sont stockés dans l&apos;Union européenne
+          (Firebase / Firestore, région eur3). L&apos;affichage du site passe par Vercel. Le détail
+          des sous-traitants, des rôles (RH, partenaire, FITOPS AI) et des accès figure dans la
+          politique de confidentialité et le DPA.
         </p>
       </section>
     </LegalShell>

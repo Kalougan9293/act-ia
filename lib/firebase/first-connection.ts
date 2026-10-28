@@ -61,6 +61,7 @@ export async function completeFirstConnection(
       name: String(pending.name ?? ""),
       role: pending.role,
       structureId: pending.structureId ?? null,
+      partnerId: pending.partnerId ?? null,
       status: "active",
       lastLoginAt: serverTimestamp(),
       createdAt: pending.createdAt ?? new Date().toISOString().slice(0, 10),

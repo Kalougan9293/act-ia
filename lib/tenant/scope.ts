@@ -9,6 +9,8 @@ export interface AppSession {
   name: string;
   role: UserRole;
   structureId: string | null;
+  /** Compte partenaire OF */
+  partnerId?: string | null;
   /** RH : true seulement si inscrit à la formation (créé dans la liste RH). */
   formationEnrolled?: boolean;
 }

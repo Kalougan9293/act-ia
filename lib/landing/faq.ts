@@ -77,7 +77,7 @@ export const faqs = [
   {
     question: "Qu'est-ce que l'option marque blanche ?",
     answer:
-      "Une version de la plateforme à l'image de votre entreprise : votre logo et vos couleurs. Vos équipes voient votre marque, le fonctionnement reste le même. Pour un organisme de formation ou un cabinet RH : sur devis.",
+      "Une version de la plateforme à l'image de votre entreprise : votre logo et vos couleurs. Vos équipes voient votre marque, le fonctionnement reste le même. Pour un organisme de formation ou un cabinet RH : espace partenaire et marque blanche sur devis. Les données restent hébergées chez LockinIA, isolées par client.",
   },
   {
     question: "Un OPCO peut-il financer la formation ?",
@@ -108,7 +108,12 @@ export const faqs = [
   {
     question: "Où sont hébergées les données ?",
     answer:
-      "Les comptes, la formation et le suivi (Firestore, authentification Firebase) sont stockés dans l'Union européenne (région eur3). L'affichage du site passe par Vercel (États-Unis), encadré par un DPA et les clauses contractuelles types. Le détail figure dans la politique de confidentialité.",
+      "Les comptes, la formation et le suivi (Firestore, authentification Firebase) sont stockés dans l'Union européenne (région eur3), sur une plateforme mutualisée isolée par entreprise. L'affichage du site passe par Vercel (États-Unis), encadré par un DPA et les clauses contractuelles types. FITOPS AI n'exploite pas vos données pour du marketing ; les stats agrégées servent au pilotage, l'accès nominatif est limité au support et à la sécurité. Le détail figure dans la politique de confidentialité et le DPA.",
+  },
+  {
+    question: "Comment fonctionne un partenariat organisme de formation ?",
+    answer:
+      "Le partenaire dispose d'un espace dédié pour créer des entreprises clientes dans la limite de son quota, suivre des statistiques agrégées et les contacts RH. Les apprenants restent sur LockinIA (hébergement FITOPS AI). Marque blanche et tarifs partenaires : sur devis. Cadre juridique : CGU, CGV et DPA.",
   },
 ] as const;
 

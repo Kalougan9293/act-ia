@@ -23,6 +23,7 @@ export type AuthProfile = {
   name: string;
   role: UserRole;
   structureId: string | null;
+  partnerId: string | null;
   status: string;
   formationEnrolled: boolean;
 };
@@ -59,6 +60,7 @@ async function loadProfile(uid: string): Promise<AuthProfile | null> {
     name: String(data.name ?? ""),
     role: data.role as UserRole,
     structureId: (data.structureId as string | null) ?? null,
+    partnerId: (data.partnerId as string | null) ?? null,
     status: String(data.status ?? "active"),
     formationEnrolled: Boolean(data.formationEnrolled),
   };
@@ -171,6 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: name.trim(),
         role: "super_admin",
         structureId: null,
+        partnerId: null,
         status: "active",
         progressPercent: null,
         certificateId: null,
@@ -206,6 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: profile.name,
       role: profile.role,
       structureId: profile.structureId,
+      partnerId: profile.partnerId,
       formationEnrolled: profile.formationEnrolled,
     };
   }, [user, profile]);

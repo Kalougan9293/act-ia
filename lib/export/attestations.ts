@@ -13,6 +13,7 @@ import {
   SOCLE_DURATION_HOURS,
   SOCLE_DURATION_LABEL,
 } from "@/lib/formation/curriculum";
+import { buildLearnerAttestationPdf } from "@/lib/export/attestation-pdf";
 import { buildSimplePdf, downloadBytes, slug } from "@/lib/export/proof-zip";
 
 /** Durée pédagogique du socle (heures), reprise sur l'attestation / registre. */
@@ -67,53 +68,34 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
   const serial = certificateSerialFromId(input.certificateId);
   const hash = certificateFingerprint(serial);
   const { paris, utc } = stampLines(input.issuedAt, input.dateLabel, input.timeLabel);
-  const lines = [
-    "LockinIA",
-    "Attestation de suivi de formation et de sensibilisation",
-    "Maîtrise de l'IA — Article 4 (AI Act)",
-    "",
-    `Attestation n° ${input.certificateId}`,
-    `Version ${CURRICULUM_LABEL}`,
-    input.specimen ? "Spécimen de démonstration" : "Attestation de suivi",
-    "",
-    "01 — Bénéficiaire",
-    `Prénom : ${first}`,
-    `Nom : ${last}`,
-    `Fonction : ${input.role || "Collaborateur"}`,
-    `Entreprise : ${input.companyName}`,
-    "",
-    "02 — Parcours suivi",
-    ATTESTATION_COURSE_TITLE + ".",
-    "Référentiel : EU AI Act (AI literacy, article 4).",
-    "",
-    "03 — Validation",
-    `Durée pédagogique prévue : ${SOCLE_DURATION_LABEL}`,
-    ...(input.timeSpentSec != null && input.timeSpentSec > 0
-      ? [`Temps de connexion mesuré : ${formatDurationSec(input.timeSpentSec)}`]
-      : []),
-    ...(input.modulesCompleted != null && input.modulesCompleted > 0
-      ? [`Modules / étapes validés : ${input.modulesCompleted}`]
-      : []),
-    "Parcours complété : 100 %",
-    `Évaluation finale : ${input.quizScore} / 100`,
-    "Seuil de réussite : 80 / 100",
-    "Statut : Validé",
-    `Date de finalisation (Europe/Paris) : ${paris.date}`,
-    `Heure de finalisation (Europe/Paris) : ${paris.time}`,
-    utc ? `Horodatage UTC : ${utc.date} à ${utc.time} UTC` : "Horodatage UTC : —",
-    "",
-    "04 — Traçabilité",
-    `Identifiant : ${input.certificateId}`,
-    `Empreinte documentaire : ${hash}`,
-    `Émise le : ${paris.date} à ${paris.time} (Europe/Paris)`,
-    "",
-    "Ce document est un justificatif de suivi délivré pour documenter la démarche de maîtrise de l'IA.",
-    "Il ne constitue ni une certification officielle de conformité à l'AI Act ou au RGPD, ni une certification de l'Union européenne.",
-  ];
 
   downloadBytes(
     `attestation-${slug(input.certificateId)}.pdf`,
-    buildSimplePdf(lines),
+    buildLearnerAttestationPdf({
+      first,
+      last,
+      role: input.role || "Collaborateur",
+      companyName: input.companyName,
+      certificateId: input.certificateId,
+      curriculumLabel: CURRICULUM_LABEL,
+      courseTitle: ATTESTATION_COURSE_TITLE,
+      durationLabel: SOCLE_DURATION_LABEL,
+      quizScore: input.quizScore,
+      dateLabel: paris.date,
+      timeLabel: paris.time,
+      issuedAtLabel: `${paris.date} à ${paris.time} (Europe/Paris)`,
+      utcLabel: utc ? `${utc.date} à ${utc.time} UTC` : null,
+      hash,
+      specimen: input.specimen,
+      timeSpentLabel:
+        input.timeSpentSec != null && input.timeSpentSec > 0
+          ? formatDurationSec(input.timeSpentSec)
+          : null,
+      modulesCompletedLabel:
+        input.modulesCompleted != null && input.modulesCompleted > 0
+          ? String(input.modulesCompleted)
+          : null,
+    }),
     "application/pdf",
   );
 }

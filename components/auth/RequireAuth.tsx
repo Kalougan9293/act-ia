@@ -7,6 +7,7 @@ import type { UserRole } from "@/lib/admin/types";
 
 function homeForRole(role: UserRole) {
   if (role === "super_admin") return "/admin";
+  if (role === "partner") return "/partenaire";
   if (role === "rh") return "/rh";
   return "/utilisateur";
 }

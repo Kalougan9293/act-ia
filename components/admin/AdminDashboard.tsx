@@ -22,6 +22,7 @@ import {
 import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import AdminCertificatePreview from "@/components/admin/AdminCertificatePreview";
+import PartnersAdminPanel from "@/components/admin/PartnersAdminPanel";
 import {
   attestationsCsv,
   downloadAdminReportZip,
@@ -42,6 +43,7 @@ import {
   type StructureFormValues,
 } from "@/lib/admin/types";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { listPartners } from "@/lib/firebase/partners";
 import {
   deleteStructureAndUsers,
   deleteUser,
@@ -220,9 +222,9 @@ export default function AdminDashboard() {
   const [modalMode, setModalMode] = useState<ModalMode>("create");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<StructureFormValues>(emptyForm());
-  const [view, setView] = useState<"active" | "archived" | "users" | "attestations">(
-    "active",
-  );
+  const [view, setView] = useState<
+    "active" | "archived" | "users" | "attestations" | "partners"
+  >("active");
   const [graduatesStructureId, setGraduatesStructureId] = useState<string | null>(null);
   const [previewCertificateUser, setPreviewCertificateUser] =
     useState<PlatformUser | null>(null);
@@ -230,6 +232,9 @@ export default function AdminDashboard() {
   const [userQuery, setUserQuery] = useState("");
   const [attestationQuery, setAttestationQuery] = useState("");
   const [attestationPage, setAttestationPage] = useState(0);
+  const [addChoiceOpen, setAddChoiceOpen] = useState(false);
+  const [partnerCreateOpen, setPartnerCreateOpen] = useState(false);
+  const [partnersCount, setPartnersCount] = useState(0);
   const [userSort, setUserSort] = useState<{
     key: "name" | "company" | "progress" | "satisfaction" | "lastLogin";
     dir: "asc" | "desc";
@@ -247,15 +252,18 @@ export default function AdminDashboard() {
       setLoading(true);
       setLoadError(null);
       try {
-        const [listedStructures, nextUsers, pendingInvites] = await Promise.all([
-          listStructures(),
-          listUsers(),
-          listPendingInvites(),
-        ]);
+        const [listedStructures, nextUsers, pendingInvites, partners] =
+          await Promise.all([
+            listStructures(),
+            listUsers(),
+            listPendingInvites(),
+            listPartners(),
+          ]);
         const nextStructures = await Promise.all(
           listedStructures.map((structure) => ensureStructureRegistryId(structure)),
         );
         if (!cancelled) {
+          setPartnersCount(partners.filter((p) => p.status === "active").length);
           setStructures(nextStructures);
           // Invitations perso collaborateur abandonnées — on ne les compte plus.
           // Seules les invitations RH pending restent visibles si besoin.
@@ -506,6 +514,22 @@ export default function AdminDashboard() {
     setModalOpen(true);
   }
 
+  function openAddChoice() {
+    setAddChoiceOpen(true);
+  }
+
+  function chooseAddEntreprise() {
+    setAddChoiceOpen(false);
+    setView("active");
+    openCreate();
+  }
+
+  function chooseAddOf() {
+    setAddChoiceOpen(false);
+    setView("partners");
+    setPartnerCreateOpen(true);
+  }
+
   function openEdit(structure: Structure) {
     const rh = users.find((u) => u.structureId === structure.id && u.role === "rh");
     setModalMode("edit");
@@ -563,6 +587,7 @@ export default function AdminDashboard() {
           archivedAt: null,
           inviteToken,
           registryId: createRegistryId(id),
+          partnerId: null,
           companyModule: emptyCompanyModule(),
           billing: {
             companyName: form.name.trim(),
@@ -751,6 +776,7 @@ export default function AdminDashboard() {
   }
 
   function exportCurrentViewCsv() {
+    if (view === "partners") return;
     const day = new Date().toISOString().slice(0, 10);
     if (view === "users") {
       downloadCsv(`utilisateurs-${day}.csv`, usersCsv(allPlatformUsers, structures));
@@ -826,7 +852,7 @@ export default function AdminDashboard() {
           <h1 className="text-xl font-bold tracking-tight">Pilotage plateforme</h1>
           <button
             type="button"
-            onClick={openCreate}
+            onClick={openAddChoice}
             disabled={loading || saving}
             className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
           >
@@ -862,7 +888,7 @@ export default function AdminDashboard() {
           <p className="text-sm text-slate-500">Chargement Firestore…</p>
         )}
 
-        <div className="mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
+        <div className="mx-auto grid grid-cols-2 sm:grid-cols-5 gap-2 max-w-3xl">
           <button
             type="button"
             onClick={() => {
@@ -880,6 +906,21 @@ export default function AdminDashboard() {
               Structures
             </div>
             <div className="mt-0.5 text-2xl font-bold tabular-nums">{activeStructures.length}</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("partners")}
+            className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
+              view === "partners"
+                ? "border-violet-300 bg-violet-50 dark:border-violet-500/40 dark:bg-violet-500/10"
+                : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs">
+              <Users className="h-3.5 w-3.5" />
+              Partenaires
+            </div>
+            <div className="mt-0.5 text-2xl font-bold tabular-nums">{partnersCount}</div>
           </button>
           <button
             type="button"
@@ -941,7 +982,13 @@ export default function AdminDashboard() {
         </div>
 
         <section className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-          {view === "users" ? (
+          {view === "partners" ? (
+            <PartnersAdminPanel
+              createOpen={partnerCreateOpen}
+              onCreateClose={() => setPartnerCreateOpen(false)}
+              onCountChange={setPartnersCount}
+            />
+          ) : view === "users" ? (
           <div>
             <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-2.5">
               <div className="relative mx-auto max-w-md">
@@ -1512,6 +1559,36 @@ export default function AdminDashboard() {
                 </li>
               )}
             </ul>
+          </div>
+        </div>
+      )}
+
+      {addChoiceOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-3 sm:p-4"
+          onClick={() => setAddChoiceOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Ajouter"
+            className="grid w-full max-w-lg grid-cols-2 gap-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={chooseAddEntreprise}
+              className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-10 text-2xl font-bold tracking-tight text-blue-800 shadow-xl transition-colors hover:bg-blue-100 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200 dark:hover:bg-blue-500/20 sm:text-3xl"
+            >
+              Entreprise
+            </button>
+            <button
+              type="button"
+              onClick={chooseAddOf}
+              className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-10 text-2xl font-bold tracking-tight text-violet-800 shadow-xl transition-colors hover:bg-violet-100 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-200 dark:hover:bg-violet-500/20 sm:text-3xl"
+            >
+              OF
+            </button>
           </div>
         </div>
       )}

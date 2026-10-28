@@ -40,6 +40,7 @@ function passwordRules(password: string) {
 
 function defaultPathForRole(role: UserRole) {
   if (role === "super_admin") return "/admin";
+  if (role === "partner") return "/partenaire";
   if (role === "rh") return "/rh";
   return "/utilisateur";
 }
@@ -50,6 +51,7 @@ function pathAllowedForRole(
   formationEnrolled?: boolean,
 ) {
   if (path.startsWith("/admin")) return role === "super_admin";
+  if (path.startsWith("/partenaire")) return role === "partner";
   if (path.startsWith("/rh")) return role === "rh";
   // Formation : collaborateurs, ou RH seulement s'il est inscrit dans la liste
   if (path.startsWith("/utilisateur")) {
@@ -239,6 +241,8 @@ export default function ConnexionClient() {
               ? "Première connexion"
               : mode === "reset"
                 ? "Mot de passe oublié"
+                : nextParam?.startsWith("/partenaire")
+                  ? "Espace partenaire"
                 : nextParam?.startsWith("/rh")
                   ? "Connexion espace RH"
                   : "Connexion"}

@@ -306,7 +306,9 @@ export default function HrView({
       return;
     }
     if (seatsFull) {
-      setAddError(`Offre pleine (${seatsMax}). Supprimez un compte pour en ajouter un.`);
+      setAddError(
+        `Limite atteinte (${seatsUsed}/${seatsMax}). Supprimez un compte pour en ajouter un.`,
+      );
       return;
     }
     const name = `${addFirstName.trim()} ${addLastName.trim()}`.trim();
@@ -494,7 +496,7 @@ export default function HrView({
       </div>
 
       <div
-        className={`grid gap-4 ${demo ? "mx-auto max-w-3xl grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}`}
+        className={`grid gap-4 ${demo ? "mx-auto max-w-3xl grid-cols-3" : "grid-cols-2 lg:grid-cols-5"}`}
       >
         <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
           <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{done}/{active.length}</div>
@@ -504,6 +506,20 @@ export default function HrView({
           <div className="text-2xl font-bold text-sky-700 dark:text-sky-300">{rate} %</div>
           <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de suivi</div>
         </div>
+        {!demo ? (
+          <div className="rounded-xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+            <div
+              className={`text-2xl font-bold tabular-nums ${
+                seatsFull
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-violet-700 dark:text-violet-300"
+              }`}
+            >
+              {seatsUsed}/{seatsMax}
+            </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Limite</div>
+          </div>
+        ) : null}
         {!demo ? (
           <div className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
             <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
@@ -774,9 +790,13 @@ export default function HrView({
                 </p>
                 {seatsFull ? (
                   <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
-                    Offre pleine ({seatsMax} collaborateurs). Supprimez un compte pour en ajouter un.
+                    Limite atteinte ({seatsUsed}/{seatsMax}). Supprimez un compte pour en ajouter un.
                   </p>
-                ) : null}
+                ) : (
+                  <p className="text-xs text-slate-500">
+                    Limite : {seatsUsed}/{seatsMax} accès utilisés
+                  </p>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <label className="block space-y-1">
                     <span className="text-xs font-medium text-slate-500">Prénom</span>

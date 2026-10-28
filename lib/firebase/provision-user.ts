@@ -20,7 +20,7 @@ function todayIso() {
 export async function provisionTenantUser(params: {
   email: string;
   name: string;
-  role: Exclude<UserRole, "super_admin">;
+  role: Exclude<UserRole, "super_admin" | "partner">;
   structureId: string;
 }): Promise<PlatformUser> {
   const db = getFirebaseDb();
@@ -95,6 +95,7 @@ export async function provisionTenantUser(params: {
     name,
     role: params.role,
     structureId: params.structureId,
+    partnerId: null,
     status: "invited",
     lastLoginAt: null,
     createdAt: todayIso(),

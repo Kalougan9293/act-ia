@@ -103,11 +103,15 @@ export function useFormationProgress(
         }
         // Recalcule le % RH (100 dès l'examen) pour les progressions déjà en base.
         if (next.quizPassed && computeFormationPercent(next) === 100) {
-          void saveFormationProgress(uid, next).then((result) => {
-            if (!cancelled && result.certificate) {
-              setCertificate(result.certificate);
-            }
-          });
+          void saveFormationProgress(uid, next)
+            .then((result) => {
+              if (!cancelled && result.certificate) {
+                setCertificate(result.certificate);
+              }
+            })
+            .catch(() => {
+              /* sync RH non bloquante */
+            });
         }
       } catch {
         const local = readLocal(uid);

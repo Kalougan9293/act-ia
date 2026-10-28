@@ -21,11 +21,15 @@ export default function UserApp() {
   useEffect(() => {
     if (!session?.structureId) return;
     let cancelled = false;
-    void getStructure(session.structureId).then((structure) => {
-      if (cancelled || !structure) return;
-      if (structure.name) setCompanyName(structure.name);
-      setCompanyModule(structure.companyModule ?? emptyCompanyModule());
-    });
+    void getStructure(session.structureId)
+      .then((structure) => {
+        if (cancelled || !structure) return;
+        if (structure.name) setCompanyName(structure.name);
+        setCompanyModule(structure.companyModule ?? emptyCompanyModule());
+      })
+      .catch(() => {
+        /* isolation / réseau : garder les valeurs par défaut */
+      });
     return () => {
       cancelled = true;
     };

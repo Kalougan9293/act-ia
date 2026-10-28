@@ -35,17 +35,46 @@ export default function CguPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Objet</h2>
         <p>
-          Les présentes CGU régissent l&apos;accès à LockinIA : formation, attestations de suivi et
-          outils de pilotage RH associés.
+          Les présentes CGU régissent l&apos;accès à LockinIA : formation, attestations de suivi,
+          outils de pilotage RH et, le cas échéant, espace partenaire (organismes de formation ou
+          revendeurs).
         </p>
       </section>
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Compte</h2>
         <p>
-          L&apos;abonnement est souscrit par l&apos;entreprise cliente. L&apos;accès des salariés est
-          réservé aux personnes invitées ou rattachées à cette structure. Chacun est responsable
-          de la confidentialité de ses identifiants.
+          L&apos;abonnement peut être souscrit directement par l&apos;entreprise cliente, ou via un
+          partenaire (organisme de formation / revendeur) disposant d&apos;un espace dédié. Dans
+          tous les cas, l&apos;accès des salariés est réservé aux personnes invitées ou rattachées
+          à leur structure. Chacun est responsable de la confidentialité de ses identifiants.
+        </p>
+        <p>
+          Rôles principaux : <strong>super-administrateur</strong> LockinIA (FITOPS AI) ;{" "}
+          <strong>partenaire</strong> (pilotage de ses entreprises clientes et quotas) ;{" "}
+          <strong>RH</strong> (pilotage des collaborateurs de sa structure) ;{" "}
+          <strong>apprenant</strong> (parcours et attestation).
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Hébergement mutualisé et isolation
+        </h2>
+        <p>
+          LockinIA est une plateforme mutualisée : les comptes, parcours et suivis sont hébergés
+          sur l&apos;infrastructure de FITOPS AI (Firebase / Google Cloud en Union européenne pour
+          les données de compte et de formation ; Vercel pour l&apos;affichage du site). Les
+          données de chaque entreprise (et, le cas échéant, de chaque partenaire) sont isolées
+          logiquement par contrôles d&apos;accès : un RH ne voit que sa structure ; un partenaire
+          ne voit que ses entreprises clientes.
+        </p>
+        <p>
+          FITOPS AI n&apos;exploite pas les données des clients à des fins commerciales propres
+          (prospection, revente, profilage marketing). L&apos;accès technique ou nominatif par
+          FITOPS AI est limité au support, à la sécurité, à la facturation, à la maintenance et
+          aux obligations légales. Les indicateurs agrégés (volumes, sièges, taux de
+          complétion) peuvent être consultés pour le pilotage du service.
         </p>
       </section>
 
@@ -101,9 +130,26 @@ export default function CguPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Propriété</h2>
         <p>
           Les contenus pédagogiques, la marque LockinIA et l&apos;interface appartiennent à FITOPS
-          AI. L&apos;entreprise cliente reste propriétaire de ses données : liste des salariés,
-          registre des usages et attestations. FITOPS AI ne les revend pas et ne les réutilise pas
-          pour un autre client.
+          AI. L&apos;entreprise cliente (ou le partenaire pour le périmètre qu&apos;il gère)
+          reste responsable et « propriétaire » de ses données opérationnelles : liste des
+          salariés, registre des usages et attestations. FITOPS AI ne les revend pas et ne les
+          réutilise pas pour un autre client. La licence d&apos;usage du contenu pédagogique
+          n&apos;emporte aucun transfert de propriété intellectuelle.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Partenaires (OF / revendeurs)
+        </h2>
+        <p>
+          Un partenaire peut créer et suivre des entreprises clientes dans les limites de son
+          quota contractuel, consulter des statistiques agrégées et les contacts RH nécessaires
+          au déploiement. Sauf besoin de support ou stipulation contraire au contrat, le
+          partenaire n&apos;utilise pas le détail nominatif des parcours de tous les apprenants
+          comme un fichier commercial. Face au client final, le partenaire demeure responsable
+          de sa relation commerciale et, le cas échéant, de son statut d&apos;organisme de
+          formation ; FITOPS AI fournit la plateforme et le parcours sous licence.
         </p>
       </section>
 
@@ -179,7 +225,7 @@ export default function CguPage() {
             politique de confidentialité
           </a>
           . Lorsque FITOPS AI traite des données de collaborateurs pour le compte de
-          l&apos;entreprise, l&apos;
+          l&apos;entreprise (et, le cas échéant, dans le cadre d&apos;un partenariat OF), l&apos;
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
             accord de sous-traitance (DPA)
           </a>{" "}
