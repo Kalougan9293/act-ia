@@ -10,6 +10,7 @@ import {
   Award,
   Building2,
   Download,
+  Eye,
   FileText,
   Pencil,
   Plus,
@@ -33,21 +34,29 @@ import {
 import { formatDate } from "@/lib/admin/format";
 import { openStructureInvoice } from "@/lib/admin/invoice";
 import { structureGraduates } from "@/lib/admin/stats";
+import { downloadLearnerAttestation } from "@/lib/export/attestations";
+import { formatProofDate } from "@/lib/formation/proof";
 import {
   PLAN_PRICES,
   PLAN_SEATS,
   emptyCompanyModule,
+  type Partner,
   type PlanId,
   type PlatformUser,
   type Structure,
   type StructureFormValues,
 } from "@/lib/admin/types";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { listPartners } from "@/lib/firebase/partners";
+import {
+  deletePartnerForever,
+  listPartners,
+  restorePartner,
+} from "@/lib/firebase/partners";
 import {
   deleteStructureAndUsers,
   deleteUser,
   ensureStructureRegistryId,
+  purgeStructureForever,
   listStructures,
   listUsers,
   saveStructure,
@@ -55,7 +64,10 @@ import {
 } from "@/lib/firebase/admin-data";
 import { createRegistryId } from "@/lib/export/attestations";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import { syncStructureInviteSeats } from "@/lib/firebase/seats";
+import {
+  listSeatsUsedByStructure,
+  syncStructureInviteSeats,
+} from "@/lib/firebase/seats";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import {
   deleteInviteByToken,
@@ -229,12 +241,25 @@ export default function AdminDashboard() {
   const [previewCertificateUser, setPreviewCertificateUser] =
     useState<PlatformUser | null>(null);
   const [structureQuery, setStructureQuery] = useState("");
+  /** null = tous · direct = B2B · partner = via OF */
+  const [structureOriginFilter, setStructureOriginFilter] = useState<
+    null | "direct" | "partner"
+  >(null);
   const [userQuery, setUserQuery] = useState("");
+  /** null = tous · direct = B2B · partner = via OF */
+  const [userOriginFilter, setUserOriginFilter] = useState<
+    null | "direct" | "partner"
+  >(null);
   const [attestationQuery, setAttestationQuery] = useState("");
   const [attestationPage, setAttestationPage] = useState(0);
   const [addChoiceOpen, setAddChoiceOpen] = useState(false);
   const [partnerCreateOpen, setPartnerCreateOpen] = useState(false);
   const [partnersCount, setPartnersCount] = useState(0);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  /** Sièges consommés (inclut départs après démarrage ≥ 1 %) */
+  const [seatsUsedByStructure, setSeatsUsedByStructure] = useState<
+    Record<string, number>
+  >({});
   const [userSort, setUserSort] = useState<{
     key: "name" | "company" | "progress" | "satisfaction" | "lastLogin";
     dir: "asc" | "desc";
@@ -262,8 +287,13 @@ export default function AdminDashboard() {
         const nextStructures = await Promise.all(
           listedStructures.map((structure) => ensureStructureRegistryId(structure)),
         );
+        const seatsMap = await listSeatsUsedByStructure(nextStructures);
         if (!cancelled) {
-          setPartnersCount(partners.filter((p) => p.status === "active").length);
+          setPartners(partners);
+          setPartnersCount(
+            partners.filter((p) => p.status === "active" && !p.archivedAt).length,
+          );
+          setSeatsUsedByStructure(seatsMap);
           setStructures(nextStructures);
           // Invitations perso collaborateur abandonnées — on ne les compte plus.
           // Seules les invitations RH pending restent visibles si besoin.
@@ -301,6 +331,16 @@ export default function AdminDashboard() {
     () => structures.filter((s) => !!s.archivedAt),
     [structures],
   );
+  const archivedPartners = useMemo(
+    () =>
+      partners
+        .filter((p) => !!p.archivedAt || p.status === "suspended")
+        .sort((a, b) =>
+          (b.archivedAt ?? b.createdAt).localeCompare(a.archivedAt ?? a.createdAt),
+        ),
+    [partners],
+  );
+  const archivedTotal = archivedStructures.length + archivedPartners.length;
   const activeStructureIds = useMemo(
     () => new Set(activeStructures.map((s) => s.id)),
     [activeStructures],
@@ -345,20 +385,43 @@ export default function AdminDashboard() {
     return map;
   }, [structures]);
 
+  /** structureId → partnerId (null = B2B direct) */
+  const structurePartnerIdById = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const s of structures) map.set(s.id, s.partnerId);
+    return map;
+  }, [structures]);
+
+  const partnerNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of partners) map.set(p.id, p.name);
+    return map;
+  }, [partners]);
+
   const filtered = useMemo(() => {
     const source = view === "archived" ? archivedStructures : activeStructures;
     const q = structureQuery.trim().toLowerCase();
-    const list = q
-      ? source.filter((s) => {
-          const email = structureEmail(s, users).toLowerCase();
-          return (
-            s.name.toLowerCase().includes(q) ||
-            email.includes(q) ||
-            s.billing.billingEmail.toLowerCase().includes(q) ||
-            s.billing.siret.toLowerCase().includes(q)
-          );
-        })
-      : source;
+    let list = source;
+    if (view === "active" && structureOriginFilter === "direct") {
+      list = list.filter((s) => !s.partnerId);
+    } else if (view === "active" && structureOriginFilter === "partner") {
+      list = list.filter((s) => Boolean(s.partnerId));
+    }
+    if (q) {
+      list = list.filter((s) => {
+        const email = structureEmail(s, users).toLowerCase();
+        const partnerLabel = s.partnerId
+          ? (partnerNameById.get(s.partnerId) ?? "").toLowerCase()
+          : "";
+        return (
+          s.name.toLowerCase().includes(q) ||
+          email.includes(q) ||
+          s.billing.billingEmail.toLowerCase().includes(q) ||
+          s.billing.siret.toLowerCase().includes(q) ||
+          partnerLabel.includes(q)
+        );
+      });
+    }
     return [...list].sort((a, b) => {
       let result = 0;
       if (sort.key === "name") result = a.name.localeCompare(b.name, "fr");
@@ -376,7 +439,16 @@ export default function AdminDashboard() {
       }
       return sort.dir === "asc" ? result : -result;
     });
-  }, [activeStructures, archivedStructures, users, sort, view, structureQuery]);
+  }, [
+    activeStructures,
+    archivedStructures,
+    users,
+    sort,
+    view,
+    structureQuery,
+    structureOriginFilter,
+    partnerNameById,
+  ]);
 
   const allPlatformUsers = useMemo(() => {
     const q = userQuery.trim().toLowerCase();
@@ -387,14 +459,24 @@ export default function AdminDashboard() {
       ) {
         return false;
       }
+      const partnerId = u.structureId
+        ? structurePartnerIdById.get(u.structureId) ?? null
+        : null;
+      const fromPartner = Boolean(partnerId);
+      if (userOriginFilter === "direct" && fromPartner) return false;
+      if (userOriginFilter === "partner" && !fromPartner) return false;
       if (!q) return true;
       const company = u.structureId
         ? structureNameById.get(u.structureId) ?? ""
+        : "";
+      const partnerLabel = partnerId
+        ? (partnerNameById.get(partnerId) ?? "").toLowerCase()
         : "";
       return (
         u.name.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
         company.toLowerCase().includes(q) ||
+        partnerLabel.includes(q) ||
         (u.certificateId ?? "").toLowerCase().includes(q)
       );
     });
@@ -417,7 +499,16 @@ export default function AdminDashboard() {
       }
       return userSort.dir === "asc" ? result : -result;
     });
-  }, [users, activeStructureIds, structureNameById, userSort, userQuery]);
+  }, [
+    users,
+    activeStructureIds,
+    structureNameById,
+    structurePartnerIdById,
+    partnerNameById,
+    userSort,
+    userQuery,
+    userOriginFilter,
+  ]);
 
   const allAttestations = useMemo(() => {
     return users.filter(
@@ -588,6 +679,7 @@ export default function AdminDashboard() {
           inviteToken,
           registryId: createRegistryId(id),
           partnerId: null,
+          article4Report: null,
           companyModule: emptyCompanyModule(),
           billing: {
             companyName: form.name.trim(),
@@ -722,9 +814,46 @@ export default function AdminDashboard() {
     }
   }
 
-  async function deleteStructureForever(structure: Structure) {
+  async function restoreArchivedPartner(partner: Partner) {
+    const previous = partner;
+    setPartners((current) =>
+      current.map((p) =>
+        p.id === partner.id ? { ...p, status: "active", archivedAt: null } : p,
+      ),
+    );
+    setPartnersCount((n) => n + 1);
+    try {
+      await restorePartner(partner.id);
+    } catch (e) {
+      setPartners((current) =>
+        current.map((p) => (p.id === partner.id ? previous : p)),
+      );
+      setPartnersCount((n) => Math.max(0, n - 1));
+      setLoadError(e instanceof Error ? e.message : "Restauration impossible");
+    }
+  }
+
+  async function deleteArchivedPartnerForever(partner: Partner) {
     const ok = window.confirm(
-      `Retirer les comptes de « ${structure.name} » ? Les preuves de formation restent archivées (année + 3 ans). La structure passe en archivée.`,
+      `Supprimer définitivement « ${partner.name} » ?\n\nLes comptes OF seront effacés. Les entreprises clientes restent (détachées du partenaire).`,
+    );
+    if (!ok) return;
+    const previous = partners;
+    setPartners((current) => current.filter((p) => p.id !== partner.id));
+    try {
+      await deletePartnerForever(partner.id);
+    } catch (e) {
+      setPartners(previous);
+      setLoadError(e instanceof Error ? e.message : "Suppression impossible");
+    }
+  }
+
+  async function deleteStructureForever(structure: Structure) {
+    const alreadyArchived = Boolean(structure.archivedAt);
+    const ok = window.confirm(
+      alreadyArchived
+        ? `Supprimer définitivement « ${structure.name} » ?\n\nLa fiche disparaîtra des archivés. Les preuves de formation restent conservées (année + 3 ans).`
+        : `Retirer les comptes de « ${structure.name} » ? Les preuves de formation restent archivées (année + 3 ans). La structure passe en archivée.`,
     );
     if (!ok) return;
     const linked = users.filter(
@@ -732,18 +861,26 @@ export default function AdminDashboard() {
     );
     try {
       await deleteInvitesForStructure(structure.id);
-      await deleteStructureAndUsers(
-        structure.id,
-        linked.map((u) => u.id),
-      );
-      const archivedAt = new Date().toISOString().slice(0, 10);
-      setStructures((current) =>
-        current.map((s) =>
-          s.id === structure.id
-            ? { ...s, status: "suspended", archivedAt }
-            : s,
-        ),
-      );
+      if (alreadyArchived) {
+        await purgeStructureForever(
+          structure.id,
+          linked.map((u) => u.id),
+        );
+        setStructures((current) => current.filter((s) => s.id !== structure.id));
+      } else {
+        await deleteStructureAndUsers(
+          structure.id,
+          linked.map((u) => u.id),
+        );
+        const archivedAt = new Date().toISOString().slice(0, 10);
+        setStructures((current) =>
+          current.map((s) =>
+            s.id === structure.id
+              ? { ...s, status: "suspended", archivedAt }
+              : s,
+          ),
+        );
+      }
       setUsers((current) => current.filter((u) => u.structureId !== structure.id));
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Suppression impossible");
@@ -894,6 +1031,7 @@ export default function AdminDashboard() {
             onClick={() => {
               setView("active");
               setStructureQuery("");
+              setStructureOriginFilter(null);
             }}
             className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
               view === "active"
@@ -927,6 +1065,7 @@ export default function AdminDashboard() {
             onClick={() => {
               setView("users");
               setUserQuery("");
+              setUserOriginFilter(null);
             }}
             className={`rounded-lg border px-3 py-2.5 shadow-sm transition-colors ${
               view === "users"
@@ -977,7 +1116,7 @@ export default function AdminDashboard() {
               <Archive className="h-3.5 w-3.5" />
               Archivés
             </div>
-            <div className="mt-0.5 text-2xl font-bold tabular-nums">{archivedStructures.length}</div>
+            <div className="mt-0.5 text-2xl font-bold tabular-nums">{archivedTotal}</div>
           </button>
         </div>
 
@@ -987,6 +1126,7 @@ export default function AdminDashboard() {
               createOpen={partnerCreateOpen}
               onCreateClose={() => setPartnerCreateOpen(false)}
               onCountChange={setPartnersCount}
+              onPartnersChange={setPartners}
             />
           ) : view === "users" ? (
           <div>
@@ -1001,11 +1141,48 @@ export default function AdminDashboard() {
                   className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
                 />
               </div>
-              <p className="mt-1.5 text-xs text-slate-500">
-                {allPlatformUsers.length} utilisateur
-                {allPlatformUsers.length !== 1 ? "s" : ""}
-                {userQuery.trim() ? " trouvé(s)" : ""}
-              </p>
+              <div className="mt-1.5 flex flex-wrap items-center justify-center gap-2 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setUserOriginFilter((f) => (f === "direct" ? null : "direct"))
+                  }
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium transition-colors ${
+                    userOriginFilter === "direct"
+                      ? "border-blue-400 bg-blue-100 text-blue-800 dark:border-blue-400 dark:bg-blue-500/30 dark:text-blue-100"
+                      : "border-transparent text-slate-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-500/10"
+                  }`}
+                  title={
+                    userOriginFilter === "direct"
+                      ? "Réafficher tous les utilisateurs"
+                      : "Filtrer : B2B direct uniquement"
+                  }
+                >
+                  <span className="h-2.5 w-2.5 rounded-sm bg-blue-500" />
+                  B2B direct
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setUserOriginFilter((f) =>
+                      f === "partner" ? null : "partner",
+                    )
+                  }
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium transition-colors ${
+                    userOriginFilter === "partner"
+                      ? "border-violet-400 bg-violet-100 text-violet-800 dark:border-violet-400 dark:bg-violet-500/30 dark:text-violet-100"
+                      : "border-transparent text-slate-600 hover:bg-violet-50 dark:text-slate-300 dark:hover:bg-violet-500/10"
+                  }`}
+                  title={
+                    userOriginFilter === "partner"
+                      ? "Réafficher tous les utilisateurs"
+                      : "Filtrer : via partenaire uniquement"
+                  }
+                >
+                  <span className="h-2.5 w-2.5 rounded-sm bg-violet-500" />
+                  Via partenaire
+                </button>
+              </div>
             </div>
             <div className="overflow-x-auto">
             <table className="w-full table-fixed text-sm text-center">
@@ -1058,13 +1235,34 @@ export default function AdminDashboard() {
                   const company = user.structureId
                     ? structureNameById.get(user.structureId) ?? "—"
                     : "—";
+                  const partnerId = user.structureId
+                    ? structurePartnerIdById.get(user.structureId) ?? null
+                    : null;
+                  const fromPartner = Boolean(partnerId);
+                  const partnerName = partnerId
+                    ? partnerNameById.get(partnerId) ?? null
+                    : null;
+                  const companyLabel =
+                    fromPartner && partnerName
+                      ? `${company} (${partnerName})`
+                      : company;
                   const before =
                     user.positioningScore != null ? `${user.positioningScore}` : "—";
                   const after = user.quizScore != null ? `${user.quizScore}` : "—";
+                  const rowClass = fromPartner
+                    ? "border-t border-violet-300 bg-violet-200 dark:border-violet-400/50 dark:bg-violet-500/40 hover:bg-violet-300 dark:hover:bg-violet-500/50"
+                    : "border-t border-blue-300 bg-blue-200 dark:border-blue-400/50 dark:bg-blue-500/40 hover:bg-blue-300 dark:hover:bg-blue-500/50";
                   return (
                     <tr
                       key={user.id}
-                      className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                      className={`${rowClass} transition-colors`}
+                      title={
+                        fromPartner
+                          ? partnerName
+                            ? `Via partenaire : ${partnerName}`
+                            : "Via partenaire"
+                          : "Entreprise B2B directe"
+                      }
                     >
                       <td className="px-2 py-1.5 font-medium truncate" title={user.name}>
                         <button
@@ -1082,8 +1280,17 @@ export default function AdminDashboard() {
                       <td className="px-2 py-1.5 truncate text-xs sm:text-sm" title={user.email}>
                         {user.email}
                       </td>
-                      <td className="px-2 py-1.5 truncate text-xs sm:text-sm" title={company}>
+                      <td
+                        className="px-2 py-1.5 truncate text-xs sm:text-sm"
+                        title={companyLabel}
+                      >
                         {company}
+                        {fromPartner && partnerName ? (
+                          <span className="font-normal text-violet-700 dark:text-violet-200">
+                            {" "}
+                            ({partnerName})
+                          </span>
+                        ) : null}
                       </td>
                       <td className="px-2 py-1.5 tabular-nums">
                         {user.role === "employee" || user.formationEnrolled
@@ -1300,23 +1507,175 @@ export default function AdminDashboard() {
           </div>
           ) : (
           <div>
-            <div className="border-b border-slate-100 dark:border-slate-800 px-3 py-2.5">
-              <div className="relative mx-auto max-w-md">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="search"
-                  value={structureQuery}
-                  onChange={(e) => setStructureQuery(e.target.value)}
-                  placeholder="Nom, e-mail ou SIRET"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
-                />
+            {view === "archived" && (
+              <div className="border-b border-violet-100 bg-violet-50/60 dark:border-violet-500/20 dark:bg-violet-500/10">
+                <div className="px-3 py-2.5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">
+                    Partenaires archivés
+                  </p>
+                  <p className="mt-0.5 text-xs text-violet-500/80 dark:text-violet-400/70">
+                    {archivedPartners.length} partenaire
+                    {archivedPartners.length !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full table-fixed text-sm text-center">
+                    <colgroup>
+                      <col className="w-[28%]" />
+                      <col className="w-[28%]" />
+                      <col className="w-[16%]" />
+                      <col className="w-[16%]" />
+                      <col className="w-[12%]" />
+                    </colgroup>
+                    <thead className="text-violet-600/80 dark:text-violet-300/80">
+                      <tr>
+                        <th className="px-2 py-1.5 font-medium text-xs">Partenaire</th>
+                        <th className="px-2 py-1.5 font-medium text-xs">Contact</th>
+                        <th className="px-2 py-1.5 font-medium text-xs">Création</th>
+                        <th className="px-2 py-1.5 font-medium text-xs">Archivé le</th>
+                        <th className="px-2 py-1.5 font-medium"> </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {archivedPartners.map((partner) => (
+                        <tr
+                          key={partner.id}
+                          className="border-t border-violet-100/80 dark:border-violet-500/15 hover:bg-violet-100/50 dark:hover:bg-violet-500/15 transition-colors"
+                        >
+                          <td
+                            className="px-2 py-1.5 font-medium truncate"
+                            title={partner.name}
+                          >
+                            {partner.name}
+                          </td>
+                          <td
+                            className="px-2 py-1.5 truncate text-xs sm:text-sm"
+                            title={partner.email}
+                          >
+                            {partner.email}
+                          </td>
+                          <td className="px-2 py-1.5 whitespace-nowrap text-xs">
+                            {formatDate(partner.createdAt)}
+                          </td>
+                          <td className="px-2 py-1.5 whitespace-nowrap text-xs">
+                            {partner.archivedAt ? formatDate(partner.archivedAt) : "—"}
+                          </td>
+                          <td className="px-2 py-1.5">
+                            <div className="flex items-center justify-center gap-0.5">
+                              <button
+                                type="button"
+                                aria-label="Restaurer"
+                                title="Restaurer le partenaire"
+                                onClick={() => void restoreArchivedPartner(partner)}
+                                className="rounded-md p-1 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10"
+                              >
+                                <RotateCcw className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label="Supprimer définitivement"
+                                title="Supprimer définitivement"
+                                onClick={() => void deleteArchivedPartnerForever(partner)}
+                                className="rounded-md p-1 text-slate-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {archivedPartners.length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="px-4 py-6 text-sm text-slate-500">
+                            Aucun partenaire archivé
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <p className="mt-1.5 text-xs text-slate-500">
-                {filtered.length} structure{filtered.length !== 1 ? "s" : ""}
-                {structureQuery.trim() ? " trouvée(s)" : ""}
-              </p>
+            )}
+            <div
+              className={
+                view === "archived"
+                  ? "border-b border-blue-100 bg-blue-50/60 px-3 py-2.5 dark:border-blue-500/20 dark:bg-blue-500/10"
+                  : "border-b border-slate-100 px-3 py-2.5 dark:border-slate-800"
+              }
+            >
+              {view === "archived" ? (
+                <p className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">
+                  Structures archivées
+                  <span className="ml-2 font-normal normal-case tracking-normal text-blue-500/80 dark:text-blue-400/70">
+                    {filtered.length}
+                  </span>
+                </p>
+              ) : (
+                <>
+                  <div className="relative mx-auto max-w-md">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="search"
+                      value={structureQuery}
+                      onChange={(e) => setStructureQuery(e.target.value)}
+                      placeholder="Nom, e-mail ou SIRET"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-950 pl-9 pr-3 py-2 text-sm text-center placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center justify-center gap-2 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStructureOriginFilter((f) =>
+                          f === "direct" ? null : "direct",
+                        )
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium transition-colors ${
+                        structureOriginFilter === "direct"
+                          ? "border-blue-400 bg-blue-100 text-blue-800 dark:border-blue-400 dark:bg-blue-500/30 dark:text-blue-100"
+                          : "border-transparent text-slate-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-500/10"
+                      }`}
+                      title={
+                        structureOriginFilter === "direct"
+                          ? "Réafficher toutes les structures"
+                          : "Filtrer : B2B direct uniquement"
+                      }
+                    >
+                      <span className="h-2.5 w-2.5 rounded-sm bg-blue-500" />
+                      B2B direct
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setStructureOriginFilter((f) =>
+                          f === "partner" ? null : "partner",
+                        )
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium transition-colors ${
+                        structureOriginFilter === "partner"
+                          ? "border-violet-400 bg-violet-100 text-violet-800 dark:border-violet-400 dark:bg-violet-500/30 dark:text-violet-100"
+                          : "border-transparent text-slate-600 hover:bg-violet-50 dark:text-slate-300 dark:hover:bg-violet-500/10"
+                      }`}
+                      title={
+                        structureOriginFilter === "partner"
+                          ? "Réafficher toutes les structures"
+                          : "Filtrer : via partenaire uniquement"
+                      }
+                    >
+                      <span className="h-2.5 w-2.5 rounded-sm bg-violet-500" />
+                      Via partenaire
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="overflow-x-auto">
+            <div
+              className={`overflow-x-auto ${
+                view === "archived"
+                  ? "bg-blue-50/40 dark:bg-blue-500/[0.07]"
+                  : ""
+              }`}
+            >
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
                 <col className="w-[18%]" />
@@ -1327,7 +1686,13 @@ export default function AdminDashboard() {
                 <col className="w-[12%]" />
                 <col className="w-[14%]" />
               </colgroup>
-              <thead className="text-slate-500 dark:text-slate-400">
+              <thead
+                className={
+                  view === "archived"
+                    ? "text-blue-600/80 dark:text-blue-300/80"
+                    : "text-slate-500 dark:text-slate-400"
+                }
+              >
                 <tr>
                   <SortHeader
                     label="Structure"
@@ -1368,13 +1733,48 @@ export default function AdminDashboard() {
               <tbody>
                 {filtered.map((structure) => {
                   const grads = structureGraduates(structure.id, users);
+                  const seatsUsed = Math.max(
+                    grads.total,
+                    seatsUsedByStructure[structure.id] ?? grads.total,
+                  );
+                  const seatsRetained = Math.max(0, seatsUsed - grads.total);
+                  const fromPartner = Boolean(structure.partnerId);
+                  const partnerName = structure.partnerId
+                    ? partnerNameById.get(structure.partnerId) ?? null
+                    : null;
+                  const rowTint =
+                    view === "archived"
+                      ? "border-t border-blue-100/80 dark:border-blue-500/15 hover:bg-blue-100/50 dark:hover:bg-blue-500/15"
+                      : fromPartner
+                        ? "border-t border-violet-300 bg-violet-200 dark:border-violet-400/50 dark:bg-violet-500/40 hover:bg-violet-300 dark:hover:bg-violet-500/50"
+                        : "border-t border-blue-300 bg-blue-200 dark:border-blue-400/50 dark:bg-blue-500/40 hover:bg-blue-300 dark:hover:bg-blue-500/50";
                   return (
                   <tr
                     key={structure.id}
-                    className="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                    className={`${rowTint} transition-colors`}
+                    title={
+                      fromPartner
+                        ? partnerName
+                          ? `Via partenaire : ${partnerName}`
+                          : "Entreprise ajoutée par un partenaire"
+                        : "Entreprise B2B directe"
+                    }
                   >
-                    <td className="px-2 py-1.5 font-medium truncate" title={structure.name}>
+                    <td
+                      className="px-2 py-1.5 font-medium truncate"
+                      title={
+                        partnerName
+                          ? `${structure.name} (${partnerName})`
+                          : structure.name
+                      }
+                    >
                       {structure.name}
+                      {partnerName ? (
+                        <span className="font-normal text-violet-700 dark:text-violet-200">
+                          {" "}
+                          ({partnerName})
+                        </span>
+                      ) : null}
                     </td>
                     <td
                       className="px-2 py-1.5 truncate text-xs sm:text-sm"
@@ -1382,22 +1782,34 @@ export default function AdminDashboard() {
                     >
                       {structureEmail(structure, users)}
                     </td>
-                    <td
-                      className="px-2 py-1.5 truncate font-mono text-[11px] text-slate-600 dark:text-slate-300"
-                      title={structure.registryId}
-                    >
-                      {structure.registryId}
+                    <td className="px-2 py-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setGraduatesStructureId(structure.id)}
+                        className="max-w-full truncate font-mono text-[11px] text-blue-600 hover:underline dark:text-blue-400"
+                        title={`Suivi Article 4 — voir les attestations (${structure.registryId})`}
+                      >
+                        {structure.registryId}
+                      </button>
                     </td>
                     <td className="px-2 py-1.5 tabular-nums">
                       <button
                         type="button"
                         onClick={() => setGraduatesStructureId(structure.id)}
                         className="rounded-md px-1.5 py-0.5 font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                        title="Formés / utilisateurs (collaborateurs) / capacité offre"
+                        title={
+                          `Formés / comptes actifs / sièges consommés / capacité.\n` +
+                          (seatsRetained > 0
+                            ? `${seatsRetained} siège(s) non récupéré(s) : départ après démarrage (≥ 1 %).`
+                            : `Aucun siège retenu hors comptes actifs.`)
+                        }
                       >
                         {grads.graduated}
                         <span className="font-normal text-emerald-600 dark:text-emerald-400">
                           /{grads.total}
+                        </span>
+                        <span className="font-normal text-amber-600 dark:text-amber-400">
+                          /{seatsUsed}
                         </span>
                         <span className="text-slate-400 font-normal">
                           /{structure.billing.seats}
@@ -1524,19 +1936,21 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <ul className="divide-y divide-slate-100 dark:divide-slate-800 text-left">
+            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
               {graduatesMembers.map((user) => {
-                const done = user.progressPercent === 100 && !!user.certificateId;
+                const done = Boolean(user.certificateId);
+                const stamp = user.certifiedAt
+                  ? formatProofDate(user.certifiedAt)
+                  : null;
                 return (
-                  <li key={user.id}>
-                    <button
-                      type="button"
-                      onClick={() => router.push(`/admin/candidats/${user.id}`)}
-                      className="w-full px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/70 text-center"
-                    >
-                      <div className="text-sm font-medium">{user.name}</div>
-                      <div className="text-xs text-slate-500 truncate">{user.email}</div>
-                      {done ? (
+                  <li
+                    key={user.id}
+                    className="px-4 py-3 text-center hover:bg-slate-50 dark:hover:bg-slate-800/70"
+                  >
+                    <div className="text-sm font-medium">{user.name}</div>
+                    <div className="truncate text-xs text-slate-500">{user.email}</div>
+                    {done ? (
+                      <>
                         <div className="mt-1 font-mono text-[11px] text-blue-600 dark:text-blue-400">
                           {user.certificateId}
                           {user.quizScore != null ? ` · ${user.quizScore} %` : ""}
@@ -1544,17 +1958,52 @@ export default function AdminDashboard() {
                             ? ` · ${formatDate(user.certifiedAt)}`
                             : ""}
                         </div>
-                      ) : (
-                        <div className="mt-1 text-[11px] text-slate-400">
-                          {user.progressPercent ?? 0} % — attestation non émise
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewCertificateUser(user)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-white dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Voir
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!user.certificateId || !graduatesStructure) return;
+                              downloadLearnerAttestation({
+                                fullName: user.name,
+                                role: user.role === "rh" ? "RH" : "Collaborateur",
+                                companyName:
+                                  graduatesStructure.billing.companyName ||
+                                  graduatesStructure.name,
+                                certificateId: user.certificateId,
+                                quizScore: user.quizScore ?? 0,
+                                issuedAt: user.certifiedAt,
+                                dateLabel: stamp?.date ?? formatDate(new Date().toISOString()),
+                                timeLabel: stamp?.time ?? "10:00",
+                                specimen: false,
+                                timeSpentSec: user.attestationTimeSpentSec,
+                                modulesCompleted: user.attestationModulesCompleted,
+                              });
+                            }}
+                            className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-blue-700"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            PDF
+                          </button>
                         </div>
-                      )}
-                    </button>
+                      </>
+                    ) : (
+                      <div className="mt-1 text-[11px] text-slate-400">
+                        {user.progressPercent ?? 0} % — attestation non émise
+                      </div>
+                    )}
                   </li>
                 );
               })}
               {graduatesMembers.length === 0 && (
-                <li className="px-4 py-8 text-sm text-slate-500 text-center">
+                <li className="px-4 py-8 text-center text-sm text-slate-500">
                   Aucun utilisateur dans cette structure
                 </li>
               )}

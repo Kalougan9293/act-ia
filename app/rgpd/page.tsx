@@ -18,10 +18,11 @@ export default function RgpdPage() {
         <p>
           <strong>1. LockinIA en tant que prestataire</strong> — nous hébergeons de façon
           mutualisée des données de compte et de formation (identité, e-mail, progression,
-          attestations) pour délivrer le service, avec isolation par entreprise / partenaire.
-          FITOPS AI agit en sous-traitant : indicateurs agrégés pour le pilotage ; accès
-          nominatif limité au support, à la sécurité, à la facturation et aux obligations
-          légales. Les finalités, durées et droits figurent dans la{" "}
+          attestations, synthèse Article&nbsp;4, module entreprise) pour délivrer le service,
+          avec isolation par entreprise / partenaire. FITOPS AI agit en sous-traitant :
+          indicateurs agrégés pour le pilotage ; accès nominatif limité au support, à la
+          sécurité, à la facturation et aux obligations légales. Les finalités, durées et
+          droits figurent dans la{" "}
           <Link
             href="/confidentialite"
             className="text-blue-600 hover:underline dark:text-blue-400"

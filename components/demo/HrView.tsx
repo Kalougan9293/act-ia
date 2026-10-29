@@ -27,9 +27,13 @@ import {
   isCompanyModuleFilled,
   normalizeAiUseCase,
   type AiUseCaseEntry,
+  type Article4ReportRecord,
   type CompanyModuleContent,
 } from "@/lib/admin/types";
-import { downloadCompanyReport } from "@/lib/export/attestations";
+import {
+  downloadCompanyReport,
+  nextArticle4ReportRecord,
+} from "@/lib/export/attestations";
 import { downloadProofZip } from "@/lib/export/proof-zip";
 import { loadFormationProgressMany } from "@/lib/firebase/formation-progress";
 import { provisionTenantUser } from "@/lib/firebase/provision-user";
@@ -84,7 +88,7 @@ function trimUseCase(row: AiUseCaseEntry): AiUseCaseEntry {
   return next;
 }
 
-type SortKey = "name" | "email" | "percent" | "rating" | "lastSeen";
+type SortKey = "name" | "email" | "percent" | "scores" | "rating" | "lastSeen";
 
 function dateValue(value: string) {
   const [day, month, year] = value.split("/").map(Number);
@@ -183,10 +187,12 @@ export default function HrView({
   structureId,
   structureInviteLink,
   structureRegistryId,
+  article4Report: article4ReportProp = null,
   seatsMax = 5,
   seatsUsed = 0,
   companyModule: companyModuleProp,
   onSaveCompanyModule,
+  onSaveArticle4Report,
   onRosterChange,
   demo = false,
 }: {
@@ -195,15 +201,18 @@ export default function HrView({
   structureId?: string;
   structureInviteLink?: string | null;
   structureRegistryId?: string | null;
+  article4Report?: Article4ReportRecord | null;
   seatsMax?: number;
   seatsUsed?: number;
   companyModule?: CompanyModuleContent;
   onSaveCompanyModule?: (module: CompanyModuleContent) => Promise<void>;
+  onSaveArticle4Report?: (report: Article4ReportRecord) => Promise<void>;
   onRosterChange?: () => void;
   /** Démo publique : lien fictif, export bloqué. */
   demo?: boolean;
 }) {
   const [roster, setRoster] = useState<Employee[]>(initialEmployees);
+  const [article4Report, setArticle4Report] = useState(article4ReportProp);
   const [preview, setPreview] = useState<string | null>(null);
   const [copiedPermanent, setCopiedPermanent] = useState(false);
   const [query, setQuery] = useState("");
@@ -235,6 +244,10 @@ export default function HrView({
   }, [initialEmployees]);
 
   useEffect(() => {
+    setArticle4Report(article4ReportProp);
+  }, [article4ReportProp]);
+
+  useEffect(() => {
     const next = normalizeModule(companyModuleProp);
     setModuleSaved(next);
     if (!showModuleEditor) setModuleDraft(next);
@@ -247,6 +260,10 @@ export default function HrView({
     return employee.name.toLowerCase().includes(needle) || employee.email.toLowerCase().includes(needle);
   });
   const sorted = [...visible].sort((a, b) => {
+    const scoreDelta = (e: Employee) =>
+      e.quizScore != null && e.positioningScore != null
+        ? e.quizScore - e.positioningScore
+        : e.quizScore ?? e.positioningScore ?? -1;
     const result =
       sort.key === "name"
         ? a.name.localeCompare(b.name, "fr")
@@ -254,9 +271,11 @@ export default function HrView({
           ? a.email.localeCompare(b.email, "fr")
           : sort.key === "percent"
             ? a.percent - b.percent
-            : sort.key === "rating"
-              ? (a.satisfactionRating ?? -1) - (b.satisfactionRating ?? -1)
-              : dateValue(a.lastSeen) - dateValue(b.lastSeen);
+            : sort.key === "scores"
+              ? scoreDelta(a) - scoreDelta(b)
+              : sort.key === "rating"
+                ? (a.satisfactionRating ?? -1) - (b.satisfactionRating ?? -1)
+                : dateValue(a.lastSeen) - dateValue(b.lastSeen);
     return sort.dir === "asc" ? result : -result;
   });
   const done = active.filter((employee) => employee.percent >= 100).length;
@@ -307,7 +326,7 @@ export default function HrView({
     }
     if (seatsFull) {
       setAddError(
-        `Limite atteinte (${seatsUsed}/${seatsMax}). Supprimez un compte pour en ajouter un.`,
+        `Limite atteinte (${seatsUsed}/${seatsMax}). Un siège n’est libéré que si le collaborateur est à 0 %.`,
       );
       return;
     }
@@ -354,10 +373,14 @@ export default function HrView({
 
   async function removeCollaborator(employee: Employee) {
     if (demo || deletingId) return;
+    const started = (employee.percent ?? 0) > 0;
     const ok = window.confirm(
       `Attention ! Vous allez perdre tout le suivi !\n\n` +
         `Supprimer ${employee.name} efface définitivement sa progression et son attestation.\n` +
         `S’il est réinscrit, il devra tout recommencer depuis zéro.\n\n` +
+        (started
+          ? `Il a déjà démarré (${employee.percent} %) : le siège reste consommé dans votre limite.\n\n`
+          : `Il est à 0 % : le siège sera libéré pour un autre collaborateur.\n\n`) +
         `Continuer ?`,
     );
     if (!ok) return;
@@ -453,17 +476,35 @@ export default function HrView({
           onClick={() => setShowCompany(true)}
           className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
         >
-          Rapport Article 4
+          Synthèse Article 4
         </button>
         {!demo ? (
           <>
             <button
               type="button"
-              onClick={() => downloadCompanyReport(companyName, active, structureRegistryId)}
+              onClick={() => {
+                void (async () => {
+                  const registryId = structureRegistryId ?? null;
+                  const next = nextArticle4ReportRecord({
+                    previous: article4Report,
+                    employees: active,
+                    registryId: registryId ?? companyName,
+                    forExport: true,
+                  });
+                  setArticle4Report(next);
+                  downloadCompanyReport(
+                    companyName,
+                    active,
+                    registryId,
+                    next,
+                  );
+                  await onSaveArticle4Report?.(next);
+                })();
+              }}
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-900 dark:text-emerald-200"
             >
               <Download className="h-4 w-4" />
-              Télécharger le rapport (PDF)
+              Télécharger la synthèse (PDF)
             </button>
             <button
               type="button"
@@ -605,12 +646,25 @@ export default function HrView({
                 <SortHeader label="Collaborateur" active={sort.key === "name"} dir={sort.dir} onClick={() => toggleSort("name")} />
                 <SortHeader label="E-mail" active={sort.key === "email"} dir={sort.dir} onClick={() => toggleSort("email")} />
                 <SortHeader label="Avancement" active={sort.key === "percent"} dir={sort.dir} onClick={() => toggleSort("percent")} />
+                <SortHeader
+                  label="Avant/Après"
+                  active={sort.key === "scores"}
+                  dir={sort.dir}
+                  onClick={() => toggleSort("scores")}
+                />
                 <SortHeader label="Avis" active={sort.key === "rating"} dir={sort.dir} onClick={() => toggleSort("rating")} />
                 <SortHeader label="Dernière connexion" active={sort.key === "lastSeen"} dir={sort.dir} onClick={() => toggleSort("lastSeen")} />
               </tr>
             </thead>
             <tbody>
-              {sorted.map((employee) => (
+              {sorted.map((employee) => {
+                const before =
+                  employee.positioningScore != null
+                    ? `${employee.positioningScore}`
+                    : "—";
+                const after =
+                  employee.quizScore != null ? `${employee.quizScore}` : "—";
+                return (
                 <tr key={employee.id} className="group border-t border-slate-100 dark:border-slate-700">
                   <td className="px-4 py-3 font-medium text-slate-900 dark:text-white whitespace-nowrap">
                     <NameWithService name={employee.name} role={employee.role} />
@@ -630,6 +684,12 @@ export default function HrView({
                       }
                     />
                   </td>
+                  <td
+                    className="px-4 py-3 tabular-nums text-xs text-slate-600 dark:text-slate-300"
+                    title="Positionnement → QCM final"
+                  >
+                    {before} → {after}
+                  </td>
                   <td className="px-4 py-3 text-center align-middle">
                     {employee.satisfactionRating != null ? (
                       <button
@@ -639,6 +699,11 @@ export default function HrView({
                         title="Voir le commentaire"
                       >
                         {employee.satisfactionRating}/5
+                        {employee.satisfactionComplaint?.trim() ? (
+                          <span className="ml-1 text-[10px] font-semibold text-amber-600 dark:text-amber-300">
+                            !
+                          </span>
+                        ) : null}
                       </button>
                     ) : (
                       <span className="inline-block text-slate-400">—</span>
@@ -655,12 +720,13 @@ export default function HrView({
                         title="Effacer — perte définitive du suivi"
                         className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex text-slate-400 opacity-100 transition-opacity hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40 dark:hover:text-red-400"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     ) : null}
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>
@@ -670,9 +736,9 @@ export default function HrView({
         <div className="flex items-start justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <Info className="w-4 h-4 shrink-0 mt-0.5" />
           <p className="text-center max-w-2xl">
-            Supprimer un collaborateur est définitif : progression et attestation sont effacées, et l&apos;accès est
-            libéré pour un autre salarié. Cela permet de rester dans la capacité de votre offre et de garder le
-            registre à jour.
+            Supprimer un collaborateur est définitif (progression et attestation effacées). Un siège n&apos;est
+            libéré que si la personne est à 0&nbsp;% : dès qu&apos;elle a démarré (même 1&nbsp;%), le siège reste
+            compté dans votre limite.
           </p>
         </div>
       ) : null}
@@ -745,7 +811,12 @@ export default function HrView({
           total={active.length}
           employees={active}
           registryId={structureRegistryId}
+          article4Report={article4Report}
           canDownload={!demo}
+          onReportChange={async (report) => {
+            setArticle4Report(report);
+            await onSaveArticle4Report?.(report);
+          }}
           onClose={() => setShowCompany(false)}
         />
       )}
@@ -790,7 +861,7 @@ export default function HrView({
                 </p>
                 {seatsFull ? (
                   <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
-                    Limite atteinte ({seatsUsed}/{seatsMax}). Supprimez un compte pour en ajouter un.
+                    Limite atteinte ({seatsUsed}/{seatsMax}). Un siège n’est libéré que si le collaborateur est à 0 %.
                   </p>
                 ) : (
                   <p className="text-xs text-slate-500">

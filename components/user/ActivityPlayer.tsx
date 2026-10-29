@@ -3496,7 +3496,6 @@ function TetrisActivity({
   const [board, setBoard] = useState<(TetrisCell | null)[][]>(() => emptyBoard());
   const [current, setCurrent] = useState<TetrisPiece | null>(null);
   const [lockedIds, setLockedIds] = useState<string[]>([]);
-  const [sideLabels, setSideLabels] = useState<string[]>([]);
   const [finished, setFinished] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(1);
@@ -3552,9 +3551,8 @@ function TetrisActivity({
     currentRef.current = null;
     failedRef.current = true;
     setFailed(true);
-    // 3ᵉ essai : on valide même si le plateau est bloqué, et on affiche les 7 réflexes.
+    // 3ᵉ essai : on valide même si le plateau est bloqué (les 7 réflexes s’affichent via `finished`).
     if (attemptRef.current >= TETRIS_MAX_ATTEMPTS) {
-      setSideLabels(reflexes.map((block) => block.label));
       setLockedIds(reflexes.map((block) => block.id));
       lockedRef.current = reflexes.map((block) => block.id);
       setFinished(true);
@@ -3585,9 +3583,6 @@ function TetrisActivity({
       : [...lockedRef.current, piece.id];
     lockedRef.current = nextLocked;
     setLockedIds(nextLocked);
-    if (!piece.neutral && piece.label) {
-      setSideLabels((prev) => (prev.includes(piece.label) ? prev : [...prev, piece.label]));
-    }
 
     const nextIndex = cursorRef.current + 1;
     if (nextIndex >= drops.length) {
@@ -3619,7 +3614,6 @@ function TetrisActivity({
     boardRef.current = initial;
     setLockedIds([]);
     lockedRef.current = [];
-    setSideLabels([]);
     setFailed(false);
     failedRef.current = false;
     setFinished(false);
@@ -3794,16 +3788,12 @@ function TetrisActivity({
     "flex items-start gap-1 rounded-lg border border-emerald-400 bg-emerald-50 px-1.5 py-1 text-left text-[10px] font-medium leading-snug break-words text-emerald-900 sm:text-[11px] dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-100";
   const playWidth = frameWidth || TETRIS_COLS * cell + 16;
   const lastSlot = reflexes.length - 1;
-  const showSides = !narrow;
+  const showSides = !narrow && finished;
   const forcePassed = finished && failed;
   const canRetry = failed && !finished && attempt < TETRIS_MAX_ATTEMPTS;
   const showEndList = narrow && finished;
-  /** À la fin (réussite ou 3ᵉ échec), toujours les 7 réflexes. */
-  const displayLabels = finished
-    ? reflexes.map((block) => block.label)
-    : sideLabels.length > 0
-      ? sideLabels
-      : reflexes.map((block) => block.label);
+  /** Les 7 réflexes n’apparaissent sur le côté / en liste qu’à la fin du jeu. */
+  const displayLabels = finished ? reflexes.map((block) => block.label) : [];
   const endLabels = displayLabels;
 
   function sideStyle(index: number) {

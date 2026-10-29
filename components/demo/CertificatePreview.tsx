@@ -1,9 +1,17 @@
 "use client";
 
-import { Download, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Award, Download, ShieldCheck, X } from "lucide-react";
 import type { Employee } from "./data";
 import { downloadLearnerAttestation } from "@/lib/export/attestations";
 import { ATTESTATION_COURSE_TITLE, SOCLE_DURATION_LABEL } from "@/lib/formation/curriculum";
+import {
+  ATTESTATION_HEADER_TAGLINE,
+  ATTESTATION_INTRO,
+  ATTESTATION_ISSUER,
+  ATTESTATION_REFERENTIEL,
+  QUIZ_PASS_THRESHOLD,
+} from "@/lib/formation/attestation-issuer";
 import {
   certificateFingerprint,
   CURRICULUM_LABEL,
@@ -30,26 +38,13 @@ export type CertificateProof = {
   modulesCompleted?: number | null;
 };
 
-function FakeQr() {
-  const cells = [
-    "111011101",
-    "100010001",
-    "101110101",
-    "101010101",
-    "111011101",
-    "000100010",
-    "110101011",
-    "101000101",
-    "111011101",
-  ];
-
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="inline-grid grid-cols-9 gap-px bg-white p-1 border border-slate-300" aria-hidden="true">
-      {cells.flatMap((row, y) =>
-        row.split("").map((cell, x) => (
-          <span key={`${y}-${x}`} className={`w-2 h-2 ${cell === "1" ? "bg-slate-900" : "bg-white"}`} />
-        )),
-      )}
+    <div>
+      <dt className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+        {label}
+      </dt>
+      <dd className="mt-1 text-sm font-semibold text-slate-900">{children}</dd>
     </div>
   );
 }
@@ -87,10 +82,30 @@ export default function CertificatePreview({
   const utc = proof.issuedAt ? formatProofDateUtc(proof.issuedAt) : null;
   const specimen = proof.specimen ?? !Boolean(employee.certificateId);
 
+  const validationRows: [string, string][] = [
+    ["Durée pédagogique prévue (socle)", SOCLE_DURATION_LABEL],
+    ...(proof.timeSpentSec != null && proof.timeSpentSec > 0
+      ? ([
+          ["Temps de connexion enregistré", formatDurationSec(proof.timeSpentSec)],
+        ] as [string, string][])
+      : []),
+    ...(proof.modulesCompleted != null && proof.modulesCompleted > 0
+      ? ([["Modules / étapes validés", String(proof.modulesCompleted)]] as [string, string][])
+      : []),
+    ["Parcours complété", "100 %"],
+    ["Résultat de l'évaluation", `${proof.score} / 100 — Réussite`],
+    [
+      "Seuil de réussite défini pour ce parcours",
+      `${QUIZ_PASS_THRESHOLD} / 100`,
+    ],
+    ["Date de finalisation", proof.date],
+    ["Heure de finalisation", `${proof.time} Europe/Paris`],
+    ...(utc ? ([["Horodatage UTC", `${utc.date} à ${utc.time} UTC`]] as [string, string][]) : []),
+  ];
+
   function download() {
     downloadLearnerAttestation({
       fullName: employee.name,
-      role: employee.role,
       companyName: employee.companyName ?? companyName,
       certificateId,
       quizScore: proof.score,
@@ -103,170 +118,218 @@ export default function CertificatePreview({
     });
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/60 px-4 py-8" onClick={onClose}>
-      <div className="w-full max-w-3xl" onClick={(event) => event.stopPropagation()}>
-      <div className="relative bg-white text-slate-900 shadow-2xl">
+  const modal = (
+    <div
+      className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-slate-900/60 px-3 py-6 sm:px-4 sm:py-8"
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-2xl" onClick={(event) => event.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 p-2 text-slate-400 hover:text-slate-900"
+          className="absolute -top-1 -right-1 z-10 rounded-full bg-white p-2 text-slate-500 shadow-md transition hover:text-slate-900"
           aria-label="Fermer l'attestation"
         >
-          <X className="w-5 h-5" />
+          <X className="h-5 w-5" />
         </button>
 
-        <div className="px-8 sm:px-12 py-10 space-y-8">
-          <header className="text-center space-y-2 border-b border-slate-200 pb-6">
-            <div className="text-sm font-bold tracking-[0.25em] text-blue-600">LockinIA</div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-              Attestation de suivi de formation et de sensibilisation
-            </h2>
-            <p className="text-center text-sm text-slate-600">Maîtrise de l&apos;IA — EU AI Act (article 4)</p>
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 pt-2 text-xs text-slate-500">
-              <span>Attestation n° {certificateId}</span>
-              <span>Version {CURRICULUM_LABEL}</span>
-              {specimen && <span className="text-amber-700 font-semibold">Spécimen de démonstration</span>}
-            </div>
-          </header>
+        <article className="overflow-hidden rounded-sm bg-[#fbf8f1] text-slate-900 shadow-2xl">
+          <div className="bg-blue-700 px-6 py-2.5 text-center text-[11px] font-semibold tracking-[0.28em] text-blue-50 sm:px-8">
+            LockinIA · ATTESTATION DE SUIVI
+          </div>
 
-          <section className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-blue-700">01 — Bénéficiaire</h3>
-            <div className="grid sm:grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="text-xs text-slate-500">Nom et prénom</div>
-                <div className="font-semibold">{first} {last}</div>
+          <div className="border-[10px] border-blue-700/90 px-4 py-6 sm:px-8 sm:py-8">
+            <div className="border border-blue-700/25 px-4 py-7 sm:px-8 sm:py-9">
+              {specimen ? (
+                <p className="mb-4 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700">
+                  Spécimen de démonstration
+                </p>
+              ) : null}
+
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-4 border-blue-600 bg-blue-50 text-blue-700 shadow-[0_0_0_5px_rgba(37,99,235,0.12)]">
+                <Award className="h-7 w-7" strokeWidth={1.75} />
               </div>
-              <div>
-                <div className="text-xs text-slate-500">Fonction</div>
-                <div className="font-semibold">{employee.role}</div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500">Entreprise</div>
-                <div className="font-semibold">{employee.companyName ?? companyName}</div>
-              </div>
-            </div>
-          </section>
 
-          <section className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-blue-700">02 — Parcours suivi</h3>
-            <p className="text-left text-sm leading-relaxed">
-              Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation proposé par la plateforme LockinIA et a satisfait aux conditions de validation définies pour ce parcours.
-            </p>
-            <div className="text-sm">
-              <div className="text-xs text-slate-500">Intitulé du parcours</div>
-              <div className="font-semibold">{ATTESTATION_COURSE_TITLE}</div>
-            </div>
-            <div className="text-sm">
-              <div className="text-xs text-slate-500">Référentiel</div>
-              <div>EU AI Act — maîtrise de l&apos;IA (article 4)</div>
-              <div>Données personnelles et bons usages au travail</div>
-            </div>
-            <ul className="text-sm text-left space-y-1 list-disc pl-5">
-              <li>Comprendre les principes liés à l&apos;utilisation de l&apos;IA et à la AI literacy.</li>
-              <li>Identifier les principaux risques, notamment pour les données personnelles.</li>
-              <li>Adopter des pratiques responsables avec les outils d&apos;IA générative.</li>
-              <li>Repérer les situations qui relèvent des règles internes de l&apos;entreprise.</li>
-            </ul>
-          </section>
+              <header className="mt-5 space-y-2 text-center">
+                <p className="text-center text-xs font-bold tracking-[0.28em] text-blue-700">
+                  LockinIA
+                </p>
+                <h2 className="text-center text-xl font-bold tracking-tight sm:text-2xl">
+                  Attestation de suivi de formation
+                  <span className="block text-lg font-semibold text-slate-700 sm:text-xl">
+                    et de sensibilisation
+                  </span>
+                </h2>
+                <p className="text-center text-sm text-slate-600">
+                  {ATTESTATION_HEADER_TAGLINE}
+                </p>
+                <p className="pt-1 text-center text-xs text-slate-500">
+                  Attestation n°{" "}
+                  <span className="font-mono font-medium text-slate-700">
+                    {certificateId}
+                  </span>
+                  <span className="mx-1.5 text-slate-300">·</span>
+                  Version {CURRICULUM_LABEL}
+                </p>
+              </header>
 
-          <section className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-blue-700">03 — Validation</h3>
-            <table className="w-full text-sm text-left border border-slate-200">
-              <tbody>
-                {[
-                  ["Durée pédagogique prévue", SOCLE_DURATION_LABEL],
-                  ...(proof.timeSpentSec != null && proof.timeSpentSec > 0
-                    ? ([
-                        [
-                          "Temps de connexion mesuré",
-                          formatDurationSec(proof.timeSpentSec),
-                        ],
-                      ] as [string, string][])
-                    : []),
-                  ...(proof.modulesCompleted != null && proof.modulesCompleted > 0
-                    ? ([
-                        [
-                          "Modules / étapes validés",
-                          String(proof.modulesCompleted),
-                        ],
-                      ] as [string, string][])
-                    : []),
-                  ["Parcours complété", "100 %"],
-                  ["Évaluation finale", `${proof.score} / 100`],
-                  ["Seuil de réussite", "80 / 100"],
-                  ["Statut", "Validé"],
-                  ["Date de finalisation", proof.date],
-                  ["Heure de finalisation", `${proof.time} Europe/Paris`],
-                  ...(utc ? [["Horodatage UTC", `${utc.date} à ${utc.time} UTC`] as [string, string]] : []),
-                ].map(([label, value]) => (
-                  <tr key={label} className="border-t border-slate-200 first:border-t-0">
-                    <th className="px-3 py-2 font-medium text-slate-600 w-1/2">{label}</th>
-                    <td className="px-3 py-2 font-semibold">{value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="text-sm font-semibold">Résultat : parcours validé</div>
-          </section>
-
-          <section className="space-y-3">
-            <h3 className="text-xs font-bold tracking-widest text-blue-700">04 — Traçabilité</h3>
-            <p className="text-left text-sm leading-relaxed">
-              Attestation générée automatiquement par LockinIA à partir des données de suivi enregistrées.
-            </p>
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 text-sm">
-              <div className="space-y-2">
-                <div>
-                  <div className="text-xs text-slate-500">Identifiant unique</div>
-                  <div className="font-mono text-xs">{certificateId}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500">Empreinte documentaire</div>
-                  <div className="font-mono text-xs break-all">{hash}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500">Émise le</div>
-                  <div>{issuedAt}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-500">Version du parcours</div>
-                  <div>{CURRICULUM_LABEL}</div>
+              <div className="mt-5 flex justify-center">
+                <div className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-700 px-3.5 py-1.5 text-center text-xs font-semibold text-white">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    Réussite · {proof.score} / 100
+                  </span>
                 </div>
               </div>
-              <FakeQr />
-            </div>
-          </section>
 
-          <footer className="border-t border-slate-200 pt-6 space-y-3 text-sm">
-            <div>
-              <div className="font-semibold">LockinIA</div>
-              <div className="text-slate-600">
-                {specimen ? "Émetteur — spécimen de démonstration" : "Émetteur — attestation de suivi"}
-              </div>
+              <section className="mt-8 text-left">
+                <h3 className="text-center text-[11px] font-bold tracking-[0.2em] text-blue-700">
+                  01 — BÉNÉFICIAIRE
+                </h3>
+                <dl className="mt-3 grid gap-4 rounded-xl border border-blue-900/10 bg-white/70 px-4 py-4 sm:grid-cols-2">
+                  <Field label="Nom et prénom">
+                    {first} {last}
+                  </Field>
+                  <Field label="Entreprise">
+                    {employee.companyName ?? companyName}
+                  </Field>
+                </dl>
+              </section>
+
+              <section className="mt-7">
+                <h3 className="text-center text-[11px] font-bold tracking-[0.2em] text-blue-700">
+                  02 — PARCOURS SUIVI
+                </h3>
+                <div className="mt-3 space-y-3 rounded-xl border border-blue-900/10 bg-white/70 px-4 py-4 text-left text-sm leading-relaxed text-slate-700">
+                  <p>{ATTESTATION_INTRO}</p>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Intitulé du parcours
+                    </p>
+                    <p className="mt-1 font-semibold text-slate-900">{ATTESTATION_COURSE_TITLE}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Référentiel pédagogique
+                    </p>
+                    <p className="mt-1">{ATTESTATION_REFERENTIEL}</p>
+                  </div>
+                  <ul className="space-y-1.5 pl-1 text-[13px]">
+                    {[
+                      "Comprendre les principes liés à l'utilisation de l'IA et à la AI literacy.",
+                      "Identifier les principaux risques, notamment pour les données personnelles.",
+                      "Adopter des pratiques responsables avec les outils d'IA générative.",
+                      "Repérer les situations qui relèvent des règles internes de l'entreprise.",
+                    ].map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+
+              <section className="mt-7">
+                <h3 className="text-center text-[11px] font-bold tracking-[0.2em] text-blue-700">
+                  03 — VALIDATION
+                </h3>
+                <div className="mt-3 overflow-hidden rounded-xl border border-blue-900/10 bg-white/70">
+                  <table className="w-full text-left text-sm">
+                    <tbody>
+                      {validationRows.map(([label, value], i) => (
+                        <tr
+                          key={label}
+                          className={i % 2 === 1 ? "bg-slate-50/80" : undefined}
+                        >
+                          <th className="w-1/2 px-3.5 py-2 font-medium text-slate-500">
+                            {label}
+                          </th>
+                          <td className="px-3.5 py-2 font-semibold text-slate-900">{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-2 px-1 text-center text-[11px] leading-relaxed text-slate-500">
+                  Le temps de connexion enregistré peut être inférieur à la durée pédagogique
+                  prévue (sessions fractionnées, onglet en arrière-plan).
+                </p>
+                <p className="mt-3 text-center text-sm font-semibold text-emerald-800">
+                  Résultat de l&apos;évaluation : {proof.score}/100 — Réussite
+                </p>
+              </section>
+
+              <section className="mt-7">
+                <h3 className="text-center text-[11px] font-bold tracking-[0.2em] text-blue-700">
+                  04 — TRAÇABILITÉ
+                </h3>
+                <div className="mt-3 rounded-xl border border-blue-900/10 bg-white/70 px-4 py-4">
+                  <p className="text-left text-sm leading-relaxed text-slate-600">
+                    Attestation générée par LockinIA à partir des données de suivi
+                    enregistrées.
+                  </p>
+                  <dl className="mt-4 space-y-3 text-left">
+                    <Field label="Identifiant unique">
+                      <span className="break-all font-mono text-xs">{certificateId}</span>
+                    </Field>
+                    <Field label="Empreinte documentaire">
+                      <span className="break-all font-mono text-[11px] font-medium">
+                        {hash}
+                      </span>
+                    </Field>
+                    <Field label="Émise le">{issuedAt}</Field>
+                    <Field label="Version du parcours">{CURRICULUM_LABEL}</Field>
+                  </dl>
+                </div>
+              </section>
+
+              <footer className="mt-8 border-t border-blue-900/15 pt-5 text-center">
+                {specimen ? (
+                  <p className="mb-2 text-center text-xs font-semibold text-amber-700">
+                    Spécimen de démonstration — non opposable
+                  </p>
+                ) : null}
+                <p className="text-center text-sm font-semibold text-slate-900">
+                  {ATTESTATION_ISSUER.brand} — édité par {ATTESTATION_ISSUER.legalName}
+                </p>
+                <p className="mt-1 text-center text-xs text-slate-500">
+                  {ATTESTATION_ISSUER.address}
+                </p>
+                <p className="text-center text-xs text-slate-500">
+                  SIRET {ATTESTATION_ISSUER.siret} · {ATTESTATION_ISSUER.email}
+                </p>
+                <p className="mx-auto mt-3 max-w-md text-center text-xs leading-relaxed text-slate-500">
+                  Ce document constitue un justificatif de suivi délivré à l&apos;entreprise pour
+                  documenter sa démarche de maîtrise de l&apos;IA. Il ne constitue ni une
+                  certification officielle de conformité à l&apos;AI Act ou au RGPD, ni une
+                  certification délivrée par l&apos;Union européenne.
+                </p>
+                <p className="mt-2 text-center text-[11px] text-slate-400">
+                  Référence {certificateId} · Document {hash.slice(-8)}
+                </p>
+              </footer>
             </div>
-            <p className="text-left text-xs text-slate-500 leading-relaxed">
-              Ce document constitue un justificatif de suivi délivré à l&apos;entreprise pour documenter sa démarche de maîtrise de l&apos;IA. Il ne constitue ni une certification officielle de conformité à l&apos;AI Act ou au RGPD, ni une certification délivrée par l&apos;Union européenne.
-            </p>
-            <div className="text-xs text-slate-500">
-              Référence {certificateId} · Document {hash.slice(-8)}
-            </div>
-          </footer>
-        </div>
-      </div>
-      {canDownload ? (
-        <div className="mt-4 flex justify-center">
-          <button
-            type="button"
-            onClick={download}
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
-          >
-            <Download className="h-4 w-4" />
-            Télécharger l&apos;attestation (PDF)
-          </button>
-        </div>
-      ) : null}
+          </div>
+        </article>
+
+        {canDownload ? (
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={download}
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-800"
+            >
+              <Download className="h-4 w-4" />
+              Télécharger l&apos;attestation (PDF)
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
+
+  // Hors du DOM parent (ex. translate sur le badge témoin) pour un vrai plein écran.
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

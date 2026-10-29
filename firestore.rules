@@ -160,6 +160,8 @@ service cloud.firestore {
 
     match /structureInvites/{token} {
       allow get: if true;
+      // List collection réservée au super admin (évite un scan public)
+      allow list: if isSuperAdmin();
       allow create: if isSuperAdmin()
         || (isPartner()
             && request.resource.data.structureId is string
@@ -217,7 +219,7 @@ service cloud.firestore {
         || (isRh()
             && sameStructure(structureId)
             && request.resource.data.diff(resource.data).affectedKeys()
-                .hasOnly(["inviteToken", "companyModule"]))
+                .hasOnly(["inviteToken", "companyModule", "article4Report"]))
         || (isPartner()
             && resource.data.partnerId == myPartnerId()
             && request.resource.data.partnerId == myPartnerId());
@@ -239,7 +241,9 @@ service cloud.firestore {
       // Le token est le secret (lien d'invitation)
       // Collaborateurs : uniquement le lien permanent structure (/rejoindre) — pas d'invite perso RH
       allow get: if true;
-      allow list: if isSuperAdmin() || isRh();
+      // Isolation RH : list limitée à sa structure (query doit filtrer structureId)
+      allow list: if isSuperAdmin()
+        || (isRh() && resource.data.structureId == myStructureId());
       allow create: if isSuperAdmin()
         || (isRh()
             && request.resource.data.structureId == myStructureId()
@@ -391,5 +395,6 @@ service cloud.firestore {
                 get(/databases/$(database)/documents/users/$(userId)).data.structureId));
       }
     }
+
   }
 }

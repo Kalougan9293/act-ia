@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
+import { useDemoTourOptional } from "@/components/landing/DemoTour";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -13,6 +14,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const onHome = pathname === "/";
+  const demoTour = useDemoTourOptional();
+  const tourActive =
+    demoTour?.phase === "ready" || demoTour?.phase === "running";
 
   const links = [
     { label: "Accompagnement", href: "/interventions" },
@@ -33,13 +37,18 @@ export default function Navbar() {
     setOpen(false);
   }, [pathname]);
 
+  function handleDemoClick() {
+    setOpen(false);
+    demoTour?.openDemo();
+  }
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
           ? "border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95"
-          : "bg-white/80 backdrop-blur-sm dark:bg-slate-900/80"
+          : "bg-white/80 backdrop-blur-sm dark:bg-slate-900/80",
       )}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between pl-4 pr-6 sm:pl-6 sm:pr-8 lg:pl-8 lg:pr-12">
@@ -57,7 +66,7 @@ export default function Navbar() {
               "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               pathname === link.href
                 ? "text-blue-600 dark:text-blue-400"
-                : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white",
             );
             if (link.href.startsWith("mailto:")) {
               return (
@@ -94,6 +103,23 @@ export default function Navbar() {
         </div>
       </nav>
 
+      {onHome && demoTour ? (
+        <div className="mx-auto hidden max-w-7xl justify-end pl-4 pr-6 pb-2 sm:flex sm:pl-6 sm:pr-8 lg:pl-8 lg:pr-12">
+          <button
+            type="button"
+            onClick={handleDemoClick}
+            className={cn(
+              "rounded-lg px-4 py-1 text-[11px] font-semibold transition-colors",
+              tourActive
+                ? "bg-blue-600 text-white"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200",
+            )}
+          >
+            Démo
+          </button>
+        </div>
+      ) : null}
+
       {open ? (
         <div className="border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 md:hidden">
           <div className="flex flex-col gap-1">
@@ -102,7 +128,7 @@ export default function Navbar() {
                 "rounded-lg px-3 py-2.5 text-sm font-medium",
                 pathname === link.href
                   ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
-                  : "text-slate-800 dark:text-slate-200"
+                  : "text-slate-800 dark:text-slate-200",
               );
               if (link.href.startsWith("mailto:")) {
                 return (
@@ -133,6 +159,20 @@ export default function Navbar() {
             >
               Espace RH
             </a>
+            {onHome && demoTour ? (
+              <button
+                type="button"
+                onClick={handleDemoClick}
+                className={cn(
+                  "rounded-lg px-3 py-2.5 text-center text-sm font-semibold",
+                  tourActive
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
+                )}
+              >
+                Démo
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}

@@ -17,6 +17,7 @@ import {
   saveStructure,
   saveUser,
 } from "@/lib/firebase/admin-data";
+import { deleteAuthAccount } from "@/lib/firebase/delete-auth-account";
 import { createRegistryId } from "@/lib/export/attestations";
 import {
   emptyCompanyModule,
@@ -28,7 +29,10 @@ import {
   type Structure,
 } from "@/lib/admin/types";
 import { provisionTenantUser } from "@/lib/firebase/provision-user";
-import { syncStructureInviteSeats } from "@/lib/firebase/seats";
+import {
+  getStructureSeatStatus,
+  syncStructureInviteSeats,
+} from "@/lib/firebase/seats";
 
 function requireDb() {
   const db = getFirebaseDb();
@@ -62,13 +66,20 @@ function toIsoDate(value: unknown): string {
 }
 
 export function mapPartner(id: string, data: Record<string, unknown>): Partner {
+  const status = (data.status as Partner["status"]) ?? "active";
+  const archivedAt = data.archivedAt
+    ? toIsoDate(data.archivedAt)
+    : status === "suspended"
+      ? toIsoDate(data.createdAt)
+      : null;
   return {
     id,
     name: String(data.name ?? ""),
     email: String(data.email ?? "").trim().toLowerCase(),
     siret: String(data.siret ?? ""),
-    status: (data.status as Partner["status"]) ?? "active",
+    status,
     createdAt: toIsoDate(data.createdAt),
+    archivedAt,
     seatsMax: Math.max(1, Number(data.seatsMax ?? 1) || 1),
     licenseExpiresAt: data.licenseExpiresAt ? toIsoDate(data.licenseExpiresAt) : null,
     notes: data.notes ? String(data.notes) : null,
@@ -99,6 +110,7 @@ export async function savePartner(partner: Partner): Promise<void> {
       siret: partner.siret,
       status: partner.status,
       createdAt: partner.createdAt,
+      archivedAt: partner.archivedAt,
       seatsMax: partner.seatsMax,
       licenseExpiresAt: partner.licenseExpiresAt,
       notes: partner.notes ?? null,
@@ -108,14 +120,67 @@ export async function savePartner(partner: Partner): Promise<void> {
 }
 
 /**
- * Révoque l'accès OF : partenaire + comptes partner suspendus, firstLogin nettoyé.
+ * Met à jour la fiche partenaire et synchronise le compte OF (nom / e-mail).
+ */
+export async function updatePartnerProfile(
+  partner: Partner,
+  options?: { contactName?: string; previousEmail?: string },
+): Promise<void> {
+  await savePartner(partner);
+
+  const db = requireDb();
+  const contactName = options?.contactName?.trim();
+  const previousEmail = (options?.previousEmail ?? partner.email).trim().toLowerCase();
+  const nextEmail = partner.email.trim().toLowerCase();
+  const emailChanged = previousEmail !== nextEmail;
+
+  const usersSnap = await getDocs(
+    query(collection(db, "users"), where("partnerId", "==", partner.id)),
+  );
+  await Promise.all(
+    usersSnap.docs.map(async (d) => {
+      const user = mapUser(d.id, d.data() as Record<string, unknown>);
+      if (user.role !== "partner") return;
+      await saveUser({
+        ...user,
+        ...(contactName ? { name: contactName } : {}),
+        ...(emailChanged ? { email: nextEmail } : {}),
+      });
+    }),
+  );
+
+  if (!emailChanged) return;
+
+  const oldLoginRef = doc(db, "firstLogin", previousEmail);
+  const oldLoginSnap = await getDoc(oldLoginRef);
+  if (oldLoginSnap.exists()) {
+    const data = oldLoginSnap.data() as Record<string, unknown>;
+    if (data.status === "pending") {
+      await setDoc(doc(db, "firstLogin", nextEmail), {
+        ...data,
+        email: nextEmail,
+        ...(contactName ? { name: contactName } : {}),
+        partnerId: partner.id,
+        role: "partner",
+      });
+      await deleteDoc(oldLoginRef);
+    }
+  }
+}
+
+/**
+ * Révoque l'accès OF : partenaire archivé + comptes partner suspendus, firstLogin nettoyé.
  * Les entreprises clientes restent (à archiver séparément si besoin).
  */
 export async function revokePartner(partnerId: string): Promise<void> {
   const partner = await getPartner(partnerId);
   if (!partner) throw new Error("Partenaire introuvable");
 
-  await savePartner({ ...partner, status: "suspended" });
+  await savePartner({
+    ...partner,
+    status: "suspended",
+    archivedAt: new Date().toISOString().slice(0, 10),
+  });
 
   const db = requireDb();
   const usersSnap = await getDocs(
@@ -134,6 +199,73 @@ export async function revokePartner(partnerId: string): Promise<void> {
   if (loginSnap.exists()) {
     await deleteDoc(loginRef);
   }
+}
+
+/** Restaure un partenaire archivé (réactive l'accès OF côté fiche partenaire). */
+export async function restorePartner(partnerId: string): Promise<void> {
+  const partner = await getPartner(partnerId);
+  if (!partner) throw new Error("Partenaire introuvable");
+
+  await savePartner({ ...partner, status: "active", archivedAt: null });
+
+  const db = requireDb();
+  const usersSnap = await getDocs(
+    query(collection(db, "users"), where("partnerId", "==", partnerId)),
+  );
+  await Promise.all(
+    usersSnap.docs.map(async (d) => {
+      const user = mapUser(d.id, d.data() as Record<string, unknown>);
+      if (user.role !== "partner") return;
+      await saveUser({ ...user, status: "active" });
+    }),
+  );
+}
+
+/**
+ * Suppression définitive d'un partenaire archivé :
+ * comptes OF + firstLogin + fiche partenaire.
+ * Les entreprises clientes restent (partnerId détaché).
+ */
+export async function deletePartnerForever(partnerId: string): Promise<void> {
+  const db = requireDb();
+  const partnerSnap = await getDoc(doc(db, "partners", partnerId));
+  if (!partnerSnap.exists()) throw new Error("Partenaire introuvable");
+  const partner = mapPartner(
+    partnerSnap.id,
+    partnerSnap.data() as Record<string, unknown>,
+  );
+
+  const usersSnap = await getDocs(
+    query(collection(db, "users"), where("partnerId", "==", partnerId)),
+  );
+
+  for (const d of usersSnap.docs) {
+    const user = mapUser(d.id, d.data() as Record<string, unknown>);
+    if (user.role !== "partner") continue;
+    try {
+      await deleteAuthAccount({ uid: user.id, email: user.email });
+    } catch {
+      // Compte Auth déjà absent
+    }
+    await deleteDoc(doc(db, "users", user.id)).catch(() => undefined);
+  }
+
+  const loginRef = doc(db, "firstLogin", partner.email.trim().toLowerCase());
+  const loginSnap = await getDoc(loginRef);
+  if (loginSnap.exists()) {
+    await deleteDoc(loginRef);
+  }
+
+  const structuresSnap = await getDocs(
+    query(collection(db, "structures"), where("partnerId", "==", partnerId)),
+  );
+  await Promise.all(
+    structuresSnap.docs.map((d) =>
+      setDoc(doc(db, "structures", d.id), { partnerId: null }, { merge: true }),
+    ),
+  );
+
+  await deleteDoc(doc(db, "partners", partnerId));
 }
 
 /** Compte partenaire : première connexion via /connexion (comme RH). */
@@ -307,6 +439,7 @@ export async function createPartnerStructure(params: {
     inviteToken,
     registryId: createRegistryId(id),
     partnerId: params.partnerId,
+    article4Report: null,
     companyModule: emptyCompanyModule(),
     billing: {
       companyName: name,
@@ -340,4 +473,63 @@ export async function createPartnerStructure(params: {
   await syncStructureInviteSeats(structure, { recountUsed: true }).catch(() => undefined);
 
   return { structure, rh };
+}
+
+/**
+ * Ajuste la limite max d'une entreprise cliente (±1).
+ * - Ne descend pas sous les sièges déjà consommés
+ * - Ne dépasse pas le quota global du partenaire
+ */
+export async function adjustPartnerStructureSeats(params: {
+  partnerId: string;
+  partnerSeatsMax: number;
+  structures: Structure[];
+  structureId: string;
+  delta: 1 | -1;
+}): Promise<Structure> {
+  await assertPartnerScope(params.partnerId);
+
+  const structure = params.structures.find((s) => s.id === params.structureId);
+  if (!structure) throw new Error("Entreprise introuvable");
+  if (structure.partnerId !== params.partnerId) {
+    throw new Error("Entreprise hors de votre périmètre");
+  }
+  if (structure.status !== "active" || structure.archivedAt) {
+    throw new Error("Entreprise inactive");
+  }
+
+  const current = Math.max(1, Number(structure.billing.seats) || 1);
+  const next = current + params.delta;
+  if (next < 1) throw new Error("La limite ne peut pas être inférieure à 1");
+
+  const seatStatus = await getStructureSeatStatus(structure.id);
+  if (next < seatStatus.seatsUsed) {
+    throw new Error(
+      `Impossible : ${seatStatus.seatsUsed} siège${seatStatus.seatsUsed !== 1 ? "s" : ""} déjà consommé${seatStatus.seatsUsed !== 1 ? "s" : ""} (actifs ou retenus après démarrage).`,
+    );
+  }
+
+  const allocatedOthers = partnerSeatsAllocated(
+    params.structures.filter((s) => s.id !== structure.id),
+  );
+  if (allocatedOthers + next > params.partnerSeatsMax) {
+    throw new Error(
+      `Quota partenaire insuffisant : ${allocatedOthers + current}/${params.partnerSeatsMax} alloués, +1 impossible.`,
+    );
+  }
+
+  const plan = planForPartnerSeats(next);
+  const updated: Structure = {
+    ...structure,
+    billing: {
+      ...structure.billing,
+      seats: next,
+      plan,
+      priceMonthlyEur: plan === "enterprise" ? 0 : PLAN_PRICES[plan],
+    },
+  };
+
+  await saveStructure(updated);
+  await syncStructureInviteSeats(updated).catch(() => undefined);
+  return updated;
 }

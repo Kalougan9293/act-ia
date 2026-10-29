@@ -235,11 +235,12 @@ export default function FeaturesSection() {
             return (
               <motion.div
                 key={feature.title}
+                id={`demo-tour-feature-${i + 1}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.55, delay: 0.05 }}
-                className="grid md:grid-cols-2 gap-12 items-stretch"
+                className="scroll-mt-28 grid md:grid-cols-2 gap-12 items-stretch"
               >
                 <div className={`space-y-5 text-center md:text-left ${isEven ? "md:order-2" : ""}`}>
                   <span className="block text-5xl font-black text-blue-600 dark:text-blue-400 tabular-nums leading-none select-none">

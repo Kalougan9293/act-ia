@@ -18,7 +18,7 @@ function fadeUp(delay: number) {
 
 export default function Hero() {
   return (
-    <section className="relative bg-white dark:bg-slate-900 overflow-hidden pt-16">
+    <section className="relative bg-white dark:bg-slate-900 overflow-hidden pt-24">
       {/* Background texture */}
       <div className="absolute inset-0 pointer-events-none select-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(219,234,254,0.5),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(30,58,138,0.2),transparent)]" />
@@ -31,7 +31,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-10 lg:pt-28 lg:pb-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10 lg:pt-8 lg:pb-12">
         <div className="grid lg:grid-cols-2 gap-14 xl:gap-20 items-center">
 
           {/* LEFT — Copy */}
@@ -44,9 +44,12 @@ export default function Hero() {
               </Badge>
             </motion.div>
 
-            {/* H1 */}
+            {/* H1 — cible parcours Démo */}
             <motion.div {...fadeUp(0.1)}>
-              <h1 className="text-[1.85rem] sm:text-[2.15rem] lg:text-[2.55rem] font-extrabold text-slate-900 dark:text-white leading-[1.2] tracking-tight text-justify hyphens-auto">
+              <h1
+                id="demo-tour-hero-solution"
+                className="scroll-mt-28 text-[1.85rem] sm:text-[2.15rem] lg:text-[2.55rem] font-extrabold text-slate-900 dark:text-white leading-[1.2] tracking-tight text-justify hyphens-auto"
+              >
                 La plateforme clé en main pour{" "}
                 <span className="text-blue-600 dark:text-blue-400">attester</span>{" "}
                 la formation de vos salariés à l&apos;
@@ -57,10 +60,11 @@ export default function Hero() {
               </h1>
             </motion.div>
 
-            {/* Subtitle */}
+            {/* Subtitle — cible étape 1 du parcours Démo */}
             <motion.p
               {...fadeUp(0.2)}
-              className="text-base sm:text-[1.0625rem] text-slate-700 dark:text-slate-200 leading-relaxed text-justify hyphens-auto"
+              id="demo-tour-hero-pitch"
+              className="scroll-mt-28 text-base sm:text-[1.0625rem] text-slate-700 dark:text-slate-200 leading-relaxed text-justify hyphens-auto"
             >
               Depuis le 2 février 2025, l&apos;article 4 demande des mesures
               documentées. Formez vos équipes en 1&nbsp;h&nbsp;15, suivez l&apos;avancement
@@ -83,8 +87,10 @@ export default function Hero() {
                   </a>
                 </motion.div>
                 <motion.div
+                  id="demo-tour-cta-demo"
                   whileHover={{ scale: 1.08, y: -8 }}
                   transition={{ type: "spring", stiffness: 380, damping: 15 }}
+                  className="scroll-mt-28"
                 >
                   <Link
                     href="/demo"
@@ -95,7 +101,10 @@ export default function Hero() {
                   </Link>
                 </motion.div>
               </div>
-              <p className="max-w-md text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+              <p
+                id="demo-tour-hero-expertise"
+                className="scroll-mt-28 max-w-md text-xs leading-relaxed text-slate-400 dark:text-slate-500"
+              >
                 Contenu conçu et relu avec un formateur agréé et un juriste AI Act / RGPD.
                 Les retours des premières sessions seront bientôt publiés.
               </p>

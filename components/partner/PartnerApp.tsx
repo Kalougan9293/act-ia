@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, Gauge, Plus, Users, X } from "lucide-react";
+import { Building2, ChevronDown, ChevronUp, Gauge, Plus, Users, X } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -13,6 +13,7 @@ import {
   type Structure,
 } from "@/lib/admin/types";
 import {
+  adjustPartnerStructureSeats,
   computePartnerLearnerStats,
   createPartnerStructure,
   getPartner,
@@ -20,6 +21,7 @@ import {
   listUsersForStructures,
   partnerSeatsAllocated,
 } from "@/lib/firebase/partners";
+import { getInviteSeatInfo } from "@/lib/firebase/seats";
 
 const inputClass =
   "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950";
@@ -38,6 +40,12 @@ export default function PartnerApp() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [adjustingId, setAdjustingId] = useState<string | null>(null);
+  const [seatsUsedById, setSeatsUsedById] = useState<Record<string, number>>({});
+  /** Entreprise dépliée pour le suivi apprenants */
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  /** Avis (note + commentaire, sans réclamation) */
+  const [avisUser, setAvisUser] = useState<PlatformUser | null>(null);
   const [form, setForm] = useState({
     name: "",
     seats: 5,
@@ -68,10 +76,18 @@ export default function PartnerApp() {
           nextStructures.map((s) => s.id),
           partnerId,
         );
+        const usedEntries = await Promise.all(
+          nextStructures.map(async (s) => {
+            if (!s.inviteToken) return [s.id, 0] as const;
+            const info = await getInviteSeatInfo(s.inviteToken);
+            return [s.id, info?.seatsUsed ?? 0] as const;
+          }),
+        );
         if (cancelled) return;
         setPartner(nextPartner);
         setStructures(nextStructures);
         setUsers(nextUsers);
+        setSeatsUsedById(Object.fromEntries(usedEntries));
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Chargement impossible");
@@ -133,6 +149,35 @@ export default function PartnerApp() {
       setError(e instanceof Error ? e.message : "Création impossible");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleAdjustSeats(structure: Structure, delta: 1 | -1) {
+    if (!partner || adjustingId) return;
+    setAdjustingId(structure.id);
+    setError(null);
+    try {
+      const updated = await adjustPartnerStructureSeats({
+        partnerId: partner.id,
+        partnerSeatsMax: partner.seatsMax,
+        structures,
+        structureId: structure.id,
+        delta,
+      });
+      setStructures((current) =>
+        current.map((s) => (s.id === updated.id ? updated : s)),
+      );
+      if (structure.inviteToken) {
+        const info = await getInviteSeatInfo(structure.inviteToken);
+        setSeatsUsedById((m) => ({
+          ...m,
+          [structure.id]: info?.seatsUsed ?? m[structure.id] ?? 0,
+        }));
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Ajustement impossible");
+    } finally {
+      setAdjustingId(null);
     }
   }
 
@@ -241,15 +286,15 @@ export default function PartnerApp() {
               ].map((card) => (
                 <div
                   key={card.label}
-                  className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80"
+                  className="flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <div className="flex w-full items-center justify-center gap-1.5">
+                    <p className="text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
                       {card.label}
                     </p>
-                    <card.icon className="h-4 w-4 text-blue-500" />
+                    <card.icon className="h-4 w-4 shrink-0 text-blue-500" />
                   </div>
-                  <p className="mt-2 text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+                  <p className="mt-2 w-full text-center text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
                     {card.value}
                   </p>
                 </div>
@@ -273,29 +318,127 @@ export default function PartnerApp() {
                       <tr>
                         <th className="px-4 py-2.5 font-semibold">Entreprise</th>
                         <th className="px-4 py-2.5 font-semibold">Limite max</th>
-                        <th className="px-4 py-2.5 font-semibold">Apprenants</th>
-                        <th className="px-4 py-2.5 font-semibold">Terminés</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Apprenants</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Terminés</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Sat. moy.</th>
                         <th className="px-4 py-2.5 font-semibold">RH</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {activeStructures.map((structure) => {
                         const members = users.filter((u) => u.structureId === structure.id);
-                        const learners = members.filter(
-                          (u) =>
-                            u.role === "employee" ||
-                            (u.role === "rh" && Boolean(u.formationEnrolled)),
-                        );
+                        const learners = members
+                          .filter(
+                            (u) =>
+                              u.role === "employee" ||
+                              (u.role === "rh" && Boolean(u.formationEnrolled)),
+                          )
+                          .sort((a, b) => a.name.localeCompare(b.name, "fr"));
                         const done = learners.filter((u) => (u.progressPercent ?? 0) >= 100).length;
+                        const rated = learners.filter((u) => u.satisfactionRating != null);
+                        const satAvg =
+                          rated.length > 0
+                            ? (
+                                rated.reduce(
+                                  (sum, u) => sum + (u.satisfactionRating ?? 0),
+                                  0,
+                                ) / rated.length
+                              ).toFixed(1)
+                            : null;
                         const rh = members.find((u) => u.role === "rh");
+                        const seats = Math.max(1, Number(structure.billing.seats) || 1);
+                        const seatsUsed = seatsUsedById[structure.id] ?? 0;
+                        const canDecrease = seats > Math.max(1, seatsUsed);
+                        const canIncrease = seatsLeft > 0;
+                        const busy = adjustingId === structure.id;
+                        const expanded = expandedId === structure.id;
                         return (
-                          <tr key={structure.id} className="text-slate-700 dark:text-slate-200">
-                            <td className="px-4 py-3 font-medium">{structure.name}</td>
-                            <td className="px-4 py-3 tabular-nums">
-                              {structure.billing.seats}
+                          <Fragment key={structure.id}>
+                          <tr className="text-slate-700 dark:text-slate-200">
+                            <td className="px-4 py-3 font-medium">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedId((id) =>
+                                    id === structure.id ? null : structure.id,
+                                  )
+                                }
+                                className="inline-flex max-w-full items-center gap-1.5 text-left hover:text-violet-700 dark:hover:text-violet-300"
+                                title={
+                                  expanded
+                                    ? "Masquer le suivi"
+                                    : "Voir le suivi apprenants"
+                                }
+                              >
+                                {expanded ? (
+                                  <ChevronUp className="h-4 w-4 shrink-0 text-violet-500" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+                                )}
+                                <span className="truncate">{structure.name}</span>
+                              </button>
                             </td>
-                            <td className="px-4 py-3 tabular-nums">{learners.length}</td>
-                            <td className="px-4 py-3 tabular-nums">{done}</td>
+                            <td className="px-4 py-3">
+                              <div className="inline-flex items-center gap-1">
+                                <span className="min-w-[1.75rem] text-center tabular-nums font-semibold">
+                                  {seats}
+                                </span>
+                                <div className="flex flex-col">
+                                  <button
+                                    type="button"
+                                    disabled={busy || !canIncrease}
+                                    onClick={() => void handleAdjustSeats(structure, 1)}
+                                    aria-label={`Augmenter la limite de ${structure.name}`}
+                                    title={
+                                      canIncrease
+                                        ? "Augmenter la limite (+1)"
+                                        : "Quota partenaire atteint"
+                                    }
+                                    className="rounded p-0.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 disabled:opacity-30 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                  >
+                                    <ChevronUp className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={busy || !canDecrease}
+                                    onClick={() => void handleAdjustSeats(structure, -1)}
+                                    aria-label={`Diminuer la limite de ${structure.name}`}
+                                    title={
+                                      canDecrease
+                                        ? "Diminuer la limite (−1)"
+                                        : seatsUsed > 0
+                                          ? `Minimum ${seatsUsed} (sièges déjà consommés)`
+                                          : "Minimum 1"
+                                    }
+                                    className="rounded p-0.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 disabled:opacity-30 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                  >
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-center tabular-nums">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedId((id) =>
+                                    id === structure.id ? null : structure.id,
+                                  )
+                                }
+                                className="font-semibold text-violet-600 hover:underline dark:text-violet-400"
+                                title="Voir le suivi apprenants"
+                              >
+                                {learners.length}
+                              </button>
+                            </td>
+                            <td className="px-4 py-3 text-center tabular-nums">{done}</td>
+                            <td className="px-4 py-3 text-center tabular-nums">
+                              {satAvg != null ? (
+                                <span className="font-semibold">{satAvg}/5</span>
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3">
                               <div className="min-w-0">
                                 <p className="truncate font-medium">{rh?.name ?? "—"}</p>
@@ -305,6 +448,82 @@ export default function PartnerApp() {
                               </div>
                             </td>
                           </tr>
+                          {expanded ? (
+                            <tr className="bg-violet-50/60 dark:bg-violet-500/10">
+                              <td colSpan={6} className="px-3 py-3 sm:px-4">
+                                {learners.length === 0 ? (
+                                  <p className="py-2 text-center text-xs text-slate-500">
+                                    Aucun apprenant inscrit pour cette entreprise.
+                                  </p>
+                                ) : (
+                                  <div className="overflow-x-auto rounded-xl border border-violet-200/80 bg-white dark:border-violet-500/30 dark:bg-slate-950/40">
+                                    <table className="min-w-full text-center text-xs sm:text-sm">
+                                      <thead className="text-slate-500 dark:text-slate-400">
+                                        <tr>
+                                          <th className="px-3 py-2 font-medium">Apprenant</th>
+                                          <th className="px-3 py-2 font-medium">E-mail</th>
+                                          <th className="px-3 py-2 font-medium">%</th>
+                                          <th
+                                            className="px-3 py-2 font-medium"
+                                            title="Positionnement → QCM"
+                                          >
+                                            Avant/Après
+                                          </th>
+                                          <th className="px-3 py-2 font-medium">Avis</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {learners.map((learner) => {
+                                          const before =
+                                            learner.positioningScore != null
+                                              ? `${learner.positioningScore}`
+                                              : "—";
+                                          const after =
+                                            learner.quizScore != null
+                                              ? `${learner.quizScore}`
+                                              : "—";
+                                          return (
+                                            <tr
+                                              key={learner.id}
+                                              className="border-t border-slate-100 dark:border-slate-800"
+                                            >
+                                              <td className="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">
+                                                {learner.name}
+                                              </td>
+                                              <td className="max-w-[10rem] truncate px-3 py-2 text-slate-600 dark:text-slate-300 sm:max-w-none">
+                                                {learner.email}
+                                              </td>
+                                              <td className="px-3 py-2 tabular-nums">
+                                                {learner.progressPercent ?? 0}&nbsp;%
+                                              </td>
+                                              <td className="px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300">
+                                                {before} → {after}
+                                              </td>
+                                              <td className="px-3 py-2">
+                                                {learner.satisfactionRating != null ? (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => setAvisUser(learner)}
+                                                    className="font-semibold tabular-nums text-violet-700 underline-offset-2 hover:underline dark:text-violet-300"
+                                                    title="Voir le commentaire"
+                                                  >
+                                                    {learner.satisfactionRating}/5
+                                                  </button>
+                                                ) : (
+                                                  <span className="text-slate-400">—</span>
+                                                )}
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          ) : null}
+                          </Fragment>
                         );
                       })}
                     </tbody>
@@ -315,6 +534,42 @@ export default function PartnerApp() {
           </>
         )}
       </main>
+
+      {avisUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4"
+          onClick={() => setAvisUser(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setAvisUser(null)}
+              className="absolute right-3 top-3 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+              aria-label="Fermer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="pr-8 text-sm font-semibold text-slate-900 dark:text-white">
+              Avis — {avisUser.name}
+            </p>
+            <p className="mt-1 text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+              {avisUser.satisfactionRating}/5
+            </p>
+            {avisUser.satisfactionComment?.trim() ? (
+              <p className="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                « {avisUser.satisfactionComment.trim()} »
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-slate-400">Sans commentaire</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">

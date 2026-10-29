@@ -170,7 +170,6 @@ function wrapText(text: string, maxWidth: number, size: number, bold = false): s
 export type AttestationPdfInput = {
   first: string;
   last: string;
-  role: string;
   companyName: string;
   certificateId: string;
   curriculumLabel: string;
@@ -356,32 +355,42 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   const available = startY - endY;
 
   const rows: [string, string][] = [
-    ["Durée pédagogique prévue", input.durationLabel],
+    ["Durée pédagogique prévue (socle)", input.durationLabel],
   ];
-  if (input.timeSpentLabel) rows.push(["Temps de connexion mesuré", input.timeSpentLabel]);
+  if (input.timeSpentLabel) {
+    rows.push(["Temps de connexion enregistré", input.timeSpentLabel]);
+  }
   if (input.modulesCompletedLabel) {
     rows.push(["Modules / étapes validés", input.modulesCompletedLabel]);
   }
   rows.push(
     ["Parcours complété", "100 %"],
-    ["Évaluation finale", `${input.quizScore} / 100`],
-    ["Seuil de réussite", "80 / 100"],
-    ["Statut", "Validé"],
+    ["Résultat de l'évaluation", `${input.quizScore} / 100 — Réussite`],
+    ["Seuil de réussite défini pour ce parcours", "80 / 100"],
     ["Date de finalisation", input.dateLabel],
     ["Heure de finalisation", `${input.timeLabel} Europe/Paris`],
   );
   if (input.utcLabel) rows.push(["Horodatage UTC", input.utcLabel]);
 
   const intro =
-    "Nous attestons que la personne ci-dessus a suivi le parcours LockinIA et a satisfait aux conditions de validation.";
+    "Nous attestons que la personne identifiée ci-dessus a suivi le parcours de sensibilisation indiqué et satisfait aux critères de validation définis par l'organisme émetteur.";
   const bullets = [
     "Comprendre les principes liés à l'utilisation de l'IA et à la AI literacy.",
     "Identifier les principaux risques, notamment pour les données personnelles.",
     "Adopter des pratiques responsables avec les outils d'IA générative.",
     "Repérer les situations qui relèvent des règles internes de l'entreprise.",
   ];
+  const referentiel =
+    "Règlement européen sur l'intelligence artificielle (AI Act), notamment son article 4 relatif à la maîtrise de l'IA ; bonnes pratiques de protection des données personnelles et d'utilisation responsable de l'IA.";
+  const durationNote =
+    "Le temps de connexion enregistré peut être inférieur à la durée pédagogique prévue (sessions fractionnées, onglet en arrière-plan).";
   const disclaimer =
     "Ce document constitue un justificatif de suivi délivré à l'entreprise pour documenter sa démarche de maîtrise de l'IA. Il ne constitue ni une certification officielle de conformité à l'AI Act ou au RGPD, ni une certification délivrée par l'Union européenne.";
+  const issuerLines = [
+    "LockinIA — édité par FITOPS AI (micro-entreprise)",
+    "119 rue Jules Parent, 92500 Rueil-Malmaison — SIRET 853 780 906 00063",
+    "contact@lockin-web.online — lockin-web.online",
+  ];
 
   const titleLines = wrapText(
     "Attestation de suivi de formation et de sensibilisation",
@@ -391,11 +400,12 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   );
   const courseLines = wrapText(input.courseTitle, CONTENT_W, 10, true);
   const introLines = wrapText(intro, CONTENT_W, 9);
+  const referentielLines = wrapText(referentiel, CONTENT_W, 9);
+  const durationNoteLines = wrapText(durationNote, CONTENT_W, 7.5);
   const disclaimerLines = wrapText(disclaimer, CONTENT_W, 7.5);
-  const hashLines = wrapText(input.hash, CONTENT_W - 90, 8, true);
+  const hashLines = wrapText(input.hash, CONTENT_W - 8, 8, true);
 
   const rowH = 14;
-  const qrSize = 44;
 
   // Hauteurs de blocs (sans les respirations inter-sections)
   const hHeader =
@@ -415,20 +425,28 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
     courseLines.length * 12 +
     3 +
     11 +
-    10 +
-    10 +
+    referentielLines.length * 11 +
     12 +
     bullets.reduce((sum, b) => sum + wrapText(b, CONTENT_W - 12, 9).length * 11, 0);
-  const h03 = 16 + rows.length * rowH + 10 + 12;
+  const h03 =
+    16 +
+    rows.length * rowH +
+    10 +
+    12 +
+    durationNoteLines.length * 9;
   const h04 =
     12 +
     12 +
     14 +
-    Math.max(
-      qrSize + 4,
-      4 * (9 + 9 + 3) + hashLines.length * 9,
-    );
-  const hFooter = 4 + 13 + 11 + 11 + disclaimerLines.length * 9 + 3 + 10;
+    4 * (9 + 9 + 3) +
+    hashLines.length * 9;
+  const hFooter =
+    4 +
+    issuerLines.length * 11 +
+    4 +
+    disclaimerLines.length * 9 +
+    3 +
+    10;
 
   const solid =
     hHeader + h01 + h02 + h03 + h04 + hFooter;
@@ -456,7 +474,7 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
     page.text((PAGE_W - w) / 2, page.y, line, { size: 13, bold: true });
     page.y -= 17;
   }
-  page.centerText(page.y, "Maîtrise de l'IA — EU AI Act (article 4)", {
+  page.centerText(page.y, "Sensibilisation à la maîtrise de l'IA (AI Act, art. 4)", {
     size: 9,
     color: MUTED,
   });
@@ -478,12 +496,11 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   // —— 01 ——
   page.text(LEFT, page.y, "01 — BÉNÉFICIAIRE", { size: 9, bold: true, color: BLUE });
   page.y -= 14;
-  const colW = CONTENT_W / 3;
+  const colW = CONTENT_W / 2;
   const fieldTop = page.y;
   (
     [
       ["Nom et prénom", `${input.first} ${input.last}`.trim()],
-      ["Fonction", input.role || "Collaborateur"],
       ["Entreprise", input.companyName],
     ] as [string, string][]
   ).forEach(([label, value], i) => {
@@ -513,12 +530,13 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
     page.y -= 12;
   }
   page.y -= 3;
-  page.text(LEFT, page.y, "Référentiel", { size: 8, color: MUTED });
+  page.text(LEFT, page.y, "Référentiel pédagogique", { size: 8, color: MUTED });
   page.y -= 11;
-  page.text(LEFT, page.y, "EU AI Act — maîtrise de l'IA (article 4)", { size: 9 });
-  page.y -= 10;
-  page.text(LEFT, page.y, "Données personnelles et bons usages au travail", { size: 9 });
-  page.y -= 12;
+  for (const line of referentielLines) {
+    page.text(LEFT, page.y, line, { size: 9 });
+    page.y -= 11;
+  }
+  page.y -= 2;
   for (const bullet of bullets) {
     const lines = wrapText(bullet, CONTENT_W - 12, 9);
     page.text(LEFT, page.y, "•", { size: 9, color: BLUE });
@@ -546,8 +564,18 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
     page.text(LEFT + CONTENT_W / 2, y, value, { size: 8.5, bold: true });
     page.y -= rowH;
   });
-  page.y -= 10;
-  page.text(LEFT, page.y, "Résultat : parcours validé", { size: 10, bold: true });
+  page.y -= 8;
+  for (const line of durationNoteLines) {
+    page.text(LEFT, page.y, line, { size: 7.5, color: MUTED });
+    page.y -= 9;
+  }
+  page.y -= 6;
+  page.text(
+    LEFT,
+    page.y,
+    `Résultat de l'évaluation : ${input.quizScore}/100 — Réussite`,
+    { size: 10, bold: true },
+  );
   page.y -= 12;
   page.y -= gaps[3]!;
 
@@ -557,12 +585,11 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   page.text(
     LEFT,
     page.y,
-    "Attestation générée automatiquement par LockinIA à partir des données de suivi.",
+    "Attestation générée par LockinIA à partir des données de suivi enregistrées.",
     { size: 8.5 },
   );
   page.y -= 14;
 
-  const traceTop = page.y;
   let ty = page.y;
   const traceItems: [string, string][] = [
     ["Identifiant unique", input.certificateId],
@@ -573,37 +600,46 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   for (const [label, value] of traceItems) {
     page.text(LEFT, ty, label, { size: 7.5, color: MUTED });
     ty -= 9;
-    for (const line of wrapText(value, CONTENT_W - 90, 8, true)) {
+    for (const line of wrapText(value, CONTENT_W - 8, 8, true)) {
       page.text(LEFT, ty, line, { size: 8, bold: true });
       ty -= 9;
     }
     ty -= 3;
   }
-  page.fakeQr(RIGHT - qrSize, Math.min(traceTop, ty + qrSize) - qrSize + 2, qrSize);
-  page.y = Math.min(ty, traceTop - qrSize - 6);
+  page.y = ty;
   page.y -= gaps[4]!;
 
-  // —— Pied (ancré vers le bas de page) ——
-  // Si un écart résiduel reste, on le pousse ici pour coller au bas.
+  // —— Pied ——
   const footerNeed =
-    4 + 13 + 11 + 11 + disclaimerLines.length * 9 + 3 + 10;
+    4 +
+    issuerLines.length * 11 +
+    4 +
+    disclaimerLines.length * 9 +
+    3 +
+    10;
   if (page.y - footerNeed > endY) {
     page.y = endY + footerNeed;
   }
 
   page.line(LEFT, page.y, RIGHT, page.y);
   page.y -= 13;
-  page.text(LEFT, page.y, "LockinIA", { size: 10, bold: true });
-  page.y -= 11;
-  page.text(
-    LEFT,
-    page.y,
-    input.specimen
-      ? "Émetteur — spécimen de démonstration"
-      : "Émetteur — attestation de suivi",
-    { size: 8.5, color: MUTED },
-  );
-  page.y -= 11;
+  if (input.specimen) {
+    page.text(LEFT, page.y, "Spécimen de démonstration — non opposable", {
+      size: 9,
+      bold: true,
+      color: AMBER,
+    });
+    page.y -= 11;
+  }
+  for (const line of issuerLines) {
+    page.text(LEFT, page.y, line, {
+      size: line.startsWith("LockinIA") ? 9.5 : 8,
+      bold: line.startsWith("LockinIA"),
+      color: line.startsWith("LockinIA") ? SLATE : MUTED,
+    });
+    page.y -= 11;
+  }
+  page.y -= 2;
   for (const line of disclaimerLines) {
     page.text(LEFT, page.y, line, { size: 7.5, color: MUTED });
     page.y -= 9;
@@ -617,4 +653,210 @@ export function buildLearnerAttestationPdf(input: AttestationPdfInput): Uint8Arr
   );
 
   return assemblePdf([page.stream()]);
+}
+
+export type CompanyArticle4PdfPerson = {
+  name: string;
+  certificateId: string | null;
+  certifiedAtLabel: string | null;
+  quizScore: number | null;
+  complete: boolean;
+};
+
+export type CompanyArticle4PdfInput = {
+  companyName: string;
+  registryId: string;
+  fingerprint: string;
+  version: number;
+  statusComplete: boolean;
+  trained: number;
+  certified: number;
+  total: number;
+  hours: number;
+  durationLabel: string;
+  issuedAtLabel: string;
+  utcLabel: string | null;
+  firstIssuedLabel: string | null;
+  /** Uniquement les collaborateurs attestés (pas toute la liste RH). */
+  people: CompanyArticle4PdfPerson[];
+  /** Collaborateurs encore sans attestation — compteur, pas de noms. */
+  pendingCount: number;
+};
+
+/** PDF synthèse entreprise — suivi Art. 4 (multi-pages si besoin). */
+export function buildCompanyArticle4Pdf(input: CompanyArticle4PdfInput): Uint8Array {
+  const EMERALD = "0.024 0.463 0.341";
+  const rate =
+    input.total === 0 ? 0 : Math.round((input.trained / input.total) * 100);
+  const streams: string[] = [];
+  let page = new PageBuilder();
+  let pageIndex = 1;
+
+  const paintHeader = (p: PageBuilder, continued: boolean) => {
+    p.rect(0, PAGE_H - 28, PAGE_W, 28, { fill: EMERALD });
+    p.centerText(
+      PAGE_H - 18,
+      continued
+        ? `LockinIA  ·  SYNTHÈSE DE SUIVI  ·  Suite (p.${pageIndex})`
+        : "LockinIA  ·  SYNTHÈSE DE SUIVI  ·  ARTICLE 4",
+      { size: 9, bold: true, color: WHITE },
+    );
+    p.y = PAGE_H - 52;
+  };
+
+  const newContinuedPage = () => {
+    streams.push(page.stream());
+    pageIndex += 1;
+    page = new PageBuilder();
+    paintHeader(page, true);
+    page.text(LEFT, page.y, `${input.companyName} — récapitulatif (suite)`, {
+      size: 10,
+      bold: true,
+    });
+    page.y -= 16;
+  };
+
+  paintHeader(page, false);
+  page.centerText(page.y, "Synthèse de suivi — Article 4", {
+    size: 18,
+    bold: true,
+  });
+  page.y -= 22;
+  page.centerText(page.y, "Attestations de suivi · AI Act (article 4)", {
+    size: 10,
+    color: MUTED,
+  });
+  page.y -= 18;
+
+  if (!input.statusComplete) {
+    page.centerText(page.y, "DOCUMENT EN COURS — suivi incomplet", {
+      size: 9,
+      bold: true,
+      color: AMBER,
+    });
+    page.y -= 16;
+  }
+
+  page.centerText(page.y, "Raison sociale", { size: 8, color: MUTED });
+  page.y -= 14;
+  page.centerText(page.y, input.companyName, { size: 16, bold: true });
+  page.y -= 22;
+
+  page.rect(LEFT, page.y - 28, CONTENT_W, 36, {
+    fill: "0.925 0.973 0.953",
+    stroke: EMERALD,
+    width: 1,
+  });
+  page.centerText(page.y - 8, `${input.trained}/${input.total} collaborateurs formés · ${rate} %`, {
+    size: 11,
+    bold: true,
+    color: EMERALD,
+  });
+  page.centerText(
+    page.y - 22,
+    `${input.hours} h de formation · ${input.certified} attestation${input.certified > 1 ? "s" : ""} émise${input.certified > 1 ? "s" : ""}`,
+    { size: 9, color: MUTED },
+  );
+  page.y -= 48;
+
+  const meta: [string, string][] = [
+    ["Identifiant suivi", input.registryId],
+    ["Empreinte", input.fingerprint],
+    ["Version document", `v${Math.max(1, input.version)}`],
+    [
+      "Périmètre",
+      "Usage des IA génératives, protection des données et cadre EU AI Act (article 4).",
+    ],
+    [
+      "Volume d'heures",
+      `${input.hours} h — ${input.durationLabel} par collaborateur au parcours validé (100 %).`,
+    ],
+    ["Émis / exporté le", input.issuedAtLabel],
+  ];
+  if (input.utcLabel) meta.push(["Horodatage UTC", input.utcLabel]);
+  if (input.firstIssuedLabel) {
+    meta.push(["Première complétion", input.firstIssuedLabel]);
+  }
+
+  for (const [label, value] of meta) {
+    if (!page.ensure(40)) newContinuedPage();
+    page.text(LEFT, page.y, label.toUpperCase(), { size: 7.5, color: MUTED });
+    page.y -= 11;
+    for (const line of wrapText(value, CONTENT_W, 9.5)) {
+      if (!page.ensure(14)) newContinuedPage();
+      page.text(LEFT, page.y, line, { size: 9.5 });
+      page.y -= 12;
+    }
+    page.y -= 4;
+  }
+
+  page.y -= 4;
+  if (!page.ensure(50)) newContinuedPage();
+  page.line(LEFT, page.y, RIGHT, page.y);
+  page.y -= 16;
+  page.text(LEFT, page.y, "Attestations émises (nominatif)", {
+    size: 11,
+    bold: true,
+  });
+  page.y -= 12;
+  page.text(
+    LEFT,
+    page.y,
+    "Liste des collaborateurs ayant une attestation de suivi. Les parcours en cours figurent uniquement en compteur.",
+    { size: 8, color: MUTED },
+  );
+  page.y -= 14;
+
+  if (input.people.length === 0) {
+    page.text(LEFT, page.y, "Aucune attestation émise pour le moment.", {
+      size: 9,
+      color: MUTED,
+    });
+    page.y -= 12;
+  } else {
+    for (const person of input.people) {
+      if (!page.ensure(36)) newContinuedPage();
+      const when = person.certifiedAtLabel ?? "—";
+      const score =
+        person.quizScore != null ? `Score ${person.quizScore}` : "Score —";
+      page.text(LEFT, page.y, person.name, { size: 9.5, bold: true });
+      page.y -= 11;
+      page.text(
+        LEFT,
+        page.y,
+        `Attestation ${person.certificateId ?? "—"}  ·  ${when}  ·  ${score}`,
+        { size: 8, color: MUTED },
+      );
+      page.y -= 14;
+    }
+  }
+
+  if (input.pendingCount > 0) {
+    if (!page.ensure(28)) newContinuedPage();
+    page.text(
+      LEFT,
+      page.y,
+      `${input.pendingCount} collaborateur${input.pendingCount > 1 ? "s" : ""} encore sans attestation (non listé${input.pendingCount > 1 ? "s" : ""} ici).`,
+      { size: 9, color: AMBER },
+    );
+    page.y -= 12;
+  }
+
+  if (!page.ensure(70)) newContinuedPage();
+  page.y = Math.min(page.y, MARGIN_BOTTOM + 70);
+  page.line(LEFT, page.y, RIGHT, page.y);
+  page.y -= 12;
+  const disclaimer = [
+    "Document émis par LockinIA et conservé dans le suivi des parcours.",
+    "Il consigne les attestations de suivi des collaborateurs.",
+    "Il ne certifie pas l'entreprise et ne constitue pas un conseil juridique.",
+    `Réf. ${input.registryId} · v${Math.max(1, input.version)} · ${input.fingerprint.slice(-8)}`,
+  ];
+  for (const line of disclaimer) {
+    page.text(LEFT, page.y, line, { size: 7.5, color: MUTED });
+    page.y -= 9;
+  }
+
+  streams.push(page.stream());
+  return assemblePdf(streams);
 }

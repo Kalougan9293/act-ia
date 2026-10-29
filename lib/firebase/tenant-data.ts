@@ -8,7 +8,12 @@ import {
   where,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
-import type { CompanyModuleContent, PlatformUser, Structure } from "@/lib/admin/types";
+import type {
+  Article4ReportRecord,
+  CompanyModuleContent,
+  PlatformUser,
+  Structure,
+} from "@/lib/admin/types";
 import { mapStructure, mapUser } from "@/lib/firebase/admin-data";
 
 function requireDb() {
@@ -30,6 +35,15 @@ export async function saveCompanyModule(
 ): Promise<void> {
   const db = requireDb();
   await updateDoc(doc(db, "structures", structureId), { companyModule });
+}
+
+/** Persiste la synthèse Art. 4 (dates figées / version d'export). */
+export async function saveArticle4Report(
+  structureId: string,
+  article4Report: Article4ReportRecord,
+): Promise<void> {
+  const db = requireDb();
+  await updateDoc(doc(db, "structures", structureId), { article4Report });
 }
 
 export async function listUsersByStructure(structureId: string): Promise<PlatformUser[]> {

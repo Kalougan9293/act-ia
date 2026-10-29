@@ -27,6 +27,8 @@ export type ArchivedProofSnapshot = {
   certifiedAt: string | null;
   quizScore: number | null;
   progressPercent: number | null;
+  /** true = siège non récupéré (démarrage ≥ 1 %) */
+  seatConsumed: boolean;
   certificates: Record<string, unknown>[];
   progress: Record<string, unknown>[];
   archivedAt: ReturnType<typeof serverTimestamp>;
@@ -45,6 +47,7 @@ export async function archiveUserProofs(params: {
   quizScore?: number | null;
   progressPercent?: number | null;
   reason: string;
+  seatConsumed?: boolean;
 }): Promise<boolean> {
   if (!params.structureId) return false;
   const db = requireDb();
@@ -54,10 +57,13 @@ export async function archiveUserProofs(params: {
     getDocs(collection(db, "users", params.userId, "certificates")),
   ]);
 
+  const seatConsumed =
+    params.seatConsumed ?? (params.progressPercent ?? 0) > 0;
   const hasProof =
     certsSnap.size > 0 ||
     Boolean(params.certificateId) ||
-    progressSnap.size > 0;
+    progressSnap.size > 0 ||
+    seatConsumed;
   if (!hasProof) return false;
 
   const payload: ArchivedProofSnapshot = {
@@ -70,6 +76,7 @@ export async function archiveUserProofs(params: {
     certifiedAt: params.certifiedAt ?? null,
     quizScore: params.quizScore ?? null,
     progressPercent: params.progressPercent ?? null,
+    seatConsumed,
     certificates: certsSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
     progress: progressSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
     archivedAt: serverTimestamp(),

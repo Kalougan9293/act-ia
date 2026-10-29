@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import LegalShell from "@/components/legal/LegalShell";
 import { ASSISTANCE } from "@/lib/formation/assistance";
+import { PLAN_LABELS, PLAN_PRICES, PLAN_SEATS } from "@/lib/admin/types";
 
 export const metadata: Metadata = {
   title: "CGV — LockinIA",
+  description:
+    "Conditions générales de vente des abonnements et prestations LockinIA.",
 };
 
 export default function CgvPage() {
@@ -79,13 +82,29 @@ export default function CgvPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Prix</h2>
         <p>
-          Le prix est celui affiché sur le site au jour de la commande, pour douze mois : Micro
-          390 €, TPE 790 €, PME 1&nbsp;290 €. L&apos;offre ETI est établie sur devis. Hors
-          abonnement : le module métier sur mesure au format standard est facturé 690 € par
-          module (texte, cas pratique et idée d&apos;usage intégrés au parcours) ; une demande
-          plus large est établie sur devis ; l&apos;atelier usages et automatisation (visio ou
-          présentiel) est établi sur devis. La marque blanche et les partenariats organismes de
-          formation / cabinets RH sont établis sur devis (forfait et/ou sièges).
+          Le prix est celui affiché sur le site au jour de la commande, pour douze mois :
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            {PLAN_LABELS.starter} : {PLAN_PRICES.starter}&nbsp;€ / an — jusqu&apos;à{" "}
+            {PLAN_SEATS.starter} sièges.
+          </li>
+          <li>
+            {PLAN_LABELS.pro} : {PLAN_PRICES.pro}&nbsp;€ / an — jusqu&apos;à {PLAN_SEATS.pro}{" "}
+            sièges.
+          </li>
+          <li>
+            {PLAN_LABELS.pme} : {PLAN_PRICES.pme.toLocaleString("fr-FR")}&nbsp;€ / an — jusqu&apos;à{" "}
+            {PLAN_SEATS.pme} sièges.
+          </li>
+          <li>{PLAN_LABELS.enterprise} : sur devis.</li>
+        </ul>
+        <p>
+          Hors abonnement : le module métier sur mesure au format standard est facturé 690&nbsp;€
+          par module (texte, cas pratique et idée d&apos;usage intégrés au parcours) ; une
+          demande plus large est établie sur devis ; l&apos;atelier usages et automatisation
+          (visio ou présentiel) est établi sur devis. La marque blanche et les partenariats
+          organismes de formation / cabinets RH sont établis sur devis (forfait et/ou sièges).
         </p>
         <p>
           Il n&apos;y a pas encore de paiement en ligne : la facture est envoyée par e-mail et se
@@ -99,7 +118,18 @@ export default function CgvPage() {
         </h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>Accès à la plateforme selon le nombre de sièges de l&apos;offre.</li>
-          <li>Parcours de formation socle, attestations de suivi et espace RH de pilotage.</li>
+          <li>
+            Parcours de formation socle, attestations de suivi nominatives, synthèse de suivi
+            Article&nbsp;4 (écran et export PDF versionné) et espace RH de pilotage.
+          </li>
+          <li>
+            Module entreprise (outils, charte, cas d&apos;usage) renseigné par le RH, visible
+            dans le parcours lorsque activé.
+          </li>
+          <li>
+            Exports de preuves à usage interne (attestation individuelle, synthèse, archive
+            groupée le cas échéant).
+          </li>
           <li>
             Assistance pédagogique et technique nommée (voir ci-dessous), délai de réponse{" "}
             {ASSISTANCE.responseDelay}.
@@ -108,7 +138,9 @@ export default function CgvPage() {
         <p>
           Sauf mention contraire sur devis : LockinIA ne fournit pas de conseil juridique, d&apos;audit
           de conformité, ni de certification officielle de l&apos;entreprise. L&apos;attestation
-          documente le parcours suivi ; elle ne constitue ni diplôme ni certification.
+          documente le parcours suivi ; la synthèse Article&nbsp;4 consigne le suivi des
+          attestations. Ni l&apos;une ni l&apos;autre ne constitue un diplôme ni une
+          certification de l&apos;entreprise.
         </p>
       </section>
 
@@ -174,7 +206,7 @@ export default function CgvPage() {
         <p>
           En cas de retard de paiement, et conformément aux articles L.441-10 et D.441-5 du code
           de commerce : pénalités de retard au taux de trois fois le taux d&apos;intérêt légal, et
-          indemnité forfaitaire de recouvrement de 40 €. FITOPS AI se réserve le droit de
+          indemnité forfaitaire de recouvrement de 40&nbsp;€. FITOPS AI se réserve le droit de
           réclamer une indemnité complémentaire si les frais de recouvrement dépassent ce montant.
         </p>
       </section>
@@ -203,12 +235,12 @@ export default function CgvPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Fin de contrat</h2>
         <p>
           À l&apos;échéance, les accès sont fermés. Les preuves de formation (attestations,
-          résultats par module, relevés de connexion liés au parcours) restent disponibles
-          pour l&apos;entreprise cliente pendant l&apos;année civile de réalisation de
-          l&apos;action et les trois années civiles suivantes, puis sont supprimées. Un
-          rappel est adressé avant reconduction tacite. Les factures sont conservées dix ans.
-          La fermeture anticipée se demande par e-mail ; la période déjà payée n&apos;est pas
-          remboursée.
+          résultats par module, relevés de connexion liés au parcours, synthèses Article&nbsp;4
+          encore dues) restent disponibles pour l&apos;entreprise cliente pendant l&apos;année
+          civile de réalisation de l&apos;action et les trois années civiles suivantes, puis sont
+          supprimées. Un rappel est adressé avant reconduction tacite. Les factures sont
+          conservées dix ans. La fermeture anticipée se demande par e-mail ; la période déjà
+          payée n&apos;est pas remboursée.
         </p>
       </section>
 

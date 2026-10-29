@@ -11,6 +11,7 @@ export const mockStructures: Structure[] = [
     inviteToken: "invite_atelier_demo",
     registryId: "REG-LIA-2026-ATELR",
     partnerId: null,
+    article4Report: null,
     companyModule: {
       visible: false,
       tools: "",
@@ -41,6 +42,7 @@ export const mockStructures: Structure[] = [
     inviteToken: "invite_nova_demo",
     registryId: "REG-LIA-2026-NOVAR",
     partnerId: null,
+    article4Report: null,
     companyModule: {
       visible: false,
       tools: "",
@@ -71,6 +73,7 @@ export const mockStructures: Structure[] = [
     inviteToken: "invite_green_demo",
     registryId: "REG-LIA-2026-GREEN",
     partnerId: null,
+    article4Report: null,
     companyModule: {
       visible: false,
       tools: "",

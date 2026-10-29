@@ -3,6 +3,8 @@ import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
   title: "Confidentialité — LockinIA",
+  description:
+    "Politique de confidentialité de LockinIA : données traitées, finalités, conservation et droits.",
 };
 
 export default function ConfidentialitePage() {
@@ -43,15 +45,35 @@ export default function ConfidentialitePage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Données traitées</h2>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Compte : nom, e-mail, mot de passe (hashé), rôle, structure, partenaire le cas échéant.</li>
-          <li>Formation : progression, scores, attestation de suivi, temps de parcours.</li>
-          <li>Espace RH / admin / partenaire : listes et indicateurs de suivi selon le rôle.</li>
-          <li>Quotas et sièges (consommation d&apos;accès).</li>
-          <li>Registre des usages d&apos;IA renseigné par l&apos;employeur.</li>
+          <li>
+            Compte : nom, e-mail, mot de passe (hashé), rôle, structure, partenaire le cas
+            échéant, fonction métier le cas échéant.
+          </li>
+          <li>
+            Formation : progression, scores, attestation de suivi, temps de connexion mesuré,
+            résultats par module.
+          </li>
+          <li>
+            Structure : identifiant de suivi (REG-LIA-…), module entreprise (outils, charte,
+            contacts, cas d&apos;usage), synthèse Article&nbsp;4 (dates figées, version
+            d&apos;export, compteurs, empreinte).
+          </li>
+          <li>
+            Invitations en attente (e-mail / nom fournis par le RH) et quotas / sièges.
+          </li>
+          <li>
+            Preuves archivées après retrait d&apos;un accès (rétention année civile + 3).
+          </li>
+          <li>Espace RH / admin / partenaire : listes et indicateurs selon le rôle.</li>
         </ul>
         <p>
-          Lorsqu&apos;un salarié est invité, son nom et son e-mail sont d&apos;abord fournis par
-          son employeur (ou, le cas échéant, préparés via le partenaire / le RH).
+          Lorsqu&apos;un collaborateur est invité, son nom et son e-mail sont d&apos;abord fournis
+          par son employeur (ou, le cas échéant, préparés via le partenaire / le RH).
+        </p>
+        <p>
+          Sur la démo publique ou un compte témoin, certaines données restent locales au
+          navigateur et ne sont pas traitées comme preuves contractuelles d&apos;une entreprise
+          cliente.
         </p>
       </section>
 
@@ -59,13 +81,13 @@ export default function ConfidentialitePage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Finalités et bases</h2>
         <ul className="list-disc space-y-1 pl-5">
           <li>
-            Compte de l&apos;entreprise, accès, formation, attestations et registre : exécution du
-            contrat d&apos;abonnement ou de partenariat.
+            Compte de l&apos;entreprise, accès, formation, attestations, synthèse Article&nbsp;4 et
+            module entreprise : exécution du contrat d&apos;abonnement ou de partenariat.
           </li>
           <li>
-            Données des salariés : traitées pour le compte de l&apos;entreprise cliente. C&apos;est
-            elle qui décide de la formation, au titre de ses propres obligations, notamment
-            l&apos;article 4 de l&apos;AI Act. Cadre détaillé dans le{" "}
+            Données des collaborateurs : traitées pour le compte de l&apos;entreprise cliente.
+            C&apos;est elle qui décide de la formation, au titre de ses propres obligations,
+            notamment l&apos;article 4 de l&apos;AI Act. Cadre détaillé dans le{" "}
             <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
               DPA
             </a>
@@ -96,7 +118,8 @@ export default function ConfidentialitePage() {
             <strong>Apprenant</strong> : son compte et son parcours.
           </li>
           <li>
-            <strong>RH</strong> : les collaborateurs et le registre de sa structure uniquement.
+            <strong>RH</strong> : les collaborateurs, le module entreprise et la synthèse de sa
+            structure uniquement.
           </li>
           <li>
             <strong>Partenaire</strong> : ses entreprises clientes, quotas, statistiques
@@ -114,13 +137,16 @@ export default function ConfidentialitePage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Conservation</h2>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Pendant le contrat : compte, progression, registre et attestations restent disponibles.</li>
+          <li>
+            Pendant le contrat : compte, progression, module entreprise, synthèse Article&nbsp;4 et
+            attestations restent disponibles.
+          </li>
           <li>
             Preuves de formation (attestations, résultats par module, relevés de connexion
-            liés au parcours) : conservées pendant l&apos;année civile de réalisation de
-            l&apos;action de formation et les trois années civiles suivantes, puis
+            liés au parcours, synthèses encore dues) : conservées pendant l&apos;année civile de
+            réalisation de l&apos;action de formation et les trois années civiles suivantes, puis
             supprimées, sauf obligation légale plus longue. La même durée s&apos;applique
-            lorsqu&apos;un accès salarié est retiré : les preuves restent archivées pour
+            lorsqu&apos;un accès collaborateur est retiré : les preuves restent archivées pour
             l&apos;employeur.
           </li>
           <li>Factures : 10 ans, durée comptable.</li>
@@ -134,7 +160,7 @@ export default function ConfidentialitePage() {
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="mailto:contact@lockin-web.online">
             contact@lockin-web.online
           </a>
-          . L&apos;entreprise demande la fermeture de sa structure. Un salarié demande la
+          . L&apos;entreprise demande la fermeture de sa structure. Un collaborateur demande la
           suppression de son accès. Les preuves encore dues à l&apos;employeur et les factures sont
           conservées dans les durées ci-dessus (pas d&apos;effacement définitif des preuves
           pendant la période de rétention).
@@ -162,7 +188,7 @@ export default function ConfidentialitePage() {
           (authentification et Firestore).
         </p>
         <p>
-          Les données de compte, de formation et de registre sont stockées dans l&apos;Union
+          Les données de compte, de formation et de suivi sont stockées dans l&apos;Union
           européenne (Firestore, région eur3), dans le cadre du contrat de traitement de Google
           Cloud. L&apos;affichage du site passe par Vercel Inc., établi aux États-Unis. Ce transfert
           est encadré par son accord de traitement et les clauses contractuelles types de la

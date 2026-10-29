@@ -43,29 +43,35 @@ export default function ProblemSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 space-y-3"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            Ce que{" "}
-            <span className="text-blue-600 dark:text-blue-400">
-              l&apos;absence de mesures
-            </span>{" "}
-            fait risquer à votre entreprise
-          </h2>
-          <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
-            L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA,
-            et il faut pouvoir le montrer — comme pour le RGPD. Sans traces de suivi, le
-            risque reste entier.
-          </p>
+          <div
+            id="demo-tour-problem-intro"
+            className="scroll-mt-28 mx-auto max-w-3xl space-y-3"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+              Ce que{" "}
+              <span className="text-blue-600 dark:text-blue-400">
+                l&apos;absence de mesures
+              </span>{" "}
+              fait risquer à votre entreprise
+            </h2>
+            <p className="mx-auto max-w-2xl text-center text-lg text-slate-900 dark:text-slate-100">
+              L&apos;article 4 demande des mesures pour les équipes qui utilisent l&apos;IA,
+              et il faut pouvoir le montrer — comme pour le RGPD. Sans traces de suivi, le
+              risque reste entier.
+            </p>
+          </div>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 md:items-stretch">
           {problems.map((problem, i) => (
             <motion.div
               key={problem.title}
+              id={`demo-tour-problem-card-${i + 1}`}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`grid h-full grid-rows-[1fr_auto] rounded-xl border px-6 pb-4 pt-6 shadow-sm ${problem.card}`}
+              className={`scroll-mt-28 grid h-full grid-rows-[1fr_auto] rounded-xl border px-6 pb-4 pt-6 shadow-sm ${problem.card}`}
             >
               <div className="space-y-2">
                 <p className="text-center text-sm font-semibold text-blue-700 dark:text-blue-300">

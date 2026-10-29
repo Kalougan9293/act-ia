@@ -87,7 +87,7 @@ function buildDemoActivity(id: SampleId): {
         items: [item],
       },
       duration: "30 s",
-      title: "Quel niveau d'attention ?",
+      title: "Est-ce que je peux mettre dans l'IA le CV d'un candidat ?",
     };
   }
 

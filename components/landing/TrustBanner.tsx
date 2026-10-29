@@ -34,7 +34,10 @@ export default function TrustBanner() {
   return (
     <section className="bg-slate-50 dark:bg-slate-800/50 border-y border-slate-200 dark:border-slate-700/60 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex w-fit max-w-5xl flex-col gap-6 sm:w-full sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-8">
+        <div
+          id="demo-tour-trust-banner"
+          className="scroll-mt-28 mx-auto flex w-fit max-w-5xl flex-col gap-6 sm:w-full sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-8"
+        >
           {stats.map((stat, i) => (
             <motion.div
               key={stat.value}

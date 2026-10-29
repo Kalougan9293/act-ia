@@ -40,7 +40,10 @@ export default function DeploySection() {
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-4xl gap-6 sm:grid-cols-3 sm:gap-8">
+        <div
+          id="demo-tour-deploy-steps"
+          className="scroll-mt-28 mx-auto grid max-w-4xl gap-6 sm:grid-cols-3 sm:gap-8"
+        >
           {steps.map((step, i) => (
             <motion.div
               key={step.n}

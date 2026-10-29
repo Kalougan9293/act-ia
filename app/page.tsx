@@ -9,6 +9,7 @@ import PricingSection from "@/components/landing/PricingSection";
 import GoFurtherSection from "@/components/landing/GoFurtherSection";
 import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
+import { DemoTourProvider } from "@/components/landing/DemoTour";
 import { faqJsonLd } from "@/lib/landing/faq";
 
 export const metadata: Metadata = {
@@ -22,16 +23,18 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 antialiased">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-      <Navbar />
-      <Hero />
-      <TrustBanner />
-      <ProblemSection />
-      <FeaturesSection />
-      <DeploySection />
-      <PricingSection />
-      <GoFurtherSection />
-      <FAQSection />
-      <Footer />
+      <DemoTourProvider>
+        <Navbar />
+        <Hero />
+        <TrustBanner />
+        <ProblemSection />
+        <FeaturesSection />
+        <DeploySection />
+        <PricingSection />
+        <GoFurtherSection />
+        <FAQSection />
+        <Footer />
+      </DemoTourProvider>
     </main>
   );
 }

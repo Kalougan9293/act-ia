@@ -16,6 +16,8 @@ export interface Employee {
   inviteToken?: string;
   certificateId?: string | null;
   certifiedAt?: string | null;
+  /** Score positionnement (avant) */
+  positioningScore?: number | null;
   quizScore?: number | null;
   timeSpentSec?: number | null;
   modulesCompleted?: number | null;
@@ -111,6 +113,7 @@ export const demoEmployees: Employee[] = [
     lastSeen: "26/10/2026",
     certificateId: "LIA-2026-CAM01",
     certifiedAt: "2026-10-26T09:12:00.000Z",
+    positioningScore: 48,
     quizScore: 92,
     timeSpentSec: 4680,
     modulesCompleted: 33,
@@ -131,6 +134,7 @@ export const demoEmployees: Employee[] = [
     lastSeen: "25/10/2026",
     certificateId: "LIA-2026-MAR02",
     certifiedAt: "2026-10-25T14:40:00.000Z",
+    positioningScore: 55,
     quizScore: 85,
     timeSpentSec: 5100,
     modulesCompleted: 33,
@@ -162,6 +166,7 @@ export const demoEmployees: Employee[] = [
     lastSeen: "23/10/2026",
     certificateId: "LIA-2026-SOP04",
     certifiedAt: "2026-10-23T16:20:00.000Z",
+    positioningScore: 62,
     quizScore: 96,
     timeSpentSec: 3900,
     modulesCompleted: 33,

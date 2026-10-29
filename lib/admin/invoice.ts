@@ -1,5 +1,5 @@
 import { formatDate } from "@/lib/admin/format";
-import { PLAN_LABELS, type Structure } from "@/lib/admin/types";
+import { PLAN_LABELS, type Partner, type Structure } from "@/lib/admin/types";
 
 function escapeHtml(value: string) {
   return value
@@ -14,26 +14,30 @@ function money(amount: number) {
   return `${amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 }
 
-function invoiceHtml(structure: Structure) {
-  const billing = structure.billing;
-  const issued = new Date().toISOString().slice(0, 10);
-  const number = `FAC-${issued.replace(/-/g, "")}-${structure.id.slice(-6).toUpperCase()}`;
-  const client = [
-    billing.companyName || structure.name,
-    billing.address,
-    billing.siret ? `SIRET ${billing.siret}` : "",
-    billing.billingEmail,
-    billing.phone,
-  ]
-    .filter(Boolean)
-    .map((line) => escapeHtml(line))
-    .join("<br>");
+function openInvoiceWindow(html: string) {
+  const page = window.open("", "_blank", "width=820,height=900");
+  if (!page) return false;
+  page.document.open();
+  page.document.write(html);
+  page.document.close();
+  page.focus();
+  window.setTimeout(() => page.print(), 200);
+  return true;
+}
 
+function invoiceShell(params: {
+  number: string;
+  issued: string;
+  clientHtml: string;
+  prestationTitle: string;
+  prestationDetail: string;
+  amount: number;
+}) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Facture ${escapeHtml(number)}</title>
+  <title>Facture ${escapeHtml(params.number)}</title>
   <style>
     body { font-family: Georgia, "Times New Roman", serif; color: #0f172a; margin: 56px 64px; }
     .emitter { font-size: 14px; line-height: 1.45; }
@@ -63,12 +67,12 @@ function invoiceHtml(structure: Structure) {
   <div class="client-wrap">
     <div class="client">
       <strong>Client</strong><br>
-      ${client || "—"}
+      ${params.clientHtml || "—"}
     </div>
   </div>
   <div class="head">
     <h1>Facture</h1>
-    <p class="muted">${escapeHtml(number)} · ${escapeHtml(formatDate(issued))}</p>
+    <p class="muted">${escapeHtml(params.number)} · ${escapeHtml(formatDate(params.issued))}</p>
   </div>
   <table>
     <thead>
@@ -80,26 +84,71 @@ function invoiceHtml(structure: Structure) {
     <tbody>
       <tr>
         <td>
-          Abonnement LockinIA · ${escapeHtml(PLAN_LABELS[billing.plan])}<br>
-          <span class="muted">${billing.seats} accès · prochaine échéance ${escapeHtml(formatDate(billing.nextInvoiceAt))}</span>
+          ${params.prestationTitle}<br>
+          <span class="muted">${params.prestationDetail}</span>
         </td>
-        <td class="amount">${escapeHtml(money(billing.priceMonthlyEur))}</td>
+        <td class="amount">${escapeHtml(money(params.amount))}</td>
       </tr>
     </tbody>
   </table>
-  <p class="total">Total ${escapeHtml(money(billing.priceMonthlyEur))}</p>
+  <p class="total">Total ${escapeHtml(money(params.amount))}</p>
   <p class="muted">TVA non applicable, art. 293 B du CGI</p>
 </body>
 </html>`;
 }
 
+function invoiceHtml(structure: Structure) {
+  const billing = structure.billing;
+  const issued = new Date().toISOString().slice(0, 10);
+  const number = `FAC-${issued.replace(/-/g, "")}-${structure.id.slice(-6).toUpperCase()}`;
+  const client = [
+    billing.companyName || structure.name,
+    billing.address,
+    billing.siret ? `SIRET ${billing.siret}` : "",
+    billing.billingEmail,
+    billing.phone,
+  ]
+    .filter(Boolean)
+    .map((line) => escapeHtml(line))
+    .join("<br>");
+
+  return invoiceShell({
+    number,
+    issued,
+    clientHtml: client,
+    prestationTitle: `Abonnement LockinIA · ${escapeHtml(PLAN_LABELS[billing.plan])}`,
+    prestationDetail: `${billing.seats} accès · prochaine échéance ${escapeHtml(formatDate(billing.nextInvoiceAt))}`,
+    amount: billing.priceMonthlyEur,
+  });
+}
+
+function partnerInvoiceHtml(partner: Partner) {
+  const issued = new Date().toISOString().slice(0, 10);
+  const number = `FAC-${issued.replace(/-/g, "")}-${partner.id.slice(-6).toUpperCase()}`;
+  const due = partner.licenseExpiresAt || issued;
+  const client = [
+    partner.name,
+    partner.siret ? `SIRET ${partner.siret}` : "",
+    partner.email,
+  ]
+    .filter(Boolean)
+    .map((line) => escapeHtml(line))
+    .join("<br>");
+
+  return invoiceShell({
+    number,
+    issued,
+    clientHtml: client,
+    prestationTitle: "Abonnement LockinIA · Partenaire OF",
+    prestationDetail: `${partner.seatsMax} accès · prochaine échéance ${escapeHtml(formatDate(due))}`,
+    amount: 0,
+  });
+}
+
 export function openStructureInvoice(structure: Structure) {
-  const page = window.open("", "_blank", "width=820,height=900");
-  if (!page) return false;
-  page.document.open();
-  page.document.write(invoiceHtml(structure));
-  page.document.close();
-  page.focus();
-  window.setTimeout(() => page.print(), 200);
-  return true;
+  return openInvoiceWindow(invoiceHtml(structure));
+}
+
+export function openPartnerInvoice(partner: Partner) {
+  return openInvoiceWindow(partnerInvoiceHtml(partner));
 }

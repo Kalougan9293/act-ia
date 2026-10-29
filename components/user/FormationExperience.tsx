@@ -40,6 +40,7 @@ import {
   findChapter,
   type Block,
 } from "@/lib/formation/curriculum";
+import { witnessDemoCertificate } from "@/lib/formation/witness";
 import {
   QUIZ_DRAW_SIZE,
   QUIZ_PASS_COUNT,
@@ -108,6 +109,8 @@ export default function FormationExperience({
   companyModule = emptyCompanyModule(),
   demo = false,
   demoSeed,
+  /** Compte témoin exclusif (ex. c@gmail.com) : cadenas ouverts, rien n'est validé en base. */
+  witnessDemo = false,
 }: {
   uid: string;
   firstName: string;
@@ -117,8 +120,10 @@ export default function FormationExperience({
   /** Mode démo publique : pas de Firestore, progression seedée. */
   demo?: boolean;
   demoSeed?: FormationProgress;
+  witnessDemo?: boolean;
 }) {
   const companyVisible = Boolean(companyModule.visible);
+  const sandbox = demo || witnessDemo;
   const {
     ready,
     progress,
@@ -135,11 +140,12 @@ export default function FormationExperience({
     recordSession,
     markSatisfaction,
   } = useFormationProgress(uid, {
-    localOnly: demo,
+    localOnly: sandbox,
+    skipValidation: witnessDemo,
     seed: demoSeed,
   });
 
-  useConnectionLog(ready && Boolean(uid) && !demo, recordSession);
+  useConnectionLog(ready && Boolean(uid) && !sandbox, recordSession);
 
   const [screen, setScreen] = useState<Screen | null>(null);
   const [positioningRound] = useState(() =>
@@ -227,12 +233,13 @@ export default function FormationExperience({
         careerPathId={progress.careerPathId}
         positioningCount={positioningRound.length}
         showWelcomePitch={!hideWelcomePitch}
+        witnessDemo={witnessDemo}
         onOpenPositioning={() => {
           if (!progress.introDone) markIntroDone();
           setScreen({ kind: "positioning" });
         }}
         onOpenBlock={(blockId) => {
-          if (!progress.positioningDone) return;
+          if (!witnessDemo && !progress.positioningDone) return;
           if (!progress.introDone) markIntroDone();
           setScreen({ kind: "block", blockId });
         }}
@@ -318,6 +325,7 @@ export default function FormationExperience({
       <BlockScreen
         block={block}
         completed={progress.completedChapters}
+        unlockAll={witnessDemo}
         onBack={() => setScreen({ kind: "intro" })}
         onOpenChapter={openChapter}
       />,
@@ -497,9 +505,11 @@ function blockMenuState(
   block: Block,
   completed: string[],
   positioningDone: boolean,
+  unlockAll = false,
 ): "done" | "current" | "locked" {
   const done = block.chapters.every((chapter) => completed.includes(chapter.id));
   if (done) return "done";
+  if (unlockAll) return "current";
   if (!positioningDone) return "locked";
   const previous = BLOCKS.find((item) => item.number === block.number - 1);
   const previousDone =
@@ -516,6 +526,8 @@ function PathCard({
   onClick,
   lockedHint,
   doneHint,
+  /** Faisceau lumineux (défaut : oui si « current »). Désactivable ex. compte témoin. */
+  orbit,
 }: {
   label: string;
   title: string;
@@ -525,19 +537,21 @@ function PathCard({
   onClick: () => void;
   lockedHint: string;
   doneHint: string;
+  orbit?: boolean;
 }) {
   const current = state === "current";
   const done = state === "done";
   const locked = state === "locked";
+  const showOrbit = orbit ?? current;
   return (
     <button
       type="button"
       onClick={onClick}
       className={`group relative w-full cursor-pointer rounded-xl border-0 bg-transparent p-[2px] text-left shadow-sm shadow-slate-200/80 transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/20 dark:shadow-slate-950/50 ${
-        current ? "shadow-blue-500/25" : ""
+        showOrbit ? "shadow-blue-500/25" : ""
       } ${done ? "shadow-emerald-500/15" : ""} ${denied ? "block-deny shadow-red-500/40" : ""}`}
     >
-      {current ? (
+      {showOrbit ? (
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl" aria-hidden>
           <div className="border-orbit" />
         </div>
@@ -622,6 +636,7 @@ function IntroScreen({
   careerPathId,
   positioningCount,
   showWelcomePitch,
+  witnessDemo = false,
   onOpenPositioning,
   onOpenBlock,
   onOpenCompany,
@@ -643,6 +658,7 @@ function IntroScreen({
   careerPathId: string | null;
   positioningCount: number;
   showWelcomePitch: boolean;
+  witnessDemo?: boolean;
   onOpenPositioning: () => void;
   onOpenBlock: (blockId: string) => void;
   onOpenCompany: () => void;
@@ -657,19 +673,23 @@ function IntroScreen({
   );
   const quizState: "done" | "current" | "locked" = quizPassed
     ? "done"
-    : positioningDone && chaptersDone
+    : witnessDemo || (positioningDone && chaptersDone)
       ? "current"
       : "locked";
   const companyState: "done" | "current" | "locked" = companyDone
     ? "done"
-    : quizPassed
+    : witnessDemo || quizPassed
       ? "current"
       : "locked";
   const careerState: "done" | "current" | "locked" = careerPathId
     ? "done"
-    : quizPassed
+    : witnessDemo || quizPassed
       ? "current"
       : "locked";
+  /** Témoin : attestation spécimen locale, jamais en base — affichée à droite de l’examen. */
+  const displayCertificate = witnessDemo
+    ? certificate ?? witnessDemoCertificate()
+    : certificate;
 
   function openOrDeny(id: string, locked: boolean, onOpen: () => void) {
     if (!locked) {
@@ -730,13 +750,13 @@ function IntroScreen({
         </div>
       )}
 
-      {certificate && (
+      {displayCertificate && !witnessDemo && (
         <LearnerAttestation
           fullName={fullName}
           companyName={companyName}
           careerPathId={careerPathId}
           quizScore={quizScore}
-          certificate={certificate}
+          certificate={displayCertificate}
         />
       )}
 
@@ -782,7 +802,12 @@ function IntroScreen({
 
         <div className="grid w-full items-start gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {BLOCKS.map((block) => {
-            const state = blockMenuState(block, completedChapters, positioningDone);
+            const state = blockMenuState(
+              block,
+              completedChapters,
+              positioningDone,
+              witnessDemo,
+            );
             return (
               <PathCard
                 key={block.id}
@@ -790,6 +815,7 @@ function IntroScreen({
                 title={block.title}
                 meta={`${block.chapters.length} chapitre${block.chapters.length > 1 ? "s" : ""}`}
                 state={state}
+                orbit={witnessDemo ? false : undefined}
                 denied={deniedId === block.id}
                 onClick={() => openOrDeny(block.id, state === "locked", () => onOpenBlock(block.id))}
                 lockedHint={
@@ -803,89 +829,117 @@ function IntroScreen({
           })}
         </div>
 
-        <button
-          type="button"
-          onClick={() => openOrDeny("quiz", quizState === "locked", onOpenQuiz)}
-          className={`group relative mx-auto mt-3 flex w-fit cursor-pointer rounded-2xl border-0 bg-transparent p-[2px] text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
-            quizState === "done"
-              ? "shadow-emerald-500/20 hover:shadow-emerald-500/30"
-              : "shadow-rose-500/20 hover:shadow-rose-500/35"
-          } ${deniedId === "quiz" ? "block-deny shadow-red-500/40" : ""}`}
-        >
-          {quizState === "current" ? (
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden>
-              <div className="border-orbit-rose" />
-            </div>
-          ) : (
-            <div
-              className={`pointer-events-none absolute inset-0 rounded-2xl border ${
-                deniedId === "quiz"
-                  ? "border-red-500"
-                  : quizState === "done"
-                    ? "border-emerald-400 dark:border-emerald-500"
-                    : "border-rose-200 dark:border-rose-800"
-              }`}
-              aria-hidden
-            />
-          )}
-          <div
-            className={`relative flex items-center gap-3 rounded-[14px] px-4 py-2.5 ${
-              deniedId === "quiz"
-                ? "bg-red-50 dark:bg-red-950/50"
-                : quizState === "done"
-                  ? "bg-emerald-50 dark:bg-emerald-950/40"
-                  : "bg-rose-50 dark:bg-rose-950/40"
-            }`}
+        <div className="relative mx-auto mt-3 w-fit">
+          <button
+            type="button"
+            onClick={() => openOrDeny("quiz", quizState === "locked", onOpenQuiz)}
+            className={`group relative flex w-fit cursor-pointer rounded-2xl border-0 bg-transparent p-[2px] text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
+              quizState === "done"
+                ? "shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                : "shadow-rose-500/20 hover:shadow-rose-500/35"
+            } ${deniedId === "quiz" ? "block-deny shadow-red-500/40" : ""}`}
           >
-            <span
-              className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-sm ${
-                quizState === "done"
-                  ? "bg-emerald-500 text-white"
-                  : quizState === "current"
-                    ? "bg-rose-600 text-white shadow-rose-500/40"
-                    : "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-200"
+            {quizState === "current" && !witnessDemo ? (
+              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden>
+                <div className="border-orbit-rose" />
+              </div>
+            ) : (
+              <div
+                className={`pointer-events-none absolute inset-0 rounded-2xl border ${
+                  deniedId === "quiz"
+                    ? "border-red-500"
+                    : quizState === "done"
+                      ? "border-emerald-400 dark:border-emerald-500"
+                      : "border-rose-200 dark:border-rose-800"
+                }`}
+                aria-hidden
+              />
+            )}
+            <div
+              className={`relative flex items-center gap-3 rounded-[14px] px-4 py-2.5 ${
+                deniedId === "quiz"
+                  ? "bg-red-50 dark:bg-red-950/50"
+                  : quizState === "done"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40"
+                    : "bg-rose-50 dark:bg-rose-950/40"
               }`}
             >
-              {quizState === "done" ? (
-                <Check className="h-4 w-4" aria-hidden />
-              ) : (
-                <Trophy className="h-4 w-4" aria-hidden />
-              )}
-              {quizState === "locked" && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">
-                  <Lock className="h-2.5 w-2.5" aria-hidden />
+              <span
+                className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-sm ${
+                  quizState === "done"
+                    ? "bg-emerald-500 text-white"
+                    : quizState === "current"
+                      ? "bg-rose-600 text-white shadow-rose-500/40"
+                      : "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-200"
+                }`}
+              >
+                {quizState === "done" ? (
+                  <Check className="h-4 w-4" aria-hidden />
+                ) : (
+                  <Trophy className="h-4 w-4" aria-hidden />
+                )}
+                {quizState === "locked" && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">
+                    <Lock className="h-2.5 w-2.5" aria-hidden />
+                  </span>
+                )}
+              </span>
+              <span className="text-left">
+                <span
+                  className={`block text-sm font-bold leading-tight ${
+                    quizState === "done"
+                      ? "text-emerald-950 dark:text-emerald-50"
+                      : "text-rose-950 dark:text-rose-50"
+                  }`}
+                >
+                  Examen final
                 </span>
-              )}
-            </span>
-            <span className="text-left">
-              <span
-                className={`block text-sm font-bold leading-tight ${
-                  quizState === "done"
-                    ? "text-emerald-950 dark:text-emerald-50"
-                    : "text-rose-950 dark:text-rose-50"
-                }`}
-              >
-                Examen final
+                <span
+                  className={`mt-0.5 block text-xs leading-none ${
+                    quizState === "done"
+                      ? "text-emerald-800/80 dark:text-emerald-200/80"
+                      : "text-rose-700/80 dark:text-rose-200/80"
+                  }`}
+                >
+                  {QUIZ_DRAW_SIZE} questions
+                </span>
               </span>
-              <span
-                className={`mt-0.5 block text-xs leading-none ${
-                  quizState === "done"
-                    ? "text-emerald-800/80 dark:text-emerald-200/80"
-                    : "text-rose-700/80 dark:text-rose-200/80"
-                }`}
-              >
-                {QUIZ_DRAW_SIZE} questions
+              <span className="sr-only">
+                {quizState === "done"
+                  ? "Examen final réussi"
+                  : quizState === "locked"
+                    ? "Disponible une fois les 6 blocs terminés"
+                    : "Ouvrir l'examen final"}
               </span>
-            </span>
-            <span className="sr-only">
-              {quizState === "done"
-                ? "Examen final réussi"
-                : quizState === "locked"
-                  ? "Disponible une fois les 6 blocs terminés"
-                  : "Ouvrir l'examen final"}
-            </span>
+            </div>
+          </button>
+
+          {witnessDemo && displayCertificate ? (
+            <div className="absolute left-full top-1/2 z-10 ml-2 hidden -translate-y-1/2 sm:block">
+              <LearnerAttestation
+                fullName={fullName}
+                companyName={companyName}
+                careerPathId={careerPathId}
+                quizScore={displayCertificate.quizScore ?? quizScore}
+                certificate={displayCertificate}
+                beside
+              />
+            </div>
+          ) : null}
+        </div>
+
+        {witnessDemo && displayCertificate ? (
+          <div className="mx-auto mt-2 w-fit sm:hidden">
+            <LearnerAttestation
+              fullName={fullName}
+              companyName={companyName}
+              careerPathId={careerPathId}
+              quizScore={displayCertificate.quizScore ?? quizScore}
+              certificate={displayCertificate}
+              beside
+            />
           </div>
-        </button>
+        ) : null}
 
         <div
           className={`mx-auto mt-4 grid w-full max-w-xl gap-2.5 ${
@@ -898,6 +952,7 @@ function IntroScreen({
               title="Votre entreprise"
               meta={companyDone ? "Consulté" : "Optionnel"}
               state={companyState}
+              orbit={witnessDemo ? false : undefined}
               denied={deniedId === "company"}
               onClick={() => openOrDeny("company", companyState === "locked", onOpenCompany)}
               lockedHint="Disponible après l'attestation"
@@ -909,6 +964,7 @@ function IntroScreen({
             title="Fiche métier"
             meta={careerPathId ? "Validé" : "Optionnel"}
             state={careerState}
+            orbit={witnessDemo ? false : undefined}
             denied={deniedId === "career"}
             onClick={() => openOrDeny("career", careerState === "locked", onOpenCareer)}
             lockedHint="Disponible après l'attestation"
@@ -1161,12 +1217,15 @@ function LearnerAttestation({
   careerPathId,
   quizScore,
   certificate,
+  beside = false,
 }: {
   fullName: string;
   companyName: string;
   careerPathId: string | null;
   quizScore: number | null;
   certificate: IssuedCertificate;
+  /** Compacte à droite de l’examen final (compte témoin). */
+  beside?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const { date, time } = formatProofDate(certificate.issuedAt);
@@ -1198,31 +1257,73 @@ function LearnerAttestation({
 
   return (
     <>
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-800 dark:bg-emerald-950/30">
-        <p className="text-center text-sm font-semibold text-emerald-900 dark:text-emerald-100">
-          Attestation de suivi · {certificate.id}
-        </p>
-        <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
-          Examen validé. Vous pouvez la consulter ou la télécharger.
-        </p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
-          >
-            <GraduationCap className="h-4 w-4" />
-            Voir mon attestation
-          </button>
-          <button
-            type="button"
-            onClick={download}
-            className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
-          >
-            <Download className="h-4 w-4" />
-            Télécharger
-          </button>
-        </div>
+      <div
+        className={
+          beside
+            ? "flex w-max max-w-[13.5rem] items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-left shadow-sm dark:border-emerald-800 dark:bg-emerald-950/30"
+            : "rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-800 dark:bg-emerald-950/30"
+        }
+      >
+        {beside ? (
+          <>
+            <GraduationCap
+              className="h-3.5 w-3.5 shrink-0 text-emerald-700 dark:text-emerald-300"
+              aria-hidden
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] font-semibold leading-tight text-emerald-900 dark:text-emerald-100">
+                Attestation
+              </p>
+              <p className="truncate font-mono text-[9px] leading-tight text-emerald-800/75 dark:text-emerald-200/75">
+                {certificate.id}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="rounded-md bg-emerald-600 px-1.5 py-1 text-[10px] font-semibold leading-none text-white transition hover:bg-emerald-700"
+              >
+                Voir
+              </button>
+              <button
+                type="button"
+                onClick={download}
+                aria-label="Télécharger l'attestation"
+                className="inline-flex items-center justify-center rounded-md border border-emerald-300 bg-white p-1 text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
+              >
+                <Download className="h-3 w-3" />
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-center text-sm font-semibold text-emerald-900 dark:text-emerald-100">
+              Attestation de suivi · {certificate.id}
+            </p>
+            <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
+              Examen validé. Vous pouvez la consulter ou la télécharger.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+              >
+                <GraduationCap className="h-4 w-4" />
+                Voir mon attestation
+              </button>
+              <button
+                type="button"
+                onClick={download}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
+              >
+                <Download className="h-4 w-4" />
+                Télécharger
+              </button>
+            </div>
+          </>
+        )}
       </div>
       {open && (
         <CertificatePreview
@@ -1579,11 +1680,14 @@ const BLOCK_RECAPS: Record<string, string[]> = {
 function BlockScreen({
   block,
   completed,
+  unlockAll = false,
   onBack,
   onOpenChapter,
 }: {
   block: Block;
   completed: string[];
+  /** Compte témoin : tous les chapitres accessibles */
+  unlockAll?: boolean;
   onBack: () => void;
   onOpenChapter: (id: string) => void;
 }) {
@@ -1642,7 +1746,11 @@ function BlockScreen({
         {block.chapters.map((chapter, index) => {
           const done = completed.includes(chapter.id);
           const previous = block.chapters[index - 1];
-          const locked = !done && !!previous && !completed.includes(previous.id);
+          const locked =
+            !unlockAll &&
+            !done &&
+            !!previous &&
+            !completed.includes(previous.id);
           const denied = deniedId === chapter.id;
           const tone = activityTone(chapter.format);
           const teaser = chapterTeaser(chapter);

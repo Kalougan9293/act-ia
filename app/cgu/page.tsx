@@ -4,6 +4,8 @@ import { ASSISTANCE } from "@/lib/formation/assistance";
 
 export const metadata: Metadata = {
   title: "CGU — LockinIA",
+  description:
+    "Conditions générales d'utilisation de la plateforme LockinIA (formation, attestations, suivi RH).",
 };
 
 export default function CguPage() {
@@ -33,11 +35,22 @@ export default function CguPage() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Objet</h2>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Objet et acceptation</h2>
         <p>
-          Les présentes CGU régissent l&apos;accès à LockinIA : formation, attestations de suivi,
-          outils de pilotage RH et, le cas échéant, espace partenaire (organismes de formation ou
-          revendeurs).
+          Les présentes CGU régissent l&apos;accès à LockinIA : parcours de formation à
+          distance, attestations de suivi nominatives, synthèse de suivi entreprise au titre
+          de l&apos;article 4 du règlement (UE) 2024/1689 («&nbsp;AI Act&nbsp;»), module
+          entreprise (outils, charte, cas d&apos;usage), outils de pilotage RH et, le cas
+          échéant, espace partenaire (organismes de formation ou revendeurs).
+        </p>
+        <p>
+          L&apos;utilisation de la plateforme (création de compte, première connexion ou
+          poursuite d&apos;usage après information) vaut acceptation des présentes CGU. Les
+          conditions commerciales figurent dans les{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgv">
+            CGV
+          </a>
+          .
         </p>
       </section>
 
@@ -46,14 +59,29 @@ export default function CguPage() {
         <p>
           L&apos;abonnement peut être souscrit directement par l&apos;entreprise cliente, ou via un
           partenaire (organisme de formation / revendeur) disposant d&apos;un espace dédié. Dans
-          tous les cas, l&apos;accès des salariés est réservé aux personnes invitées ou rattachées
-          à leur structure. Chacun est responsable de la confidentialité de ses identifiants.
+          tous les cas, l&apos;accès des collaborateurs est réservé aux personnes invitées ou
+          rattachées à leur structure. Chacun est responsable de la confidentialité de ses
+          identifiants et de l&apos;exactitude des informations qu&apos;il saisit.
         </p>
         <p>
           Rôles principaux : <strong>super-administrateur</strong> LockinIA (FITOPS AI) ;{" "}
           <strong>partenaire</strong> (pilotage de ses entreprises clientes et quotas) ;{" "}
           <strong>RH</strong> (pilotage des collaborateurs de sa structure) ;{" "}
           <strong>apprenant</strong> (parcours et attestation).
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Démo publique et compte témoin
+        </h2>
+        <p>
+          La démo publique et les comptes témoins éventuellement mis à disposition à des fins
+          de présentation commerciale permettent d&apos;explorer l&apos;interface. Dans ces
+          modes, les validations de parcours ne sont pas enregistrées comme preuves
+          contractuelles pour une entreprise cliente, et les documents affichés (y compris une
+          attestation ou une synthèse) peuvent être des spécimens. Ils ne constituent pas une
+          attestation de suivi délivrée au titre d&apos;un abonnement.
         </p>
       </section>
 
@@ -104,6 +132,10 @@ export default function CguPage() {
           moyenne, évaluations) figurent dans les{" "}
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgv">
             CGV
+          </a>{" "}
+          et la{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/programme">
+            fiche programme
           </a>
           .
         </p>
@@ -113,16 +145,47 @@ export default function CguPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Usage</h2>
         <p>
           La plateforme doit être utilisée conformément à sa destination, sans détournement, sans
-          tentative d&apos;accès non autorisé et sans extraction abusive des contenus.
+          tentative d&apos;accès non autorisé et sans extraction abusive des contenus. L&apos;employeur
+          est responsable des invitations qu&apos;il envoie et du contenu qu&apos;il saisit dans le
+          module entreprise (outils, charte, cas d&apos;usage).
         </p>
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Contenu & attestation</h2>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+          Contenu, attestation et synthèse Article 4
+        </h2>
         <p>
-          Les contenus pédagogiques sont indicatifs et évolutifs. L&apos;attestation de suivi prouve
-          le parcours suivi et documente les mesures au titre de l&apos;article 4. Elle ne constitue
-          ni diplôme, ni certification officielle, ni certification de l&apos;entreprise.
+          Les contenus pédagogiques sont indicatifs et évolutifs. Ils ne constituent pas un
+          conseil juridique.
+        </p>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <strong>Attestation de suivi nominative</strong> : prouve qu&apos;un collaborateur a
+            suivi et validé le parcours (évaluation finale). Elle documente une mesure prise au
+            titre de l&apos;article 4. Elle ne constitue ni diplôme, ni certification
+            professionnelle officielle.
+          </li>
+          <li>
+            <strong>Synthèse de suivi entreprise</strong> : document RH (écran et/ou PDF
+            versionné) qui consigne le suivi des attestations et un récapitulatif nominatif. Elle
+            ne certifie pas l&apos;entreprise et ne remplace pas un audit de conformité.
+          </li>
+        </ul>
+        <p>
+          L&apos;identifiant de suivi structure (type REG-LIA-…) et les empreintes associées
+          servent à la traçabilité du dossier ; ils n&apos;emportent aucune homologation
+          publique.
+        </p>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Exports</h2>
+        <p>
+          Le RH peut télécharger des attestations individuelles, une synthèse Article 4 et, le
+          cas échéant, un export groupé de preuves. Ces fichiers sont destinés au dossier interne
+          de l&apos;employeur. L&apos;utilisateur s&apos;engage à ne pas les altérer pour
+          tromper un tiers sur le statut réel des parcours.
         </p>
       </section>
 
@@ -132,9 +195,10 @@ export default function CguPage() {
           Les contenus pédagogiques, la marque LockinIA et l&apos;interface appartiennent à FITOPS
           AI. L&apos;entreprise cliente (ou le partenaire pour le périmètre qu&apos;il gère)
           reste responsable et « propriétaire » de ses données opérationnelles : liste des
-          salariés, registre des usages et attestations. FITOPS AI ne les revend pas et ne les
-          réutilise pas pour un autre client. La licence d&apos;usage du contenu pédagogique
-          n&apos;emporte aucun transfert de propriété intellectuelle.
+          collaborateurs, module entreprise, registre des usages, attestations et synthèses. FITOPS
+          AI ne les revend pas et ne les réutilise pas pour un autre client. La licence
+          d&apos;usage du contenu pédagogique n&apos;emporte aucun transfert de propriété
+          intellectuelle.
         </p>
       </section>
 
@@ -181,10 +245,10 @@ export default function CguPage() {
         </p>
         <p>
           La suppression du compte se demande par e-mail au même contact. L&apos;entreprise demande
-          la fermeture de sa structure. Un salarié demande la suppression de son accès. Les preuves
-          de formation restent disponibles pour l&apos;employeur pendant l&apos;année civile de
-          réalisation de l&apos;action et les trois années civiles suivantes, et les factures
-          pendant dix ans.
+          la fermeture de sa structure. Un collaborateur demande la suppression de son accès. Les
+          preuves de formation restent disponibles pour l&apos;employeur pendant l&apos;année
+          civile de réalisation de l&apos;action et les trois années civiles suivantes, et les
+          factures pendant dix ans.
         </p>
       </section>
 
@@ -229,7 +293,11 @@ export default function CguPage() {
           <a className="text-blue-600 hover:underline dark:text-blue-400" href="/dpa">
             accord de sous-traitance (DPA)
           </a>{" "}
-          s&apos;applique.
+          s&apos;applique. Les cookies et le stockage local sont décrits sur la page{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cookies">
+            Cookies
+          </a>
+          .
         </p>
       </section>
 
@@ -243,7 +311,10 @@ export default function CguPage() {
 
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Droit applicable</h2>
-        <p>Droit français. En cas de litige, les tribunaux compétents seront saisis selon les règles en vigueur.</p>
+        <p>
+          Droit français. En cas de litige, et à défaut d&apos;accord amiable, les tribunaux
+          compétents seront saisis selon les règles en vigueur.
+        </p>
       </section>
     </LegalShell>
   );

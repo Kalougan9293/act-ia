@@ -10,7 +10,13 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import type { Employee, EmployeeStatus } from "@/components/demo/data";
 import type { CompanyModuleContent, PlatformUser, Structure } from "@/lib/admin/types";
 import { ensureStructureRegistryId } from "@/lib/firebase/admin-data";
-import { getStructure, listUsersByStructure, saveCompanyModule } from "@/lib/firebase/tenant-data";
+import {
+  getStructure,
+  listUsersByStructure,
+  saveArticle4Report,
+  saveCompanyModule,
+} from "@/lib/firebase/tenant-data";
+import type { Article4ReportRecord } from "@/lib/admin/types";
 import {
   ensureStructureInviteToken,
   structureInviteLink,
@@ -53,6 +59,7 @@ function toEmployees(users: PlatformUser[], companyName: string): Employee[] {
           : formatLastSeen(u.lastLoginAt ?? u.certifiedAt),
       certificateId: u.certificateId,
       certifiedAt: u.certifiedAt,
+      positioningScore: u.positioningScore ?? null,
       quizScore: u.quizScore,
       timeSpentSec: u.attestationTimeSpentSec ?? null,
       modulesCompleted: u.attestationModulesCompleted ?? null,
@@ -193,13 +200,22 @@ export default function RhApp() {
             structureId={session.structureId}
             structureInviteLink={inviteLink}
             structureRegistryId={structure?.registryId}
+            article4Report={structure?.article4Report ?? null}
             seatsMax={seatsMax}
             seatsUsed={seatsUsed}
             companyModule={structure?.companyModule}
             onRosterChange={() => setReloadKey((k) => k + 1)}
             onSaveCompanyModule={async (module: CompanyModuleContent) => {
               await saveCompanyModule(session.structureId!, module);
-              setStructure((current) => (current ? { ...current, companyModule: module } : current));
+              setStructure((current) =>
+                current ? { ...current, companyModule: module } : current,
+              );
+            }}
+            onSaveArticle4Report={async (report: Article4ReportRecord) => {
+              await saveArticle4Report(session.structureId!, report);
+              setStructure((current) =>
+                current ? { ...current, article4Report: report } : current,
+              );
             }}
           />
         )}

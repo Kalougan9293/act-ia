@@ -3,6 +3,8 @@ import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
   title: "Cookies — LockinIA",
+  description:
+    "Cookies et stockage local utilisés par LockinIA : éléments techniques uniquement, sans publicité.",
 };
 
 export default function CookiesPage() {
@@ -31,7 +33,11 @@ export default function CookiesPage() {
           </li>
           <li>
             <strong>Cache de progression formation</strong> en local pour éviter une perte en cas
-            de coupure réseau, synchronisé ensuite avec le serveur.
+            de coupure réseau, synchronisé ensuite avec le serveur (comptes abonnés).
+          </li>
+          <li>
+            <strong>Démo publique / compte témoin</strong> : progression et spécimens peuvent
+            rester uniquement locaux au navigateur, sans valeur de preuve contractuelle.
           </li>
         </ul>
       </section>
@@ -41,6 +47,13 @@ export default function CookiesPage() {
         <p>
           Vous pouvez effacer les données du site via les paramètres de votre navigateur. La
           déconnexion met fin à la session active.
+        </p>
+        <p>
+          Pour le traitement des données personnelles hors cookies, voir la{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/confidentialite">
+            politique de confidentialité
+          </a>
+          .
         </p>
         <p>
           Contact :{" "}

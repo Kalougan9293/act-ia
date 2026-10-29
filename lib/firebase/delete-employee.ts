@@ -74,6 +74,7 @@ export async function deleteEmployeeAsRh(params: {
       quizScore,
       progressPercent,
       reason: "rh_unenroll_formation",
+      seatConsumed: (progressPercent ?? 0) > 0,
     });
     const batch = writeBatch(db);
     for (const d of progressSnap.docs) batch.delete(d.ref);
@@ -87,7 +88,8 @@ export async function deleteEmployeeAsRh(params: {
       structureInviteToken: null,
     });
     await batch.commit();
-    await releaseSeatIfEmployee(structure, "rh", true);
+    // Siège libéré seulement si 0 % — un démarrage (≥1 %) reste consommé
+    await releaseSeatIfEmployee(structure, "rh", true, progressPercent);
     return;
   }
 
@@ -106,6 +108,7 @@ export async function deleteEmployeeAsRh(params: {
     quizScore,
     progressPercent,
     reason: "rh_remove_employee",
+    seatConsumed: (progressPercent ?? 0) > 0,
   });
 
   // Auth avant Firestore : sinon le compte Auth orphelin bloque une future 1ʳᵉ connexion.
@@ -138,7 +141,8 @@ export async function deleteEmployeeAsRh(params: {
   }
   await batch.commit();
 
-  await releaseSeatIfEmployee(structure, "employee", true);
+  // Siège libéré seulement si 0 % — un démarrage (≥1 %) reste consommé
+  await releaseSeatIfEmployee(structure, "employee", true, progressPercent);
 }
 
 /** Annule une invitation personnelle pending (legacy). */

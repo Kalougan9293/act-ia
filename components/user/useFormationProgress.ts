@@ -49,6 +49,11 @@ function nowIso() {
 export type FormationProgressOptions = {
   /** Ne pas lire/écrire Firestore (démo publique). */
   localOnly?: boolean;
+  /**
+   * Compte témoin : les mark* ne valident rien (pas de completedChapters / quizPassed).
+   * À combiner avec localOnly.
+   */
+  skipValidation?: boolean;
   /** Progression initiale (ex. démo : bloc 1 terminé). */
   seed?: FormationProgress;
 };
@@ -58,6 +63,7 @@ export function useFormationProgress(
   options?: FormationProgressOptions,
 ) {
   const localOnly = Boolean(options?.localOnly);
+  const skipValidation = Boolean(options?.skipValidation);
   const seedRef = useRef(options?.seed);
   seedRef.current = options?.seed;
   const [progress, setProgress] = useState<FormationProgress>(
@@ -147,6 +153,7 @@ export function useFormationProgress(
   );
 
   const markIntroDone = useCallback(() => {
+    if (skipValidation) return;
     const base = { ...progressRef.current, introDone: true };
     void persist(
       upsertModuleResult(base, {
@@ -157,10 +164,11 @@ export function useFormationProgress(
         score: null,
       }),
     );
-  }, [persist]);
+  }, [persist, skipValidation]);
 
   const markPositioning = useCallback(
     (score: number) => {
+      if (skipValidation) return;
       const base = {
         ...progressRef.current,
         positioningDone: true,
@@ -176,11 +184,12 @@ export function useFormationProgress(
         }),
       );
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const markChapterDone = useCallback(
     (chapterId: string) => {
+      if (skipValidation) return;
       if (progressRef.current.completedChapters.includes(chapterId)) return;
       const found = findChapter(chapterId);
       const base = {
@@ -197,10 +206,11 @@ export function useFormationProgress(
         }),
       );
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const markCompanyDone = useCallback(() => {
+    if (skipValidation) return;
     const base = { ...progressRef.current, companyModuleDone: true };
     void persist(
       upsertModuleResult(base, {
@@ -211,10 +221,11 @@ export function useFormationProgress(
         score: null,
       }),
     );
-  }, [persist]);
+  }, [persist, skipValidation]);
 
   const markQuiz = useCallback(
     (score: number, passed: boolean, quizAttempts: number) => {
+      if (skipValidation) return;
       const base = {
         ...progressRef.current,
         quizScore: score,
@@ -231,11 +242,12 @@ export function useFormationProgress(
         }),
       );
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const markCareer = useCallback(
     (careerPathId: string) => {
+      if (skipValidation) return;
       const base = { ...progressRef.current, careerPathId };
       void persist(
         upsertModuleResult(base, {
@@ -247,19 +259,21 @@ export function useFormationProgress(
         }),
       );
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const recordSession = useCallback(
     (session: ConnectionSession) => {
+      if (skipValidation) return;
       const next = upsertConnectionSession(progressRef.current, session);
       void persist(next);
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const markSatisfaction = useCallback(
     (input: Omit<SatisfactionFeedback, "submittedAt">) => {
+      if (skipValidation) return;
       const satisfaction: SatisfactionFeedback = {
         rating: input.rating,
         comment: input.comment.trim(),
@@ -268,7 +282,7 @@ export function useFormationProgress(
       };
       void persist({ ...progressRef.current, satisfaction });
     },
-    [persist],
+    [persist, skipValidation],
   );
 
   const totalChapters = allChapterIds().length;

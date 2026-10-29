@@ -352,7 +352,8 @@ export default function InterventionsContent() {
                 className="mx-auto max-w-xl text-center text-base leading-relaxed text-slate-700 dark:text-slate-200 sm:text-[1.0625rem]"
               >
                 Gagner du temps, former vos équipes, automatiser le répétitif —
-                sans exposer vos données ni empiler les outils inutiles.
+                sans exposer vos données, et en restant alignés avec l&apos;AI Act
+                et le RGPD.
               </motion.p>
 
               <motion.div

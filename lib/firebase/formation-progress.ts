@@ -17,7 +17,6 @@ import {
   type ModuleResult,
   type SatisfactionFeedback,
 } from "@/lib/formation/proof";
-
 function requireDb() {
   const db = getFirebaseDb();
   if (!db) throw new Error("Firebase non configuré");
@@ -276,7 +275,9 @@ export async function saveFormationProgress(
     const existing = await loadIssuedCertificate(uid);
     certificate = {
       id: existingCert,
-      issuedAt: userData.certifiedAt ? toIso(userData.certifiedAt) : new Date().toISOString(),
+      issuedAt: userData.certifiedAt
+        ? toIso(userData.certifiedAt)
+        : new Date().toISOString(),
       quizScore: progress.quizScore,
       careerPathId: progress.careerPathId,
       timeSpentSec: existing?.timeSpentSec ?? progress.totalTimeSpentSec,

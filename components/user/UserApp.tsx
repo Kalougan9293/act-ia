@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import type { CompanyModuleContent } from "@/lib/admin/types";
 import { emptyCompanyModule } from "@/lib/admin/types";
 import { getStructure } from "@/lib/firebase/tenant-data";
+import { isWitnessDemoAccount } from "@/lib/formation/witness";
 
 export default function UserApp() {
   const router = useRouter();
@@ -86,6 +87,7 @@ export default function UserApp() {
   }
 
   const firstName = session.name.trim().split(/\s+/)[0] ?? "";
+  const witnessDemo = isWitnessDemoAccount(session.email);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -103,6 +105,14 @@ export default function UserApp() {
             <span className="hidden sm:inline-flex rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
               Formation
             </span>
+            {witnessDemo ? (
+              <span
+                className="hidden sm:inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+                title="Compte témoin : parcours libre, aucune validation enregistrée"
+              >
+                Témoin
+              </span>
+            ) : null}
           </div>
 
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-16 sm:px-40">
@@ -138,6 +148,7 @@ export default function UserApp() {
           fullName={session.name}
           companyName={companyName}
           companyModule={companyModule}
+          witnessDemo={witnessDemo}
         />
       </main>
       <FloatingLexiconFab />

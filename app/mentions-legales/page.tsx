@@ -3,6 +3,8 @@ import LegalShell from "@/components/legal/LegalShell";
 
 export const metadata: Metadata = {
   title: "Mentions légales — LockinIA",
+  description:
+    "Mentions légales de LockinIA : éditeur FITOPS AI, hébergement et responsabilités.",
 };
 
 export default function MentionsLegalesPage() {
@@ -63,9 +65,10 @@ export default function MentionsLegalesPage() {
       <section className="space-y-2">
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Responsabilité</h2>
         <p>
-          LockinIA fournit des outils pour documenter une démarche de formation et une formation. Le contenu ne
-          constitue pas un conseil juridique. L&apos;attestation de suivi documente les mesures
-          prises au titre de l&apos;article 4 ; elle ne certifie pas l&apos;entreprise.
+          LockinIA fournit une formation à distance et des outils pour documenter le suivi des
+          parcours. Le contenu ne constitue pas un conseil juridique. L&apos;attestation de suivi
+          nominative et la synthèse Article&nbsp;4 documentent des mesures prises au titre de
+          l&apos;article 4 ; elles ne certifient pas l&apos;entreprise.
         </p>
       </section>
 
@@ -73,7 +76,15 @@ export default function MentionsLegalesPage() {
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Propriété intellectuelle</h2>
         <p>
           Les contenus, marques et éléments de la plateforme sont protégés. Toute reproduction non
-          autorisée est interdite.
+          autorisée est interdite. Les conditions d&apos;usage figurent dans les{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgu">
+            CGU
+          </a>{" "}
+          et les{" "}
+          <a className="text-blue-600 hover:underline dark:text-blue-400" href="/cgv">
+            CGV
+          </a>
+          .
         </p>
       </section>
     </LegalShell>

@@ -4,7 +4,7 @@ import LegalShell from "@/components/legal/LegalShell";
 export const metadata: Metadata = {
   title: "DPA — LockinIA",
   description:
-    "Accord de sous-traitance (article 28 du RGPD) entre l'entreprise cliente et FITOPS AI.",
+    "Accord de sous-traitance (article 28 du RGPD) : rôles, traitements, isolation et sous-traitants LockinIA.",
 };
 
 export default function DpaPage() {
@@ -70,8 +70,8 @@ export default function DpaPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <strong>Objet</strong> : hébergement mutualisé et mise à disposition de la plateforme
-            LockinIA (comptes, formation, attestations, espaces RH et partenaire, registre des
-            usages).
+            LockinIA (comptes, formation, attestations, synthèse Article&nbsp;4, module
+            entreprise / registre des usages, espaces RH et partenaire, invitations et quotas).
           </li>
           <li>
             <strong>Durée</strong> : pendant le contrat d&apos;abonnement (ou de partenariat),
@@ -93,8 +93,10 @@ export default function DpaPage() {
           </li>
           <li>
             <strong>Données</strong> : identité, e-mail, rôle, structure / partenaire,
-            progression de formation, scores, attestations, indicateurs de suivi, quotas /
-            sièges, contenu du registre des usages renseigné par le client.
+            progression de formation, scores, attestations, métadonnées de synthèse
+            Article&nbsp;4 (dates, version, empreinte, compteurs), indicateurs de suivi, quotas /
+            sièges, invitations, contenu du module entreprise / registre des usages renseigné
+            par le client, preuves archivées pendant la rétention due.
           </li>
         </ul>
       </section>

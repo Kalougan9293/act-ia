@@ -13,15 +13,20 @@ import {
   SOCLE_DURATION_HOURS,
   SOCLE_DURATION_LABEL,
 } from "@/lib/formation/curriculum";
-import { buildLearnerAttestationPdf } from "@/lib/export/attestation-pdf";
-import { buildSimplePdf, downloadBytes, slug } from "@/lib/export/proof-zip";
+import {
+  buildCompanyArticle4Pdf,
+  buildLearnerAttestationPdf,
+} from "@/lib/export/attestation-pdf";
+import { downloadBytes, slug } from "@/lib/export/proof-zip";
+import type { Article4ReportRecord } from "@/lib/admin/types";
 
 /** Durée pédagogique du socle (heures), reprise sur l'attestation / registre. */
 export const TRAINING_HOURS_EACH = SOCLE_DURATION_HOURS;
 
 export type LearnerAttestationInput = {
   fullName: string;
-  role: string;
+  /** Conservé pour compat ; non affiché sur l'attestation. */
+  role?: string;
   companyName: string;
   certificateId: string;
   quizScore: number;
@@ -74,7 +79,6 @@ export function downloadLearnerAttestation(input: LearnerAttestationInput) {
     buildLearnerAttestationPdf({
       first,
       last,
-      role: input.role || "Collaborateur",
       companyName: input.companyName,
       certificateId: input.certificateId,
       curriculumLabel: CURRICULUM_LABEL,
@@ -114,60 +118,96 @@ export function companyTrainingStats(employees: Employee[]) {
   };
 }
 
+/** Construit / met à jour l'enregistrement stocké sur la structure. */
+export function nextArticle4ReportRecord(params: {
+  previous: Article4ReportRecord | null | undefined;
+  employees: Employee[];
+  registryId: string;
+  /** true = export PDF (incrémente version) */
+  forExport: boolean;
+}): Article4ReportRecord {
+  const stats = companyTrainingStats(params.employees);
+  const complete = stats.total > 0 && stats.certified === stats.total;
+  const now = new Date().toISOString();
+  const fingerprint = certificateFingerprint(
+    certificateSerialFromId(params.registryId),
+  );
+  const previous = params.previous ?? null;
+  const first = previous?.firstIssuedAt ?? (complete ? now : null);
+
+  return {
+    firstIssuedAt: first,
+    lastExportedAt: params.forExport ? now : (previous?.lastExportedAt ?? null),
+    version: params.forExport
+      ? Math.max(1, (previous?.version ?? 0) + 1)
+      : Math.max(0, previous?.version ?? 0),
+    fingerprint,
+    trainedCount: stats.trained,
+    certifiedCount: stats.certified,
+    totalCount: stats.total,
+    hours: stats.hours,
+    status: complete ? "complete" : "preview",
+  };
+}
+
 export function downloadCompanyReport(
   companyName: string,
   employees: Employee[],
   registryIdOverride?: string | null,
+  report?: Article4ReportRecord | null,
 ) {
   const stats = companyTrainingStats(employees);
-  const issuedAt = new Date().toISOString();
-  const paris = formatProofDate(issuedAt);
-  const utc = formatProofDateUtc(issuedAt);
   const registryId =
     registryIdOverride?.trim() || registryIdForCompany(companyName);
   const serial = certificateSerialFromId(registryId);
-  const hash = certificateFingerprint(serial);
+  const hash = report?.fingerprint || certificateFingerprint(serial);
   const complete = stats.total > 0 && stats.certified === stats.total;
-
-  const people = employees.map((employee) => {
-    const when = employee.certifiedAt ? formatProofDate(employee.certifiedAt) : null;
-    const whenUtc = employee.certifiedAt ? formatProofDateUtc(employee.certifiedAt) : null;
-    const attestation = employee.certificateId ?? "sans attestation";
-    const parisLabel = when ? `${when.date} ${when.time} Europe/Paris` : "—";
-    const utcLabel = whenUtc ? `${whenUtc.date} ${whenUtc.time} UTC` : "—";
-    return `${employee.name} — ${attestation} — ${parisLabel} — ${utcLabel} — score ${employee.quizScore ?? "—"}`;
-  });
-
-  const lines = [
-    "LockinIA",
-    "Rapport d'engagement et de suivi — Article 4",
-    "Attestations de suivi · AI Act (article 4) et RGPD",
-    "",
-    `Raison sociale : ${companyName}`,
-    `Identifiant suivi : ${registryId}`,
-    `Empreinte : ${hash}`,
-    `Émis le : ${paris.date} à ${paris.time} (Europe/Paris)`,
-    `Horodatage UTC : ${utc.date} à ${utc.time} UTC`,
-    `Statut du suivi : ${complete ? "À jour — chaque collaborateur actif a une attestation" : "En cours"}`,
-    "",
-    "Synthèse",
-    `Collaborateurs actifs : ${stats.total}`,
-    `Parcours validés à 100 % : ${stats.trained}/${stats.total} (${stats.rate} %)`,
-    `Attestations de suivi émises : ${stats.certified}`,
-    `Volume d'heures : ${stats.hours} h`,
-    `Durée pédagogique comptée : ${SOCLE_DURATION_LABEL} par collaborateur au parcours validé (100 %).`,
-    "",
-    "Récapitulatif horodaté — archive audit",
-    ...(people.length ? people : ["Aucun collaborateur."]),
-    "",
-    "Document émis par LockinIA et conservé dans le suivi des parcours.",
-    "Il consigne les attestations de suivi des collaborateurs.",
-    "Il ne certifie pas l'entreprise et ne constitue pas un conseil juridique.",
-  ];
+  const exportIso = report?.lastExportedAt || new Date().toISOString();
+  const paris = formatProofDate(exportIso);
+  const utc = formatProofDateUtc(exportIso);
+  const firstIso = report?.firstIssuedAt;
+  const firstParis = firstIso ? formatProofDate(firstIso) : null;
 
   downloadBytes(
-    `rapport-article-4-${slug(companyName)}.pdf`,
-    buildSimplePdf(lines),
+    `synthese-suivi-article-4-${slug(companyName)}.pdf`,
+    buildCompanyArticle4Pdf({
+      companyName,
+      registryId,
+      fingerprint: hash,
+      version: report?.version ?? 1,
+      statusComplete: complete,
+      trained: stats.trained,
+      certified: stats.certified,
+      total: stats.total,
+      hours: stats.hours,
+      durationLabel: SOCLE_DURATION_LABEL,
+      issuedAtLabel: `${paris.date} à ${paris.time} (Europe/Paris)`,
+      utcLabel: `${utc.date} à ${utc.time} UTC`,
+      firstIssuedLabel: firstParis
+        ? `${firstParis.date} à ${firstParis.time} (Europe/Paris)`
+        : null,
+      people: employees
+        .filter(
+          (employee) =>
+            Boolean(employee.certificateId) && employee.percent >= 100,
+        )
+        .sort((a, b) => a.name.localeCompare(b.name, "fr"))
+        .map((employee) => {
+          const when = employee.certifiedAt
+            ? formatProofDate(employee.certifiedAt)
+            : null;
+          return {
+            name: employee.name,
+            certificateId: employee.certificateId ?? null,
+            certifiedAtLabel: when
+              ? `${when.date} à ${when.time} (Europe/Paris)`
+              : null,
+            quizScore: employee.quizScore ?? null,
+            complete: true,
+          };
+        }),
+      pendingCount: Math.max(0, stats.total - stats.certified),
+    }),
     "application/pdf",
   );
 }

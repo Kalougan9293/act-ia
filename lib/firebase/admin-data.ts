@@ -45,6 +45,27 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
   const registryId = data.registryId
     ? String(data.registryId)
     : registryIdForCompany(name || id);
+  const rawReport = (data.article4Report ?? null) as Record<string, unknown> | null;
+  const article4Report = rawReport
+    ? {
+        firstIssuedAt: rawReport.firstIssuedAt
+          ? toIsoDate(rawReport.firstIssuedAt)
+          : null,
+        lastExportedAt: rawReport.lastExportedAt
+          ? toIsoDate(rawReport.lastExportedAt)
+          : null,
+        version: Number(rawReport.version ?? 0),
+        fingerprint: String(rawReport.fingerprint ?? ""),
+        trainedCount: Number(rawReport.trainedCount ?? 0),
+        certifiedCount: Number(rawReport.certifiedCount ?? 0),
+        totalCount: Number(rawReport.totalCount ?? 0),
+        hours: Number(rawReport.hours ?? 0),
+        status:
+          rawReport.status === "complete"
+            ? ("complete" as const)
+            : ("preview" as const),
+      }
+    : null;
   return {
     id,
     name,
@@ -54,6 +75,7 @@ export function mapStructure(id: string, data: Record<string, unknown>): Structu
     inviteToken: data.inviteToken ? String(data.inviteToken) : null,
     registryId,
     partnerId: data.partnerId ? String(data.partnerId) : null,
+    article4Report,
     companyModule: {
       ...emptyCompanyModule(),
       visible: Boolean(company.visible),
@@ -167,6 +189,7 @@ export async function saveStructure(structure: Structure): Promise<void> {
       inviteToken: structure.inviteToken,
       registryId: structure.registryId,
       partnerId: structure.partnerId,
+      article4Report: structure.article4Report,
       billing: structure.billing,
       companyModule: structure.companyModule,
     },
@@ -267,6 +290,69 @@ export async function deleteStructureAndUsers(
   for (const userId of userIds) {
     batch.delete(doc(db, "users", userId));
   }
+  await batch.commit();
+}
+
+/**
+ * Suppression définitive d'une structure déjà archivée.
+ * Preuves FOAD conservées dans archivedProofs ; fiche structure + comptes + invites effacés.
+ */
+export async function purgeStructureForever(
+  structureId: string,
+  userIds: string[],
+): Promise<void> {
+  const db = requireDb();
+
+  // Même rétention preuves que deleteStructureAndUsers
+  for (const userId of userIds) {
+    const snap = await getDoc(doc(db, "users", userId));
+    if (!snap.exists()) continue;
+    const data = snap.data() as Record<string, unknown>;
+    await archiveUserProofs({
+      userId,
+      structureId,
+      email: String(data.email ?? ""),
+      name: String(data.name ?? ""),
+      role: String(data.role ?? ""),
+      certificateId:
+        data.certificateId != null ? String(data.certificateId) : null,
+      certifiedAt: data.certifiedAt != null ? String(data.certifiedAt) : null,
+      quizScore: typeof data.quizScore === "number" ? data.quizScore : null,
+      progressPercent:
+        typeof data.progressPercent === "number" ? data.progressPercent : null,
+      reason: "admin_purge_structure",
+    });
+  }
+
+  for (const userId of userIds) {
+    const snap = await getDoc(doc(db, "users", userId));
+    const email = snap.exists()
+      ? String(snap.data()?.email ?? "")
+          .trim()
+          .toLowerCase()
+      : "";
+    try {
+      await deleteAuthAccount({ uid: userId, email });
+    } catch {
+      // Compte Auth déjà absent — on continue le nettoyage Firestore
+    }
+  }
+
+  const structureSnap = await getDoc(doc(db, "structures", structureId));
+  const inviteToken = structureSnap.exists()
+    ? String(
+        (structureSnap.data() as Record<string, unknown>).inviteToken ?? "",
+      ).trim()
+    : "";
+  if (inviteToken) {
+    await deleteDoc(doc(db, "structureInvites", inviteToken)).catch(() => undefined);
+  }
+
+  const batch = writeBatch(db);
+  for (const userId of userIds) {
+    batch.delete(doc(db, "users", userId));
+  }
+  batch.delete(doc(db, "structures", structureId));
   await batch.commit();
 }
 

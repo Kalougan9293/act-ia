@@ -10,6 +10,8 @@ export interface Partner {
   siret: string;
   status: AccountStatus;
   createdAt: string;
+  /** ISO date si révoqué / archivé — null = actif */
+  archivedAt: string | null;
   /** Quota global d'accès stagiaires allouables à ses entreprises */
   seatsMax: number;
   /** Fin de licence partenaire (AAAA-MM-JJ), null = pas de date */
@@ -193,6 +195,22 @@ export function isCompanyModuleFilled(module: CompanyModuleContent | null | unde
   );
 }
 
+/** Synthèse / rapport de suivi Art. 4 — figé & versionné côté structure */
+export interface Article4ReportRecord {
+  /** Première fois où le suivi est complet (tous attestés) — ISO, figé */
+  firstIssuedAt: string | null;
+  /** Dernier export PDF — ISO */
+  lastExportedAt: string | null;
+  /** Incrémenté à chaque export PDF */
+  version: number;
+  fingerprint: string;
+  trainedCount: number;
+  certifiedCount: number;
+  totalCount: number;
+  hours: number;
+  status: "preview" | "complete";
+}
+
 export interface Structure {
   id: string;
   name: string;
@@ -209,6 +227,8 @@ export interface Structure {
   companyModule: CompanyModuleContent;
   /** Partenaire OF propriétaire — null = client direct LockinIA */
   partnerId: string | null;
+  /** Synthèse Art. 4 (dates figées, versions d'export) */
+  article4Report: Article4ReportRecord | null;
 }
 
 export interface PlatformUser {
