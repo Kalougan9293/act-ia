@@ -111,7 +111,9 @@ export const DEMO_TOUR_STEPS = [
   },
 ];
 
-type DemoTourStep = (typeof DEMO_TOUR_STEPS)[number];
+type DemoTourStep = Omit<(typeof DEMO_TOUR_STEPS)[number], "placement"> & {
+  placement: "below" | "above";
+};
 
 type DemoPhase = "idle" | "code" | "ready" | "running";
 
