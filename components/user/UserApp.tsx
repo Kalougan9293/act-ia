@@ -90,8 +90,8 @@ export default function UserApp() {
   const witnessDemo = isWitnessDemoAccount(session.email);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
+      <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
         <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="relative z-10 flex min-w-0 items-center gap-2.5">
             <ThemeToggle />
@@ -139,8 +139,8 @@ export default function UserApp() {
         </div>
       </header>
 
-      {/* pb large : on peut scroller sous le FAB « Les mots de l'IA » pour accéder aux boutons */}
-      <main className="mx-auto w-full max-w-6xl scroll-pb-40 px-4 pb-44 pt-8 sm:scroll-pb-36 sm:px-6 sm:pb-36 sm:pt-10">
+      {/* flex-1 + my-auto : contenu court centré verticalement ; pb large pour scroller sous le FAB */}
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col scroll-pb-40 px-4 pb-44 pt-6 sm:scroll-pb-36 sm:px-6 sm:pb-36 sm:pt-8">
         <FormationExperience
           key={session.uid}
           uid={session.uid}

@@ -201,8 +201,12 @@ const FAB_CORE = [
   "supervision-humaine",
 ];
 
-/** Bouton flottant « Les mots de l'IA » — accessible partout. */
-export function FloatingLexiconFab() {
+/** Bouton « Les mots de l'IA » — flottant, ou inline sous le rail desktop. */
+export function FloatingLexiconFab({
+  variant = "fixed",
+}: {
+  variant?: "fixed" | "inline";
+} = {}) {
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -226,15 +230,27 @@ export function FloatingLexiconFab() {
     a.term.localeCompare(b.term, "fr", { sensitivity: "base" }),
   );
 
+  const inline = variant === "inline";
+
   return (
     <div
       ref={panelRef}
-      className="fixed right-4 z-50 bottom-[max(1.25rem,env(safe-area-inset-bottom))] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-6"
+      className={
+        inline
+          ? "relative z-50 flex w-full flex-col items-center"
+          : "formation-fab-fixed fixed right-4 z-50 bottom-[max(1.25rem,env(safe-area-inset-bottom))] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-6"
+      }
     >
       {open && (
-        <div className="mb-3 w-[min(100vw-2rem,20rem)] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-600 dark:bg-slate-900">
+        <div
+          className={`mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-600 dark:bg-slate-900 ${
+            inline
+              ? "absolute bottom-full w-full max-w-[calc(100vw-2rem)]"
+              : "w-[min(100vw-2rem,20rem)]"
+          }`}
+        >
           <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">
               Les mots de l&apos;IA
             </p>
             <button
@@ -268,9 +284,11 @@ export function FloatingLexiconFab() {
         aria-expanded={open}
         aria-label="Ouvrir le lexique"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+        className={`inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 font-semibold text-white shadow-lg transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 ${
+          inline ? "w-full px-3 py-2.5 text-xs" : "px-4 py-3 text-sm"
+        }`}
       >
-        <BookOpen className="h-3.5 w-3.5" aria-hidden />
+        <BookOpen className="h-3.5 w-3.5 shrink-0" aria-hidden />
         Les mots de l&apos;IA
       </button>
     </div>

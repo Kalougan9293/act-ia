@@ -11,7 +11,7 @@ import { demoCompanyModule, demoEmployees } from "./data";
 type View = "rh" | "user";
 
 export default function DemoApp() {
-  const [view, setView] = useState<View>("rh");
+  const [view, setView] = useState<View>("user");
 
   return (
     <div
@@ -38,8 +38,8 @@ export default function DemoApp() {
             <div className="pointer-events-auto inline-flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
               {(
                 [
-                  ["rh", "Espace RH"],
                   ["user", "Parcours"],
+                  ["rh", "Espace RH"],
                 ] as const
               ).map(([id, label]) => (
                 <button

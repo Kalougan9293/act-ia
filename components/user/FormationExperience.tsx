@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import ActivityPlayer from "@/components/user/ActivityPlayer";
 import CareerScreen from "@/components/user/CareerScreen";
-import LexiconBar from "@/components/user/LexiconTip";
+import LexiconBar, { FloatingLexiconFab } from "@/components/user/LexiconTip";
 import { useConnectionLog } from "@/components/user/useConnectionLog";
 import { useFormationProgress } from "@/components/user/useFormationProgress";
 import CertificatePreview from "@/components/demo/CertificatePreview";
@@ -184,7 +184,7 @@ export default function FormationExperience({
 
   function withDesign(node: ReactNode) {
     return (
-      <div data-design="v2" className="formation-shell relative">
+      <div data-design="v2" className="formation-shell relative my-auto w-full">
         {node}
       </div>
     );
@@ -214,7 +214,7 @@ export default function FormationExperience({
   }
 
   if (!ready) {
-    return <p className="text-center text-sm text-slate-500 py-16">Chargement…</p>;
+    return <p className="my-auto py-16 text-center text-sm text-slate-500">Chargement…</p>;
   }
 
   if (active.kind === "intro") {
@@ -1957,106 +1957,217 @@ function ChapterScreen({
   const stepCount = block.chapters.length;
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
 
+  useEffect(() => {
+    document.documentElement.classList.add("formation-desktop-rail");
+    return () => document.documentElement.classList.remove("formation-desktop-rail");
+  }, []);
+
+  const railTip =
+    chapter.id === "1.3" ? (
+      <>
+        <span className="font-semibold">IA classique</span> : trie, calcule, range.
+        <br />
+        <span className="font-semibold">IA générative</span> : crée un texte ou une image.
+      </>
+    ) : (
+      block.goal
+    );
+  const railTipLabel = chapter.id === "1.3" ? "Rappel" : "Objectif";
+
+  const progressBar = (
+    <div className="px-1 xl:hidden">
+      <ol className="flex justify-between gap-1">
+        {block.chapters.map((item, index) => {
+          const current = item.id === chapter.id;
+          const reached = index <= stepIndex;
+          return (
+            <li
+              key={item.id}
+              className={`text-center text-xs leading-none sm:text-sm ${
+                current
+                  ? "font-semibold text-slate-700 dark:text-slate-200"
+                  : reached
+                    ? "text-slate-400 dark:text-slate-500"
+                    : "text-slate-300 dark:text-slate-600"
+              }`}
+            >
+              {item.id}
+            </li>
+          );
+        })}
+      </ol>
+      <div className="relative mt-2.5 h-0.5 rounded-full bg-slate-200 dark:bg-slate-700">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-slate-400/80 dark:bg-slate-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-7 sm:space-y-8">
-      <div className="px-1">
-        <ol className="flex justify-between gap-1">
-          {block.chapters.map((item, index) => {
-            const current = item.id === chapter.id;
-            const reached = index <= stepIndex;
-            return (
-              <li
-                key={item.id}
-                className={`text-center text-xs leading-none sm:text-sm ${
-                  current
-                    ? "font-semibold text-slate-700 dark:text-slate-200"
-                    : reached
-                      ? "text-slate-400 dark:text-slate-500"
-                      : "text-slate-300 dark:text-slate-600"
+    <>
+      {/* Contenu centré — rail à droite en xl+ */}
+      <div className="mx-auto w-full max-w-3xl space-y-7 sm:space-y-8 xl:max-w-4xl">
+        {progressBar}
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Bloc {block.number}
+        </button>
+
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 hidden rounded-[1.75rem] bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(ellipse_at_20%_90%,rgba(167,139,250,0.1),transparent_45%)] xl:block dark:bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.12),transparent_50%)]"
+          />
+          <div className="space-y-6 xl:rounded-3xl xl:border xl:border-blue-100/70 xl:bg-gradient-to-b xl:from-white/70 xl:via-slate-50/55 xl:to-blue-50/40 xl:px-10 xl:py-9 xl:shadow-[0_12px_40px_-24px_rgba(15,23,42,0.28)] xl:backdrop-blur-[3px] dark:xl:border-slate-700/80 dark:xl:from-slate-900/55 dark:xl:via-slate-900/45 dark:xl:to-blue-950/30">
+            <div className="space-y-2 text-center">
+              <h1
+                className={`text-center text-2xl text-slate-900 dark:text-white sm:text-[1.75rem] ${
+                  kind === "text"
+                    ? "font-semibold [font-family:var(--font-reading),Georgia,serif]"
+                    : "font-bold"
                 }`}
               >
-                {item.id}
-              </li>
-            );
-          })}
-        </ol>
-        <div className="relative mt-2.5 h-0.5 rounded-full bg-slate-200 dark:bg-slate-700">
-          <div
-            className="absolute inset-y-0 left-0 rounded-full bg-slate-400/80 dark:bg-slate-500"
-            style={{ width: `${progress}%` }}
-          />
+                {chapter.id} · {chapter.title}
+              </h1>
+            </div>
+
+            <ActivityPlayer
+              key={chapter.id}
+              activity={chapter.activity}
+              duration={chapter.duration}
+              onReady={() => setActivityComplete(true)}
+            />
+          </div>
         </div>
+
+        {(kind === "fiche" || chapter.id === "6.1") && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={printReflexSheet}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              Imprimer la fiche des 7 réflexes
+            </button>
+          </div>
+        )}
+
+        {showAck && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => setAcked(true)}
+              className="rounded-xl border-2 border-blue-400 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-100 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-100 dark:hover:bg-blue-950"
+            >
+              J&apos;ai compris
+            </button>
+          </div>
+        )}
+
+        {!waitForActivity && (
+          <div className="flex justify-center pt-2">
+            <button
+              type="button"
+              disabled={!canContinue}
+              onClick={onComplete}
+              className={`inline-flex min-w-[12rem] items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold shadow-md transition duration-300 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
+                waitingTimer
+                  ? "bg-blue-600/80 text-white shadow-blue-600/10"
+                  : "bg-blue-600 text-white shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 disabled:opacity-40"
+              }`}
+            >
+              {continueLabel}
+              {canContinue ? <ArrowRight className="h-4 w-4" /> : null}
+            </button>
+          </div>
+        )}
       </div>
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors duration-200 hover:text-blue-600"
+
+      <aside
+        className="pointer-events-none fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 top-24 z-30 hidden w-72 xl:right-6 xl:flex xl:flex-col 2xl:w-80"
+        aria-label="Progression du bloc"
       >
-        <ArrowLeft className="h-4 w-4" />
-        Bloc {block.number}
-      </button>
+        <div className="pointer-events-auto flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/95">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+            <div className="space-y-2">
+              <p className="text-center text-xs font-bold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
+                Bloc {block.number}
+              </p>
+              <p className="text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+                {block.title}
+              </p>
+              <p className="text-center text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                {chapter.format} · {chapter.duration}
+              </p>
+            </div>
 
-      <div className="space-y-2 text-center">
-        <h1
-          className={`text-center text-2xl text-slate-900 dark:text-white sm:text-[1.75rem] ${
-            kind === "text"
-              ? "font-semibold [font-family:var(--font-reading),Georgia,serif]"
-              : "font-bold"
-          }`}
-        >
-          {chapter.id} · {chapter.title}
-        </h1>
-      </div>
+            <ol className="mt-5 border-t border-slate-100 pt-5 text-left dark:border-slate-800">
+              {block.chapters.map((item, index) => {
+                const current = item.id === chapter.id;
+                const done = index < stepIndex;
+                const isLast = index === block.chapters.length - 1;
+                return (
+                  <li key={item.id} className="relative flex gap-3.5 pb-5 last:pb-0">
+                    <span className="relative flex w-3 shrink-0 flex-col items-center">
+                      <span
+                        className={`relative z-10 mt-1.5 h-3 w-3 rounded-full ring-[3px] ${
+                          done
+                            ? "bg-emerald-500 ring-emerald-100 dark:ring-emerald-950"
+                            : current
+                              ? "bg-blue-600 ring-blue-100 dark:ring-blue-950"
+                              : "bg-slate-300 ring-slate-100 dark:bg-slate-600 dark:ring-slate-800"
+                        }`}
+                        aria-hidden
+                      />
+                      {!isLast ? (
+                        <span
+                          className={`absolute top-[1.35rem] bottom-[-1.25rem] left-1/2 w-0.5 -translate-x-1/2 ${
+                            done ? "bg-emerald-400" : "bg-slate-200 dark:bg-slate-700"
+                          }`}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </span>
+                    <span
+                      className={`min-w-0 flex-1 pt-1 text-[13px] leading-relaxed ${
+                        current
+                          ? "font-semibold text-blue-800 dark:text-blue-200"
+                          : done
+                            ? "font-medium text-slate-600 dark:text-slate-300"
+                            : "text-slate-400 dark:text-slate-500"
+                      }`}
+                    >
+                      <span className="font-semibold">{item.id}</span>
+                      {" · "}
+                      {item.title}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
 
-      <ActivityPlayer
-        key={chapter.id}
-        activity={chapter.activity}
-        duration={chapter.duration}
-        onReady={() => setActivityComplete(true)}
-      />
+            <div className="mt-5 rounded-xl border border-violet-100 bg-violet-50/80 px-4 py-4 text-center dark:border-violet-900/50 dark:bg-violet-950/30">
+              <p className="text-center text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700 dark:text-violet-300">
+                {railTipLabel}
+              </p>
+              <p className="mt-2 text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                {railTip}
+              </p>
+            </div>
+          </div>
 
-      {(kind === "fiche" || chapter.id === "6.1") && (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={printReflexSheet}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-          >
-            Imprimer la fiche des 7 réflexes
-          </button>
+          <div className="pointer-events-auto shrink-0 border-t border-slate-100 p-4 dark:border-slate-800">
+            <FloatingLexiconFab variant="inline" />
+          </div>
         </div>
-      )}
-
-      {showAck && (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setAcked(true)}
-            className="rounded-xl border-2 border-blue-400 bg-blue-50 px-5 py-3 text-sm font-semibold text-blue-800 transition hover:bg-blue-100 dark:border-blue-500 dark:bg-blue-950/50 dark:text-blue-100 dark:hover:bg-blue-950"
-          >
-            J&apos;ai compris
-          </button>
-        </div>
-      )}
-
-      {!waitForActivity && (
-        <div className="flex justify-center pt-2">
-          <button
-            type="button"
-            disabled={!canContinue}
-            onClick={onComplete}
-            className={`inline-flex min-w-[12rem] items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold shadow-md transition duration-300 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:hover:translate-y-0 ${
-              waitingTimer
-                ? "bg-blue-600/80 text-white shadow-blue-600/10"
-                : "bg-blue-600 text-white shadow-blue-600/20 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 disabled:opacity-40"
-            }`}
-          >
-            {continueLabel}
-            {canContinue ? <ArrowRight className="h-4 w-4" /> : null}
-          </button>
-        </div>
-      )}
-    </div>
+      </aside>
+    </>
   );
 }
 
