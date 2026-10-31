@@ -95,15 +95,6 @@ const addons: {
       "Format standard à 690 € : texte + cas pratique + idée d'usage, rédigé pour votre métier et intégré au parcours. Demande plus large (plusieurs métiers, contenus longs) : sur devis.",
   },
   {
-    name: "Marque blanche",
-    tag: "Partenaires",
-    price: "Sur devis",
-    detail: "",
-    featured: false,
-    description:
-      "Votre logo et vos couleurs sur la plateforme — pour un organisme de formation ou un cabinet RH. Sur devis.",
-  },
-  {
     name: "Atelier usages & automatisation",
     tag: "Accompagnement",
     price: "Sur devis",
@@ -115,6 +106,12 @@ const addons: {
       "Session avec vos équipes (visio ou présentiel) : prioriser les usages, gagner du temps sur le quotidien, cadrer ce qui peut être automatisé. Hors abonnement, sur devis.",
   },
 ];
+
+const whiteLabelTiers = [
+  { seats: "20–99", price: "40 €" },
+  { seats: "100–249", price: "35 €" },
+  { seats: "250+", price: "30 €" },
+] as const;
 
 export default function PricingSection() {
   return (
@@ -138,11 +135,7 @@ export default function PricingSection() {
           <span className="text-blue-600 dark:text-blue-400">OPCO</span> possible
           sous réserve d&apos;éligibilité{" "}
           <span className="font-normal text-slate-600 dark:text-slate-300">
-            (dossier Qualiopi en préparation, sans certification revendiquée ·{" "}
-            <a href="/programme" className="underline hover:text-blue-600 dark:hover:text-blue-400">
-              fiche programme
-            </a>
-            )
+            (dossier Qualiopi en préparation)
           </span>
         </p>
 
@@ -233,61 +226,134 @@ export default function PricingSection() {
             contenu propre à votre métier ? Ajoutez un module sur mesure — rédigé et intégré pour vous.
           </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {addons.map((addon) => (
-              <div
-                key={addon.name}
-                className={`relative flex flex-col rounded-2xl border p-5 text-center ${
-                  addon.featured
-                    ? "border-blue-500 bg-blue-50/60 shadow-md dark:border-blue-500 dark:bg-blue-950/30 lg:scale-[1.02]"
-                    : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
-                }`}
-              >
-                {addon.featured ? (
+            {addons
+              .filter((addon) => addon.featured)
+              .map((addon) => (
+                <div
+                  key={addon.name}
+                  className="relative flex flex-col rounded-2xl border border-blue-500 bg-blue-50/60 p-5 text-center shadow-md dark:border-blue-500 dark:bg-blue-950/30 lg:scale-[1.02]"
+                >
                   <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                     Sur mesure
                   </span>
-                ) : null}
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wider ${
-                    addon.featured
-                      ? "text-blue-700 dark:text-blue-300"
-                      : "text-blue-600 dark:text-blue-400"
-                  }`}
-                >
-                  {addon.tag}
-                </p>
-                <p className="mt-2 font-semibold text-slate-900 dark:text-white">{addon.name}</p>
-                <p className="mt-3">
-                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                    {addon.price}
-                  </span>
-                  {addon.detail ? (
-                    <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
-                      {addon.detail}
+                  <p className="text-xs font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                    {addon.tag}
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900 dark:text-white">{addon.name}</p>
+                  <p className="mt-3">
+                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                      {addon.price}
                     </span>
-                  ) : null}
-                </p>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                  {addon.description}
-                </p>
-                {addon.featured ? (
+                    {addon.detail ? (
+                      <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                        {addon.detail}
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                    {addon.description}
+                  </p>
                   <a
                     href="mailto:contact@lockin-web.online?subject=LockinIA%20-%20module%20metier%20sur%20mesure"
                     className="mt-4 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
                   >
                     Demander un module sur mesure
                   </a>
-                ) : null}
-                {addon.href && addon.cta ? (
-                  <Link
-                    href={addon.href}
-                    className="mt-4 inline-flex items-center justify-center rounded-xl border border-blue-600 px-4 py-2.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40"
-                  >
-                    {addon.cta}
-                  </Link>
-                ) : null}
+                </div>
+              ))}
+
+            <div className="relative flex flex-col rounded-2xl border border-slate-200 bg-white p-5 text-center dark:border-slate-700 dark:bg-slate-800">
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                Partenaires
+              </p>
+              <p className="mt-2 font-semibold text-slate-900 dark:text-white">
+                Marque blanche
+              </p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Organismes de formation
+              </p>
+
+              <div className="mt-4 flex-1 space-y-3 text-left">
+                <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-600">
+                  {whiteLabelTiers.map((tier, i) => (
+                    <div
+                      key={tier.seats}
+                      className={`flex items-center justify-between px-3 py-2 text-sm ${
+                        i > 0 ? "border-t border-slate-200 dark:border-slate-600" : ""
+                      }`}
+                    >
+                      <span className="text-slate-600 dark:text-slate-300">
+                        {tier.seats}{" "}
+                        <span className="text-xs text-slate-400">apprenants</span>
+                      </span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {tier.price}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <li className="flex justify-between gap-2">
+                    <span>Installation</span>
+                    <span>
+                      <span className="text-slate-400 line-through">500 €</span>{" "}
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        offert
+                      </span>
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span>Logo + nom OF</span>
+                    <span>
+                      <span className="text-slate-400 line-through">500 €</span>{" "}
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        offert
+                      </span>
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span>Personnalisation avancée</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">500 €</span>
+                  </li>
+                </ul>
               </div>
-            ))}
+            </div>
+
+            {addons
+              .filter((addon) => !addon.featured)
+              .map((addon) => (
+                <div
+                  key={addon.name}
+                  className="relative flex flex-col rounded-2xl border border-slate-200 bg-white p-5 text-center dark:border-slate-700 dark:bg-slate-800"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    {addon.tag}
+                  </p>
+                  <p className="mt-2 font-semibold text-slate-900 dark:text-white">{addon.name}</p>
+                  <p className="mt-3">
+                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                      {addon.price}
+                    </span>
+                    {addon.detail ? (
+                      <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                        {addon.detail}
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                    {addon.description}
+                  </p>
+                  {addon.href && addon.cta ? (
+                    <Link
+                      href={addon.href}
+                      className="mt-4 inline-flex items-center justify-center rounded-xl border border-blue-600 px-4 py-2.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40"
+                    >
+                      {addon.cta}
+                    </Link>
+                  ) : null}
+                </div>
+              ))}
           </div>
 
           <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-300">

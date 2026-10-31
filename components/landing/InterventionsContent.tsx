@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  ClipboardCheck,
   GraduationCap,
   MessageSquare,
   Pause,
@@ -20,19 +21,19 @@ const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
 
 const offerings = [
   {
+    label: "Audit",
+    icon: ClipboardCheck,
+    title: "Vos outils passés au crible",
+    summary:
+      "Vérification de vos outils, pour AI Act + RGPD : ce qui est déjà conforme, les risques, et ce qu'il faut corriger avant d'aller plus loin.",
+    side: "left" as const,
+  },
+  {
     label: "Formation",
     icon: GraduationCap,
     title: "Vos équipes opérationnelles dès demain",
     summary:
       "Ateliers concrets : bons usages, données sensibles, prompts efficaces. Vos collaborateurs repartent avec des méthodes applicables immédiatement.",
-    side: "left" as const,
-  },
-  {
-    label: "Automatisation",
-    icon: Workflow,
-    title: "On coupe le travail inutile",
-    summary:
-      "On cartographie ce qui vous fait perdre du temps, on priorise le ROI, on déploie assistants et workflows — sans usine à gaz.",
     side: "right" as const,
   },
   {
@@ -44,12 +45,20 @@ const offerings = [
     side: "left" as const,
   },
   {
+    label: "Automatisation",
+    icon: Workflow,
+    title: "On coupe le travail inutile",
+    summary:
+      "On cartographie ce qui vous fait perdre du temps, on priorise le ROI, on déploie assistants et workflows — sans usine à gaz.",
+    side: "right" as const,
+  },
+  {
     label: "Canal IA",
     icon: MessageSquare,
     title: "Un ChatGPT interne, sous vos règles",
     summary:
       "Un chat IA sur mesure en interne pour vos équipes, sans données clients dans ChatGPT grand public. Outils validés, accès contrôlés, sur devis.",
-    side: "right" as const,
+    side: "left" as const,
   },
 ];
 
@@ -407,7 +416,7 @@ export default function InterventionsContent() {
             Ce que l&apos;on livre
           </motion.p>
           <h2 className="sr-only">
-            Formation, Automatisation, Intégration, Canal IA
+            Audit, Formation, Intégration, Automatisation, Canal IA
           </h2>
 
           <div className="flex flex-col">
