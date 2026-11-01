@@ -288,7 +288,7 @@ export const BLOCKS: Block[] = [
           kind: "quiz",
           questions: [
             {
-              prompt: "Depuis quand l'entreprise doit-elle prendre des mesures pour soutenir la maîtrise de l'IA ?",
+              prompt: "Depuis quand l'entreprise doit-elle prendre des mesures pour favoriser le développement de la maîtrise de l'IA ?",
               choices: [
                 {
                   label: "Depuis le 2 février 2025",
@@ -465,7 +465,7 @@ export const BLOCKS: Block[] = [
               label: "Déjà en vigueur",
               law: "Articles 4 et 5 — déjà en vigueur",
               detail:
-                "Article 4 (après l'Omnibus 2026) : l'entreprise doit prendre des mesures pour soutenir la maîtrise de l'IA chez celles et ceux qui l'utilisent — pas « garantir » un niveau d'expertise. Cette formation en fait partie. Le texte n'attache pas d'amende spécifique à l'article 4. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo) — hors exceptions très limitées —, ou déduire sa religion ou son origine à partir d'une photo.",
+                "Article 4 (après le règlement Omnibus 2026/1744) : l'entreprise doit prendre des mesures pour favoriser le développement de la maîtrise de l'IA chez celles et ceux qui l'utilisent — pas garantir un niveau individuel de compétence. Cette formation en fait partie. L'article 4 n'a pas de plafond d'amende qui lui soit propre ; des mesures d'exécution ou sanctions restent possibles selon le droit applicable. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo) — hors exceptions très limitées —, ou déduire sa religion ou son origine à partir d'une photo.",
             },
             {
               id: "aout26",
@@ -481,27 +481,27 @@ export const BLOCKS: Block[] = [
               shortDate: "Déc. 2026",
               date: "2 décembre 2026",
               label: "Prochaine échéance",
-              law: "Deepfakes intimes — AI Act + déjà en France",
+              law: "Interdictions sur certains contenus illicites — AI Act + déjà en France",
               detail:
-                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN). Au 2 décembre 2026, l'AI Act ajoute aussi une interdiction européenne sur certains systèmes qui produisent ce type de contenus intimes non consentis. Retenez : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
+                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN). Au 2 décembre 2026, l'AI Act ajoute surtout des interdictions européennes sur certains systèmes qui produisent ce type de contenus intimes non consentis — ce n'est pas la date générale de toutes les règles « deepfake » (la transparence Art. 50, elle, s'applique dès août 2026). Retenez : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
             },
             {
               id: "dec27",
               shortDate: "Déc. 2027",
               date: "2 décembre 2027",
               label: "Recrutement",
-              law: "Haut risque — décalé par l'Omnibus",
+              law: "Haut risque (annexe III) — calendrier Omnibus",
               detail:
-                "Décembre 2027 concerne surtout les règles AI Act les plus strictes sur le recrutement et les outils qui trient des CV ou notent des salariés (report via l'Omnibus). Attention : le RGPD (art. 22) s'applique déjà — on ne laisse pas une machine écarter seule un candidat. L'outil peut aider à classer, mais un humain garde la décision finale.",
+                "Décembre 2027 : règles AI Act pour les systèmes à haut risque concernés par l'annexe III, notamment emploi et recrutement — selon la finalité du système (tous les outils RH ne sont pas automatiquement à haut risque). Attention : le RGPD (art. 22) s'applique déjà — on ne laisse pas une machine écarter seule un candidat. L'outil peut aider à classer, mais un humain garde la décision finale.",
             },
             {
               id: "aout28",
               shortDate: "Août 2028",
               date: "2 août 2028",
               label: "Plus tard",
-              law: "IA dans certains produits",
+              law: "IA dans certains produits réglementés (art. 6 §1 / annexe I)",
               detail:
-                "D'autres règles arriveront pour l'IA intégrée dans des produits réglementés. Vous n'avez pas à les connaître dans le détail. Si ça concerne votre métier, votre entreprise vous le dira.",
+                "D'autres règles arriveront pour certaines IA liées à des produits réglementés. Vous n'avez pas à les connaître dans le détail. Si ça concerne votre métier, votre entreprise vous le dira.",
             },
           ],
         },

@@ -435,7 +435,7 @@ out.push("-".repeat(50));
 out.push("");
 out.push("Titre: Un prix fixe, des attestations à jour");
 out.push(
-  "Mention: Prise en charge OPCO possible via un organisme de formation partenaire Qualiopi, selon éligibilité.",
+  "Mention: Formation réalisable avec un partenaire certifié Qualiopi. OPCO selon éligibilité via ce partenaire.",
 );
 out.push("");
 for (const plan of plans) {

@@ -1,9 +1,9 @@
 import type { PlatformUser } from "./types";
 
 /**
- * Formés / utilisateurs / (capacité affichée à part).
+ * Formés / inscrits actifs (places = sièges consommés / capacité, affichés à part).
  * Collaborateurs + RH inscrits via le lien (formationEnrolled).
- * À la création : 0/0/N (le RH seul ne compte pas).
+ * À la création : 0/0 formés · 0/N places (le RH seul ne compte pas).
  */
 export function structureGraduates(structureId: string, users: PlatformUser[]) {
   const members = users.filter(

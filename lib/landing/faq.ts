@@ -2,7 +2,7 @@ export const faqs = [
   {
     question: "L'article 4 de l'AI Act concerne-t-il mon entreprise ?",
     answer:
-      "Oui, dès que des personnes utilisent une IA pour le travail de l'entreprise, y compris ChatGPT ou Copilot. Depuis le 2 février 2025, vous devez prendre des mesures pour soutenir la maîtrise de l'IA — l'Omnibus de 2026 a clarifié cette formulation (soutenir, pas « garantir » un niveau d'expertise). Il n'y a pas de seuil de taille : même une TPE est concernée, avec un effort proportionné à ses usages. Le texte n'attache pas d'amende spécifique à l'article 4.",
+      "Oui, dès que des personnes utilisent une IA pour le travail de l'entreprise, y compris ChatGPT ou Copilot. Depuis le 2 février 2025, l'article 4 impose de prendre des mesures pour favoriser le développement de la maîtrise de l'IA. Le règlement Omnibus (UE) 2026/1744 a clarifié que l'obligation porte sur les mesures mises en œuvre, pas sur la garantie d'un niveau individuel de compétence. Il n'y a pas de seuil de taille : même une TPE est concernée, avec un effort proportionné à ses usages. L'article 4 ne prévoit pas de plafond d'amende qui lui soit propre ; un manquement peut toutefois donner lieu à des mesures d'exécution ou à des sanctions selon le droit applicable.",
   },
   {
     question: "Quel lien entre l'IA et le RGPD dans la formation ?",
@@ -12,7 +12,7 @@ export const faqs = [
   {
     question: "Faut-il garantir que chaque salarié « maîtrise » l'IA ?",
     answer:
-      "Non. La loi ne vous demande pas de prouver que chaque salarié est expert en IA. Elle vous demande de prendre des mesures pour soutenir la maîtrise de l'IA, adaptées à vos usages, et de pouvoir les documenter. Sans mesures documentées, il devient difficile de montrer que vous avez agi en cas d'audit client, d'incident ou de demande d'assurance.",
+      "Non. La loi ne vous demande pas de prouver que chaque salarié est expert en IA. Elle vous demande de prendre des mesures pour favoriser le développement de la maîtrise de l'IA, adaptées à vos usages, et de pouvoir les documenter. Sans mesures documentées, il devient difficile de montrer que vous avez agi en cas d'audit client, d'incident ou de demande d'assurance.",
   },
   {
     question: "Que se passe-t-il si on n'a rien documenté ?",
@@ -37,7 +37,7 @@ export const faqs = [
   {
     question: "Faut-il un organisme certifié ou un volume d'heures imposé ?",
     answer:
-      "Non. Le texte n'impose ni organisme, ni label, ni durée. Une formation bien documentée peut faire partie des mesures prises au titre de l'article 4. Si vous visez une prise en charge OPCO, un partenaire Qualiopi reste possible.",
+      "Non. Le texte n'impose ni organisme, ni label, ni durée. Une formation bien documentée peut faire partie des mesures prises au titre de l'article 4. Si vous visez une prise en charge OPCO, la formation peut être réalisée via un partenaire certifié Qualiopi.",
   },
   {
     question: "Combien de temps dure la formation ?",
@@ -82,7 +82,7 @@ export const faqs = [
   {
     question: "Un OPCO peut-il financer la formation ?",
     answer:
-      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, et le cas échéant via un organisme de formation partenaire Qualiopi. LockinIA prépare son dossier Qualiopi (référentiel et preuves FOAD) : aucune date d'audit n'est fixée, aucune certification ni numéro de déclaration d'activité n'est revendiqué. Le détail figure dans la fiche programme.",
+      "Oui, une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, via un organisme de formation partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée dès finalisation des accords. Le détail figure dans la fiche programme.",
   },
   {
     question: "Où trouver la fiche programme de la formation ?",

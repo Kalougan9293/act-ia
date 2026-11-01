@@ -1,9 +1,10 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { validatePassword } from "@/lib/auth/password";
 import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
 import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/client";
 import { logOut } from "@/lib/firebase/auth";
+import { fetchFirstLoginStatus } from "@/lib/firebase/first-login-status";
 
 function authCode(error: unknown) {
   return error && typeof error === "object" && "code" in error
@@ -31,9 +32,9 @@ export async function completeFirstConnection(
   const db = getFirebaseDb();
   if (!auth || !db) throw new Error("Firebase non configuré");
 
-  const pendingSnap = await getDoc(doc(db, "firstLogin", email));
-  const pending = pendingSnap.data();
-  if (!pendingSnap.exists() || pending?.status !== "pending") {
+  // Lecture via Admin SDK (firstLogin n'est plus get-public)
+  const pending = await fetchFirstLoginStatus(email);
+  if (!pending.pending) {
     throw new Error(
       "Aucun accès créé pour cet e-mail. Demandez à votre RH de vous ajouter.",
     );

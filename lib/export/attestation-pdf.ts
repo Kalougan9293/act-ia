@@ -263,6 +263,41 @@ class PageBuilder {
     }
   }
 
+  /** Cercle (approximation Bézier) — centre (cx, cy), rayon r. */
+  circle(
+    cx: number,
+    cy: number,
+    r: number,
+    opts: { stroke?: string; fill?: string; width?: number } = {},
+  ) {
+    const k = 0.5522847498 * r;
+    const path = [
+      `${(cx + r).toFixed(2)} ${cy.toFixed(2)} m`,
+      `${(cx + r).toFixed(2)} ${(cy + k).toFixed(2)} ${(cx + k).toFixed(2)} ${(cy + r).toFixed(2)} ${cx.toFixed(2)} ${(cy + r).toFixed(2)} c`,
+      `${(cx - k).toFixed(2)} ${(cy + r).toFixed(2)} ${(cx - r).toFixed(2)} ${(cy + k).toFixed(2)} ${(cx - r).toFixed(2)} ${cy.toFixed(2)} c`,
+      `${(cx - r).toFixed(2)} ${(cy - k).toFixed(2)} ${(cx - k).toFixed(2)} ${(cy - r).toFixed(2)} ${cx.toFixed(2)} ${(cy - r).toFixed(2)} c`,
+      `${(cx + k).toFixed(2)} ${(cy - r).toFixed(2)} ${(cx + r).toFixed(2)} ${(cy - k).toFixed(2)} ${(cx + r).toFixed(2)} ${cy.toFixed(2)} c`,
+    ].join(" ");
+    if (opts.fill && opts.stroke) {
+      this.cmds.push(
+        `${opts.fill} rg`,
+        `${opts.stroke} RG`,
+        `${opts.width ?? 1.2} w`,
+        path,
+        "B",
+      );
+    } else if (opts.fill) {
+      this.cmds.push(`${opts.fill} rg`, path, "f");
+    } else {
+      this.cmds.push(
+        `${opts.stroke ?? SLATE} RG`,
+        `${opts.width ?? 1.2} w`,
+        path,
+        "S",
+      );
+    }
+  }
+
   fakeQr(x: number, y: number, size = 48) {
     const cells = [
       "111011101",
@@ -683,95 +718,128 @@ export type CompanyArticle4PdfInput = {
   pendingCount: number;
 };
 
-/** PDF synthèse entreprise — suivi Art. 4 (multi-pages si besoin). */
+/** PDF synthèse entreprise — diplôme / suivi Art. 4 (aligné sur l'aperçu UI). */
 export function buildCompanyArticle4Pdf(input: CompanyArticle4PdfInput): Uint8Array {
   const EMERALD = "0.024 0.463 0.341";
+  const EMERALD_SOFT = "0.925 0.973 0.953";
+  const CREAM = "0.984 0.973 0.945";
+  const GOLD = "0.706 0.549 0.220";
   const rate =
     input.total === 0 ? 0 : Math.round((input.trained / input.total) * 100);
+  const versionLabel = `v${Math.max(1, input.version)}`;
   const streams: string[] = [];
   let page = new PageBuilder();
   let pageIndex = 1;
 
-  const paintHeader = (p: PageBuilder, continued: boolean) => {
-    p.rect(0, PAGE_H - 28, PAGE_W, 28, { fill: EMERALD });
+  const paintFrame = (p: PageBuilder) => {
+    p.rect(0, 0, PAGE_W, PAGE_H, { fill: CREAM });
+    p.rect(18, 18, PAGE_W - 36, PAGE_H - 36, {
+      stroke: EMERALD,
+      width: 2.4,
+    });
+    p.rect(24, 24, PAGE_W - 48, PAGE_H - 48, {
+      stroke: GOLD,
+      width: 0.7,
+    });
+  };
+
+  const paintHeaderBand = (p: PageBuilder, continued: boolean) => {
+    p.rect(24, PAGE_H - 54, PAGE_W - 48, 26, { fill: EMERALD });
     p.centerText(
-      PAGE_H - 18,
+      PAGE_H - 38,
       continued
         ? `LockinIA  ·  SYNTHÈSE DE SUIVI  ·  Suite (p.${pageIndex})`
         : "LockinIA  ·  SYNTHÈSE DE SUIVI  ·  ARTICLE 4",
-      { size: 9, bold: true, color: WHITE },
+      { size: 8.5, bold: true, color: WHITE },
     );
-    p.y = PAGE_H - 52;
+    p.y = PAGE_H - 72;
+  };
+
+  const paintSeal = (p: PageBuilder, cy: number) => {
+    const cx = PAGE_W / 2;
+    p.circle(cx, cy, 28, { fill: EMERALD_SOFT, stroke: EMERALD, width: 2.2 });
+    p.circle(cx, cy, 21, { stroke: GOLD, width: 1.1 });
+    p.centerText(cy + 4, "ART. 4", { size: 9, bold: true, color: EMERALD });
+    p.centerText(cy - 8, "AI ACT", { size: 6.5, color: MUTED });
   };
 
   const newContinuedPage = () => {
     streams.push(page.stream());
     pageIndex += 1;
     page = new PageBuilder();
-    paintHeader(page, true);
-    page.text(LEFT, page.y, `${input.companyName} — récapitulatif (suite)`, {
-      size: 10,
-      bold: true,
-    });
-    page.y -= 16;
+    paintFrame(page);
+    paintHeaderBand(page, true);
+    page.centerText(page.y, input.companyName, { size: 11, bold: true });
+    page.y -= 18;
   };
 
-  paintHeader(page, false);
+  paintFrame(page);
+  paintHeaderBand(page, false);
+  paintSeal(page, page.y - 8);
+  page.y -= 52;
+
   page.centerText(page.y, "Synthèse de suivi — Article 4", {
-    size: 18,
+    size: 17,
     bold: true,
   });
-  page.y -= 22;
+  page.y -= 18;
   page.centerText(page.y, "Attestations de suivi · AI Act (article 4)", {
-    size: 10,
+    size: 9.5,
     color: MUTED,
   });
-  page.y -= 18;
-
-  if (!input.statusComplete) {
-    page.centerText(page.y, "DOCUMENT EN COURS — suivi incomplet", {
-      size: 9,
-      bold: true,
-      color: AMBER,
-    });
-    page.y -= 16;
-  }
-
-  page.centerText(page.y, "Raison sociale", { size: 8, color: MUTED });
   page.y -= 14;
-  page.centerText(page.y, input.companyName, { size: 16, bold: true });
+  page.centerText(
+    page.y,
+    input.statusComplete
+      ? `Version ${versionLabel} · suivi complet`
+      : `Version ${versionLabel} · document en cours`,
+    {
+      size: 8.5,
+      bold: true,
+      color: input.statusComplete ? EMERALD : AMBER,
+    },
+  );
+  page.y -= 20;
+
+  page.centerText(page.y, "RAISON SOCIALE", {
+    size: 7.5,
+    color: MUTED,
+  });
+  page.y -= 13;
+  page.centerText(page.y, input.companyName, { size: 18, bold: true });
   page.y -= 22;
 
-  page.rect(LEFT, page.y - 28, CONTENT_W, 36, {
-    fill: "0.925 0.973 0.953",
+  // Bandeau indicateurs
+  page.rect(LEFT, page.y - 34, CONTENT_W, 42, {
+    fill: EMERALD_SOFT,
     stroke: EMERALD,
     width: 1,
   });
-  page.centerText(page.y - 8, `${input.trained}/${input.total} collaborateurs formés · ${rate} %`, {
-    size: 11,
-    bold: true,
-    color: EMERALD,
-  });
   page.centerText(
-    page.y - 22,
-    `${input.hours} h de formation · ${input.certified} attestation${input.certified > 1 ? "s" : ""} émise${input.certified > 1 ? "s" : ""}`,
+    page.y - 10,
+    `${input.trained} / ${input.total} collaborateurs formés  ·  ${rate} %`,
+    { size: 11, bold: true, color: EMERALD },
+  );
+  page.centerText(
+    page.y - 26,
+    `${input.hours} h de formation  ·  ${input.certified} attestation${input.certified > 1 ? "s" : ""} émise${input.certified > 1 ? "s" : ""}`,
     { size: 9, color: MUTED },
   );
-  page.y -= 48;
+  page.y -= 54;
 
   const meta: [string, string][] = [
-    ["Identifiant suivi", input.registryId],
-    ["Empreinte", input.fingerprint],
-    ["Version document", `v${Math.max(1, input.version)}`],
+    ["Identifiant de suivi", input.registryId],
+    ["Empreinte documentaire", input.fingerprint],
+    ["Version du document", versionLabel],
     [
-      "Périmètre",
+      "Périmètre documenté",
       "Usage des IA génératives, protection des données et cadre EU AI Act (article 4).",
     ],
     [
       "Volume d'heures",
       `${input.hours} h — ${input.durationLabel} par collaborateur au parcours validé (100 %).`,
     ],
-    ["Émis / exporté le", input.issuedAtLabel],
+    ["Horodatage (Europe/Paris)", input.issuedAtLabel],
   ];
   if (input.utcLabel) meta.push(["Horodatage UTC", input.utcLabel]);
   if (input.firstIssuedLabel) {
@@ -779,83 +847,109 @@ export function buildCompanyArticle4Pdf(input: CompanyArticle4PdfInput): Uint8Ar
   }
 
   for (const [label, value] of meta) {
-    if (!page.ensure(40)) newContinuedPage();
-    page.text(LEFT, page.y, label.toUpperCase(), { size: 7.5, color: MUTED });
-    page.y -= 11;
+    if (!page.ensure(36)) newContinuedPage();
+    page.text(LEFT, page.y, label.toUpperCase(), { size: 7, color: MUTED });
+    page.y -= 10;
     for (const line of wrapText(value, CONTENT_W, 9.5)) {
-      if (!page.ensure(14)) newContinuedPage();
+      if (!page.ensure(12)) newContinuedPage();
       page.text(LEFT, page.y, line, { size: 9.5 });
-      page.y -= 12;
+      page.y -= 11;
     }
-    page.y -= 4;
+    page.y -= 5;
   }
 
-  page.y -= 4;
-  if (!page.ensure(50)) newContinuedPage();
-  page.line(LEFT, page.y, RIGHT, page.y);
-  page.y -= 16;
-  page.text(LEFT, page.y, "Attestations émises (nominatif)", {
-    size: 11,
-    bold: true,
-  });
+  if (!page.ensure(56)) newContinuedPage();
+  page.line(LEFT, page.y, RIGHT, page.y, GOLD, 0.9);
+  page.y -= 14;
+  page.text(LEFT, page.y, "Attestations émises", { size: 11, bold: true });
   page.y -= 12;
   page.text(
     LEFT,
     page.y,
-    "Liste des collaborateurs ayant une attestation de suivi. Les parcours en cours figurent uniquement en compteur.",
+    `${input.people.length} attesté${input.people.length > 1 ? "s" : ""}${
+      input.pendingCount > 0
+        ? ` · ${input.pendingCount} sans attestation`
+        : ""
+    } · ${input.total} collaborateur${input.total > 1 ? "s" : ""}`,
     { size: 8, color: MUTED },
   );
   page.y -= 14;
 
   if (input.people.length === 0) {
-    page.text(LEFT, page.y, "Aucune attestation émise pour le moment.", {
+    if (!page.ensure(24)) newContinuedPage();
+    page.rect(LEFT, page.y - 16, CONTENT_W, 22, {
+      fill: WHITE,
+      stroke: LINE,
+      width: 0.8,
+    });
+    page.centerText(page.y - 8, "Aucune attestation émise pour le moment.", {
       size: 9,
       color: MUTED,
     });
-    page.y -= 12;
+    page.y -= 28;
   } else {
     for (const person of input.people) {
-      if (!page.ensure(36)) newContinuedPage();
-      const when = person.certifiedAtLabel ?? "—";
-      const score =
-        person.quizScore != null ? `Score ${person.quizScore}` : "Score —";
-      page.text(LEFT, page.y, person.name, { size: 9.5, bold: true });
-      page.y -= 11;
+      if (!page.ensure(30)) newContinuedPage();
+      page.rect(LEFT, page.y - 18, CONTENT_W, 24, {
+        fill: WHITE,
+        stroke: LINE,
+        width: 0.6,
+      });
+      page.text(LEFT + 8, page.y - 4, person.name, { size: 9.5, bold: true });
       page.text(
-        LEFT,
-        page.y,
-        `Attestation ${person.certificateId ?? "—"}  ·  ${when}  ·  ${score}`,
-        { size: 8, color: MUTED },
+        LEFT + 8,
+        page.y - 14,
+        `${person.certificateId ?? "—"}  ·  ${person.certifiedAtLabel ?? "—"}${
+          person.quizScore != null ? `  ·  Score ${person.quizScore}` : ""
+        }`,
+        { size: 7.5, color: MUTED },
       );
-      page.y -= 14;
+      page.y -= 28;
     }
   }
 
   if (input.pendingCount > 0) {
-    if (!page.ensure(28)) newContinuedPage();
+    if (!page.ensure(22)) newContinuedPage();
     page.text(
       LEFT,
       page.y,
-      `${input.pendingCount} collaborateur${input.pendingCount > 1 ? "s" : ""} encore sans attestation (non listé${input.pendingCount > 1 ? "s" : ""} ici).`,
-      { size: 9, color: AMBER },
+      "Les collaborateurs sans attestation ne sont pas listés nominativement (suivi détaillé dans l'espace RH).",
+      { size: 8, color: AMBER },
     );
-    page.y -= 12;
+    page.y -= 14;
   }
 
-  if (!page.ensure(70)) newContinuedPage();
-  page.y = Math.min(page.y, MARGIN_BOTTOM + 70);
-  page.line(LEFT, page.y, RIGHT, page.y);
+  if (!page.ensure(88)) newContinuedPage();
+  page.line(LEFT, page.y, RIGHT, page.y, GOLD, 0.9);
   page.y -= 12;
   const disclaimer = [
     "Document émis par LockinIA et conservé dans le suivi des parcours.",
-    "Il consigne les attestations de suivi des collaborateurs.",
-    "Il ne certifie pas l'entreprise et ne constitue pas un conseil juridique.",
-    `Réf. ${input.registryId} · v${Math.max(1, input.version)} · ${input.fingerprint.slice(-8)}`,
+    "Il consigne les attestations de suivi. Il ne certifie pas l'entreprise",
+    "et ne constitue pas un conseil juridique. Le PDF versionné liste les",
+    "collaborateurs attestés ; le détail des parcours en cours reste dans l'espace RH.",
   ];
   for (const line of disclaimer) {
-    page.text(LEFT, page.y, line, { size: 7.5, color: MUTED });
+    page.centerText(page.y, line, { size: 7.2, color: MUTED });
     page.y -= 9;
   }
+  page.y -= 6;
+  page.centerText(page.y, "LockinIA — édité par FITOPS AI (micro-entreprise)", {
+    size: 7.5,
+    bold: true,
+    color: SLATE,
+  });
+  page.y -= 9;
+  page.centerText(
+    page.y,
+    "119 rue Jules Parent, 92500 Rueil-Malmaison — SIRET 853 780 906 00063",
+    { size: 7, color: MUTED },
+  );
+  page.y -= 9;
+  page.centerText(
+    page.y,
+    `contact@lockin-web.online · lockin-web.online · Réf. ${input.registryId} · ${versionLabel}`,
+    { size: 7, color: MUTED },
+  );
 
   streams.push(page.stream());
   return assemblePdf(streams);

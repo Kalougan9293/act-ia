@@ -101,15 +101,17 @@ function SortHeader({
   active,
   dir,
   onClick,
+  id,
 }: {
   label: string;
   active: boolean;
   dir: "asc" | "desc";
   onClick: () => void;
+  id?: string;
 }) {
   const Icon = !active ? ArrowUpDown : dir === "asc" ? ArrowUp : ArrowDown;
   return (
-    <th className="px-4 py-3 text-center font-medium">
+    <th id={id} className="px-4 py-3 text-center font-medium">
       <button
         type="button"
         onClick={onClick}
@@ -279,7 +281,10 @@ export default function HrView({
     return sort.dir === "asc" ? result : -result;
   });
   const done = active.filter((employee) => employee.percent >= 100).length;
-  const rate = active.length === 0 ? 0 : Math.round((done / active.length) * 100);
+  const inProgress = active.filter(
+    (employee) => employee.percent > 0 && employee.percent < 100,
+  ).length;
+  const enrolled = active.length;
   const selected = roster.find((employee) => employee.id === preview) ?? null;
   const avisDetail = roster.find((employee) => employee.id === avisDetailId) ?? null;
   const seatsFull = seatsUsed >= seatsMax;
@@ -472,6 +477,7 @@ export default function HrView({
 
       <div className="flex flex-wrap items-center justify-center gap-3">
         <button
+          id="rh-tour-article4"
           type="button"
           onClick={() => setShowCompany(true)}
           className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
@@ -537,20 +543,42 @@ export default function HrView({
       </div>
 
       <div
-        className={`grid gap-4 ${demo ? "mx-auto max-w-3xl grid-cols-3" : "grid-cols-2 lg:grid-cols-5"}`}
+        className={`grid gap-2.5 ${demo ? "mx-auto max-w-3xl grid-cols-2 sm:grid-cols-4" : "grid-cols-2 lg:grid-cols-5"}`}
       >
-        <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
-          <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{done}/{active.length}</div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Salariés formés</div>
+        <div
+          id="rh-tour-enrolled"
+          className="rounded-xl border border-sky-100 bg-gradient-to-br from-white to-sky-50/90 px-3 py-2.5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800"
+        >
+          <div className="text-xl font-bold tabular-nums text-sky-700 dark:text-sky-300">
+            {enrolled}
+          </div>
+          <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Inscrits</div>
         </div>
-        <div className="rounded-xl border border-sky-100 bg-gradient-to-br from-white to-sky-50/90 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
-          <div className="text-2xl font-bold text-sky-700 dark:text-sky-300">{rate} %</div>
-          <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Taux de suivi</div>
+        <div
+          id="rh-tour-progress"
+          className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-3 py-2.5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800"
+        >
+          <div className="text-xl font-bold tabular-nums text-amber-700 dark:text-amber-300">
+            {inProgress}
+          </div>
+          <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">En cours</div>
+        </div>
+        <div
+          id="rh-tour-done"
+          className="rounded-xl border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/80 px-3 py-2.5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800"
+        >
+          <div className="text-xl font-bold tabular-nums text-emerald-700 dark:text-emerald-300">
+            {done}
+          </div>
+          <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Terminés</div>
         </div>
         {!demo ? (
-          <div className="rounded-xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+          <div
+            id="rh-tour-seats"
+            className="rounded-xl border border-violet-100 bg-gradient-to-br from-white to-violet-50/80 px-3 py-2.5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800"
+          >
             <div
-              className={`text-2xl font-bold tabular-nums ${
+              className={`text-xl font-bold tabular-nums ${
                 seatsFull
                   ? "text-red-600 dark:text-red-400"
                   : "text-violet-700 dark:text-violet-300"
@@ -558,49 +586,40 @@ export default function HrView({
             >
               {seatsUsed}/{seatsMax}
             </div>
-            <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Limite</div>
-          </div>
-        ) : null}
-        {!demo ? (
-          <div className="rounded-xl border border-amber-100 bg-gradient-to-br from-white to-amber-50/80 px-4 py-5 text-center shadow-sm dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
-            <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">90 jours</div>
-            <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">Avant échéance (31 déc. 2026)</div>
+            <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Limite</div>
           </div>
         ) : null}
         <button
+          id="rh-tour-module"
           type="button"
           onClick={openModuleEditor}
-          className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-4 py-5 text-center shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-800 dark:hover:border-blue-800"
+          className="rounded-xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/90 px-3 py-2.5 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:from-slate-800 dark:to-slate-800 dark:hover:border-blue-800"
         >
           <div className="flex justify-center text-blue-700 dark:text-blue-300">
-            <Building2 className="h-7 w-7" strokeWidth={2} />
+            <Building2 className="h-5 w-5" strokeWidth={2} />
           </div>
-          <div className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          <div className="mt-0.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
             Module entreprise
-          </div>
-          <div
-            className={`mt-1 text-[11px] font-medium ${
-              moduleSaved.visible
-                ? "text-emerald-700 dark:text-emerald-300"
-                : "text-slate-400 dark:text-slate-500"
-            }`}
-          >
-            {moduleSaved.visible ? "Visible aux collaborateurs" : "Masqué (par défaut)"}
           </div>
         </button>
       </div>
 
       {deleteError && (
-        <p className="text-center text-sm text-red-600 dark:text-red-400">{deleteError}</p>
+        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+          {deleteError}
+        </p>
       )}
 
       {(demo || structureInviteLink) && (
-        <div className="flex w-full items-center gap-3 rounded-xl border border-blue-100/80 bg-gradient-to-r from-blue-50/60 to-white px-4 py-2.5 shadow-sm dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-900">
-          <p className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
-            Lien de connexion
+        <div
+          id="rh-tour-link"
+          className="mx-auto flex w-fit max-w-full items-center gap-2 rounded-lg border border-blue-100/80 bg-gradient-to-r from-blue-50/60 to-white px-2.5 py-1.5 shadow-sm dark:border-slate-700 dark:from-slate-800/80 dark:to-slate-900"
+        >
+          <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
+            Lien
           </p>
           <p
-            className="min-w-0 flex-1 truncate text-sm font-medium text-blue-600 dark:text-blue-400"
+            className="max-w-[min(28rem,70vw)] truncate text-xs font-medium text-blue-600 dark:text-blue-400"
             title={permanentLink}
           >
             {permanentLink}
@@ -608,9 +627,9 @@ export default function HrView({
           <button
             type="button"
             onClick={() => void copyPermanentLink()}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
+            className="inline-flex shrink-0 items-center gap-1 rounded-md border border-blue-200 bg-white px-2 py-1 text-[11px] font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
           >
-            {copiedPermanent ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copiedPermanent ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             {copiedPermanent ? "Copié" : "Copier"}
           </button>
         </div>
@@ -623,6 +642,7 @@ export default function HrView({
           </h2>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <button
+              id="rh-tour-add"
               type="button"
               onClick={openAddForm}
               className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
@@ -643,20 +663,51 @@ export default function HrView({
           <table className="w-full text-sm text-center">
             <thead className="text-slate-500 dark:text-slate-400">
               <tr>
-                <SortHeader label="Collaborateur" active={sort.key === "name"} dir={sort.dir} onClick={() => toggleSort("name")} />
-                <SortHeader label="E-mail" active={sort.key === "email"} dir={sort.dir} onClick={() => toggleSort("email")} />
-                <SortHeader label="Avancement" active={sort.key === "percent"} dir={sort.dir} onClick={() => toggleSort("percent")} />
                 <SortHeader
+                  id="rh-tour-col-name"
+                  label="Collaborateur"
+                  active={sort.key === "name"}
+                  dir={sort.dir}
+                  onClick={() => toggleSort("name")}
+                />
+                <SortHeader label="E-mail" active={sort.key === "email"} dir={sort.dir} onClick={() => toggleSort("email")} />
+                <SortHeader
+                  id="rh-tour-col-progress"
+                  label="Avancement"
+                  active={sort.key === "percent"}
+                  dir={sort.dir}
+                  onClick={() => toggleSort("percent")}
+                />
+                <SortHeader
+                  id="rh-tour-col-scores"
                   label="Avant/Après"
                   active={sort.key === "scores"}
                   dir={sort.dir}
                   onClick={() => toggleSort("scores")}
                 />
                 <SortHeader label="Avis" active={sort.key === "rating"} dir={sort.dir} onClick={() => toggleSort("rating")} />
-                <SortHeader label="Dernière connexion" active={sort.key === "lastSeen"} dir={sort.dir} onClick={() => toggleSort("lastSeen")} />
+                <SortHeader
+                  id="rh-tour-col-lastseen"
+                  label="Dernière connexion"
+                  active={sort.key === "lastSeen"}
+                  dir={sort.dir}
+                  onClick={() => toggleSort("lastSeen")}
+                />
               </tr>
             </thead>
             <tbody>
+              {sorted.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400"
+                  >
+                    {query.trim()
+                      ? "Aucun collaborateur ne correspond à la recherche."
+                      : "Aucun collaborateur pour l'instant. Ajoutez votre premier accès."}
+                  </td>
+                </tr>
+              ) : null}
               {sorted.map((employee) => {
                 const before =
                   employee.positioningScore != null

@@ -30,34 +30,37 @@ export const AI_ACT_MILESTONES = [
     date: "2 février 2025",
     label: "Article 4 et pratiques interdites",
     detail:
-      "Mesures pour soutenir la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026) et pratiques interdites (Art. 5).",
+      "Mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026/1744) et pratiques interdites (Art. 5).",
   },
   {
     date: "2 août 2025",
     label: "Modèles à usage général",
-    detail: "Règles pour les modèles d'IA à usage général, gouvernance et sanctions.",
+    detail:
+      "Obligations relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance.",
   },
   {
     date: "2 août 2026",
     label: "Article 50 — transparence",
     detail:
-      "Chatbots et contenus générés qui peuvent passer pour réels. Les obligations varient selon le cas.",
+      "Obligations de transparence (chatbots, certains contenus synthétiques). Les obligations varient selon le cas.",
   },
   {
     date: "2 décembre 2026",
-    label: "Deepfakes intimes — AI Act",
+    label: "Interdictions contenus illicites",
     detail:
-      "Interdiction AI Act renforcée. En France, la diffusion sans consentement est déjà un délit (loi SREN).",
+      "Certaines interdictions spécifiques (ex. contenus intimes non consentis) — distinctes des obligations générales de transparence (Art. 50). En France, la diffusion sans consentement est déjà un délit (loi SREN).",
   },
   {
     date: "2 décembre 2027",
     label: "Haut risque (Annexe III)",
-    detail: "Dont le recrutement et la gestion RH. Le RGPD art. 22 s'applique déjà (décision humaine).",
+    detail:
+      "Règles pour les systèmes concernés (dont emploi / recrutement selon finalité). Tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD art. 22 s'applique déjà.",
   },
   {
     date: "2 août 2028",
-    label: "Haut risque (Annexe I)",
-    detail: "IA intégrée dans des produits réglementés.",
+    label: "Haut risque (Art. 6 §1 / Annexe I)",
+    detail:
+      "Certaines catégories liées à des produits réglementés couverts par l'annexe I.",
   },
 ] as const;
 

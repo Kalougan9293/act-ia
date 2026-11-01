@@ -3,9 +3,13 @@
 import { FormEvent, Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, ChevronDown, ChevronUp, Gauge, Plus, Users, X } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Copy, Plus, X } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
+import {
+  PartnerTutorialButton,
+  PartnerTutorialProvider,
+} from "@/components/partner/PartnerTutorial";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import {
   type Partner,
@@ -22,6 +26,7 @@ import {
   partnerSeatsAllocated,
 } from "@/lib/firebase/partners";
 import { getInviteSeatInfo } from "@/lib/firebase/seats";
+import { structureInviteLink } from "@/lib/firebase/structure-invite";
 
 const inputClass =
   "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-950";
@@ -44,6 +49,7 @@ export default function PartnerApp() {
   const [seatsUsedById, setSeatsUsedById] = useState<Record<string, number>>({});
   /** Entreprise dépliée pour le suivi apprenants */
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
   /** Avis (note + commentaire, sans réclamation) */
   const [avisUser, setAvisUser] = useState<PlatformUser | null>(null);
   const [form, setForm] = useState({
@@ -152,6 +158,24 @@ export default function PartnerApp() {
     }
   }
 
+  async function copyCompanyLink(structure: Structure) {
+    if (!structure.inviteToken) {
+      setError("Lien indisponible pour cette entreprise.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(
+        structureInviteLink(structure.inviteToken),
+      );
+      setCopiedLinkId(structure.id);
+      window.setTimeout(() => {
+        setCopiedLinkId((id) => (id === structure.id ? null : id));
+      }, 2000);
+    } catch {
+      setError("Impossible de copier le lien.");
+    }
+  }
+
   async function handleAdjustSeats(structure: Structure, delta: 1 | -1) {
     if (!partner || adjustingId) return;
     setAdjustingId(structure.id);
@@ -199,6 +223,7 @@ export default function PartnerApp() {
   }
 
   return (
+    <PartnerTutorialProvider>
     <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-sky-100/80 via-blue-50 to-slate-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950">
       <div
         aria-hidden
@@ -244,7 +269,11 @@ export default function PartnerApp() {
         </div>
       </header>
 
-      <main className="relative mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+      <div className="relative mx-auto flex max-w-6xl justify-end px-4 pb-1 pt-2 sm:px-6">
+        <PartnerTutorialButton />
+      </div>
+
+      <main className="relative mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         {error && (
           <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
             {error}
@@ -255,57 +284,91 @@ export default function PartnerApp() {
           <p className="text-center text-sm text-slate-500">Chargement…</p>
         ) : (
           <>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Vos entreprises clientes
-                </h1>
-              </div>
-              <button
-                type="button"
-                onClick={openCreate}
-                disabled={seatsLeft <= 0}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
-              >
-                <Plus className="h-4 w-4" />
-                Ajouter une entreprise
-              </button>
+            <div className="flex w-full flex-col items-center text-center">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                Pilotage partenaire
+              </h1>
+              <p className="mt-1 w-full text-center text-sm text-blue-700/70 dark:text-blue-300/70">
+                Vos entreprises clientes
+              </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
               {[
-                { label: "Entreprises", value: String(stats.companies), icon: Building2 },
-                { label: "Inscrits", value: String(stats.enrolled), icon: Users },
-                { label: "En cours", value: String(stats.inProgress), icon: Users },
-                { label: "Terminés", value: String(stats.done), icon: Users },
                 {
+                  id: "partner-tour-companies",
+                  label: "Entreprises",
+                  value: String(stats.companies),
+                  tone: "text-blue-700 dark:text-blue-300",
+                  border: "border-blue-100 dark:border-slate-700",
+                  bg: "from-white to-blue-50/90",
+                },
+                {
+                  id: "partner-tour-enrolled",
+                  label: "Inscrits",
+                  value: String(stats.enrolled),
+                  tone: "text-sky-700 dark:text-sky-300",
+                  border: "border-sky-100 dark:border-slate-700",
+                  bg: "from-white to-sky-50/90",
+                },
+                {
+                  id: "partner-tour-progress",
+                  label: "En cours",
+                  value: String(stats.inProgress),
+                  tone: "text-amber-700 dark:text-amber-300",
+                  border: "border-amber-100 dark:border-slate-700",
+                  bg: "from-white to-amber-50/80",
+                },
+                {
+                  id: "partner-tour-done",
+                  label: "Terminés",
+                  value: String(stats.done),
+                  tone: "text-emerald-700 dark:text-emerald-300",
+                  border: "border-emerald-100 dark:border-slate-700",
+                  bg: "from-white to-emerald-50/80",
+                },
+                {
+                  id: "partner-tour-limit",
                   label: "Limite",
                   value: `${seatsAllocated}/${seatsMax}`,
-                  icon: Gauge,
+                  tone:
+                    seatsLeft <= 0
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-violet-700 dark:text-violet-300",
+                  border: "border-violet-100 dark:border-slate-700",
+                  bg: "from-white to-violet-50/80",
                 },
               ].map((card) => (
                 <div
                   key={card.label}
-                  className="flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/80"
+                  id={card.id}
+                  className={`rounded-xl border bg-gradient-to-br ${card.border} ${card.bg} px-3 py-2.5 text-center shadow-sm dark:from-slate-800 dark:to-slate-800`}
                 >
-                  <div className="flex w-full items-center justify-center gap-1.5">
-                    <p className="text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      {card.label}
-                    </p>
-                    <card.icon className="h-4 w-4 shrink-0 text-blue-500" />
-                  </div>
-                  <p className="mt-2 w-full text-center text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
+                  <div className={`text-xl font-bold tabular-nums ${card.tone}`}>
                     {card.value}
-                  </p>
+                  </div>
+                  <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    {card.label}
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-700 dark:bg-slate-900/80">
-              <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-800">
-                <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            <div className="overflow-hidden rounded-xl border border-blue-100 bg-white/90 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <div className="flex flex-col gap-3 border-b border-blue-50 bg-gradient-to-r from-blue-50/90 to-sky-50/50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-slate-700 dark:from-slate-800 dark:to-slate-800">
+                <h2 className="text-sm font-semibold whitespace-nowrap text-slate-900 dark:text-white">
                   Entreprises ({activeStructures.length})
                 </h2>
+                <button
+                  id="partner-tour-add"
+                  type="button"
+                  onClick={openCreate}
+                  disabled={seatsLeft <= 0}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" />
+                  Ajouter
+                </button>
               </div>
               {activeStructures.length === 0 ? (
                 <p className="px-4 py-8 text-center text-sm text-slate-500">
@@ -313,15 +376,26 @@ export default function PartnerApp() {
                 </p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-950/50">
+                  <table className="min-w-full text-sm text-center">
+                    <thead className="text-slate-500 dark:text-slate-400">
                       <tr>
-                        <th className="px-4 py-2.5 font-semibold">Entreprise</th>
-                        <th className="px-4 py-2.5 font-semibold">Limite max</th>
-                        <th className="px-4 py-2.5 text-center font-semibold">Apprenants</th>
-                        <th className="px-4 py-2.5 text-center font-semibold">Terminés</th>
-                        <th className="px-4 py-2.5 text-center font-semibold">Sat. moy.</th>
-                        <th className="px-4 py-2.5 font-semibold">RH</th>
+                        <th id="partner-tour-col-company" className="px-4 py-3 text-left font-medium">
+                          Entreprise
+                        </th>
+                        <th id="partner-tour-col-seats" className="px-4 py-3 font-medium">
+                          Limite max
+                        </th>
+                        <th className="px-4 py-3 font-medium">Apprenants</th>
+                        <th className="px-4 py-3 font-medium">Terminés</th>
+                        <th id="partner-tour-col-sat" className="px-4 py-3 font-medium">
+                          Sat. moy.
+                        </th>
+                        <th id="partner-tour-col-rh" className="px-4 py-3 text-left font-medium">
+                          RH
+                        </th>
+                        <th id="partner-tour-col-link" className="px-4 py-3 font-medium">
+                          Lien
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -363,7 +437,7 @@ export default function PartnerApp() {
                                     id === structure.id ? null : structure.id,
                                   )
                                 }
-                                className="inline-flex max-w-full items-center gap-1.5 text-left hover:text-violet-700 dark:hover:text-violet-300"
+                                className="inline-flex max-w-full items-center gap-1.5 text-left hover:text-blue-700 dark:hover:text-blue-300"
                                 title={
                                   expanded
                                     ? "Masquer le suivi"
@@ -371,7 +445,7 @@ export default function PartnerApp() {
                                 }
                               >
                                 {expanded ? (
-                                  <ChevronUp className="h-4 w-4 shrink-0 text-violet-500" />
+                                  <ChevronUp className="h-4 w-4 shrink-0 text-blue-500" />
                                 ) : (
                                   <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
                                 )}
@@ -379,7 +453,7 @@ export default function PartnerApp() {
                               </button>
                             </td>
                             <td className="px-4 py-3">
-                              <div className="inline-flex items-center gap-1">
+                              <div className="inline-flex items-center justify-center gap-1">
                                 <span className="min-w-[1.75rem] text-center tabular-nums font-semibold">
                                   {seats}
                                 </span>
@@ -425,21 +499,21 @@ export default function PartnerApp() {
                                     id === structure.id ? null : structure.id,
                                   )
                                 }
-                                className="font-semibold text-violet-600 hover:underline dark:text-violet-400"
+                                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                 title="Voir le suivi apprenants"
                               >
                                 {learners.length}
                               </button>
                             </td>
-                            <td className="px-4 py-3 text-center tabular-nums">{done}</td>
-                            <td className="px-4 py-3 text-center tabular-nums">
+                            <td className="px-4 py-3 tabular-nums">{done}</td>
+                            <td className="px-4 py-3 tabular-nums">
                               {satAvg != null ? (
                                 <span className="font-semibold">{satAvg}/5</span>
                               ) : (
                                 <span className="text-slate-400">—</span>
                               )}
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3 text-left">
                               <div className="min-w-0">
                                 <p className="truncate font-medium">{rh?.name ?? "—"}</p>
                                 <p className="truncate text-xs text-slate-400">
@@ -447,22 +521,38 @@ export default function PartnerApp() {
                                 </p>
                               </div>
                             </td>
+                            <td className="px-4 py-3">
+                              <button
+                                type="button"
+                                onClick={() => void copyCompanyLink(structure)}
+                                disabled={!structure.inviteToken}
+                                title="Copier le lien de connexion pour cette entreprise"
+                                className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-white px-2 py-1 text-[11px] font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 disabled:opacity-40 dark:border-slate-600 dark:bg-slate-800 dark:text-blue-300 dark:hover:bg-slate-700"
+                              >
+                                {copiedLinkId === structure.id ? (
+                                  <Check className="h-3 w-3" />
+                                ) : (
+                                  <Copy className="h-3 w-3" />
+                                )}
+                                {copiedLinkId === structure.id ? "Copié" : "Copier"}
+                              </button>
+                            </td>
                           </tr>
                           {expanded ? (
-                            <tr className="bg-violet-50/60 dark:bg-violet-500/10">
-                              <td colSpan={6} className="px-3 py-3 sm:px-4">
+                            <tr className="bg-blue-50/60 dark:bg-blue-500/10">
+                              <td colSpan={7} className="px-3 py-3 sm:px-4">
                                 {learners.length === 0 ? (
                                   <p className="py-2 text-center text-xs text-slate-500">
                                     Aucun apprenant inscrit pour cette entreprise.
                                   </p>
                                 ) : (
-                                  <div className="overflow-x-auto rounded-xl border border-violet-200/80 bg-white dark:border-violet-500/30 dark:bg-slate-950/40">
+                                  <div className="overflow-x-auto rounded-xl border border-blue-100 bg-white dark:border-slate-700 dark:bg-slate-950/40">
                                     <table className="min-w-full text-center text-xs sm:text-sm">
                                       <thead className="text-slate-500 dark:text-slate-400">
                                         <tr>
                                           <th className="px-3 py-2 font-medium">Apprenant</th>
                                           <th className="px-3 py-2 font-medium">E-mail</th>
-                                          <th className="px-3 py-2 font-medium">%</th>
+                                          <th className="px-3 py-2 font-medium">Avancement</th>
                                           <th
                                             className="px-3 py-2 font-medium"
                                             title="Positionnement → QCM"
@@ -474,6 +564,7 @@ export default function PartnerApp() {
                                       </thead>
                                       <tbody>
                                         {learners.map((learner) => {
+                                          const percent = learner.progressPercent ?? 0;
                                           const before =
                                             learner.positioningScore != null
                                               ? `${learner.positioningScore}`
@@ -493,8 +584,20 @@ export default function PartnerApp() {
                                               <td className="max-w-[10rem] truncate px-3 py-2 text-slate-600 dark:text-slate-300 sm:max-w-none">
                                                 {learner.email}
                                               </td>
-                                              <td className="px-3 py-2 tabular-nums">
-                                                {learner.progressPercent ?? 0}&nbsp;%
+                                              <td className="px-3 py-2">
+                                                <div className="flex items-center justify-center gap-2">
+                                                  <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+                                                    <div
+                                                      className="h-full rounded-full bg-blue-600 transition-all"
+                                                      style={{
+                                                        width: `${Math.min(100, Math.max(0, percent))}%`,
+                                                      }}
+                                                    />
+                                                  </div>
+                                                  <span className="w-10 text-xs tabular-nums text-slate-600 dark:text-slate-300">
+                                                    {percent}%
+                                                  </span>
+                                                </div>
                                               </td>
                                               <td className="px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300">
                                                 {before} → {after}
@@ -504,7 +607,7 @@ export default function PartnerApp() {
                                                   <button
                                                     type="button"
                                                     onClick={() => setAvisUser(learner)}
-                                                    className="font-semibold tabular-nums text-violet-700 underline-offset-2 hover:underline dark:text-violet-300"
+                                                    className="font-semibold tabular-nums text-blue-700 underline-offset-2 hover:underline dark:text-blue-300"
                                                     title="Voir le commentaire"
                                                   >
                                                     {learner.satisfactionRating}/5
@@ -675,5 +778,6 @@ export default function PartnerApp() {
         </div>
       )}
     </div>
+    </PartnerTutorialProvider>
   );
 }

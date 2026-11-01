@@ -12,13 +12,14 @@ export const LEXICON: LexiconEntry[] = [
     id: "ai-act",
     term: "AI Act",
     definition: "La loi européenne qui encadre l'IA.",
-    example: "Elle demande des mesures pour soutenir la maîtrise de l'IA (Art. 4).",
+    example:
+      "Elle demande des mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4).",
   },
   {
     id: "art4",
     term: "Article 4",
     definition:
-      "Depuis fév. 2025 : l'entreprise doit prendre des mesures pour soutenir la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Pas d'amende spécifique liée à cet article.",
+      "Depuis fév. 2025 : prendre des mesures pour favoriser le développement de la maîtrise de l'IA — pas garantir un niveau individuel. Pas de plafond d'amende propre à cet article ; des sanctions ou mesures d'exécution restent possibles.",
     example: "Cette formation en fait partie. L'attestation prouve le suivi.",
   },
   {
@@ -37,8 +38,9 @@ export const LEXICON: LexiconEntry[] = [
   {
     id: "haut-risque",
     term: "Haut risque",
-    definition: "Niveau de risque AI Act (ex. tri de CV). Un humain décide.",
-    example: "Recrutement, notes de salariés…",
+    definition:
+      "Niveau AI Act (annexe III) selon la finalité du système — ex. certains outils de recrutement. Un humain décide. Tous les outils RH ne sont pas automatiquement à haut risque.",
+    example: "Tri de CV, évaluation de salariés…",
   },
   {
     id: "ia-generative",
@@ -118,7 +120,7 @@ export const LEXICON: LexiconEntry[] = [
     id: "omnibus",
     term: "Omnibus",
     definition:
-      "Texte européen (2026) qui a clarifié l'article 4 (soutenir la maîtrise, pas « garantir ») et reporté certaines échéances, dont les règles strictes sur le tri de CV.",
+      "Règlement (UE) 2026/1744 (Digital Omnibus on AI), adopté et en vigueur : reformule l'art. 4 (« favoriser le développement de la maîtrise ») et reporte certaines échéances haut risque (ex. emploi / recrutement).",
     example: "Le geste du quotidien ne change pas : un humain garde la décision.",
   },
 ];

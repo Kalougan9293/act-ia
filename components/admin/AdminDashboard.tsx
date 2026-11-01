@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowDown,
@@ -183,23 +183,49 @@ function isoDateValue(value: string) {
   return new Date(y, m - 1, d).getTime();
 }
 
+/** Info-bulle au survol (formés ou places). */
+function HoverHint({
+  hint,
+  className,
+  children,
+}: {
+  hint: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <span className={`group/hint relative inline-block rounded-sm ${className ?? ""}`}>
+      {children}
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity duration-75 group-hover/hint:opacity-100 dark:bg-slate-700"
+      >
+        {hint}
+      </span>
+    </span>
+  );
+}
+
 function SortHeader({
   label,
   active,
   dir,
   onClick,
+  title,
 }: {
   label: string;
   active: boolean;
   dir: "asc" | "desc";
   onClick: () => void;
+  title?: string;
 }) {
   const Icon = !active ? ArrowUpDown : dir === "asc" ? ArrowUp : ArrowDown;
   return (
-    <th className="px-2 py-1.5 font-medium">
+    <th className="px-2 py-1.5 font-medium" title={title}>
       <button
         type="button"
         onClick={onClick}
+        title={title}
         className={`inline-flex items-center justify-center gap-1 whitespace-nowrap text-xs ${
           active
             ? "text-blue-700 dark:text-blue-300"
@@ -1678,13 +1704,13 @@ export default function AdminDashboard() {
             >
             <table className="w-full table-fixed text-sm text-center">
               <colgroup>
-                <col className="w-[18%]" />
-                <col className="w-[18%]" />
                 <col className="w-[16%]" />
-                <col className="w-[10%]" />
-                <col className="w-[12%]" />
-                <col className="w-[12%]" />
+                <col className="w-[16%]" />
                 <col className="w-[14%]" />
+                <col className="w-[18%]" />
+                <col className="w-[10%]" />
+                <col className="w-[10%]" />
+                <col className="w-[16%]" />
               </colgroup>
               <thead
                 className={
@@ -1714,6 +1740,7 @@ export default function AdminDashboard() {
                     active={sort.key === "graduates"}
                     dir={sort.dir}
                     onClick={() => toggleSort("graduates")}
+                    title="Formés / inscrits · places prises / capacité"
                   />
                   <SortHeader
                     label="Création"
@@ -1796,24 +1823,34 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => setGraduatesStructureId(structure.id)}
-                        className="rounded-md px-1.5 py-0.5 font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-                        title={
-                          `Formés / comptes actifs / sièges consommés / capacité.\n` +
-                          (seatsRetained > 0
-                            ? `${seatsRetained} siège(s) non récupéré(s) : départ après démarrage (≥ 1 %).`
-                            : `Aucun siège retenu hors comptes actifs.`)
-                        }
+                        className="inline-flex items-baseline justify-center gap-x-1 whitespace-nowrap rounded-md px-1.5 py-0.5 hover:bg-blue-50 dark:hover:bg-blue-500/10"
+                        aria-label={`${grads.graduated}/${grads.total} formés & ${seatsUsed}/${structure.billing.seats} places`}
                       >
-                        {grads.graduated}
-                        <span className="font-normal text-emerald-600 dark:text-emerald-400">
-                          /{grads.total}
+                        <HoverHint hint="Formés / inscrits actifs">
+                          <span className="font-semibold text-blue-600 dark:text-blue-400">
+                            {grads.graduated}
+                          </span>
+                          <span className="font-normal text-emerald-600 dark:text-emerald-400">
+                            /{grads.total}
+                          </span>
+                        </HoverHint>
+                        <span className="font-normal text-slate-400" aria-hidden>
+                          &
                         </span>
-                        <span className="font-normal text-amber-600 dark:text-amber-400">
-                          /{seatsUsed}
-                        </span>
-                        <span className="text-slate-400 font-normal">
-                          /{structure.billing.seats}
-                        </span>
+                        <HoverHint
+                          hint={
+                            seatsRetained > 0
+                              ? `Places prises / capacité (${seatsRetained} retenue(s) après départ ≥ 1 %)`
+                              : "Places prises / capacité du forfait"
+                          }
+                        >
+                          <span className="font-semibold text-amber-600 dark:text-amber-400">
+                            {seatsUsed}
+                          </span>
+                          <span className="font-normal text-slate-400">
+                            /{structure.billing.seats}
+                          </span>
+                        </HoverHint>
                       </button>
                     </td>
                     <td className="px-2 py-1.5 whitespace-nowrap text-xs">

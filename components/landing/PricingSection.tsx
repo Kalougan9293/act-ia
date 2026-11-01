@@ -131,12 +131,8 @@ export default function PricingSection() {
         </motion.div>
 
         <p className="mx-auto mb-4 max-w-6xl text-center text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
-          Prise en charge{" "}
-          <span className="text-blue-600 dark:text-blue-400">OPCO</span> possible
-          sous réserve d&apos;éligibilité{" "}
-          <span className="font-normal text-slate-600 dark:text-slate-300">
-            (dossier Qualiopi en préparation)
-          </span>
+          Formation réalisable avec un partenaire certifié{" "}
+          <span className="text-blue-600 dark:text-blue-400">Qualiopi</span>
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">

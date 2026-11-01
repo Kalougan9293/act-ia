@@ -11,7 +11,7 @@ export const PROGRAMME = {
   contact: ASSISTANCE.email,
   phone: ASSISTANCE.phone,
   statutQualiopi:
-    "Dossier Qualiopi en préparation (référentiel et preuves FOAD) — état au 25/10/2026 : aucune date d'audit fixée, aucun numéro de déclaration d'activité revendiqué. LockinIA n'est pas présenté comme un organisme certifié Qualiopi tant que la certification n'est pas obtenue.",
+    "Formation réalisable avec un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée dès finalisation des accords contractuels.",
   objectifs: [
     {
       label: "Comprendre le fonctionnement de l'IA générative et ses limites",
@@ -80,9 +80,9 @@ export const PROGRAMME = {
     "TVA non applicable, art. 293 B du CGI.",
   ],
   financements: [
-    "Dossier Qualiopi en préparation — aucune certification Qualiopi ni numéro de déclaration d'activité n'est revendiqué à ce stade.",
-    "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise et, le cas échéant, via un organisme de formation partenaire certifié Qualiopi (émetteur de l'attestation / certificat de réalisation à définir contractuellement).",
-    "Aucun financement n'est garanti. Les modalités exactes seront confirmées après obtention éventuelle de la certification / montage avec partenaire.",
+    "Formation réalisable via un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi.",
+    "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise, via ce partenaire (émetteur de l'attestation / certificat de réalisation à définir contractuellement).",
+    "Aucun financement n'est garanti. L'identité du partenaire et les modalités exactes seront confirmées dès finalisation des accords.",
   ],
   deroule: [
     {

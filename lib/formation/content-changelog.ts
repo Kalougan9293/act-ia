@@ -17,4 +17,16 @@ export const CONTENT_CHANGELOG: ContentChange[] = [
     summary:
       "Socle V1.0 publié : 6 blocs, positionnement, QCM final (seuil 80 %), durée pédagogique fixée à 1 h 15, relevés de connexion, satisfaction à chaud et fiche programme.",
   },
+  {
+    at: "2026-11-02",
+    version: "V1.0",
+    summary:
+      "V1 produit figée : espaces RH / partenaire (tutoriels, KPI, liens), synthèse Article 4 & badges, wording Qualiopi partenaire, pilotage sièges et exports preuves.",
+  },
+  {
+    at: "2026-11-02",
+    version: "V1.0",
+    summary:
+      "Alignement juridique avocat : Art. 4 « favoriser le développement de la maîtrise » (Omnibus 2026/1744), nuance sanctions Art. 4, jalons deepfakes / haut risque / annexe I, réserve classification RH.",
+  },
 ];

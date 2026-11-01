@@ -21,7 +21,8 @@ export const DEMO_TOUR_STEPS = [
     selector: "#demo-tour-hero-pitch",
     label: "Le besoin Art. 4",
     /** Commentaire présenté sous / près du cadre, avec flèche */
-    comment: "L'AI Act demande des mesures pour soutenir la maîtrise de l'IA.",
+    comment:
+      "L'AI Act demande des mesures pour favoriser le développement de la maîtrise de l'IA.",
     /** Préférence de placement du cartouche */
     placement: "below" as const,
   },

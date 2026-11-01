@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
 import { Check, Eye, EyeOff } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -11,8 +10,8 @@ import { validatePassword } from "@/lib/auth/password";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import type { UserRole } from "@/lib/admin/types";
 import { isAllowedSuperAdminEmail } from "@/lib/auth/super-admin";
-import { getFirebaseDb } from "@/lib/firebase/client";
 import { completeFirstConnection } from "@/lib/firebase/first-connection";
+import { fetchFirstLoginStatus } from "@/lib/firebase/first-login-status";
 import { sendResetPassword } from "@/lib/firebase/auth";
 
 function authErrorCode(error: unknown) {
@@ -24,10 +23,12 @@ function authErrorCode(error: unknown) {
 async function hasPendingFirstLogin(emailRaw: string) {
   const email = emailRaw.trim().toLowerCase();
   if (!email) return false;
-  const db = getFirebaseDb();
-  if (!db) return false;
-  const snap = await getDoc(doc(db, "firstLogin", email));
-  return snap.exists() && snap.data()?.status === "pending";
+  try {
+    const status = await fetchFirstLoginStatus(email);
+    return status.pending;
+  } catch {
+    return false;
+  }
 }
 
 function passwordRules(password: string) {

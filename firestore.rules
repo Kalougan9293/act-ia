@@ -114,6 +114,70 @@ service cloud.firestore {
         );
     }
 
+    // Socle V1.0 — 30 chapitres (allChapterIds). Attestation : intro + tous + QCM ≥ 80.
+    function socleChapterIds() {
+      return [
+        "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7",
+        "2.1", "2.2", "2.3", "2.4", "2.5",
+        "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7",
+        "4.1", "4.2", "4.3", "4.4", "4.5", "4.6",
+        "5.1", "5.2", "5.3",
+        "6.1", "6.2"
+      ];
+    }
+
+    function formationProgressPath(uid) {
+      return /databases/$(database)/documents/users/$(uid)/progress/formation;
+    }
+
+    function formationEligible(uid) {
+      return exists(formationProgressPath(uid))
+        && get(formationProgressPath(uid)).data.introDone == true
+        && get(formationProgressPath(uid)).data.quizPassed == true
+        && isNumber(get(formationProgressPath(uid)).data.quizScore)
+        && get(formationProgressPath(uid)).data.quizScore >= 80
+        && get(formationProgressPath(uid)).data.completedChapters is list
+        && get(formationProgressPath(uid)).data.completedChapters.hasAll(socleChapterIds());
+    }
+
+    function quizPassConsistent() {
+      return !(request.resource.data.keys().hasAny(["quizPassed"]))
+        || request.resource.data.quizPassed != true
+        || (isNumber(request.resource.data.quizScore)
+            && request.resource.data.quizScore >= 80);
+    }
+
+    // certificateId / certifiedAt : émission une fois seulement ; RH/OF peuvent remettre à null (retrait)
+    function certFieldsOkForSelf() {
+      let had = resource.data.keys().hasAny(["certificateId"])
+        && resource.data.certificateId is string
+        && resource.data.certificateId.size() > 0;
+      let wants = request.resource.data.keys().hasAny(["certificateId"])
+        && request.resource.data.certificateId is string
+        && request.resource.data.certificateId.size() > 0;
+      return had
+        ? (request.resource.data.certificateId == resource.data.certificateId
+            && request.resource.data.get("certifiedAt", null)
+              == resource.data.get("certifiedAt", null)
+            && request.resource.data.get("attestationTimeSpentSec", null)
+              == resource.data.get("attestationTimeSpentSec", null)
+            && request.resource.data.get("attestationModulesCompleted", null)
+              == resource.data.get("attestationModulesCompleted", null))
+        : (!wants || formationEligible(request.auth.uid));
+    }
+
+    function certFieldsOkForStaff() {
+      // Interdit de forger une attestation ; autorisé de l'effacer (retrait / archivage)
+      let had = resource.data.keys().hasAny(["certificateId"])
+        && resource.data.certificateId is string
+        && resource.data.certificateId.size() > 0;
+      let wants = request.resource.data.keys().hasAny(["certificateId"])
+        && request.resource.data.certificateId is string
+        && request.resource.data.certificateId.size() > 0;
+      return !wants
+        || (had && request.resource.data.certificateId == resource.data.certificateId);
+    }
+
     match /config/{docId} {
       allow read: if signedIn();
       allow create: if signedIn()
@@ -131,8 +195,17 @@ service cloud.firestore {
     }
 
     match /firstLogin/{email} {
-      // Lu avant toute connexion : sinon « Première connexion » échoue tout de suite.
-      allow get: if true;
+      // Plus de get public : l'UI utilise /api/auth/first-login-status (Admin SDK).
+      // Après Auth, le titulaire + RH / OF (périmètre) / admin peuvent lire.
+      allow get: if isSuperAdmin()
+        || (signedIn() && request.auth.token.email == email)
+        || (isRh() && resource.data.structureId == myStructureId())
+        || (isPartner()
+            && (
+              (resource.data.structureId is string
+                && structureOwnedByPartner(resource.data.structureId))
+              || resource.data.get("partnerId", null) == myPartnerId()
+            ));
       allow create, update: if isSuperAdmin()
         || (isRh()
             && request.resource.data.structureId == myStructureId()
@@ -159,8 +232,8 @@ service cloud.firestore {
     }
 
     match /structureInvites/{token} {
+      // Token UUID = secret du lien /rejoindre (pas de list public)
       allow get: if true;
-      // List collection réservée au super admin (évite un scan public)
       allow list: if isSuperAdmin();
       allow create: if isSuperAdmin()
         || (isPartner()
@@ -185,9 +258,16 @@ service cloud.firestore {
             && isNumber(request.resource.data.seatsMax)
             && request.resource.data.seatsMax == seatCap(myStructureId(), token)
             && request.resource.data.seatsUsed == resource.data.seatsUsed)
+        // Partenaire : seatsMax / nom OK ; seatsUsed ne peut que monter (jamais baisser)
         || (isPartner()
             && structureOwnedByPartner(resource.data.structureId)
-            && request.resource.data.structureId == resource.data.structureId)
+            && request.resource.data.structureId == resource.data.structureId
+            && isNumber(request.resource.data.seatsMax)
+            && isNumber(request.resource.data.seatsUsed)
+            && isNumber(resource.data.seatsUsed)
+            && request.resource.data.seatsUsed >= resource.data.seatsUsed
+            && request.resource.data.seatsUsed <= request.resource.data.seatsMax
+            && request.resource.data.seatsMax >= request.resource.data.seatsUsed)
         // Inscription collaborateur / RH via lien : +1 siège
         || (signedIn()
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["seatsUsed"])
@@ -332,16 +412,19 @@ service cloud.firestore {
         || (signedIn()
             && request.auth.uid == userId
             && !request.resource.data.diff(resource.data).affectedKeys()
-                .hasAny(["role", "structureId", "partnerId"]))
+                .hasAny(["role", "structureId", "partnerId"])
+            && certFieldsOkForSelf())
         || (isRh()
             && resource.data.structureId == myStructureId()
             && request.resource.data.structureId == myStructureId()
-            && request.resource.data.role in ["employee", "rh"])
+            && request.resource.data.role in ["employee", "rh"]
+            && certFieldsOkForStaff())
         || (isPartner()
             && resource.data.structureId is string
             && structureOwnedByPartner(resource.data.structureId)
             && request.resource.data.structureId == resource.data.structureId
-            && request.resource.data.role in ["employee", "rh"]);
+            && request.resource.data.role in ["employee", "rh"]
+            && certFieldsOkForStaff());
 
       allow delete: if isSuperAdmin()
         || (isRh() && resource.data.structureId == myStructureId())
@@ -363,7 +446,9 @@ service cloud.firestore {
                 get(/databases/$(database)/documents/users/$(userId)).data.structureId));
 
         allow create, update: if isSuperAdmin()
-          || (signedIn() && request.auth.uid == userId);
+          || (signedIn()
+              && request.auth.uid == userId
+              && quizPassConsistent());
 
         allow delete: if isSuperAdmin()
           || (isRh()
@@ -383,10 +468,19 @@ service cloud.firestore {
               && structureOwnedByPartner(
                 get(/databases/$(database)/documents/users/$(userId)).data.structureId));
 
+        // Création uniquement si progression éligible (intro + 30 chapitres + QCM ≥ 80)
         allow create: if isSuperAdmin()
-          || (signedIn() && request.auth.uid == userId);
+          || (signedIn()
+              && request.auth.uid == userId
+              && formationEligible(userId)
+              && isNumber(request.resource.data.quizScore)
+              && request.resource.data.quizScore >= 80
+              && request.resource.data.kind == "attestation_suivi"
+              && request.resource.data.userId == userId);
 
-        allow update, delete: if isSuperAdmin()
+        // Immutable pour l'apprenant ; RH / OF / admin peuvent supprimer (retrait)
+        allow update: if isSuperAdmin();
+        allow delete: if isSuperAdmin()
           || (isRh()
               && get(/databases/$(database)/documents/users/$(userId)).data.structureId == myStructureId())
           || (isPartner()

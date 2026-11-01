@@ -632,10 +632,11 @@ def build():
     d.box(
         "Statut Qualiopi (wording site)",
         [
-            "« Démarche Qualiopi en cours. LockinIA n'est pas présenté comme un organisme "
-            "certifié Qualiopi tant que la certification n'est pas obtenue. »",
-            "OPCO : possible sous réserve d'éligibilité et, le cas échéant, via un OF "
-            "partenaire Qualiopi. Aucun financement n'est garanti.",
+            "« Formation réalisable avec un partenaire certifié Qualiopi. LockinIA n'est "
+            "pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée "
+            "dès finalisation des accords contractuels. »",
+            "OPCO : possible sous réserve d'éligibilité, via le partenaire Qualiopi. "
+            "Aucun financement n'est garanti.",
             "Fiche programme publique : /programme. Veille : content-changelog V1.0.",
         ],
     )
@@ -654,9 +655,9 @@ def build():
             ["Attestations", "OK LIA-YYYY-…", "Qui émet « OF » vs LockinIA"],
             ["Conservation +3 ans", "OK + archive accès", "Aligner contrat OF"],
             ["Veille datée", "OK changelog", "Mettre à jour à chaque maj"],
-            ["Qualiopi", "Démarche en cours", "Pas revendiqué comme certifié"],
-            ["OPCO", "Mention prudent", "Montage via partenaire"],
-            ["Contrat partenariat", "Hors produit", "À rédiger hors code"],
+            ["Qualiopi", "Partenaire certifié", "Nom après finalisation NDA / accords"],
+            ["OPCO", "Via partenaire", "Sous réserve d'éligibilité"],
+            ["Contrat partenariat", "NDA en cours", "À finaliser hors code"],
         ],
         [38 * mm, 42 * mm, CONTENT_W - 80 * mm],
     )

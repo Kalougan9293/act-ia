@@ -38,13 +38,13 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     famille: "F01",
     prompt: "Pourquoi votre entreprise vous propose-t-elle cette formation ?",
     choices: [
-      "La loi lui demande de prendre des mesures pour soutenir la maîtrise de l'IA",
+      "La loi lui demande de prendre des mesures pour favoriser le développement de la maîtrise de l'IA",
       "Parce qu'un diplôme européen est obligatoire pour chaque salarié",
       "Parce que toute IA est interdite sans ce parcours",
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit soutenir la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Cette formation en fait partie. L'attestation est la preuve du suivi.",
+      "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit favoriser le développement de la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Cette formation en fait partie. L'attestation est la preuve du suivi.",
   },
   {
     id: "q2",
@@ -130,7 +130,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis le 2 février 2025 — pas le 2 août 2025. L'entreprise doit déjà prendre des mesures pour soutenir la maîtrise de l'IA. Août 2025 concerne surtout d'autres règles (modèles à usage général). 2027, c'est surtout le haut risque recrutement.",
+      "Pourquoi ? Depuis le 2 février 2025 — pas le 2 août 2025. L'entreprise doit déjà prendre des mesures pour favoriser le développement de la maîtrise de l'IA. Août 2025 concerne surtout d'autres règles (modèles à usage général). 2027, c'est surtout le haut risque pour certains systèmes RH / recrutement (annexe III).",
   },
   {
     id: "q8",
@@ -188,7 +188,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? L'humain tranche. Les règles AI Act « haut risque » RH sont renforcées plus tard, mais le RGPD (art. 22) s'applique déjà.",
+      "Pourquoi ? L'humain tranche. Les règles AI Act « haut risque » pour certains systèmes RH (annexe III) sont renforcées plus tard ; tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD (art. 22) s'applique déjà aux décisions exclusivement automatisées à effets significatifs.",
   },
   {
     id: "q12",

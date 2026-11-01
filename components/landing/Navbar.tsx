@@ -89,7 +89,7 @@ export default function Navbar() {
             href="/rh"
             className="hidden rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 sm:inline-flex"
           >
-            Espace RH
+            Se connecter
           </a>
           <button
             type="button"
@@ -157,7 +157,7 @@ export default function Navbar() {
               href="/rh"
               className="mt-1 rounded-xl bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
             >
-              Espace RH
+              Se connecter
             </a>
             {onHome && demoTour ? (
               <button
