@@ -2024,7 +2024,7 @@ function ChapterScreen({
             aria-hidden
             className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 hidden rounded-[1.75rem] bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(ellipse_at_20%_90%,rgba(167,139,250,0.1),transparent_45%)] xl:block dark:bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.12),transparent_50%)]"
           />
-          <div className="space-y-6 xl:rounded-3xl xl:border xl:border-blue-100/70 xl:bg-gradient-to-b xl:from-white/70 xl:via-slate-50/55 xl:to-blue-50/40 xl:px-10 xl:py-9 xl:shadow-[0_12px_40px_-24px_rgba(15,23,42,0.28)] xl:backdrop-blur-[3px] dark:xl:border-slate-700/80 dark:xl:from-slate-900/55 dark:xl:via-slate-900/45 dark:xl:to-blue-950/30">
+          <div className="space-y-6 xl:rounded-3xl xl:border xl:border-blue-100/70 xl:bg-gradient-to-b xl:from-white/92 xl:via-slate-50/90 xl:to-blue-50/80 xl:px-10 xl:py-9 xl:shadow-[0_12px_40px_-24px_rgba(15,23,42,0.28)] dark:xl:border-slate-700/80 dark:xl:from-slate-900/92 dark:xl:via-slate-900/90 dark:xl:to-blue-950/80">
             <div className="space-y-2 text-center">
               <h1
                 className={`text-center text-2xl text-slate-900 dark:text-white sm:text-[1.75rem] ${

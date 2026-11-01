@@ -108,8 +108,9 @@ const addons: {
 ];
 
 const whiteLabelTiers = [
-  { seats: "20–99", price: "40 €" },
-  { seats: "100–249", price: "35 €" },
+  { seats: "20–49", price: "42 €" },
+  { seats: "50–99", price: "38 €" },
+  { seats: "100–249", price: "34 €" },
   { seats: "250+", price: "30 €" },
 ] as const;
 
@@ -263,10 +264,10 @@ export default function PricingSection() {
                 Partenaires
               </p>
               <p className="mt-2 font-semibold text-slate-900 dark:text-white">
-                Marque blanche
+                Organismes de formation
               </p>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                Organismes de formation
+                Co-branding inclus · marque blanche en option
               </p>
 
               <div className="mt-4 flex-1 space-y-3 text-left">
@@ -282,37 +283,45 @@ export default function PricingSection() {
                         {tier.seats}{" "}
                         <span className="text-xs text-slate-400">apprenants</span>
                       </span>
-                      <span className="font-bold text-slate-900 dark:text-white">
-                        {tier.price}
+                      <span className="text-right">
+                        <span className="font-bold text-slate-900 dark:text-white">
+                          {tier.price}
+                        </span>
+                        <span className="ml-1 text-[11px] font-medium text-slate-400">
+                          / apprenant
+                        </span>
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <li className="flex justify-between gap-2">
-                    <span>Installation</span>
-                    <span>
-                      <span className="text-slate-400 line-through">500 €</span>{" "}
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                        offert
+                <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+                  <div>
+                    <p className="font-semibold text-emerald-700 dark:text-emerald-400">
+                      Inclus
+                    </p>
+                    <ul className="mt-1 space-y-1">
+                      <li>Installation</li>
+                      <li>Co-branding (logo + nom OF)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">
+                      Option
+                    </p>
+                    <div className="mt-1 flex items-start justify-between gap-2">
+                      <span>
+                        Marque blanche
+                        <span className="mt-0.5 block text-[11px] text-slate-400">
+                          Couleurs, pages, charte — one-shot
+                        </span>
                       </span>
-                    </span>
-                  </li>
-                  <li className="flex justify-between gap-2">
-                    <span>Logo + nom OF</span>
-                    <span>
-                      <span className="text-slate-400 line-through">500 €</span>{" "}
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                        offert
+                      <span className="shrink-0 font-semibold text-slate-900 dark:text-white">
+                        500 €
                       </span>
-                    </span>
-                  </li>
-                  <li className="flex justify-between gap-2">
-                    <span>Personnalisation avancée</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">500 €</span>
-                  </li>
-                </ul>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -351,18 +360,6 @@ export default function PricingSection() {
                 </div>
               ))}
           </div>
-
-          <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-600 dark:text-slate-300">
-            Besoin d&apos;un accompagnement personnalisé ou d&apos;automatiser vos
-            processus ?{" "}
-            <Link
-              href="/interventions"
-              className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-            >
-              Découvrir l&apos;accompagnement
-            </Link>
-            .
-          </p>
         </motion.div>
       </div>
     </section>

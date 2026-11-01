@@ -273,10 +273,18 @@ function HeroVideo() {
   const [started, setStarted] = useState(false);
   const [hovered, setHovered] = useState(false);
 
+  function warm() {
+    const video = videoRef.current;
+    if (!video || video.preload === "auto") return;
+    video.preload = "auto";
+    video.load();
+  }
+
   function toggle() {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
+      warm();
       video.muted = false;
       void video.play();
       setPlaying(true);
@@ -290,8 +298,12 @@ function HeroVideo() {
   return (
     <div
       className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-lg dark:border-slate-700"
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => {
+        setHovered(true);
+        warm();
+      }}
       onMouseLeave={() => setHovered(false)}
+      onFocusCapture={warm}
     >
       <video
         ref={videoRef}

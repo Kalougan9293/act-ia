@@ -51,6 +51,7 @@ export default function VideoScript({
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [buffering, setBuffering] = useState(false);
   const [panelHeight, setPanelHeight] = useState<number | null>(null);
 
   const mediaColRef = useRef<HTMLDivElement>(null);
@@ -217,9 +218,11 @@ export default function VideoScript({
       setEnded(false);
     }
     if (video.paused) {
+      setBuffering(true);
       try {
         await video.play();
       } catch {
+        setBuffering(false);
         /* autoplay / user gesture */
       }
     } else {
@@ -282,28 +285,50 @@ export default function VideoScript({
           ref={mediaColRef}
           className="mx-auto flex w-full max-w-[min(100%,16.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg dark:border-slate-700"
         >
-          <video
-            ref={videoRef}
-            className="max-h-[calc(100dvh-14rem)] w-full object-contain"
-            style={{ aspectRatio: "9 / 16" }}
-            playsInline
-            preload="metadata"
-            src={src}
-            controls={false}
-            disablePictureInPicture
-            disableRemotePlayback
-            onContextMenu={(event) => event.preventDefault()}
-            onEnded={() => {
-              setPlaying(false);
-              setEnded(true);
-              applyProgress(1);
-              markComplete();
-            }}
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-          >
-            Votre navigateur ne lit pas la vidéo.
-          </video>
+          <div className="relative">
+            <video
+              ref={videoRef}
+              className="max-h-[calc(100dvh-14rem)] w-full object-contain"
+              style={{ aspectRatio: "9 / 16" }}
+              playsInline
+              preload="auto"
+              src={src}
+              controls={false}
+              disablePictureInPicture
+              disableRemotePlayback
+              onContextMenu={(event) => event.preventDefault()}
+              onWaiting={() => setBuffering(true)}
+              onStalled={() => setBuffering(true)}
+              onPlaying={() => {
+                setBuffering(false);
+                setPlaying(true);
+              }}
+              onCanPlay={() => setBuffering(false)}
+              onEnded={() => {
+                setPlaying(false);
+                setBuffering(false);
+                setEnded(true);
+                applyProgress(1);
+                markComplete();
+              }}
+              onPlay={() => setPlaying(true)}
+              onPause={() => {
+                setPlaying(false);
+                setBuffering(false);
+              }}
+            >
+              Votre navigateur ne lit pas la vidéo.
+            </video>
+            {buffering ? (
+              <div
+                className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"
+                aria-live="polite"
+                aria-label="Chargement de la vidéo"
+              >
+                <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/25 border-t-white" />
+              </div>
+            ) : null}
+          </div>
 
           {/* Barre de progression = rythme réel de la vidéo (non cliquable) */}
           <div

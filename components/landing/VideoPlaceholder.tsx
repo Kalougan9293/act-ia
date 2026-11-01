@@ -9,9 +9,17 @@ export default function VideoPlaceholder() {
   const [started, setStarted] = useState(false);
   const [hovered, setHovered] = useState(false);
 
+  function warm() {
+    const video = videoRef.current;
+    if (!video || video.preload === "auto") return;
+    video.preload = "auto";
+    video.load();
+  }
+
   function play() {
     const video = videoRef.current;
     if (!video) return;
+    warm();
     void video.play();
   }
 
@@ -28,8 +36,12 @@ export default function VideoPlaceholder() {
       <div
         className="relative rounded-2xl overflow-hidden border-4 border-blue-600 bg-slate-900 shadow-[0_20px_50px_-12px_rgba(37,99,235,0.45)] ring-1 ring-blue-900/20"
         style={{ aspectRatio: "16 / 9" }}
-        onMouseEnter={() => setHovered(true)}
+        onMouseEnter={() => {
+          setHovered(true);
+          warm();
+        }}
         onMouseLeave={() => setHovered(false)}
+        onFocusCapture={warm}
       >
         <video
           ref={videoRef}

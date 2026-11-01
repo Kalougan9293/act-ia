@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowDown,
   ArrowLeft,
@@ -849,10 +850,16 @@ function SortActivity({
     return null;
   }
 
-  function startDrag(event: React.PointerEvent, cardId: string) {
+  function startDrag(event: React.PointerEvent<HTMLButtonElement>, cardId: string) {
     if (checked) return;
     event.preventDefault();
     const pointerId = event.pointerId;
+    const target = event.currentTarget;
+    try {
+      target.setPointerCapture(pointerId);
+    } catch {
+      /* ignore */
+    }
     const startX = event.clientX;
     const startY = event.clientY;
     let dragging = false;
@@ -861,7 +868,7 @@ function SortActivity({
       if (moveEvent.pointerId !== pointerId) return;
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
-      if (!dragging && Math.hypot(dx, dy) < 8) return;
+      if (!dragging && Math.hypot(dx, dy) < 6) return;
       dragging = true;
       dragId.current = cardId;
       moveEvent.preventDefault();
@@ -907,12 +914,27 @@ function SortActivity({
     }
 
     function cleanup() {
+      try {
+        if (target.hasPointerCapture(pointerId)) {
+          target.releasePointerCapture(pointerId);
+        }
+      } catch {
+        /* ignore */
+      }
+      target.removeEventListener("pointermove", move);
+      target.removeEventListener("pointerup", up);
+      target.removeEventListener("pointercancel", up);
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
     }
 
+    target.addEventListener("pointermove", move, { passive: false });
+    target.addEventListener("pointerup", up);
+    target.addEventListener("pointercancel", up);
     window.addEventListener("pointermove", move, { passive: false });
     window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   }
 
   const guideCorrection = compact;
@@ -1132,16 +1154,31 @@ function SortActivity({
             <Bubble key={card.id} cardId={card.id} />
           ))}
       </div>
-      {drag && draggingCard && (
-        <div
-          className={`pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-1/2 scale-105 shadow-lg ${bubbleClass(
-            activity.cards.findIndex((card) => card.id === draggingCard.id),
-          )}`}
-          style={{ left: drag.x, top: drag.y }}
-        >
-          {draggingCard.label}
-        </div>
-      )}
+      {drag &&
+        draggingCard &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className={`pointer-events-none fixed z-[300] border-2 text-center font-semibold shadow-lg ${
+              compact
+                ? "max-w-[12rem] rounded-xl px-2 py-1.5 text-[11px] leading-snug"
+                : "max-w-[11.5rem] rounded-full px-3.5 py-1.5 text-xs leading-snug"
+            } ${
+              BUBBLE_COLORS[
+                activity.cards.findIndex((card) => card.id === draggingCard.id) %
+                  BUBBLE_COLORS.length
+              ]
+            }`}
+            style={{
+              left: drag.x,
+              top: drag.y,
+              transform: "translate(-50%, -50%) scale(1.05)",
+            }}
+          >
+            {draggingCard.label}
+          </div>,
+          document.body,
+        )}
       {!checked && (
         <div className="flex justify-center">
           <button
@@ -1504,7 +1541,7 @@ function TrueFakeActivity({
             disablePictureInPicture
             disableRemotePlayback
             playsInline
-            preload="metadata"
+            preload="auto"
             src={current.mediaSrc}
             onContextMenu={(event) => event.preventDefault()}
           >
@@ -1687,7 +1724,7 @@ function ScenarioActivity({
               disablePictureInPicture
               disableRemotePlayback
               playsInline
-              preload="metadata"
+              preload="auto"
               src={current.mediaSrc}
               onContextMenu={(event) => event.preventDefault()}
             >

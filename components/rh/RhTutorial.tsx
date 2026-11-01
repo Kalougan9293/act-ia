@@ -13,6 +13,21 @@ import { cn } from "@/lib/utils";
 
 export const RH_TOUR_STEPS = [
   {
+    id: "seats",
+    selector: "#rh-tour-seats",
+    label: "Limite",
+    comment:
+      "Plafond d'accès autorisé. Attention : dès qu'une personne a démarré la formation, la place reste comptée.",
+    placement: "below" as const,
+  },
+  {
+    id: "add",
+    selector: "#rh-tour-add",
+    label: "Ajouter",
+    comment: "Ici, pour ajouter manuellement vos apprenants.",
+    placement: "below" as const,
+  },
+  {
     id: "enrolled",
     selector: "#rh-tour-enrolled",
     label: "Inscrits",
@@ -31,14 +46,6 @@ export const RH_TOUR_STEPS = [
     selector: "#rh-tour-done",
     label: "Terminés",
     comment: "Ceux qui ont terminé la formation.",
-    placement: "below" as const,
-  },
-  {
-    id: "seats",
-    selector: "#rh-tour-seats",
-    label: "Limite",
-    comment:
-      "Plafond d'accès autorisé. Attention : dès qu'une personne a démarré la formation, la place reste comptée.",
     placement: "below" as const,
   },
   {
@@ -92,13 +99,6 @@ export const RH_TOUR_STEPS = [
     label: "Synthèse Article 4",
     comment:
       "Votre attestation d'entreprise : elle documente le suivi de vos salariés au titre de l'Article 4.",
-    placement: "below" as const,
-  },
-  {
-    id: "add",
-    selector: "#rh-tour-add",
-    label: "Ajouter",
-    comment: "Ici, pour ajouter manuellement vos apprenants.",
     placement: "below" as const,
   },
 ];
