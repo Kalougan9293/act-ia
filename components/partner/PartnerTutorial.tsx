@@ -93,7 +93,9 @@ export const PARTNER_TOUR_STEPS = [
   },
 ];
 
-type PartnerTourStep = (typeof PARTNER_TOUR_STEPS)[number];
+type PartnerTourStep = Omit<(typeof PARTNER_TOUR_STEPS)[number], "placement"> & {
+  placement: "below" | "above";
+};
 type PartnerPhase = "idle" | "ready" | "running";
 
 type PartnerTutorialContextValue = {

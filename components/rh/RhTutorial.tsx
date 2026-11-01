@@ -103,7 +103,9 @@ export const RH_TOUR_STEPS = [
   },
 ];
 
-type RhTourStep = (typeof RH_TOUR_STEPS)[number];
+type RhTourStep = Omit<(typeof RH_TOUR_STEPS)[number], "placement"> & {
+  placement: "below" | "above";
+};
 type RhPhase = "idle" | "ready" | "running";
 
 type RhTutorialContextValue = {
