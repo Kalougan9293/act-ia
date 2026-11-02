@@ -108,10 +108,11 @@ const addons: {
 ];
 
 const whiteLabelTiers = [
-  { seats: "20–49", price: "42 €" },
-  { seats: "50–99", price: "38 €" },
-  { seats: "100–249", price: "34 €" },
-  { seats: "250+", price: "30 €" },
+  { seats: "1–19", price: "35 €" },
+  { seats: "20–49", price: "30 €" },
+  { seats: "50–149", price: "24 €" },
+  { seats: "150–499", price: "19 €" },
+  { seats: "500+", price: "Sur devis" },
 ] as const;
 
 export default function PricingSection() {
@@ -287,9 +288,11 @@ export default function PricingSection() {
                         <span className="font-bold text-slate-900 dark:text-white">
                           {tier.price}
                         </span>
-                        <span className="ml-1 text-[11px] font-medium text-slate-400">
-                          / apprenant
-                        </span>
+                        {tier.price !== "Sur devis" ? (
+                          <span className="ml-1 text-[11px] font-medium text-slate-400">
+                            / apprenant
+                          </span>
+                        ) : null}
                       </span>
                     </div>
                   ))}
