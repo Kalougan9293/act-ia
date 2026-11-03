@@ -34,17 +34,17 @@ export const DEMO_TOUR_STEPS = [
     placement: "below" as const,
   },
   {
-    id: "problem-card-1",
-    selector: "#demo-tour-problem-card-1",
-    label: "AI Act · Article 4",
-    comment: "Il ne suffit pas d'agir : il faut pouvoir le prouver.",
-    placement: "below" as const,
-  },
-  {
     id: "problem-card-2",
     selector: "#demo-tour-problem-card-2",
     label: "Données & sécurité",
     comment: "Fuite de données : le risque est réel, et fréquent.",
+    placement: "below" as const,
+  },
+  {
+    id: "problem-card-1",
+    selector: "#demo-tour-problem-card-1",
+    label: "AI Act · Article 4",
+    comment: "Il ne suffit pas d'agir : il faut pouvoir le prouver.",
     placement: "below" as const,
   },
   {
@@ -55,24 +55,10 @@ export const DEMO_TOUR_STEPS = [
     placement: "below" as const,
   },
   {
-    id: "hero-solution",
-    selector: "#demo-tour-hero-solution",
-    label: "La solution",
-    comment: "Voici la réponse : une plateforme clé en main.",
-    placement: "below" as const,
-  },
-  {
     id: "hero-expertise",
     selector: "#demo-tour-hero-expertise",
     label: "Expertise",
     comment: "Contenu relu : formateur + juriste AI Act / RGPD.",
-    placement: "below" as const,
-  },
-  {
-    id: "trust-banner",
-    selector: "#demo-tour-trust-banner",
-    label: "Preuves & pilotage",
-    comment: "Preuves, suivi, veille : le dossier est carré.",
     placement: "below" as const,
   },
   {
