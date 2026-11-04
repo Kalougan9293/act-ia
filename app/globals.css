@@ -13,6 +13,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Rail formation : assez large pour max-w-4xl + w-72 + gouttière (xl=1280 chevauchait) */
+  --breakpoint-rail: 100rem;
 }
 
 /* Dark mode CSS variables */
@@ -36,8 +38,8 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Rail desktop (1.3+) : le FAB flottant cède la place au bouton sous le rail */
-@media (min-width: 80rem) {
+/* Rail desktop : le FAB flottant cède la place au bouton sous le rail */
+@media (min-width: 100rem) {
   html.formation-desktop-rail .formation-fab-fixed {
     display: none;
   }

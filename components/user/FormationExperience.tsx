@@ -1975,7 +1975,7 @@ function ChapterScreen({
   const railTipLabel = chapter.id === "1.3" ? "Rappel" : "Objectif";
 
   const progressBar = (
-    <div className="px-1 xl:hidden">
+    <div className="px-1 rail:hidden">
       <ol className="flex justify-between gap-1">
         {block.chapters.map((item, index) => {
           const current = item.id === chapter.id;
@@ -2007,8 +2007,8 @@ function ChapterScreen({
 
   return (
     <>
-      {/* Contenu centré — rail à droite en xl+ */}
-      <div className="mx-auto w-full max-w-3xl space-y-7 sm:space-y-8 xl:max-w-4xl">
+      {/* Contenu centré — rail à droite seulement quand la largeur laisse une gouttière */}
+      <div className="mx-auto w-full max-w-3xl space-y-7 sm:space-y-8 rail:max-w-4xl">
         {progressBar}
         <button
           type="button"
@@ -2022,9 +2022,9 @@ function ChapterScreen({
         <div className="relative">
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 hidden rounded-[1.75rem] bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(ellipse_at_20%_90%,rgba(167,139,250,0.1),transparent_45%)] xl:block dark:bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.12),transparent_50%)]"
+            className="pointer-events-none absolute -inset-x-3 -inset-y-2 -z-10 hidden rounded-[1.75rem] bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.1),transparent_50%),radial-gradient(ellipse_at_20%_90%,rgba(167,139,250,0.1),transparent_45%)] rail:block dark:bg-[radial-gradient(ellipse_at_50%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(59,130,246,0.12),transparent_50%)]"
           />
-          <div className="space-y-6 xl:rounded-3xl xl:border xl:border-blue-100/70 xl:bg-gradient-to-b xl:from-white/92 xl:via-slate-50/90 xl:to-blue-50/80 xl:px-10 xl:py-9 xl:shadow-[0_12px_40px_-24px_rgba(15,23,42,0.28)] dark:xl:border-slate-700/80 dark:xl:from-slate-900/92 dark:xl:via-slate-900/90 dark:xl:to-blue-950/80">
+          <div className="space-y-6 rail:rounded-3xl rail:border rail:border-blue-100/70 rail:bg-gradient-to-b rail:from-white/92 rail:via-slate-50/90 rail:to-blue-50/80 rail:px-10 rail:py-9 rail:shadow-[0_12px_40px_-24px_rgba(15,23,42,0.28)] dark:rail:border-slate-700/80 dark:rail:from-slate-900/92 dark:rail:via-slate-900/90 dark:rail:to-blue-950/80">
             <div className="space-y-2 text-center">
               <h1
                 className={`text-center text-2xl text-slate-900 dark:text-white sm:text-[1.75rem] ${
@@ -2090,7 +2090,7 @@ function ChapterScreen({
       </div>
 
       <aside
-        className="pointer-events-none fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 top-24 z-30 hidden w-72 xl:right-6 xl:flex xl:flex-col 2xl:w-80"
+        className="pointer-events-none fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 top-24 z-30 hidden w-72 rail:right-6 rail:flex rail:flex-col"
         aria-label="Progression du bloc"
       >
         <div className="pointer-events-auto flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/95">
