@@ -16,7 +16,7 @@ import {
   Timer,
   Trophy,
 } from "lucide-react";
-import ActivityPlayer from "@/components/user/ActivityPlayer";
+import ActivityPlayer, { Feedback } from "@/components/user/ActivityPlayer";
 import CareerScreen from "@/components/user/CareerScreen";
 import LexiconBar, { FloatingLexiconFab } from "@/components/user/LexiconTip";
 import { useConnectionLog } from "@/components/user/useConnectionLog";
@@ -1576,19 +1576,22 @@ function chapterTeaser(chapter: Block["chapters"][number]): string {
     "2.5": "Cinq dates, pour fermer le bloc",
     "3.1": "Ce que vous pouvez saisir",
     "3.2": "OK, prudence, interdit",
-    "3.3": "Feu vert, orange ou rouge",
+    "3.3": "Peut-on mettre l'info dans une IA ?",
     "3.4": "Gardez une demande utile",
-    "3.5": "Trois questions avant d'ouvrir l'outil",
-    "3.6": "La réunion, y compris les externes",
-    "3.7": "Si vous avez mis ce qu'il ne fallait pas",
+    "3.5": "J'envoie ou je corrige ?",
+    "3.6": "Trois questions avant d'ouvrir l'outil",
+    "3.7": "Quel droit sur les données ?",
+    "3.8": "La réunion, y compris les externes",
     "4.1": "L'IA propose, vous décidez",
     "4.2": "Qui valide vraiment ?",
     "4.3": "Reliez la bonne règle",
     "4.4": "Avant de publier ou d'agir",
     "4.5": "Je publie, ou je vérifie ?",
     "4.6": "Ce qui pourrait faire agir l'IA",
-    "5.1": "Ce qu'est un deepfake, et les deux gestes",
-    "5.2": "Le faux directeur, puis la publication",
+    "5.1": "Vrai ou faux ?",
+    "5.2": "Ce qu'est un deepfake",
+    "5.3": "Le faux directeur, puis la publication",
+    "5.4": "Je labelle ou pas ?",
     "6.1": "Les sept questions, expliquées",
     "6.2": "Relisez-les dans le jeu",
   };
@@ -2035,6 +2038,11 @@ function ChapterScreen({
               >
                 {chapter.id} · {chapter.title}
               </h1>
+              {chapter.subtitle ? (
+                <p className="mx-auto max-w-xl text-center text-sm leading-snug text-slate-600 dark:text-slate-300 sm:text-base">
+                  {chapter.subtitle}
+                </p>
+              ) : null}
             </div>
 
             <ActivityPlayer
@@ -2772,36 +2780,12 @@ function QuizScreen({
         </div>
       )}
 
-      {reveal && (
-        <div
-          className={
-            isFinal
-              ? "rounded-lg border border-slate-300 bg-slate-50 px-4 py-4 dark:border-slate-600 dark:bg-slate-900/80"
-              : "rounded-2xl border-2 border-blue-400 bg-blue-50 px-6 py-6 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60"
-          }
-        >
-          <p
-            className={
-              isFinal
-                ? "text-xs font-bold tracking-wide text-slate-500 uppercase"
-                : "text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300"
-            }
-          >
-            {isFinal ? "Correction" : "À retenir"}
-          </p>
-          <p
-            className={
-              isFinal
-                ? "mt-2 text-center text-base leading-relaxed text-slate-800 dark:text-slate-100"
-                : `mt-3 text-lg font-semibold leading-relaxed text-slate-900 sm:text-xl dark:text-white ${
-                    retainText.length > 160 ? "text-justify" : "text-center"
-                  }`
-            }
-          >
-            {retainText}
-          </p>
-        </div>
-      )}
+      {reveal ? (
+        <Feedback
+          title={isFinal ? "Correction" : "À retenir"}
+          text={retainText}
+        />
+      ) : null}
 
       {reveal && (
         <div className="flex justify-center">

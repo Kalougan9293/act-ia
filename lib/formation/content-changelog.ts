@@ -12,6 +12,12 @@ export type ContentChange = {
 
 export const CONTENT_CHANGELOG: ContentChange[] = [
   {
+    at: "2026-11-05",
+    version: "V1.0",
+    summary:
+      "Ajouts pédagogiques : jeu « J'envoie ou je corrige ? » (3.5, fenêtre de chat) et jeu de label « Généré par l'IA » (5.4). Renumerotation 3.5→3.8.",
+  },
+  {
     at: "2026-10-23",
     version: "V1.0",
     summary:

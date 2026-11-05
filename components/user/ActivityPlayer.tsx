@@ -15,7 +15,10 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
+  ArrowUp,
   Check,
+  CornerDownLeft,
+  Delete,
   Lock,
   type LucideIcon,
   Mail,
@@ -30,26 +33,47 @@ import VideoScript from "@/components/user/VideoScript";
 import { withLexiconTips } from "@/components/user/LexiconTip";
 import type { Activity, ActivityChoice } from "@/lib/formation/activity";
 
-function Feedback({ text }: { text: string }) {
-  const long = text.length > 160 || text.includes("\n");
+/** Format unique bleuté « À retenir » (compact) — partout dans la formation. */
+export function Feedback({
+  text,
+  points,
+  title = "À retenir",
+}: {
+  text?: string;
+  /** Plusieurs points → un seul encadré en puces. */
+  points?: string[];
+  title?: string;
+}) {
+  const items = (points ?? [])
+    .map((point) => point.trim())
+    .filter(Boolean);
+  const fromText =
+    !items.length && text
+      ? text
+          .split(/\n\s*\n/)
+          .map((part) => part.trim())
+          .filter(Boolean)
+      : [];
+  const bullets = items.length ? items : fromText.length > 1 ? fromText : [];
+  const body = bullets.length ? null : text?.trim() || null;
+  if (!bullets.length && !body) return null;
+
   return (
-    <div
-      className={`w-full rounded-2xl border-2 border-blue-400 bg-blue-50 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60 ${
-        long ? "px-4 py-3.5" : "px-6 py-6"
-      }`}
-    >
-      <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-        À retenir
+    <div className="w-full rounded-xl border-2 border-blue-400 bg-blue-50 px-3.5 py-2.5 text-center shadow-sm shadow-blue-500/10 dark:border-blue-500 dark:bg-blue-950/60">
+      <p className="text-center text-[10px] font-bold tracking-[0.14em] text-blue-700 uppercase dark:text-blue-300">
+        {title}
       </p>
-      <p
-        className={`mt-2 font-semibold text-slate-900 dark:text-white hyphens-none whitespace-pre-line ${
-          long
-            ? "text-justify text-[15px] leading-snug sm:text-base"
-            : "mt-3 text-center text-lg leading-relaxed sm:text-xl"
-        }`}
-      >
-        {withLexiconTips(text)}
-      </p>
+      {bullets.length ? (
+        <ul className="mt-2 list-disc space-y-1.5 pl-5 text-left text-sm leading-snug font-semibold text-slate-900 dark:text-white">
+          {bullets.map((point, index) => (
+            <li key={`${index}-${point.slice(0, 24)}`}>{withLexiconTips(point)}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-1 text-center text-sm leading-snug font-semibold whitespace-pre-line text-slate-900 hyphens-none dark:text-white">
+          {withLexiconTips(body!)}
+        </p>
+      )}
     </div>
   );
 }
@@ -120,39 +144,124 @@ function ChoiceList({
 }) {
   const [picked, setPicked] = useState<number | null>(null);
   const reveal = picked !== null;
+  const calendars = choices.every((choice) => choice.calendar);
+
   return (
     <div className="mx-auto w-full max-w-2xl space-y-2.5">
-      <ul className="grid w-full gap-3">
-        {choices.map((choice, index) => (
-          <li key={choice.label}>
-            <button
-              type="button"
-              disabled={reveal}
-              onClick={() => {
-                setPicked(index);
-                onPick(choice);
-              }}
-              className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left text-base transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:gap-4 sm:px-5 sm:text-[1.05rem] ${choiceStyle(
-                reveal,
-                choice.correct,
-                picked === index,
-              )}`}
-            >
-              <span
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                  reveal && (choice.correct || picked === index)
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                }`}
+      {calendars ? (
+        <ul className="mx-auto grid w-full max-w-lg grid-cols-3 gap-2.5 sm:gap-3">
+          {choices.map((choice, index) => {
+            const cal = choice.calendar!;
+            const selected = picked === index;
+            const win = reveal && choice.correct;
+            const lose = reveal && selected && !choice.correct;
+            const soft = [
+              {
+                head: "bg-sky-400",
+                border: "border-sky-300 dark:border-sky-500",
+                day: "text-sky-800 dark:text-sky-200",
+              },
+              {
+                head: "bg-violet-300",
+                border: "border-violet-300 dark:border-violet-500",
+                day: "text-violet-800 dark:text-violet-200",
+              },
+              {
+                head: "bg-teal-300",
+                border: "border-teal-300 dark:border-teal-500",
+                day: "text-teal-800 dark:text-teal-200",
+              },
+            ][index % 3]!;
+            return (
+              <li key={choice.label}>
+                <button
+                  type="button"
+                  disabled={reveal}
+                  onClick={() => {
+                    setPicked(index);
+                    onPick(choice);
+                  }}
+                  className={`flex w-full flex-col items-center gap-2 rounded-2xl border-2 p-2 text-center transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:p-2.5 ${
+                    win
+                      ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40"
+                      : lose
+                        ? "border-orange-300 bg-orange-50 dark:border-orange-400/60 dark:bg-orange-950/30"
+                        : selected
+                          ? "border-blue-300 bg-blue-50 dark:bg-blue-950/30"
+                          : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+                  }`}
+                >
+                  <span
+                    className={`flex w-full max-w-[5.5rem] flex-col overflow-hidden rounded-xl border-2 shadow-sm sm:max-w-[6.25rem] ${
+                      win
+                        ? "border-emerald-400"
+                        : lose
+                          ? "border-orange-300"
+                          : soft.border
+                    }`}
+                  >
+                    <span
+                      className={`px-1 py-1 text-[9px] font-extrabold tracking-wide text-white sm:text-[10px] ${
+                        win ? "bg-emerald-400" : lose ? "bg-orange-300" : soft.head
+                      }`}
+                    >
+                      {cal.month}
+                    </span>
+                    <span
+                      className={`flex min-h-[2.75rem] items-center justify-center bg-white text-2xl font-black tabular-nums sm:min-h-[3.25rem] sm:text-3xl dark:bg-slate-950 ${
+                        win
+                          ? "text-emerald-700 dark:text-emerald-300"
+                          : lose
+                            ? "text-orange-700 dark:text-orange-300"
+                            : soft.day
+                      }`}
+                    >
+                      {cal.day}
+                    </span>
+                  </span>
+                  <span className="text-[10px] leading-snug font-bold text-slate-700 sm:text-[11px] dark:text-slate-200">
+                    {choice.label}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <ul className="grid w-full gap-3">
+          {choices.map((choice, index) => (
+            <li key={choice.label}>
+              <button
+                type="button"
+                disabled={reveal}
+                onClick={() => {
+                  setPicked(index);
+                  onPick(choice);
+                }}
+                className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left text-base transition duration-300 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md disabled:cursor-default sm:gap-4 sm:px-5 sm:text-[1.05rem] ${choiceStyle(
+                  reveal,
+                  choice.correct,
+                  picked === index,
+                )}`}
               >
-                {reveal && choice.correct ? <Check className="h-4 w-4" /> : String.fromCharCode(65 + index)}
-              </span>
-              <span className="font-medium leading-relaxed">{choice.label}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-      {reveal && picked !== null && <Feedback text={choices[picked]!.explanation} />}
+                <span
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    reveal && (choice.correct || picked === index)
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                  }`}
+                >
+                  {reveal && choice.correct ? <Check className="h-4 w-4" /> : String.fromCharCode(65 + index)}
+                </span>
+                <span className="font-medium leading-relaxed">{choice.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {reveal && picked !== null ? (
+        <Feedback text={choices[picked]!.explanation} />
+      ) : null}
     </div>
   );
 }
@@ -169,41 +278,18 @@ function TextActivity({
   }, [onReady]);
   return (
     <div className="space-y-5 rounded-2xl border border-slate-200 bg-white px-5 py-6 dark:border-slate-700 dark:bg-slate-900 sm:px-7 sm:py-7">
-      {activity.kind === "fiche" && (
-        <div className="text-center">
-          <p className="text-center text-xs font-bold tracking-[0.16em] text-blue-700 uppercase dark:text-blue-300">
-            À retenir
-          </p>
-          <div className="mt-8">
-            <p className="text-center text-base font-semibold text-slate-900 dark:text-white">
-              Avant d&apos;écrire à l&apos;IA
-            </p>
-            <ul className="mt-2 space-y-1.5 text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-              {activity.items
-                .filter((item) => item.startsWith("🛑"))
-                .map((item) => (
-                  <li key={item} className="text-center">
-                    {item}
-                  </li>
-                ))}
-            </ul>
-          </div>
-          <div className="mt-8">
-            <p className="text-center text-base font-semibold text-slate-900 dark:text-white">
-              Après la réponse :
-            </p>
-            <ul className="mt-2 space-y-1.5 text-center text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-              {activity.items
-                .filter((item) => item.startsWith("✅"))
-                .map((item) => (
-                  <li key={item} className="text-center">
-                    {item}
-                  </li>
-                ))}
-            </ul>
-          </div>
+      {activity.kind === "fiche" ? (
+        <div className="space-y-3">
+          <Feedback
+            title="À retenir · Avant d'écrire à l'IA"
+            points={activity.items.filter((item) => item.startsWith("🛑"))}
+          />
+          <Feedback
+            title="À retenir · Après la réponse"
+            points={activity.items.filter((item) => item.startsWith("✅"))}
+          />
         </div>
-      )}
+      ) : null}
       {activity.kind === "text" && (
         <div className="space-y-4">
           {activity.paragraphs.map((paragraph) => (
@@ -785,16 +871,7 @@ function SlashActivity({
           </div>
         )}
       </div>
-      {done && (
-        <div className="mt-4 w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-5 py-4 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60">
-          <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-            À retenir
-          </p>
-          <p className="mt-2 whitespace-pre-line text-center text-[15px] font-semibold leading-relaxed text-slate-900 sm:text-base dark:text-white">
-            {withLexiconTips(activity.takeaway)}
-          </p>
-        </div>
-      )}
+      {done ? <div className="mt-4 w-full"><Feedback text={activity.takeaway} /></div> : null}
     </div>
   );
 }
@@ -816,6 +893,7 @@ function SortActivity({
   const [overBin, setOverBin] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
   const binRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const thermoScaleRef = useRef<HTMLDivElement | null>(null);
   const dragId = useRef<string | null>(null);
   const splashTimer = useRef<number | null>(null);
 
@@ -836,11 +914,23 @@ function SortActivity({
   }
   const allPlaced = activity.cards.every((card) => placed[card.id]);
   const draggingCard = activity.cards.find((card) => card.id === drag?.id);
+  const thermometer = activity.layout === "thermometer";
   const row3 = activity.bins.length === 3;
   const row4 = activity.bins.length === 4;
-  const compact = row3 || row4;
+  /** Thermomètre : pas le mode colonnes compact. */
+  const compact = !thermometer && (row3 || row4);
 
   function hitBin(x: number, y: number) {
+    /** Thermomètre : suit la hauteur de la souris (pas besoin d'être pile sur la case). */
+    if (activity.layout === "thermometer") {
+      for (const bin of activity.bins) {
+        const el = binRefs.current[bin.id];
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (y >= rect.top && y <= rect.bottom) return bin.id;
+      }
+      return null;
+    }
     for (const bin of activity.bins) {
       const el = binRefs.current[bin.id];
       if (!el) continue;
@@ -937,7 +1027,7 @@ function SortActivity({
     window.addEventListener("pointercancel", up);
   }
 
-  const guideCorrection = compact;
+  const guideCorrection = compact || thermometer;
   const targetBins = new Set(
     checked && guideCorrection
       ? activity.cards
@@ -946,16 +1036,44 @@ function SortActivity({
       : [],
   );
 
+  const THERMO_TONES: Record<string, { band: string; hot: string; title: string; bulb: string }> = {
+    ban: {
+      band: "border-rose-300 bg-rose-100/90 dark:border-rose-500/50 dark:bg-rose-950/45",
+      hot: "border-rose-400 bg-rose-200 dark:bg-rose-900/60",
+      title: "text-rose-800 dark:text-rose-200",
+      bulb: "bg-rose-400",
+    },
+    high: {
+      band: "border-orange-300 bg-orange-100/90 dark:border-orange-500/50 dark:bg-orange-950/40",
+      hot: "border-orange-400 bg-orange-200 dark:bg-orange-900/55",
+      title: "text-orange-800 dark:text-orange-200",
+      bulb: "bg-orange-400",
+    },
+    clear: {
+      band: "border-amber-300 bg-amber-100/90 dark:border-amber-500/50 dark:bg-amber-950/40",
+      hot: "border-amber-400 bg-amber-200 dark:bg-amber-900/55",
+      title: "text-amber-900 dark:text-amber-100",
+      bulb: "bg-amber-400",
+    },
+    low: {
+      band: "border-emerald-300 bg-emerald-100/90 dark:border-emerald-500/50 dark:bg-emerald-950/40",
+      hot: "border-emerald-400 bg-emerald-200 dark:bg-emerald-900/55",
+      title: "text-emerald-800 dark:text-emerald-200",
+      bulb: "bg-emerald-400",
+    },
+  };
+
   function bubbleClass(index: number, right?: boolean) {
     const tone = checked
       ? right
-        ? "border-emerald-700 bg-emerald-500 text-white"
-        : "border-red-900 bg-red-800 text-white"
+        ? "border-emerald-600 bg-emerald-500 text-white"
+        : "border-orange-400 bg-orange-300 text-orange-950"
       : BUBBLE_COLORS[index % BUBBLE_COLORS.length];
     const feedbackMotion =
       checked && guideCorrection ? (right ? "sort-pop" : "sort-shake") : "";
+    const small = compact || thermometer;
     return `touch-none select-none border-2 text-center font-semibold shadow-sm transition ${
-      compact
+      small
         ? "max-w-full rounded-xl px-1.5 py-1.5 text-[10px] leading-snug sm:px-2 sm:text-[11px]"
         : "max-w-[10.5rem] rounded-full px-3 py-1.5 text-xs leading-snug sm:max-w-[11.5rem] sm:px-3.5"
     } ${checked ? "cursor-default" : "cursor-grab active:cursor-grabbing"} ${tone} ${feedbackMotion}`;
@@ -971,6 +1089,8 @@ function SortActivity({
     const toIndex = activity.bins.findIndex((bin) => bin.id === card.binId);
     const target = activity.bins[toIndex];
     const goLeft = toIndex < fromIndex;
+    /** Sur le thermomètre : index plus haut = plus chaud = plus haut à l'écran. */
+    const goUp = toIndex > fromIndex;
 
     return (
       <div className="flex max-w-full flex-col items-center gap-1">
@@ -986,23 +1106,224 @@ function SortActivity({
         {checked && guideCorrection && !right && target && (
           <div
             className={`flex max-w-full flex-col items-center gap-0.5 text-[10px] font-semibold leading-tight text-emerald-700 dark:text-emerald-300 ${
-              goLeft ? "sort-arrow-left" : "sort-arrow"
+              thermometer
+                ? goUp
+                  ? "sort-arrow-up"
+                  : "sort-arrow-down"
+                : goLeft
+                  ? "sort-arrow-left"
+                  : "sort-arrow"
             }`}
           >
             <span className="inline-flex items-center gap-0.5">
-              {goLeft ? <ArrowLeft className="h-3 w-3 shrink-0" /> : <ArrowRight className="h-3 w-3 shrink-0" />}
+              {thermometer ? (
+                goUp ? (
+                  <ArrowUp className="h-3 w-3 shrink-0" />
+                ) : (
+                  <ArrowDown className="h-3 w-3 shrink-0" />
+                )
+              ) : goLeft ? (
+                <ArrowLeft className="h-3 w-3 shrink-0" />
+              ) : (
+                <ArrowRight className="h-3 w-3 shrink-0" />
+              )}
               <span className="uppercase tracking-wide">{target.label}</span>
             </span>
           </div>
         )}
-        {checked && (
-          <p
-            className={`max-w-[14rem] text-center text-[11px] font-medium leading-snug sm:text-xs ${
-              right ? "text-emerald-800 dark:text-emerald-200" : "text-red-800 dark:text-red-200"
-            }`}
-          >
-            {card.explanation}
-          </p>
+      </div>
+    );
+  }
+
+  if (thermometer) {
+    /** Du plus chaud (haut) au plus froid (bas). */
+    const thermoBins = [...activity.bins].reverse();
+    const pool = activity.cards.filter((card) => !placed[card.id]);
+    return (
+      <div className="mx-auto w-full max-w-lg space-y-4">
+        <p className="text-center text-sm font-medium text-slate-600 dark:text-slate-300">
+          {activity.instruction}
+        </p>
+
+        <div className="flex items-stretch gap-2.5 sm:gap-3">
+          {(() => {
+            const heatRank: Record<string, number> = {
+              ban: 4,
+              high: 3,
+              clear: 2,
+              low: 1,
+            };
+            const hottestPlaced = activity.cards.reduce((best, card) => {
+              const binId = placed[card.id];
+              if (!binId) return best;
+              return (heatRank[binId] ?? 0) > (heatRank[best] ?? 0) ? binId : best;
+            }, "" as string);
+            const restId = overBin ?? (hottestPlaced || "low");
+            const restIndex = Math.max(
+              0,
+              thermoBins.findIndex((bin) => bin.id === restId),
+            );
+            const track = thermoScaleRef.current?.getBoundingClientRect();
+            let cursorPct = ((restIndex + 0.5) / Math.max(thermoBins.length, 1)) * 100;
+            if (drag && track && track.height > 0) {
+              cursorPct = Math.max(
+                4,
+                Math.min(96, ((drag.y - track.top) / track.height) * 100),
+              );
+            }
+            const heatId =
+              overBin ??
+              (cursorPct < 25 ? "ban" : cursorPct < 50 ? "high" : cursorPct < 75 ? "clear" : "low");
+            const look =
+              heatId === "ban"
+                ? { orb: "bg-rose-500 ring-rose-300", icon: "🔥", flame: true, fill: "from-rose-500" }
+                : heatId === "high"
+                  ? {
+                      orb: "bg-orange-400 ring-orange-200",
+                      icon: "♨️",
+                      flame: true,
+                      fill: "from-orange-400",
+                    }
+                  : heatId === "clear"
+                    ? {
+                        orb: "bg-amber-300 ring-amber-100",
+                        icon: "🌤️",
+                        flame: false,
+                        fill: "from-amber-300",
+                      }
+                    : {
+                        orb: "bg-emerald-400 ring-emerald-200",
+                        icon: "❄️",
+                        flame: false,
+                        fill: "from-emerald-400",
+                      };
+            return (
+              <div className="relative w-9 shrink-0 sm:w-10" aria-hidden>
+                <div className="absolute inset-y-0 left-1/2 w-2.5 -translate-x-1/2 rounded-full bg-slate-200 shadow-inner dark:bg-slate-700" />
+                <div
+                  className={`absolute bottom-0 left-1/2 w-2.5 -translate-x-1/2 rounded-full bg-gradient-to-t to-transparent ${look.fill}`}
+                  style={{ height: `${100 - cursorPct}%` }}
+                />
+                <div
+                  className="absolute left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+                  style={{
+                    top: `${cursorPct}%`,
+                    transition: drag ? "none" : "top 0.25s ease-out",
+                  }}
+                >
+                  {look.flame ? (
+                    <span className="thermo-flame mb-0.5 text-sm leading-none">{look.icon}</span>
+                  ) : null}
+                  <span
+                    className={`h-5 w-5 rounded-full ring-2 shadow-md ${look.orb} ${
+                      look.flame ? "thermo-pulse" : "flex items-center justify-center text-[10px]"
+                    }`}
+                  >
+                    {!look.flame ? look.icon : null}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+
+          <div ref={thermoScaleRef} className="flex min-w-0 flex-1 flex-col gap-1">
+            {thermoBins.map((bin) => {
+              const tone = THERMO_TONES[bin.id] ?? {
+                band: "border-slate-300 bg-slate-100",
+                hot: "border-blue-400 bg-blue-100",
+                title: "text-slate-700",
+                bulb: "bg-slate-400",
+              };
+              const hot = overBin === bin.id;
+              const isTarget = targetBins.has(bin.id);
+              const cardsInBin = activity.cards.filter((card) => placed[card.id] === bin.id);
+              return (
+                <div
+                  key={bin.id}
+                  ref={(node) => {
+                    binRefs.current[bin.id] = node;
+                  }}
+                  className={`flex min-h-[2.85rem] flex-col items-center justify-center rounded-lg border-2 px-1.5 py-1 transition sm:min-h-[3.1rem] sm:px-2 sm:py-1.5 ${
+                    hot ? tone.hot : tone.band
+                  } ${isTarget ? "sort-target ring-2 ring-emerald-400" : ""}`}
+                >
+                  <p
+                    className={`w-full text-center text-xs font-extrabold tracking-wide sm:text-sm ${tone.title} ${
+                      cardsInBin.length > 0 ? "mb-0.5" : ""
+                    }`}
+                  >
+                    {bin.label}
+                  </p>
+                  {cardsInBin.length > 0 ? (
+                    <div className="flex w-full flex-wrap items-center justify-center gap-1">
+                      {cardsInBin.map((card) => (
+                        <Bubble key={card.id} cardId={card.id} />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {!checked && pool.length > 0 ? (
+          <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 dark:border-slate-600 dark:bg-slate-900/50">
+            {pool.map((card) => (
+              <Bubble key={card.id} cardId={card.id} />
+            ))}
+          </div>
+        ) : null}
+
+        {drag &&
+          draggingCard &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div
+              className={`pointer-events-none fixed z-[300] max-w-[12rem] -translate-x-1/2 -translate-y-1/2 rounded-xl border-2 px-2 py-1.5 text-center text-[11px] leading-snug font-semibold shadow-lg ${
+                BUBBLE_COLORS[
+                  activity.cards.findIndex((card) => card.id === draggingCard.id) %
+                    BUBBLE_COLORS.length
+                ]
+              }`}
+              style={{ left: drag.x, top: drag.y }}
+            >
+              {draggingCard.label}
+            </div>,
+            document.body,
+          )}
+
+        {checked ? (
+          <div className="flex w-full flex-col gap-2.5">
+            {thermoBins.map((bin) => {
+              const cards = activity.cards.filter((card) => card.binId === bin.id);
+              if (cards.length === 0) return null;
+              return (
+                <Feedback
+                  key={`retain-${bin.id}`}
+                  title={`À retenir · ${bin.label}`}
+                  points={cards.map((card) => {
+                    const ok = placed[card.id] === card.binId;
+                    return `${ok ? "✓" : "→"} ${card.label} — ${card.explanation}`;
+                  })}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              disabled={!allPlaced}
+              onClick={() => {
+                setChecked(true);
+                onReady();
+              }}
+              className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition enabled:hover:bg-blue-700 disabled:opacity-40"
+            >
+              Vérifier
+            </button>
+          </div>
         )}
       </div>
     );
@@ -1179,7 +1500,7 @@ function SortActivity({
           </div>,
           document.body,
         )}
-      {!checked && (
+      {!checked ? (
         <div className="flex justify-center">
           <button
             type="button"
@@ -1193,6 +1514,13 @@ function SortActivity({
             Vérifier
           </button>
         </div>
+      ) : (
+        <Feedback
+          points={activity.cards.map((card) => {
+            const ok = placed[card.id] === card.binId;
+            return `${ok ? "✓" : "→"} ${card.label} — ${card.explanation}`;
+          })}
+        />
       )}
     </div>
   );
@@ -1916,6 +2244,25 @@ function ChecklistActivity({
   );
 }
 
+const PREDICT_BRICKS = [
+  {
+    shell: "border-teal-700 bg-teal-400 text-teal-950 shadow-teal-800/25",
+    chip: "bg-teal-500",
+  },
+  {
+    shell: "border-sky-600 bg-sky-400 text-sky-950 shadow-sky-700/25",
+    chip: "bg-sky-500",
+  },
+  {
+    shell: "border-rose-600 bg-rose-400 text-rose-950 shadow-rose-700/25",
+    chip: "bg-rose-500",
+  },
+  {
+    shell: "border-lime-600 bg-lime-400 text-lime-950 shadow-lime-700/25",
+    chip: "bg-lime-500",
+  },
+] as const;
+
 function PredictActivity({
   activity,
   onReady,
@@ -1925,27 +2272,108 @@ function PredictActivity({
 }) {
   const [cursor, setCursor] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
+  const [phase, setPhase] = useState<"idle" | "rolling" | "mixing" | "done">("idle");
   const [finished, setFinished] = useState(false);
+  const [drag, setDrag] = useState<{
+    label: string;
+    index: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [overDrop, setOverDrop] = useState(false);
+  const dropRef = useRef<HTMLDivElement>(null);
+  const timers = useRef<number[]>([]);
   const round = activity.rounds[cursor];
-  const open = picked !== null;
   const last = cursor >= activity.rounds.length - 1;
   const top = round ? Math.max(...round.options.map((option) => option.percent)) : 0;
   const hint = round?.hint ?? activity.hint;
+  const pickedOption = round?.options.find((option) => option.label === picked) ?? null;
+  const pickedIndex = round ? round.options.findIndex((option) => option.label === picked) : -1;
+  const pickedTone = PREDICT_BRICKS[(pickedIndex >= 0 ? pickedIndex : 0) % PREDICT_BRICKS.length]!;
+  const correct = Boolean(pickedOption && pickedOption.percent === top);
+  const dragTone = drag ? PREDICT_BRICKS[drag.index % PREDICT_BRICKS.length]! : null;
+
+  function clearTimers() {
+    timers.current.forEach((id) => window.clearTimeout(id));
+    timers.current = [];
+  }
+
+  useEffect(() => () => clearTimers(), []);
+
+  function hitDrop(clientX: number, clientY: number) {
+    const rect = dropRef.current?.getBoundingClientRect();
+    if (!rect) return false;
+    return (
+      clientX >= rect.left &&
+      clientX <= rect.right &&
+      clientY >= rect.top &&
+      clientY <= rect.bottom
+    );
+  }
 
   function goNext() {
-    if (last) {
-      onReady();
-      setFinished(true);
-      return;
-    }
+    clearTimers();
     setCursor((value) => value + 1);
     setPicked(null);
+    setPhase("idle");
+    setDrag(null);
+    setOverDrop(false);
+  }
+
+  function sendBrick(label: string) {
+    if (!round || phase !== "idle") return;
+    clearTimers();
+    setPicked(label);
+    setDrag(null);
+    setOverDrop(false);
+    const preferReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (preferReduced) {
+      setPhase("done");
+      return;
+    }
+    setPhase("rolling");
+    timers.current.push(
+      window.setTimeout(() => {
+        setPhase("mixing");
+        timers.current.push(window.setTimeout(() => setPhase("done"), 850));
+      }, 4200),
+    );
+  }
+
+  function onBrickPointerDown(
+    event: ReactPointerEvent<HTMLButtonElement>,
+    label: string,
+    index: number,
+  ) {
+    if (phase !== "idle") return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDrag({ label, index, x: event.clientX, y: event.clientY });
+    setOverDrop(hitDrop(event.clientX, event.clientY));
+  }
+
+  function onBrickPointerMove(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (!drag || phase !== "idle") return;
+    setDrag((current) =>
+      current ? { ...current, x: event.clientX, y: event.clientY } : null,
+    );
+    setOverDrop(hitDrop(event.clientX, event.clientY));
+  }
+
+  function onBrickPointerUp(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (!drag || phase !== "idle") return;
+    const label = drag.label;
+    const ok = hitDrop(event.clientX, event.clientY);
+    setDrag(null);
+    setOverDrop(false);
+    if (ok) sendBrick(label);
   }
 
   if (!round) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto flex w-full max-w-lg flex-col items-center space-y-4">
       {activity.rounds.length > 1 && (
         <div className="flex justify-center gap-1.5">
           {activity.rounds.map((_, index) => (
@@ -1962,80 +2390,220 @@ function PredictActivity({
           ))}
         </div>
       )}
-      <div className="mx-auto max-w-lg space-y-1.5 text-center">
-        {hint && (
-          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{hint}</p>
-        )}
-        <p className="text-base font-bold leading-snug text-slate-900 dark:text-white sm:text-lg">
+
+      <div className="mx-auto w-full max-w-md space-y-2 text-center">
+        {hint ? (
+          <p className="mx-auto text-center text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
+            {hint}
+          </p>
+        ) : null}
+        <p className="mx-auto text-center text-base font-bold leading-snug text-slate-900 dark:text-white sm:text-lg">
           «&nbsp;{round.lead}&nbsp;»
         </p>
+        {phase === "idle" ? (
+          <p className="mx-auto text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Glissez la suite la plus probable sur le début du tapis.
+          </p>
+        ) : null}
       </div>
-      <ul className="mx-auto grid w-full max-w-lg gap-2">
-        {round.options.map((option, index) => {
-          const correct = option.percent === top;
-          const mine = option.label === picked;
-          const tone = !open
-            ? "border-slate-200 bg-white text-slate-800 hover:-translate-y-0.5 hover:border-amber-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-            : correct
-              ? "border-emerald-700 bg-emerald-600 text-white"
-              : mine
-                ? "border-red-900 bg-red-800 text-white"
-                : "border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-900";
-          return (
-            <li key={option.label}>
-              <button
-                type="button"
-                disabled={open}
-                onClick={() => setPicked(option.label)}
-                className={`flex w-full items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-left text-sm font-semibold transition disabled:cursor-default sm:gap-3 sm:px-3.5 sm:text-[0.95rem] ${tone}`}
-              >
+
+      {/* Une ligne : tapis (dépose à gauche dessus) → tube → petit résultat */}
+      <div className="flex w-full items-center gap-0">
+        <div className="relative h-14 min-w-0 flex-[1.35] overflow-hidden rounded-l-xl border-2 border-r-0 border-amber-600 bg-amber-800 sm:h-16 dark:border-amber-400">
+          <div className="absolute inset-x-0 inset-y-1 overflow-hidden" aria-hidden>
+            <div className="predict-belt-move flex h-full w-[200%]">
+              <div
+                className="h-full w-1/2"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, #fbbf24 0 14px, #b45309 14px 28px)",
+                }}
+              />
+              <div
+                className="h-full w-1/2"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, #fbbf24 0 14px, #b45309 14px 28px)",
+                }}
+              />
+            </div>
+          </div>
+          <div className="absolute inset-x-0 top-0 z-[1] h-1 bg-amber-500" aria-hidden />
+          <div className="absolute inset-x-0 bottom-0 z-[1] h-1 bg-amber-700" aria-hidden />
+          {/* Zone de dépose = début du tapis */}
+          <div
+            ref={dropRef}
+            className={`predict-drop-glow absolute top-1/2 left-1.5 z-[3] flex h-10 w-[3.35rem] -translate-y-1/2 flex-col items-center justify-center rounded-md border-2 px-0.5 text-center sm:left-2 sm:h-11 sm:w-[3.75rem] ${
+              overDrop
+                ? "border-sky-200 bg-sky-300/95 dark:border-white dark:bg-sky-400/75"
+                : "border-sky-300 bg-gradient-to-br from-sky-200/95 via-cyan-100/90 to-sky-300/85 dark:border-sky-300 dark:from-sky-400/50 dark:via-cyan-400/35 dark:to-sky-500/45"
+            }`}
+            aria-label="Déposer ici"
+          >
+            <span className="text-[8px] leading-[1.05] font-extrabold text-sky-950 uppercase dark:text-sky-50 sm:text-[9px]">
+              Déposer
+              <br />
+              ici
+            </span>
+          </div>
+          {phase === "rolling" && picked ? (
+            <div
+              className={`predict-brick-roll absolute z-10 flex h-8 max-w-[4.5rem] items-center justify-center rounded-md border-2 px-1 text-center text-[9px] leading-tight font-extrabold shadow-md ${pickedTone.shell}`}
+            >
+              {picked}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="relative z-[2] flex h-14 w-11 shrink-0 flex-col overflow-hidden rounded-r-md border-2 border-violet-700 bg-violet-800 sm:h-16 sm:w-12 dark:border-violet-300 dark:bg-violet-700">
+          <div
+            className="mx-auto h-0 w-0 border-x-[0.95rem] border-t-[0.85rem] border-x-transparent border-t-violet-400 dark:border-t-violet-200"
+            aria-hidden
+          />
+          <div className="relative mx-auto mt-0.5 min-h-0 w-[70%] flex-1 overflow-hidden rounded-b-sm border-2 border-t-0 border-violet-500 bg-violet-950/80 dark:border-violet-300 dark:bg-violet-900/90">
+            {phase === "mixing" ? (
+              <div className="absolute inset-0.5 overflow-hidden" aria-hidden>
                 <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                    open && (correct || mine)
-                      ? "bg-white/20 text-white"
-                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                  }`}
-                >
-                  {open && correct ? <Check className="h-3.5 w-3.5" /> : String.fromCharCode(65 + index)}
+                  className={`predict-mix-blob absolute top-0.5 left-0.5 h-2 w-2 rounded-sm ${pickedTone.chip}`}
+                />
+                <span className="predict-mix-blob absolute top-1 right-0.5 h-2 w-2 rounded-full bg-sky-400 [animation-delay:80ms]" />
+                <span className="predict-mix-blob absolute bottom-1 left-1 h-1.5 w-2.5 rounded-sm bg-rose-400 [animation-delay:140ms]" />
+                <span className="predict-mix-blob absolute right-1 bottom-0.5 h-2 w-2 rounded-full bg-lime-400 [animation-delay:40ms]" />
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div
+          className={`ml-1.5 flex h-14 w-[5.75rem] shrink-0 items-center justify-center rounded-xl border-2 px-1.5 text-center sm:h-16 sm:ml-2 sm:w-28 ${
+            phase === "done" && pickedOption
+              ? correct
+                ? "predict-eject border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50"
+                : "predict-eject border-amber-500 bg-amber-50 dark:bg-amber-950/40"
+              : "border-dashed border-slate-300 bg-white/80 dark:border-slate-600 dark:bg-slate-900/50"
+          }`}
+        >
+          {phase === "done" && pickedOption ? (
+            <div>
+              <p className="text-[11px] font-extrabold leading-snug text-slate-900 dark:text-white sm:text-xs">
+                {pickedOption.label}
+              </p>
+              <p
+                className={`text-sm font-black tabular-nums sm:text-base ${
+                  correct
+                    ? "text-emerald-700 dark:text-emerald-300"
+                    : "text-amber-700 dark:text-amber-300"
+                }`}
+              >
+                {pickedOption.percent}&nbsp;%
+              </p>
+            </div>
+          ) : phase === "mixing" ? (
+            <span className="text-xs font-semibold text-slate-400">…</span>
+          ) : null}
+        </div>
+      </div>
+
+      {phase === "done" ? (
+        <div className="flex w-full flex-col gap-1.5">
+          {round.options.map((option, index) => {
+            const tone = PREDICT_BRICKS[index % PREDICT_BRICKS.length]!;
+            const isTop = option.percent === top;
+            // Largeur discrète : 42 % mini → 100 % pour le top
+            const widthPct = 42 + (option.percent / Math.max(top, 1)) * 58;
+            return (
+              <div
+                key={option.label}
+                className={`predict-eject flex h-8 items-center justify-between gap-2 rounded-md border-2 px-2 shadow-sm sm:h-9 ${tone.shell} ${
+                  isTop ? "ring-1 ring-emerald-600/70" : ""
+                }`}
+                style={{ width: `${widthPct}%` }}
+              >
+                <span className="truncate text-[11px] font-extrabold sm:text-xs">{option.label}</span>
+                <span className="shrink-0 text-[11px] font-black tabular-nums sm:text-xs">
+                  {option.percent}&nbsp;%
                 </span>
-                <span className="flex-1 leading-snug">{option.label}</span>
-                {open && (
-                  <span className={`text-xs font-semibold ${correct || mine ? "text-white/90" : "text-slate-400"}`}>
-                    {option.percent} %
-                  </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid w-full grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
+          {round.options.map((option, index) => {
+            const tone = PREDICT_BRICKS[index % PREDICT_BRICKS.length]!;
+            const sent = picked === option.label;
+            const dragging = drag?.label === option.label;
+            const gone = dragging || (sent && phase !== "idle");
+            return (
+              <button
+                key={option.label}
+                type="button"
+                disabled={phase !== "idle"}
+                onPointerDown={(event) => onBrickPointerDown(event, option.label, index)}
+                onPointerMove={onBrickPointerMove}
+                onPointerUp={onBrickPointerUp}
+                onPointerCancel={() => {
+                  setDrag(null);
+                  setOverDrop(false);
+                }}
+                className={`relative flex min-h-[2.6rem] touch-none flex-col items-center justify-center rounded-md border-2 px-1.5 py-1.5 text-center text-[11px] font-extrabold leading-snug shadow-md transition disabled:cursor-default sm:min-h-[2.85rem] sm:text-xs ${
+                  gone
+                    ? "border-transparent bg-transparent shadow-none opacity-0"
+                    : `${tone.shell} ${phase !== "idle" && !sent ? "opacity-40 grayscale-[0.35]" : ""}`
+                }`}
+              >
+                {gone ? (
+                  <span className="invisible text-[11px]">{option.label}</span>
+                ) : (
+                  <>
+                    <span className={`mb-0.5 h-1 w-6 rounded-full ${tone.chip}`} aria-hidden />
+                    {option.label}
+                  </>
                 )}
               </button>
-            </li>
-          );
-        })}
-      </ul>
-      {open && (
-        <>
-          <p className="mx-auto max-w-lg text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-            Ce pourcentage, c&apos;est la probabilité que l&apos;IA choisisse cette suite. Plus ce pourcentage est haut, plus cette suite est courante.
+            );
+          })}
+        </div>
+      )}
+
+      {drag && dragTone && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className={`pointer-events-none fixed z-[80] flex h-9 max-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md border-2 px-2 text-center text-[11px] font-extrabold leading-tight shadow-lg ${dragTone.shell}`}
+              style={{ left: drag.x, top: drag.y }}
+            >
+              {drag.label}
+            </div>,
+            document.body,
+          )
+        : null}
+
+      {phase === "done" && pickedOption ? (
+        <div className="flex w-full flex-col items-center space-y-4">
+          <p className="mx-auto max-w-md text-center text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+            Ce pourcentage, c&apos;est la probabilité que l&apos;IA choisisse cette suite. Plus ce
+            pourcentage est haut, plus cette suite est courante.
           </p>
           <Feedback text={round.message} />
-          {!finished && !last && (
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={goNext}
-                className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-              >
-                Suivant
-              </button>
-            </div>
-          )}
-          {last && (
+          {!finished && !last ? (
+            <button
+              type="button"
+              onClick={goNext}
+              className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Suivant
+            </button>
+          ) : null}
+          {last && !finished ? (
             <ReadyOnce
               onReady={() => {
                 onReady();
                 setFinished(true);
               }}
             />
-          )}
-        </>
-      )}
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -2053,7 +2621,7 @@ function SpotActivity({
   const takeaways = traps.filter((trap) => trap.explanation);
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5">
-      <p className="text-justify text-base font-semibold leading-snug text-slate-900 dark:text-white">
+      <p className="text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
         {activity.intro}
       </p>
       <div className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-5 dark:border-slate-700 dark:bg-slate-900">
@@ -2111,23 +2679,11 @@ function SpotActivity({
           })}
         </p>
       </div>
-      {checked && takeaways.length > 0 && (
-        <div className="flex w-full flex-col gap-2">
-          {takeaways.map((trap) => (
-            <div
-              key={trap.id}
-              className="w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-4 py-3.5 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60"
-            >
-              <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-                À retenir
-              </p>
-              <p className="mt-2 text-justify text-[15px] font-semibold leading-snug text-slate-900 sm:text-base dark:text-white">
-                {withLexiconTips(trap.explanation!)}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      {checked && takeaways.length > 0 ? (
+        <Feedback
+          points={takeaways.map((trap) => trap.explanation!).filter(Boolean)}
+        />
+      ) : null}
       {!checked && (
         <div className="flex justify-center">
           <button
@@ -2231,6 +2787,360 @@ function RedactActivity({
   );
 }
 
+function labelVisualClass(visual?: Extract<Activity, { kind: "label" }>["items"][number]["visual"]) {
+  switch (visual) {
+    case "cartoon":
+      return "bg-gradient-to-br from-yellow-200 via-orange-200 to-pink-300";
+    case "paint":
+      return "bg-gradient-to-br from-sky-200 via-violet-200 to-rose-200";
+    case "broadcast":
+      return "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-950";
+    case "stylized":
+      return "bg-gradient-to-br from-cyan-300 via-blue-400 to-indigo-500";
+    case "photo":
+    default:
+      return "bg-gradient-to-br from-stone-300 via-stone-200 to-stone-400";
+  }
+}
+
+function SendActivity({
+  activity,
+  onReady,
+}: {
+  activity: Extract<Activity, { kind: "send" }>;
+  onReady: () => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [typed, setTyped] = useState("");
+  const [phase, setPhase] = useState<"typing" | "ready" | "fixing" | "done">("typing");
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const item = activity.items[index];
+  const last = index >= activity.items.length - 1;
+  const busy = phase === "typing" || phase === "fixing" || phase === "done";
+  const preferCorrect = Boolean(item && !item.send);
+  const timers = useRef<number[]>([]);
+
+  function clearTimers() {
+    timers.current.forEach((id) => window.clearTimeout(id));
+    timers.current = [];
+  }
+
+  function typeText(full: string, onDone: () => void, speed = 52) {
+    clearTimers();
+    const preferReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (preferReduced) {
+      setTyped(full);
+      onDone();
+      return;
+    }
+    let i = 0;
+    setTyped("");
+    const step = full.length > 80 ? Math.max(28, speed - 14) : full.length > 40 ? speed : speed + 10;
+    const tick = () => {
+      i += 1;
+      setTyped(full.slice(0, i));
+      if (i >= full.length) {
+        onDone();
+        return;
+      }
+      timers.current.push(window.setTimeout(tick, step));
+    };
+    timers.current.push(window.setTimeout(tick, step));
+  }
+
+  function settle(message: string) {
+    setFeedback(message);
+    setOk(true);
+    setPhase("done");
+  }
+
+  function goNext() {
+    if (last) {
+      onReady();
+      setFinished(true);
+      return;
+    }
+    setIndex((value) => value + 1);
+  }
+
+  useEffect(() => {
+    if (!item) return;
+    clearTimers();
+    setFeedback(null);
+    setOk(false);
+    setPhase("typing");
+    typeText(item.prompt, () => setPhase("ready"));
+    return clearTimers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.id]);
+
+  function onCorrect() {
+    if (!item || busy) return;
+    if (item.send) {
+      setOk(false);
+      setFeedback(item.explanation);
+      return;
+    }
+    const fixed = item.fixedPrompt;
+    if (!fixed) return;
+    setPhase("fixing");
+    setFeedback(null);
+    // Efface lettre par lettre, puis réécrit la bonne phrase.
+    let current = item.prompt;
+    const erase = () => {
+      if (current.length === 0) {
+        typeText(fixed, () => settle(item.explanation), 42);
+        return;
+      }
+      current = current.slice(0, -1);
+      setTyped(current);
+      timers.current.push(window.setTimeout(erase, 22));
+    };
+    erase();
+  }
+
+  function onEnter() {
+    if (!item || busy) return;
+    if (!item.send) {
+      setOk(false);
+      setFeedback("Non : corrigez d'abord — trop flou ou sensible.");
+      return;
+    }
+    settle(item.explanation);
+  }
+
+  if (!item) return null;
+
+  return (
+    <div className="mx-auto w-full max-w-lg space-y-4">
+      <p className="text-center text-sm font-semibold text-slate-700 dark:text-slate-200">
+        {activity.instruction}
+      </p>
+      <div className="flex justify-center gap-1.5">
+        {activity.items.map((entry, i) => (
+          <span
+            key={entry.id}
+            className={`h-1.5 w-1.5 rounded-full ${
+              i < index
+                ? "bg-emerald-500"
+                : i === index
+                  ? "bg-blue-500"
+                  : "bg-slate-300 dark:bg-slate-600"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border-2 border-slate-300 bg-white shadow-md dark:border-slate-600 dark:bg-slate-900">
+        <div className="flex items-center justify-center gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-950/70">
+          <MessageCircle className="h-4 w-4 text-sky-600 dark:text-sky-300" aria-hidden />
+          <span className="text-xs font-bold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+            Nouvelle demande à l&apos;IA
+          </span>
+        </div>
+        <div className="space-y-2.5 px-4 py-4">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Vous écrivez :</p>
+          <div className="grid grid-cols-[minmax(0,1fr)_6.6rem] grid-rows-[minmax(3.65rem,1fr)_minmax(3.65rem,1fr)] gap-2">
+            <div
+              className={`col-start-1 row-span-2 row-start-1 min-h-[7.75rem] rounded-xl border-2 px-3.5 py-3 text-sm leading-relaxed font-medium transition sm:text-base ${
+                phase === "done"
+                  ? ok
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-50"
+                    : "border-red-700 bg-red-50 text-red-950 dark:bg-red-950/40 dark:text-red-50"
+                  : "border-slate-300 bg-slate-50 text-slate-900 dark:border-slate-600 dark:bg-slate-950 dark:text-white"
+              }`}
+              aria-label={typed || item.prompt}
+            >
+              <span>{typed}</span>
+              {phase !== "done" ? (
+                <span
+                  className="ml-px font-normal text-slate-700 dark:text-slate-200"
+                  style={{ animation: "send-caret-blink 0.9s steps(1, end) infinite" }}
+                  aria-hidden
+                >
+                  |
+                </span>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={onCorrect}
+              disabled={busy}
+              className={`col-start-2 row-start-1 flex h-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-amber-500 bg-amber-400 px-1.5 text-center text-amber-950 shadow-sm transition active:scale-[0.98] disabled:opacity-45 ${
+                phase === "ready"
+                  ? `send-key-pulse${preferCorrect ? " shadow-md shadow-amber-500/30" : ""}`
+                  : ""
+              }`}
+              aria-label="Corriger : effacer et réécrire"
+            >
+              <Delete className="h-[1.05rem] w-[1.05rem]" aria-hidden />
+              <span className="text-xs font-extrabold leading-none">Corriger</span>
+            </button>
+            <button
+              type="button"
+              onClick={onEnter}
+              disabled={busy}
+              className={`col-start-2 row-start-2 flex h-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-emerald-500 bg-emerald-500 px-1.5 text-center text-white shadow-sm transition active:scale-[0.98] disabled:opacity-45 ${
+                phase === "ready"
+                  ? `send-key-pulse${!preferCorrect ? " shadow-md shadow-emerald-500/35" : ""}`
+                  : ""
+              }`}
+              aria-label="Entrée : valider"
+            >
+              <CornerDownLeft className="h-[1.05rem] w-[1.05rem]" aria-hidden />
+              <span className="text-xs font-extrabold leading-none">Entrée</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {feedback ? <Feedback text={feedback} /> : null}
+      {phase === "done" && ok && !finished ? (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={goNext}
+            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Suivant
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function LabelActivity({
+  activity,
+  onReady,
+}: {
+  activity: Extract<Activity, { kind: "label" }>;
+  onReady: () => void;
+}) {
+  const [marked, setMarked] = useState<Record<string, boolean>>({});
+  const [checked, setChecked] = useState(false);
+
+  function toggle(id: string) {
+    if (checked) return;
+    setMarked((current) => ({ ...current, [id]: !current[id] }));
+  }
+
+  function verify() {
+    setChecked(true);
+    onReady();
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="mx-auto max-w-lg text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
+        {activity.instruction}
+      </p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+        {activity.items.map((item) => {
+          const on = Boolean(marked[item.id]);
+          const right = on === item.needsLabel;
+          const tone = checked
+            ? right
+              ? "ring-2 ring-emerald-500"
+              : "ring-2 ring-red-500"
+            : on
+              ? "ring-2 ring-blue-500"
+              : "ring-1 ring-slate-200 dark:ring-slate-600";
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => toggle(item.id)}
+              className={`relative overflow-hidden rounded-2xl text-left transition hover:-translate-y-0.5 hover:shadow-md ${tone}`}
+              aria-pressed={on}
+              aria-label={`${item.caption}${on ? `, sticker ${activity.sticker}` : ""}`}
+            >
+              <span className="relative block aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                {item.imageSrc ? (
+                  <img
+                    src={item.imageSrc}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span
+                    className={`flex h-full w-full items-center justify-center ${labelVisualClass(item.visual)}`}
+                    aria-hidden
+                  >
+                    {item.visual === "cartoon" ? (
+                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-4 border-slate-800 bg-white text-lg font-black text-slate-800">
+                        IA
+                      </span>
+                    ) : item.visual === "broadcast" ? (
+                      <span className="rounded bg-red-500 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white">
+                        LIVE
+                      </span>
+                    ) : item.visual === "paint" ? (
+                      <span className="h-16 w-16 rounded-full bg-white/35 blur-[1px]" />
+                    ) : item.visual === "stylized" ? (
+                      <span className="h-12 w-12 rotate-12 rounded-lg bg-white/80 shadow-md" />
+                    ) : (
+                      <User className="h-10 w-10 text-white/80" />
+                    )}
+                  </span>
+                )}
+                {!checked && on ? (
+                  <span className="absolute top-2 left-2 rounded-md bg-amber-300 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide text-amber-950 shadow-sm sm:text-[11px]">
+                    {activity.sticker}
+                  </span>
+                ) : null}
+                {checked ? (
+                  <>
+                    <span
+                      className={`absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[10px] font-extrabold tracking-wide shadow-sm sm:text-[11px] ${
+                        item.needsLabel
+                          ? "bg-amber-300 text-amber-950"
+                          : "bg-emerald-400 text-emerald-950"
+                      }`}
+                    >
+                      {item.needsLabel ? activity.sticker : "Pas besoin ici !"}
+                    </span>
+                    <span
+                      className={`absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full ${
+                        right ? "bg-emerald-600 text-white" : "bg-red-700 text-white"
+                      }`}
+                    >
+                      {right ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                    </span>
+                  </>
+                ) : null}
+              </span>
+              <span className="block bg-white px-2.5 py-2 text-center text-[11px] font-semibold leading-snug text-slate-800 dark:bg-slate-900 dark:text-slate-100 sm:text-xs">
+                {item.caption}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {checked ? (
+        <Feedback
+          points={activity.items.map((item) => item.explanation)}
+        />
+      ) : null}
+      {!checked ? (
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={verify}
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Vérifier
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** Ordre d'affichage du feu : rouge en haut, vert en bas (traditionnel). */
 const TRAFFIC_LEVELS = [
   {
@@ -2280,6 +3190,14 @@ function TrafficActivity({
   items: Extract<Activity, { kind: "traffic" }>["items"];
   onReady: () => void;
 }) {
+  const [deck] = useState(() => {
+    const next = [...items];
+    for (let i = next.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [next[i], next[j]] = [next[j]!, next[i]!];
+    }
+    return next;
+  });
   const [cursor, setCursor] = useState(0);
   const [phase, setPhase] = useState<"arrive" | "choose" | "result" | "leave">("arrive");
   const [picked, setPicked] = useState<string | null>(null);
@@ -2289,8 +3207,8 @@ function TrafficActivity({
   const sceneRef = useRef<HTMLDivElement>(null);
   const lastRef = useRef(false);
   const onReadyRef = useRef(onReady);
-  const item = items[cursor];
-  const last = cursor >= items.length - 1;
+  const item = deck[cursor];
+  const last = cursor >= deck.length - 1;
   const right = picked !== null && item ? picked === item.level : false;
   lastRef.current = last;
   onReadyRef.current = onReady;
@@ -2348,7 +3266,7 @@ function TrafficActivity({
     }
 
     // Feu rouge STOP : la voiture cale et recule (interdit de passer).
-    const reverseLeave = phase === "leave" && items[cursor]?.level === "red";
+    const reverseLeave = phase === "leave" && deck[cursor]?.level === "red";
     const from = phase === "leave" ? stopDist : 0;
     const maxRear = Math.max(0, total - total * 0.02);
     const to = phase === "leave" ? (reverseLeave ? 0 : maxRear) : stopDist;
@@ -2397,7 +3315,7 @@ function TrafficActivity({
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [phase, cursor, items]);
+  }, [phase, cursor, deck]);
 
   function pick(levelId: string) {
     if (phase !== "choose" || picked !== null || finished) return;
@@ -2424,7 +3342,7 @@ function TrafficActivity({
   return (
     <div className="space-y-4">
       <div className="flex justify-center gap-1.5">
-        {items.map((_, index) => (
+        {deck.map((_, index) => (
           <span
             key={index}
             className={`h-1.5 w-1.5 rounded-full transition ${
@@ -2492,9 +3410,9 @@ function TrafficActivity({
         </svg>
 
         {/* Feu : pied sur la ligne haute de la route grise, devant la voiture */}
-        <div className="absolute bottom-[34%] left-[54%] z-20 flex items-stretch gap-2 sm:left-[55%]">
+        <div className="absolute bottom-[34%] left-[54%] z-20 flex items-stretch gap-2.5 sm:left-[55%]">
           <div className="flex flex-col items-center">
-            <div className="flex h-[4.75rem] w-9 flex-col justify-evenly rounded-xl border-2 border-slate-800 bg-slate-900 px-1 py-1 shadow-lg dark:border-slate-300 sm:h-[5.25rem] sm:w-10">
+            <div className="flex h-[6.25rem] w-11 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-slate-800 bg-slate-900 px-1.5 py-1.5 shadow-lg dark:border-slate-300 sm:h-[7rem] sm:w-12 sm:gap-2">
               {TRAFFIC_LEVELS.map((level) => {
                 const isAnswer = item.level === level.id;
                 const isPick = picked === level.id;
@@ -2510,7 +3428,7 @@ function TrafficActivity({
                     type="button"
                     disabled={phase !== "choose" || picked !== null}
                     onClick={() => pick(level.id)}
-                    className={`mx-auto h-5 w-5 rounded-full border border-black/20 shadow-inner transition enabled:hover:scale-125 disabled:cursor-default sm:h-6 sm:w-6 ${
+                    className={`h-6 w-6 shrink-0 rounded-full border border-black/20 shadow-inner transition enabled:hover:scale-125 disabled:cursor-default sm:h-7 sm:w-7 ${
                       lit ? level.lamp : level.lampDim
                     } ${phase === "choose" ? `traffic-lamp-pulse ring-2 ${level.ring}` : ""}`}
                     aria-label={`${level.label} — ${level.hint}`}
@@ -2521,14 +3439,14 @@ function TrafficActivity({
             <div className="h-10 w-1.5 bg-gradient-to-b from-slate-600 to-slate-800 dark:from-slate-400 dark:to-slate-600" />
             <div className="h-1.5 w-6 rounded-full bg-slate-700 dark:bg-slate-500" />
           </div>
-          <div className="flex h-[4.75rem] flex-col justify-evenly py-0.5 sm:h-[5.25rem]">
+          <div className="flex h-[6.25rem] flex-col justify-center gap-1.5 py-0.5 sm:h-[7rem] sm:gap-2">
             {TRAFFIC_LEVELS.map((level) => (
               <button
                 key={`label-${level.id}`}
                 type="button"
                 disabled={phase !== "choose" || picked !== null}
                 onClick={() => pick(level.id)}
-                className="text-left text-[10px] font-extrabold uppercase leading-none tracking-wide text-slate-800 transition enabled:hover:text-blue-700 disabled:cursor-default dark:text-slate-100 dark:enabled:hover:text-blue-300 sm:text-xs"
+                className="flex h-6 items-center text-left text-[10px] font-extrabold uppercase leading-none tracking-wide text-slate-800 transition enabled:hover:text-blue-700 disabled:cursor-default dark:text-slate-100 dark:enabled:hover:text-blue-300 sm:h-7 sm:text-xs"
               >
                 {level.label}
               </button>
@@ -2602,41 +3520,20 @@ function TrafficActivity({
         </p>
       )}
 
-      {phase === "result" && (
-        <div
-          className={`mx-auto flex w-full max-w-3xl flex-col gap-2 rounded-xl border px-3.5 py-3 sm:flex-row sm:items-center sm:gap-3 ${
-            right
-              ? "border-emerald-400 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/50"
-              : "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950/40"
-          }`}
-        >
-          <div className="min-w-0 flex-1 text-center sm:text-left">
-            <p className="text-sm font-bold leading-snug text-slate-900 dark:text-white">
-              <span
-                className={
-                  right
-                    ? "text-emerald-700 dark:text-emerald-300"
-                    : "text-red-700 dark:text-red-300"
-                }
-              >
-                {right ? "Validé" : "Pas celui-là"}
-              </span>
-              <span className="mx-1.5 text-slate-400">·</span>
-              {item.label}
-            </p>
-            <p className="mt-1 text-xs leading-snug text-slate-600 dark:text-slate-300 sm:text-[13px]">
-              {withLexiconTips(trafficFeedback(right, item.level, item.explanation))}
-            </p>
-          </div>
+      {phase === "result" ? (
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-2.5">
+          <Feedback
+            text={`${right ? "Validé" : "Pas celui-là"} · ${item.label}. ${trafficFeedback(right, item.level, item.explanation)}`}
+          />
           <button
             type="button"
             onClick={continueNext}
-            className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 sm:self-center"
+            className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
             Continuer
           </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -2768,7 +3665,8 @@ function MatchActivity({
 
   const linkedRight = new Set(Object.values(links));
   const allLinked = Object.keys(links).length === pairs.length;
-  const lineHues = [217, 160, 280, 25];
+  /** Couleurs vives distinctes par lien (ordre de tracé, pas lié à la bonne réponse). */
+  const lineHues = [210, 145, 280, 25, 340];
 
   function refreshLines() {
     const board = boardRef.current;
@@ -2777,6 +3675,7 @@ function MatchActivity({
     const next = Object.entries(links).map(([leftId, rightId], index) => {
       const leftEl = leftRefs.current[leftId];
       const rightEl = rightRefs.current[rightId];
+      const hue = lineHues[index % lineHues.length]!;
       if (!leftEl || !rightEl) {
         return {
           id: leftId,
@@ -2789,7 +3688,7 @@ function MatchActivity({
           c2x: 0,
           c2y: 0,
           ok: null,
-          hue: lineHues[index % lineHues.length]!,
+          hue,
         };
       }
       const left = leftEl.getBoundingClientRect();
@@ -2811,7 +3710,7 @@ function MatchActivity({
         c2x: midX,
         c2y: y2 - bend,
         ok: checked ? leftId === rightId : null,
-        hue: lineHues[index % lineHues.length]!,
+        hue,
       };
     });
     setLines(next);
@@ -2881,20 +3780,23 @@ function MatchActivity({
   }) => {
     if (state.checked) {
       return state.ok
-        ? "border-emerald-500 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-100"
-        : "border-red-500 bg-red-50 text-red-950 dark:bg-red-950/40 dark:text-red-100";
+        ? "border-emerald-500 bg-emerald-50 text-emerald-950 shadow-sm dark:bg-emerald-950/40 dark:text-emerald-100"
+        : "border-red-500 bg-red-50 text-red-950 shadow-sm dark:bg-red-950/40 dark:text-red-100";
     }
     if (state.selected) {
-      return "border-blue-600 bg-blue-50 text-blue-950 shadow-sm dark:bg-blue-950/50 dark:text-blue-100";
+      return "border-blue-600 bg-blue-50 text-blue-950 shadow-md shadow-blue-500/15 dark:bg-blue-950/50 dark:text-blue-100";
     }
     if (state.linked) {
-      return "border-blue-300 bg-white text-slate-900 dark:border-blue-700 dark:bg-slate-900 dark:text-white";
+      return "border-slate-400 bg-white text-slate-900 shadow-sm dark:border-slate-500 dark:bg-slate-900 dark:text-white";
     }
-    return "border-slate-200 bg-white text-slate-900 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-900 dark:text-white";
+    return "border-slate-300 bg-white/95 text-slate-900 shadow-sm hover:border-slate-400 hover:shadow-md dark:border-slate-600 dark:bg-slate-900/95 dark:text-white dark:hover:border-slate-500";
   };
 
   const boardMinH =
     pairs.length >= 5 ? "sm:min-h-[26rem]" : "sm:min-h-[22rem]";
+
+  const cardClass =
+    "flex w-full items-center justify-center rounded-xl border-2 px-2.5 py-2 text-center text-[11px] font-semibold leading-snug transition sm:px-3.5 sm:py-2.5 sm:text-[13px] sm:leading-snug";
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4 sm:max-w-5xl">
@@ -2904,13 +3806,22 @@ function MatchActivity({
 
       <div
         ref={boardRef}
-        className={`relative mx-auto grid w-full grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] grid-rows-[auto_1fr] items-stretch gap-x-1 sm:grid-cols-[minmax(0,1.15fr)_4.5rem_minmax(0,0.95fr)] sm:gap-x-3 ${boardMinH}`}
+        className={`relative mx-auto grid w-full grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] grid-rows-[auto_1fr] items-stretch gap-x-1 overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-100 via-slate-50 to-slate-100/90 px-2.5 py-3 shadow-inner sm:grid-cols-[minmax(0,1.15fr)_4.5rem_minmax(0,0.95fr)] sm:gap-x-3 sm:px-4 sm:py-4 dark:border-slate-700 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 ${boardMinH}`}
       >
-        <p className="col-start-1 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:mb-2">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.45] dark:opacity-[0.28]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgb(100 116 139) 1px, transparent 0)",
+            backgroundSize: "14px 14px",
+          }}
+        />
+        <p className="relative z-[1] col-start-1 mb-2 inline-flex w-full items-center justify-center rounded-lg border border-slate-300/80 bg-white/90 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-900/90 dark:text-slate-200 sm:mb-3">
           Situations
         </p>
-        <span className="col-start-2" aria-hidden />
-        <p className="col-start-3 mb-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 sm:mb-2">
+        <span className="relative z-[1] col-start-2" aria-hidden />
+        <p className="relative z-[1] col-start-3 mb-2 inline-flex w-full items-center justify-center rounded-lg border border-slate-300/80 bg-white/90 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-900/90 dark:text-slate-200 sm:mb-3">
           Règles
         </p>
 
@@ -2922,7 +3833,7 @@ function MatchActivity({
                   ? "#059669"
                   : line.ok === false
                     ? "#dc2626"
-                    : `hsl(${line.hue} 84% 52%)`;
+                    : `hsl(${line.hue} 92% 48%)`;
               return (
                 <linearGradient
                   key={`grad-${line.id}`}
@@ -2933,9 +3844,9 @@ function MatchActivity({
                   y2={line.y2}
                   gradientUnits="userSpaceOnUse"
                 >
-                  <stop offset="0%" stopColor={color} stopOpacity="0.95" />
-                  <stop offset="50%" stopColor={color} stopOpacity="0.75" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0.95" />
+                  <stop offset="0%" stopColor={color} stopOpacity="1" />
+                  <stop offset="50%" stopColor={color} stopOpacity="0.88" />
+                  <stop offset="100%" stopColor={color} stopOpacity="1" />
                 </linearGradient>
               );
             })}
@@ -2946,7 +3857,7 @@ function MatchActivity({
                 ? "#059669"
                 : line.ok === false
                   ? "#dc2626"
-                  : `hsl(${line.hue} 84% 52%)`;
+                  : `hsl(${line.hue} 92% 48%)`;
             const d = `M ${line.x1} ${line.y1} C ${line.c1x} ${line.c1y}, ${line.c2x} ${line.c2y}, ${line.x2} ${line.y2}`;
             return (
               <g key={line.id}>
@@ -2991,9 +3902,7 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickLeft(id)}
-                className={`flex w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-semibold leading-snug transition sm:px-3 sm:py-2 sm:text-[13px] sm:leading-snug ${cardTone(
-                  { checked, ok, selected, linked },
-                )}`}
+                className={`${cardClass} ${cardTone({ checked, ok, selected, linked })}`}
               >
                 {pair.left}
               </button>
@@ -3019,9 +3928,7 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickRight(id)}
-                className={`flex w-full items-center justify-center rounded-lg border px-2 py-1.5 text-center text-[11px] font-bold leading-snug transition sm:px-3 sm:py-2 sm:text-[13px] sm:leading-snug ${cardTone(
-                  { checked, ok, selected, linked },
-                )}`}
+                className={`${cardClass} ${cardTone({ checked, ok, selected, linked })}`}
               >
                 {pair.right}
               </button>
@@ -3030,21 +3937,9 @@ function MatchActivity({
         </div>
       </div>
 
-      {checked && (
-        <div className="w-full rounded-2xl border-2 border-blue-400 bg-blue-50 px-4 py-3.5 shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60">
-          <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-            À retenir
-          </p>
-          <ol className="mt-2 list-decimal space-y-4 pl-5 text-justify text-[15px] font-semibold leading-snug text-slate-900 sm:text-base dark:text-white">
-            {leftOrder.map((id) => {
-              const pair = byId[id]!;
-              return (
-                <li key={`explain-${id}`}>{withLexiconTips(pair.explanation)}</li>
-              );
-            })}
-          </ol>
-        </div>
-      )}
+      {checked ? (
+        <Feedback points={leftOrder.map((id) => byId[id]!.explanation)} />
+      ) : null}
 
       {!checked && (
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -3145,15 +4040,18 @@ function StampActivity({
           >
             {card.label}
           </p>
-          {revealed && (
-            <p className="mt-3 text-center text-sm font-medium leading-relaxed text-white/95">
-              {right
-                ? card.explanation
-                : `Ce n'est pas cette réponse. ${card.explanation}`}
-            </p>
-          )}
         </div>
       </div>
+
+      {revealed ? (
+        <Feedback
+          text={
+            right
+              ? card.explanation
+              : `Ce n'est pas cette réponse. ${card.explanation}`
+          }
+        />
+      ) : null}
 
       <div
         className={`mx-auto grid w-full max-w-lg gap-2 ${
@@ -3316,9 +4214,17 @@ function TimelineActivity({
             <p className="text-center text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
               {withLexiconTips(active.law)}
             </p>
-            <p className="text-center text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200">
-              {withLexiconTips(activeMain ?? active.detail)}
-            </p>
+            {(activeMain ?? active.detail)
+              .split(/\n\n+/)
+              .filter(Boolean)
+              .map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="whitespace-pre-line text-center text-sm leading-relaxed text-slate-700 sm:text-base dark:text-slate-200"
+                >
+                  {withLexiconTips(paragraph)}
+                </p>
+              ))}
             {activeFootnote ? (
               <p className="text-center text-sm italic leading-relaxed text-slate-500 sm:text-base dark:text-slate-400">
                 * {activeFootnote}
@@ -4194,8 +5100,8 @@ function DodgeActivity({
               <ArrowLeft className="h-5 w-5 shrink-0 text-slate-900 dark:text-white" aria-hidden />
               <ArrowRight className="h-5 w-5 shrink-0 text-slate-900 dark:text-white" aria-hidden />
             </li>
-            <li className="text-center">Rouge : esquiver.</li>
-            <li className="text-center">Vert : attraper.</li>
+            <li className="text-center">Rouge = mauvais prompt → esquiver.</li>
+            <li className="text-center">Vert = bon prompt → attraper.</li>
           </ul>
         </div>
         <div className="flex justify-center pb-2">
@@ -4283,8 +5189,8 @@ function DodgeActivity({
           <Feedback
             text={
               fail === "green"
-                ? "Un vert est passé. Ce sont les réflexes à garder."
-                : "Touché. Le rouge, on l'esquive."
+                ? "Un bon prompt est passé : il fallait l'attraper."
+                : "Touché. Un mauvais prompt, on l'esquive."
             }
           />
           <div className="flex justify-center">
@@ -4298,36 +5204,20 @@ function DodgeActivity({
           </div>
         </div>
       )}
-      {won && (
-        <div
-          className="rounded-2xl border-2 border-blue-400 bg-blue-50 px-3 py-4 text-center shadow-lg shadow-blue-500/15 dark:border-blue-500 dark:bg-blue-950/60"
-          style={{ width: fieldWidth }}
-        >
-          <p className="text-center text-xs font-bold tracking-[0.16em] text-blue-700 uppercase dark:text-blue-300">
-            À retenir
-          </p>
-          <div className="mt-3 flex items-start gap-2 text-center text-[11px] font-semibold leading-snug">
-            <ul className="grid min-w-0 flex-[1.2] grid-cols-2 gap-x-2 gap-y-1.5">
-              {activity.hazards
+      {won ? (
+        <div style={{ width: fieldWidth }} className="mx-auto">
+          <Feedback
+            points={[
+              ...activity.hazards
                 .filter((item) => !item.good)
-                .map((item) => (
-                  <li key={item.id} className="text-center text-rose-700 dark:text-rose-300">
-                    {item.label}
-                  </li>
-                ))}
-            </ul>
-            <ul className="flex min-w-0 flex-1 flex-col gap-y-1.5 border-l border-blue-200 pl-2 dark:border-blue-800">
-              {activity.hazards
+                .map((item) => `À éviter : ${item.label}`),
+              ...activity.hazards
                 .filter((item) => item.good)
-                .map((item) => (
-                  <li key={item.id} className="text-center text-emerald-700 dark:text-emerald-300">
-                    {item.label}
-                  </li>
-                ))}
-            </ul>
-          </div>
+                .map((item) => `Bon prompt : ${item.label}`),
+            ]}
+          />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -4606,17 +5496,15 @@ function SwipeActivity({
         </div>
       )}
 
-      {answered && (
+      {answered ? (
         <div className="space-y-3 px-1">
-          <p
-            className={`text-center text-sm font-semibold leading-snug ${
+          <Feedback
+            text={
               verdict === "ok"
-                ? "text-emerald-700 dark:text-emerald-300"
-                : "text-red-800 dark:text-red-300"
-            }`}
-          >
-            {verdict === "ok" ? "Bien vu." : "Pas celle-là."} {card.explanation}
-          </p>
+                ? `Bien vu. ${card.explanation}`
+                : `Pas celle-là. ${card.explanation}`
+            }
+          />
           <div className="flex justify-center">
             <button
               type="button"
@@ -4627,7 +5515,7 @@ function SwipeActivity({
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -4667,6 +5555,8 @@ function activityBriefing(activity: Activity): string | undefined {
     case "predict":
     case "spot":
     case "redact":
+    case "label":
+    case "send":
     case "timeline":
     case "tetris":
     case "traffic":
@@ -4781,6 +5671,20 @@ export default function ActivityPlayer({
     return (
       <GameBriefing text={briefing}>
         <RedactActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "label") {
+    return (
+      <GameBriefing text={briefing}>
+        <LabelActivity activity={activity} onReady={onReady} />
+      </GameBriefing>
+    );
+  }
+  if (activity.kind === "send") {
+    return (
+      <GameBriefing text={briefing}>
+        <SendActivity activity={activity} onReady={onReady} />
       </GameBriefing>
     );
   }

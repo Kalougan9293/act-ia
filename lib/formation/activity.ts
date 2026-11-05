@@ -4,6 +4,8 @@ export type ActivityChoice = {
   label: string;
   correct: boolean;
   explanation: string;
+  /** Mini-calendrier cliquable (ex. 2.1) à la place de A/B/C. */
+  calendar?: { day: string; month: string };
 };
 
 /** Consigne lue avant de pouvoir cliquer. Le jeu n'apparaît qu'après. */
@@ -30,6 +32,11 @@ export type Activity =
       instruction: string;
       /** Conservé pour compatibilité ; les jeux de tri sont toujours colorés. */
       colorful?: boolean;
+      /**
+       * `tubes` = version historique (2.4 avant thermomètre).
+       * `thermometer` = échelle verticale de risque.
+       */
+      layout?: "tubes" | "thermometer";
       bins: { id: string; label: string }[];
       cards: { id: string; label: string; binId: string; explanation: string }[];
     }
@@ -145,6 +152,37 @@ export type Activity =
       explanation: string;
     }
   | {
+      /** Poser (ou non) le sticker « Généré par l'IA » sur chaque image. */
+      kind: "label";
+      briefing?: string;
+      instruction: string;
+      sticker: string;
+      items: {
+        id: string;
+        caption: string;
+        needsLabel: boolean;
+        explanation: string;
+        imageSrc?: string;
+        /** Rendu visuel si pas d'image (carte stylisée). */
+        visual?: "photo" | "cartoon" | "paint" | "broadcast" | "stylized";
+      }[];
+    }
+  | {
+      /** Fausse fenêtre de chat : Entrée pour valider, Corriger (effacer) pour réécrire. */
+      kind: "send";
+      briefing?: string;
+      instruction: string;
+      items: {
+        id: string;
+        prompt: string;
+        /** true = Entrée suffit, false = Corriger d'abord */
+        send: boolean;
+        /** Version corrigée (obligatoire si send = false) */
+        fixedPrompt?: string;
+        explanation: string;
+      }[];
+    }
+  | {
       kind: "traffic";
       briefing?: string;
       items: { id: string; label: string; level: "green" | "orange" | "red"; explanation: string }[];
@@ -168,6 +206,8 @@ export type Activity =
 export type Chapter = {
   id: string;
   title: string;
+  /** Sous-titre sous le titre, dans la page du chapitre. */
+  subtitle?: string;
   duration: string;
   format: string;
   activity: Activity;

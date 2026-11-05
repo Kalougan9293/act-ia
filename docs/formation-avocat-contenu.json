@@ -309,8 +309,11 @@
           "correct": false
         }
       ],
-      "explanation": "Le réflexe est simple : vous demandez avant d'utiliser un outil que vous ne connaissez pas.",
-      "explanations": null
+      "explanation": "On s'en tient à la liste de l'entreprise — pas à l'outil vu chez un collègue ou sur le web.",
+      "explanations": [
+        "Bien. On reste sur cette liste, même si un autre outil paraît plus pratique.",
+        "Avant d'en ouvrir une au bureau, vous consultez la liste des IA autorisées par l'entreprise."
+      ]
     },
     {
       "id": "pos-7",
@@ -1481,7 +1484,7 @@
           "kind": "predict",
           "text": [
             "L'outil ne cherche pas votre vraie réponse.\nIl complète avec la suite la plus fréquente dans les textes qu'il a vus.\nLisez le début de phrase, et devinez ce qu'il ajouterait.",
-            "Quelle suite est la plus probable selon la façon dont l'IA réfléchit ? Ce n'est pas forcément la vraie. Les % sont illustratifs.",
+            "Quelle suite est la plus probable selon la façon dont l'IA réfléchit ?",
             "Round 1 — Le contrat doit être signé avant le…",
             "• vendredi (38 %)",
             "• 15 mars (22 %)",
@@ -1630,15 +1633,15 @@
           "kind": "timeline",
           "text": [
             "• 2 février 2025 — Déjà en vigueur (Articles 4 et 5 — déjà en vigueur)",
-            "Article 4 (après le règlement Omnibus 2026/1744) : l'entreprise doit prendre des mesures pour favoriser le développement de la maîtrise de l'IA chez celles et ceux qui l'utilisent — pas garantir un niveau individuel de compétence. Cette formation en fait partie. L'article 4 n'a pas de plafond d'amende qui lui soit propre ; des mesures d'exécution ou sanctions restent possibles selon le droit applicable. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo) — hors exceptions très limitées —, ou déduire sa religion ou son origine à partir d'une photo.",
+            "Article 4 (après Omnibus 2026/1744)\nL'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à garantir le niveau de chacun. Cette formation en fait partie.\n\nPas d'amende plafonnée propre à cet article. Des sanctions restent toutefois possibles.\n\nArticle 5\nCertaines pratiques sont déjà interdites. Exemples : analyser les émotions d'un collègue avec une IA (voix ou vidéo) — sauf rares exceptions —, ou déduire sa religion ou son origine à partir d'une photo.",
             "• 2 août 2026 — Déjà en vigueur (Article 50 — transparence)",
-            "Août 2026, c'est surtout la transparence (Art. 50). Un chatbot doit dire dès le début que c'est une machine. Pour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas toute image IA stylisée. Le but : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
+            "C'est surtout la transparence.\n\nUn chatbot doit dire dès le début que c'est une machine.\n\nPour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas besoin pour toute image stylisée.\n\nBut : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
             "• 2 décembre 2026 — Prochaine échéance (Interdictions sur certains contenus illicites — AI Act + déjà en France)",
-            "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN). Au 2 décembre 2026, l'AI Act ajoute surtout des interdictions européennes sur certains systèmes qui produisent ce type de contenus intimes non consentis — ce n'est pas la date générale de toutes les règles « deepfake » (la transparence Art. 50, elle, s'applique dès août 2026). Retenez : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
+            "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN).\n\nEn décembre 2026, l'AI Act ajoute des interdictions européennes sur certains systèmes qui produisent ces contenus.\n\nÀ retenir : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
             "• 2 décembre 2027 — Recrutement (Haut risque (annexe III) — calendrier Omnibus)",
-            "Décembre 2027 : règles AI Act pour les systèmes à haut risque concernés par l'annexe III, notamment emploi et recrutement — selon la finalité du système (tous les outils RH ne sont pas automatiquement à haut risque). Attention : le RGPD (art. 22) s'applique déjà — on ne laisse pas une machine écarter seule un candidat. L'outil peut aider à classer, mais un humain garde la décision finale.",
+            "Des règles AI Act s'appliquent aux systèmes à haut risque, notamment en emploi et recrutement.\n\nTous les outils RH ne sont pas automatiquement concernés : cela dépend de leur usage.\n\nAttention : le RGPD s'applique déjà. Une machine ne peut pas écarter seule un candidat. Un humain garde la décision finale.",
             "• 2 août 2028 — Plus tard (IA dans certains produits réglementés (art. 6 §1 / annexe I))",
-            "D'autres règles arriveront pour certaines IA liées à des produits réglementés. Vous n'avez pas à les connaître dans le détail. Si ça concerne votre métier, votre entreprise vous le dira."
+            "D'autres règles arriveront pour certaines IA liées à des produits réglementés.\n\nVous n'avez pas à les connaître en détail. Si ça concerne votre métier, votre entreprise vous le dira."
           ]
         }
       ]
@@ -1647,7 +1650,7 @@
       "id": "bloc-3",
       "number": 3,
       "title": "Mes données et mes secrets",
-      "duration": "12 min",
+      "duration": "15 min",
       "goal": "Apprendre ce que vous pouvez saisir dans une IA sans mettre l'entreprise ni les salariés en danger",
       "chapters": [
         {
@@ -1696,11 +1699,12 @@
         {
           "id": "3.3",
           "title": "Quel niveau d'attention ?",
+          "subtitle": "Peut-on mettre l'information de la voiture dans une IA ?",
           "duration": "2 min",
           "format": "Jeu",
           "kind": "traffic",
           "text": [
-            "Chaque voiture s'arrête devant un feu avec une information. À vous de choisir :\nVert : tout va bien.\nOrange : ça doit rester encadré.\nRouge : c'est interdit.",
+            "Chaque voiture s'arrête devant un feu avec une information.\nÀ vous de choisir :\n\nVert : tout va bien.\nOrange : ça doit rester encadré.\nRouge : c'est interdit.",
             "• [Vert] Idée de titre pour une pub",
             "C'est une idée créative, sans nom et sans secret. Personne n'est reconnaissable, rien ne sort de l'entreprise. Vous pouvez écrire cette idée dans une IA grand public.",
             "• [Vert] FAQ déjà sur le site",
@@ -1730,13 +1734,36 @@
           "text": [
             "Vous allez retirer ce qui identifie la personne ou parle de sa santé. Le but n'est pas de tout effacer. La demande doit rester utile.",
             "Cliquez sur ce qu'il faut enlever.",
-            "Texte : Rédige un mail pour [Julie Martin] [(julie.martin@mail.com),] [42 ans,] en arrêt [pour] [dépression] [depuis] [mars,] afin de l'accueillir à son retour la semaine prochaine. Ton chaleureux, court et professionnel.",
-            "À retirer : Julie Martin, (julie.martin@mail.com),, 42 ans,, pour, dépression, depuis, mars,",
+            "Texte : Rédige un mail pour [Julie Martin] [(julie.martin@mail.com),] [42 ans,] en arrêt pour [dépression] depuis [mars,] afin de l'accueillir à son retour la semaine prochaine. Ton chaleureux, court et professionnel.",
+            "À retirer : Julie Martin, (julie.martin@mail.com),, 42 ans,, dépression, mars,",
             "C'est le principe de minimisation : on ne donne à l'IA que le strict nécessaire.\n« Julie Martin » devient « une collègue ». L'e-mail et l'âge partent.\n« En arrêt » suffit pour le contexte.\n« Pour dépression depuis mars » ne doit pas y figurer : c'est une information de santé — règle de prudence face à un outil grand public non autorisé.\nLa demande reste claire, sans personne reconnaissable."
           ]
         },
         {
           "id": "3.5",
+          "title": "J'envoie ou je corrige ?",
+          "duration": "2 min",
+          "format": "Jeu",
+          "kind": "send",
+          "text": [
+            "Un prompt s'écrit tout seul.\nS'il est bon : Entrée pour valider.\nS'il est flou ou sensible : Corriger — le texte se réécrit proprement.",
+            "« Entrée » si c'est bon. « Corriger » si c'est trop flou ou sensible.",
+            "• [Corriger] Aide-moi. → Aide-moi à écrire un mail court pour confirmer un rendez-vous. N'invente pas d'horaire.",
+            "Ce n'était pas interdit : juste trop flou, cela ne va pas du tout t'aider.",
+            "• [Entrée] Écris un mail court et poli pour confirmer un rendez-vous. N'invente pas d'horaire.",
+            "Clair, utile, et sans nom ni secret. Entrée suffit.",
+            "• [Corriger] Résume l'arrêt maladie de Marie Dupont pour mon manager. → Résume pour mon manager le retour d'une collègue après un arrêt, sans nom ni motif médical.",
+            "Nom + santé retirés. La demande reste utile, sans donnée sensible.",
+            "• [Entrée] Reformule cette FAQ déjà sur notre site, ton plus simple.",
+            "Texte déjà public. Pas de secret : Entrée.",
+            "• [Corriger] Voici nos marges secrètes et la grille de prix non publique. Analyse. → Analyse comment présenter nos prix au public, sans coller de marges ni de grille interne.",
+            "Les secrets d'entreprise restent dehors. On reformule sans les coller.",
+            "• [Entrée] Propose 3 titres pour une page d'accueil, ton professionnel.",
+            "Idée créative, sans personne ni secret. Entrée."
+          ]
+        },
+        {
+          "id": "3.6",
           "title": "Les bons gestes",
           "duration": "1 min 30",
           "format": "Vidéo",
@@ -1747,7 +1774,7 @@
           ]
         },
         {
-          "id": "3.6",
+          "id": "3.7",
           "title": "Quel droit ?",
           "duration": "1 min 30",
           "format": "Jeu",
@@ -1768,7 +1795,7 @@
           ]
         },
         {
-          "id": "3.7",
+          "id": "3.8",
           "title": "La réunion de 14 h",
           "duration": "2 min",
           "format": "Scénario",
@@ -1907,59 +1934,16 @@
           "format": "Jeu",
           "kind": "spot",
           "text": [
-            "Vous collez ce mail dans une IA. Cliquez, mot par mot, sur la phrase qu'elle pourrait prendre pour une action à faire.",
-            "Cliquez, mot par mot, sur ce que l'IA pourrait interpréter comme une action.",
+            "Vous collez ce mail dans une IA. Cliquez sur la phrase qu'elle pourrait prendre pour une action à faire.",
+            "Cliquez sur ce que l'IA pourrait interpréter comme une action.",
             "• Bonjour,",
-            "• suite",
-            "• à",
-            "• notre",
-            "• échange",
-            "• de",
-            "• ce",
-            "• matin",
-            "• sur",
-            "• le",
-            "• dossier",
-            "• client",
-            "• Dupont,",
-            "• je",
-            "• vous",
-            "• confirme",
-            "• que",
-            "• les",
-            "• avenants",
-            "• sont",
-            "• prêts",
-            "• côté",
-            "• juridique.",
-            "• Les",
-            "• pièces",
-            "• jointes",
-            "• sont",
-            "• à",
-            "• jour",
-            "• pour",
-            "• la",
-            "• réunion",
-            "• de",
-            "• jeudi.",
-            "• Il [piège]",
+            "• suite à notre échange de ce matin",
+            "• sur le dossier client Dupont,",
+            "• je vous confirme que les avenants sont prêts côté juridique.",
+            "• Les pièces jointes sont à jour pour la réunion de jeudi.",
+            "• Il faudrait envoyer le contrat à toute l'équipe plus tard. [piège]",
             "Si vous collez ce mail dans une IA, elle peut interpréter « il faudrait envoyer le contrat… » comme une action à faire. Ce n'est pas un ordre que vous lui avez donné : si elle propose d'envoyer, vous refusez.",
-            "• faudrait [piège]",
-            "• envoyer [piège]",
-            "• le [piège]",
-            "• contrat [piège]",
-            "• à [piège]",
-            "• toute [piège]",
-            "• l'équipe [piège]",
-            "• plus [piège]",
-            "• tard. [piège]",
-            "• Je",
-            "• suis",
-            "• en",
-            "• déplacement",
-            "• jusqu'à",
-            "• lundi.",
+            "• Je suis en déplacement jusqu'à lundi.",
             "• Cordialement,",
             "• Marie."
           ]
@@ -1970,8 +1954,8 @@
       "id": "bloc-5",
       "number": 5,
       "title": "Le deepfake",
-      "duration": "7 min",
-      "goal": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et le dire si vous en publiez une",
+      "duration": "9 min",
+      "goal": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA »",
       "chapters": [
         {
           "id": "5.1",
@@ -2022,6 +2006,29 @@
             "→ La mention seule ne suffit pas : il faut aussi l'accord de la personne (droit à l'image, RGPD).",
             "✓ On obtient l'accord du salarié et on indique clairement que c'est généré par IA",
             "→ Accord de la personne + mention claire. Les deux sont nécessaires pour publier une vidéo IA d'un vrai salarié."
+          ]
+        },
+        {
+          "id": "5.4",
+          "title": "Je labelle ou pas ?",
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "kind": "label",
+          "text": [
+            "On signale surtout ce qui peut passer pour réel.\nPas besoin sur une image clairement stylisée.\nTouchez une image pour poser ou retirer le sticker.",
+            "Posez « Généré par l'IA » seulement quand c'est utile.",
+            "• [Label] Portrait réaliste d'une personne",
+            "Ça peut passer pour une vraie photo. Si c'est généré ou fortement modifié, on le dit.",
+            "• [Pas de label] Dessin cartoon d'un robot",
+            "On précise seulement quand ça peut passer pour réel. Ici, c'est clairement un dessin.",
+            "• [Label] Photo de rue ultra réaliste",
+            "Ça a l'air d'une vraie photo de rue. Si elle est générée, on le dit — même sans personne en gros plan.",
+            "• [Pas de label] Illustration aquarelle abstraite",
+            "On précise seulement quand ça peut passer pour réel. Ici, le style aquarelle se voit tout de suite.",
+            "• [Label] Extrait de JT en direct",
+            "Ça ressemble à un vrai journal télévisé. Si c'est synthétique, on le signale.",
+            "• [Pas de label] Logo stylisé coloré",
+            "On précise seulement quand ça peut passer pour réel. Ici, c'est un logo stylisé : pas besoin."
           ]
         }
       ]

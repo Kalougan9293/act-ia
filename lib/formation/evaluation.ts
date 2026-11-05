@@ -835,7 +835,12 @@ export const POSITIONING_BANK: QuizQuestion[] = [
     prompt: "Savez-vous quelles IA votre entreprise autorise ?",
     choices: ["Oui", "Non"],
     correctIndex: 0,
-    explanation: "Le réflexe est simple : vous demandez avant d'utiliser un outil que vous ne connaissez pas.",
+    explanation:
+      "On s'en tient à la liste de l'entreprise — pas à l'outil vu chez un collègue ou sur le web.",
+    explanations: [
+      "Bien. On reste sur cette liste, même si un autre outil paraît plus pratique.",
+      "Avant d'en ouvrir une au bureau, vous consultez la liste des IA autorisées par l'entreprise.",
+    ],
   },
   {
     id: "pos-7",

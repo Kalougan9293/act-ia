@@ -181,7 +181,7 @@ export const BLOCKS: Block[] = [
           kind: "predict",
           briefing:
             "L'outil ne cherche pas votre vraie réponse.\nIl complète avec la suite la plus fréquente dans les textes qu'il a vus.\nLisez le début de phrase, et devinez ce qu'il ajouterait.",
-          hint: "Quelle suite est la plus probable selon la façon dont l'IA réfléchit ? Ce n'est pas forcément la vraie. Les % sont illustratifs.",
+          hint: "Quelle suite est la plus probable selon la façon dont l'IA réfléchit ?",
           rounds: [
             {
               lead: "Le contrat doit être signé avant le…",
@@ -292,18 +292,21 @@ export const BLOCKS: Block[] = [
               choices: [
                 {
                   label: "Depuis le 2 février 2025",
+                  calendar: { day: "2", month: "FÉV 2025" },
                   correct: true,
                   explanation:
                     "Exact. L'article 4 s'applique depuis cette date (pas depuis août 2025). La vidéo vous explique ce que ça change pour vous.",
                 },
                 {
                   label: "Seulement en 2027",
+                  calendar: { day: "27", month: "2027" },
                   correct: false,
                   explanation:
                     "Pas tout à fait. 2027 concerne surtout le tri automatique de CV. La vidéo vous explique.",
                 },
                 {
                   label: "Il n'y a aucune obligation",
+                  calendar: { day: "✕", month: "AUCUNE" },
                   correct: false,
                   explanation:
                     "Si, une obligation existe déjà depuis février 2025. La vidéo vous explique.",
@@ -389,8 +392,10 @@ export const BLOCKS: Block[] = [
           kind: "sort",
           briefing:
             "On reprend les quatre niveaux de la vidéo.\n« Risque minimal » : usages courants, juste du bon sens.\n« Risque limité » : la personne doit savoir que c'est une IA.\n« Haut risque » : un humain doit garder la décision finale.\n« Risque inacceptable » : pratique interdite.\nClassez chaque usage.",
-          instruction: "Glissez chaque usage dans le bon niveau.",
+          instruction: "Glissez chaque usage sur le bon niveau du thermomètre.",
           colorful: true,
+          /** Remettre `layout: "tubes"` pour l'ancienne version en colonnes. */
+          layout: "thermometer",
           bins: [
             { id: "low", label: "Risque minimal" },
             { id: "clear", label: "Risque limité" },
@@ -465,7 +470,7 @@ export const BLOCKS: Block[] = [
               label: "Déjà en vigueur",
               law: "Articles 4 et 5 — déjà en vigueur",
               detail:
-                "Article 4 (après le règlement Omnibus 2026/1744) : l'entreprise doit prendre des mesures pour favoriser le développement de la maîtrise de l'IA chez celles et ceux qui l'utilisent — pas garantir un niveau individuel de compétence. Cette formation en fait partie. L'article 4 n'a pas de plafond d'amende qui lui soit propre ; des mesures d'exécution ou sanctions restent possibles selon le droit applicable. Article 5 : les pratiques à risque inacceptable sont déjà interdites. Par exemple, analyser les émotions d'un collègue avec une IA (voix ou vidéo) — hors exceptions très limitées —, ou déduire sa religion ou son origine à partir d'une photo.",
+                "Article 4 (après Omnibus 2026/1744)\nL'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à garantir le niveau de chacun. Cette formation en fait partie.\n\nPas d'amende plafonnée propre à cet article. Des sanctions restent toutefois possibles.\n\nArticle 5\nCertaines pratiques sont déjà interdites. Exemples : analyser les émotions d'un collègue avec une IA (voix ou vidéo) — sauf rares exceptions —, ou déduire sa religion ou son origine à partir d'une photo.",
             },
             {
               id: "aout26",
@@ -474,7 +479,7 @@ export const BLOCKS: Block[] = [
               label: "Déjà en vigueur",
               law: "Article 50 — transparence",
               detail:
-                "Août 2026, c'est surtout la transparence (Art. 50). Un chatbot doit dire dès le début que c'est une machine. Pour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas toute image IA stylisée. Le but : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
+                "C'est surtout la transparence.\n\nUn chatbot doit dire dès le début que c'est une machine.\n\nPour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas besoin pour toute image stylisée.\n\nBut : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
             },
             {
               id: "dec26",
@@ -483,7 +488,7 @@ export const BLOCKS: Block[] = [
               label: "Prochaine échéance",
               law: "Interdictions sur certains contenus illicites — AI Act + déjà en France",
               detail:
-                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN). Au 2 décembre 2026, l'AI Act ajoute surtout des interdictions européennes sur certains systèmes qui produisent ce type de contenus intimes non consentis — ce n'est pas la date générale de toutes les règles « deepfake » (la transparence Art. 50, elle, s'applique dès août 2026). Retenez : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
+                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN).\n\nEn décembre 2026, l'AI Act ajoute des interdictions européennes sur certains systèmes qui produisent ces contenus.\n\nÀ retenir : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
             },
             {
               id: "dec27",
@@ -492,7 +497,7 @@ export const BLOCKS: Block[] = [
               label: "Recrutement",
               law: "Haut risque (annexe III) — calendrier Omnibus",
               detail:
-                "Décembre 2027 : règles AI Act pour les systèmes à haut risque concernés par l'annexe III, notamment emploi et recrutement — selon la finalité du système (tous les outils RH ne sont pas automatiquement à haut risque). Attention : le RGPD (art. 22) s'applique déjà — on ne laisse pas une machine écarter seule un candidat. L'outil peut aider à classer, mais un humain garde la décision finale.",
+                "Des règles AI Act s'appliquent aux systèmes à haut risque, notamment en emploi et recrutement.\n\nTous les outils RH ne sont pas automatiquement concernés : cela dépend de leur usage.\n\nAttention : le RGPD s'applique déjà. Une machine ne peut pas écarter seule un candidat. Un humain garde la décision finale.",
             },
             {
               id: "aout28",
@@ -501,7 +506,7 @@ export const BLOCKS: Block[] = [
               label: "Plus tard",
               law: "IA dans certains produits réglementés (art. 6 §1 / annexe I)",
               detail:
-                "D'autres règles arriveront pour certaines IA liées à des produits réglementés. Vous n'avez pas à les connaître dans le détail. Si ça concerne votre métier, votre entreprise vous le dira.",
+                "D'autres règles arriveront pour certaines IA liées à des produits réglementés.\n\nVous n'avez pas à les connaître en détail. Si ça concerne votre métier, votre entreprise vous le dira.",
             },
           ],
         },
@@ -512,7 +517,7 @@ export const BLOCKS: Block[] = [
     id: "bloc-3",
     number: 3,
     title: "Mes données et mes secrets",
-    duration: "12 min",
+    duration: "15 min",
     goal: "Apprendre ce que vous pouvez saisir dans une IA sans mettre l'entreprise ni les salariés en danger",
     chapters: [
       {
@@ -609,12 +614,13 @@ export const BLOCKS: Block[] = [
       {
         id: "3.3",
         title: "Quel niveau d'attention ?",
+        subtitle: "Peut-on mettre l'information de la voiture dans une IA ?",
         duration: "2 min",
         format: "Jeu",
         activity: {
           kind: "traffic",
           briefing:
-            "Chaque voiture s'arrête devant un feu avec une information. À vous de choisir :\nVert : tout va bien.\nOrange : ça doit rester encadré.\nRouge : c'est interdit.",
+            "Chaque voiture s'arrête devant un feu avec une information.\nÀ vous de choisir :\n\nVert : tout va bien.\nOrange : ça doit rester encadré.\nRouge : c'est interdit.",
           items: [
             {
               id: "title",
@@ -702,9 +708,9 @@ export const BLOCKS: Block[] = [
             { id: "w7", text: "42 ans,", redact: true, replacement: "" },
             { id: "w8", text: "en", redact: false },
             { id: "w8b", text: "arrêt", redact: false },
-            { id: "w8c", text: "pour", redact: true, replacement: "" },
+            { id: "w8c", text: "pour", redact: false },
             { id: "w8d", text: "dépression", redact: true, replacement: "" },
-            { id: "w8e", text: "depuis", redact: true, replacement: "" },
+            { id: "w8e", text: "depuis", redact: false },
             { id: "w8f", text: "mars,", redact: true, replacement: "" },
             { id: "w9", text: "afin", redact: false },
             { id: "w10", text: "de", redact: false },
@@ -727,6 +733,64 @@ export const BLOCKS: Block[] = [
       },
       {
         id: "3.5",
+        title: "J'envoie ou je corrige ?",
+        duration: "2 min",
+        format: "Jeu",
+        activity: {
+          kind: "send",
+          briefing:
+            "Un prompt s'écrit tout seul.\nS'il est bon : Entrée pour valider.\nS'il est flou ou sensible : Corriger — le texte se réécrit proprement.",
+          instruction: "« Entrée » si c'est bon. « Corriger » si c'est trop flou ou sensible.",
+          items: [
+            {
+              id: "vague",
+              prompt: "Aide-moi.",
+              send: false,
+              fixedPrompt:
+                "Aide-moi à écrire un mail court pour confirmer un rendez-vous. N'invente pas d'horaire.",
+              explanation:
+                "Ce n'était pas interdit : juste trop flou, cela ne va pas du tout t'aider.",
+            },
+            {
+              id: "mail",
+              prompt:
+                "Écris un mail court et poli pour confirmer un rendez-vous. N'invente pas d'horaire.",
+              send: true,
+              explanation: "Clair, utile, et sans nom ni secret. Entrée suffit.",
+            },
+            {
+              id: "sante",
+              prompt: "Résume l'arrêt maladie de Marie Dupont pour mon manager.",
+              send: false,
+              fixedPrompt:
+                "Résume pour mon manager le retour d'une collègue après un arrêt, sans nom ni motif médical.",
+              explanation: "Nom + santé retirés. La demande reste utile, sans donnée sensible.",
+            },
+            {
+              id: "faq",
+              prompt: "Reformule cette FAQ déjà sur notre site, ton plus simple.",
+              send: true,
+              explanation: "Texte déjà public. Pas de secret : Entrée.",
+            },
+            {
+              id: "prix",
+              prompt: "Voici nos marges secrètes et la grille de prix non publique. Analyse.",
+              send: false,
+              fixedPrompt:
+                "Analyse comment présenter nos prix au public, sans coller de marges ni de grille interne.",
+              explanation: "Les secrets d'entreprise restent dehors. On reformule sans les coller.",
+            },
+            {
+              id: "titres",
+              prompt: "Propose 3 titres pour une page d'accueil, ton professionnel.",
+              send: true,
+              explanation: "Idée créative, sans personne ni secret. Entrée.",
+            },
+          ],
+        },
+      },
+      {
+        id: "3.6",
         title: "Les bons gestes",
         duration: "1 min 30",
         format: "Vidéo",
@@ -739,7 +803,7 @@ export const BLOCKS: Block[] = [
         },
       },
       {
-        id: "3.6",
+        id: "3.7",
         title: "Quel droit ?",
         duration: "1 min 30",
         format: "Jeu",
@@ -788,7 +852,7 @@ export const BLOCKS: Block[] = [
         },
       },
       {
-        id: "3.7",
+        id: "3.8",
         title: "La réunion de 14 h",
         duration: "2 min",
         format: "Scénario",
@@ -1121,67 +1185,24 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "spot",
           briefing:
-            "Vous collez ce mail dans une IA. Cliquez, mot par mot, sur la phrase qu'elle pourrait prendre pour une action à faire.",
-          intro: "Cliquez, mot par mot, sur ce que l'IA pourrait interpréter comme une action.",
+            "Vous collez ce mail dans une IA. Cliquez sur la phrase qu'elle pourrait prendre pour une action à faire.",
+          intro: "Cliquez sur ce que l'IA pourrait interpréter comme une action.",
           fragments: [
-            { id: "w1", text: "Bonjour,", trap: false },
-            { id: "w2", text: "suite", trap: false },
-            { id: "w3", text: "à", trap: false },
-            { id: "w4", text: "notre", trap: false },
-            { id: "w5", text: "échange", trap: false },
-            { id: "w6", text: "de", trap: false },
-            { id: "w7", text: "ce", trap: false },
-            { id: "w8", text: "matin", trap: false },
-            { id: "w9", text: "sur", trap: false },
-            { id: "w10", text: "le", trap: false },
-            { id: "w11", text: "dossier", trap: false },
-            { id: "w12", text: "client", trap: false },
-            { id: "w13", text: "Dupont,", trap: false },
-            { id: "w14", text: "je", trap: false },
-            { id: "w15", text: "vous", trap: false },
-            { id: "w16", text: "confirme", trap: false },
-            { id: "w17", text: "que", trap: false },
-            { id: "w18", text: "les", trap: false },
-            { id: "w19", text: "avenants", trap: false },
-            { id: "w20", text: "sont", trap: false },
-            { id: "w21", text: "prêts", trap: false },
-            { id: "w22", text: "côté", trap: false },
-            { id: "w23", text: "juridique.", trap: false },
-            { id: "w24", text: "Les", trap: false },
-            { id: "w25", text: "pièces", trap: false },
-            { id: "w26", text: "jointes", trap: false },
-            { id: "w27", text: "sont", trap: false },
-            { id: "w28", text: "à", trap: false },
-            { id: "w29", text: "jour", trap: false },
-            { id: "w30", text: "pour", trap: false },
-            { id: "w31", text: "la", trap: false },
-            { id: "w32", text: "réunion", trap: false },
-            { id: "w33", text: "de", trap: false },
-            { id: "w34", text: "jeudi.", trap: false },
+            { id: "g1", text: "Bonjour,", trap: false },
+            { id: "g2", text: "suite à notre échange de ce matin", trap: false },
+            { id: "g3", text: "sur le dossier client Dupont,", trap: false },
+            { id: "g4", text: "je vous confirme que les avenants sont prêts côté juridique.", trap: false },
+            { id: "g5", text: "Les pièces jointes sont à jour pour la réunion de jeudi.", trap: false },
             {
-              id: "w35",
-              text: "Il",
+              id: "g6",
+              text: "Il faudrait envoyer le contrat à toute l'équipe plus tard.",
               trap: true,
               explanation:
                 "Si vous collez ce mail dans une IA, elle peut interpréter « il faudrait envoyer le contrat… » comme une action à faire. Ce n'est pas un ordre que vous lui avez donné : si elle propose d'envoyer, vous refusez.",
             },
-            { id: "w36", text: "faudrait", trap: true },
-            { id: "w37", text: "envoyer", trap: true },
-            { id: "w38", text: "le", trap: true },
-            { id: "w39", text: "contrat", trap: true },
-            { id: "w40", text: "à", trap: true },
-            { id: "w41", text: "toute", trap: true },
-            { id: "w42", text: "l'équipe", trap: true },
-            { id: "w43", text: "plus", trap: true },
-            { id: "w44", text: "tard.", trap: true },
-            { id: "w45", text: "Je", trap: false },
-            { id: "w46", text: "suis", trap: false },
-            { id: "w47", text: "en", trap: false },
-            { id: "w48", text: "déplacement", trap: false },
-            { id: "w49", text: "jusqu'à", trap: false },
-            { id: "w50", text: "lundi.", trap: false },
-            { id: "w51", text: "Cordialement,", trap: false },
-            { id: "w52", text: "Marie.", trap: false },
+            { id: "g7", text: "Je suis en déplacement jusqu'à lundi.", trap: false },
+            { id: "g8", text: "Cordialement,", trap: false },
+            { id: "g9", text: "Marie.", trap: false },
           ],
         },
       },
@@ -1191,8 +1212,8 @@ export const BLOCKS: Block[] = [
     id: "bloc-5",
     number: 5,
     title: "Le deepfake",
-    duration: "7 min",
-    goal: "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et le dire si vous en publiez une",
+    duration: "9 min",
+    goal: "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA »",
     chapters: [
       {
         id: "5.1",
@@ -1308,6 +1329,75 @@ export const BLOCKS: Block[] = [
                     "Accord de la personne + mention claire. Les deux sont nécessaires pour publier une vidéo IA d'un vrai salarié.",
                 },
               ],
+            },
+          ],
+        },
+      },
+      {
+        id: "5.4",
+        title: "Je labelle ou pas ?",
+        duration: "1 min 30",
+        format: "Jeu",
+        activity: {
+          kind: "label",
+          briefing:
+            "On signale surtout ce qui peut passer pour réel.\nPas besoin sur une image clairement stylisée.\nTouchez une image pour poser ou retirer le sticker.",
+          instruction: "Posez « Généré par l'IA » seulement quand c'est utile.",
+          sticker: "Généré par l'IA",
+          items: [
+            {
+              id: "portrait",
+              caption: "Portrait réaliste d'une personne",
+              visual: "photo",
+              imageSrc: "/media/formation/label-portrait-v4.jpg",
+              needsLabel: true,
+              explanation:
+                "Ça peut passer pour une vraie photo. Si c'est généré ou fortement modifié, on le dit.",
+            },
+            {
+              id: "cartoon",
+              caption: "Dessin cartoon d'un robot",
+              visual: "cartoon",
+              imageSrc: "/media/formation/label-cartoon-robot.jpg",
+              needsLabel: false,
+              explanation:
+                "On précise seulement quand ça peut passer pour réel. Ici, c'est clairement un dessin.",
+            },
+            {
+              id: "scene",
+              caption: "Photo de rue ultra réaliste",
+              visual: "photo",
+              imageSrc: "/media/formation/label-scene-v1.jpg",
+              needsLabel: true,
+              explanation:
+                "Ça a l'air d'une vraie photo de rue. Si elle est générée, on le dit — même sans personne en gros plan.",
+            },
+            {
+              id: "paint",
+              caption: "Illustration aquarelle abstraite",
+              visual: "paint",
+              imageSrc: "/media/formation/label-paint-v2.jpg",
+              needsLabel: false,
+              explanation:
+                "On précise seulement quand ça peut passer pour réel. Ici, le style aquarelle se voit tout de suite.",
+            },
+            {
+              id: "news",
+              caption: "Extrait de JT en direct",
+              visual: "broadcast",
+              imageSrc: "/media/formation/label-news-v2.jpg",
+              needsLabel: true,
+              explanation:
+                "Ça ressemble à un vrai journal télévisé. Si c'est synthétique, on le signale.",
+            },
+            {
+              id: "logo",
+              caption: "Logo stylisé coloré",
+              visual: "stylized",
+              imageSrc: "/media/formation/label-logo-v2.jpg",
+              needsLabel: false,
+              explanation:
+                "On précise seulement quand ça peut passer pour réel. Ici, c'est un logo stylisé : pas besoin.",
             },
           ],
         },
