@@ -40,7 +40,13 @@ import {
   findChapter,
   type Block,
 } from "@/lib/formation/curriculum";
-import { witnessDemoCertificate } from "@/lib/formation/witness";
+import {
+  isWitnessHiddenChapter,
+  isWitnessLockedChapter,
+  WITNESS_HIDDEN_CHAPTER_IDS,
+  WITNESS_LOCKED_CHAPTER_IDS,
+  witnessDemoCertificate,
+} from "@/lib/formation/witness";
 import {
   QUIZ_DRAW_SIZE,
   QUIZ_PASS_COUNT,
@@ -178,6 +184,9 @@ export default function FormationExperience({
     progress.completedChapters.includes("1.1");
 
   function openChapter(chapterId: string) {
+    if (witnessDemo && (isWitnessLockedChapter(chapterId) || isWitnessHiddenChapter(chapterId))) {
+      return;
+    }
     if (chapterId === "1.1") setFirstModuleLaunched(true);
     setScreen({ kind: "chapter", chapterId });
   }
@@ -326,6 +335,8 @@ export default function FormationExperience({
         block={block}
         completed={progress.completedChapters}
         unlockAll={witnessDemo}
+        lockedChapterIds={witnessDemo ? WITNESS_LOCKED_CHAPTER_IDS : undefined}
+        hiddenChapterIds={witnessDemo ? WITNESS_HIDDEN_CHAPTER_IDS : undefined}
         onBack={() => setScreen({ kind: "intro" })}
         onOpenChapter={openChapter}
       />,
@@ -336,17 +347,30 @@ export default function FormationExperience({
     const found = findChapter(active.chapterId);
     if (!found) return null;
     const { block, chapter, index } = found;
-    const next = block.chapters[index + 1];
+    const next = block.chapters.slice(index + 1).find((item) => {
+      if (!witnessDemo) return true;
+      if (isWitnessHiddenChapter(item.id)) return false;
+      return !isWitnessLockedChapter(item.id);
+    });
+    const blockedNext = witnessDemo
+      ? block.chapters.slice(index + 1).find((item) => !isWitnessHiddenChapter(item.id) && isWitnessLockedChapter(item.id))
+      : undefined;
     return withDesign(
       <ChapterScreen
         block={block}
         chapter={chapter}
         done={progress.completedChapters.includes(chapter.id)}
+        hiddenChapterIds={witnessDemo ? WITNESS_HIDDEN_CHAPTER_IDS : undefined}
         onBack={() => setScreen({ kind: "block", blockId: block.id })}
         onComplete={() => {
           markChapterDone(chapter.id);
-          if (next) openChapter(next.id);
-          else setScreen({ kind: "intro" });
+          if (next) {
+            openChapter(next.id);
+          } else if (blockedNext) {
+            setScreen({ kind: "block", blockId: block.id });
+          } else {
+            setScreen({ kind: "intro" });
+          }
         }}
       />,
     );
@@ -489,8 +513,10 @@ export default function FormationExperience({
     return withDesign(
       <CareerScreen
         selected={progress.careerPathId}
+        lockChoices={witnessDemo}
         onBack={() => setScreen({ kind: "intro" })}
         onSelect={(id) => {
+          if (witnessDemo) return;
           markCareer(id);
           setScreen({ kind: "intro" });
         }}
@@ -832,8 +858,15 @@ function IntroScreen({
         <div className="relative mx-auto mt-3 w-fit">
           <button
             type="button"
-            onClick={() => openOrDeny("quiz", quizState === "locked", onOpenQuiz)}
-            className={`group relative flex w-fit cursor-pointer rounded-2xl border-0 bg-transparent p-[2px] text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
+            aria-disabled={quizState === "locked" || witnessDemo}
+            onClick={() =>
+              openOrDeny("quiz", quizState === "locked" || Boolean(witnessDemo), onOpenQuiz)
+            }
+            className={`group relative flex w-fit rounded-2xl border-0 bg-transparent p-[2px] text-center shadow-sm transition duration-300 ease-out ${
+              witnessDemo || quizState === "locked"
+                ? "cursor-not-allowed"
+                : "cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
+            } ${
               quizState === "done"
                 ? "shadow-emerald-500/20 hover:shadow-emerald-500/30"
                 : "shadow-rose-500/20 hover:shadow-rose-500/35"
@@ -907,8 +940,8 @@ function IntroScreen({
               <span className="sr-only">
                 {quizState === "done"
                   ? "Examen final réussi"
-                  : quizState === "locked"
-                    ? "Disponible une fois les 6 blocs terminés"
+                  : quizState === "locked" || witnessDemo
+                    ? "Examen final non accessible en démonstration"
                     : "Ouvrir l'examen final"}
               </span>
             </div>
@@ -923,6 +956,7 @@ function IntroScreen({
                 quizScore={displayCertificate.quizScore ?? quizScore}
                 certificate={displayCertificate}
                 beside
+                canDownload={false}
               />
             </div>
           ) : null}
@@ -937,6 +971,7 @@ function IntroScreen({
               quizScore={displayCertificate.quizScore ?? quizScore}
               certificate={displayCertificate}
               beside
+              canDownload={false}
             />
           </div>
         ) : null}
@@ -1218,6 +1253,7 @@ function LearnerAttestation({
   quizScore,
   certificate,
   beside = false,
+  canDownload = true,
 }: {
   fullName: string;
   companyName: string;
@@ -1226,6 +1262,8 @@ function LearnerAttestation({
   certificate: IssuedCertificate;
   /** Compacte à droite de l’examen final (compte témoin). */
   beside?: boolean;
+  /** Compte témoin : consultation seule, pas de PDF. */
+  canDownload?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const { date, time } = formatProofDate(certificate.issuedAt);
@@ -1241,6 +1279,7 @@ function LearnerAttestation({
   const role = CAREER_PATHS.find((path) => path.id === careerPathId)?.title ?? "Collaborateur";
 
   function download() {
+    if (!canDownload) return;
     downloadLearnerAttestation({
       fullName,
       role,
@@ -1286,14 +1325,16 @@ function LearnerAttestation({
               >
                 Voir
               </button>
-              <button
-                type="button"
-                onClick={download}
-                aria-label="Télécharger l'attestation"
-                className="inline-flex items-center justify-center rounded-md border border-emerald-300 bg-white p-1 text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
-              >
-                <Download className="h-3 w-3" />
-              </button>
+              {canDownload ? (
+                <button
+                  type="button"
+                  onClick={download}
+                  aria-label="Télécharger l'attestation"
+                  className="inline-flex items-center justify-center rounded-md border border-emerald-300 bg-white p-1 text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
+                >
+                  <Download className="h-3 w-3" />
+                </button>
+              ) : null}
             </div>
           </>
         ) : (
@@ -1302,7 +1343,9 @@ function LearnerAttestation({
               Attestation de suivi · {certificate.id}
             </p>
             <p className="mt-1 text-center text-xs text-emerald-800/80 dark:text-emerald-200/80">
-              Examen validé. Vous pouvez la consulter ou la télécharger.
+              {canDownload
+                ? "Examen validé. Vous pouvez la consulter ou la télécharger."
+                : "Examen validé. Vous pouvez la consulter."}
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
               <button
@@ -1313,14 +1356,16 @@ function LearnerAttestation({
                 <GraduationCap className="h-4 w-4" />
                 Voir mon attestation
               </button>
-              <button
-                type="button"
-                onClick={download}
-                className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
-              >
-                <Download className="h-4 w-4" />
-                Télécharger
-              </button>
+              {canDownload ? (
+                <button
+                  type="button"
+                  onClick={download}
+                  className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100"
+                >
+                  <Download className="h-4 w-4" />
+                  Télécharger
+                </button>
+              ) : null}
             </div>
           </>
         )}
@@ -1347,6 +1392,7 @@ function LearnerAttestation({
             timeSpentSec: certificate.timeSpentSec,
             modulesCompleted: certificate.modulesCompleted,
           }}
+          canDownload={canDownload}
           onClose={() => setOpen(false)}
         />
       )}
@@ -1684,18 +1730,29 @@ function BlockScreen({
   block,
   completed,
   unlockAll = false,
+  lockedChapterIds,
+  hiddenChapterIds,
   onBack,
   onOpenChapter,
 }: {
   block: Block;
   completed: string[];
-  /** Compte témoin : tous les chapitres accessibles */
+  /** Compte témoin : chapitres accessibles sauf lockedChapterIds */
   unlockAll?: boolean;
+  /** Chapitres visibles mais non accessibles (démo témoin). */
+  lockedChapterIds?: readonly string[];
+  /** Chapitres masqués de la grille (démo témoin). */
+  hiddenChapterIds?: readonly string[];
   onBack: () => void;
   onOpenChapter: (id: string) => void;
 }) {
   const [deniedId, setDeniedId] = useState<string | null>(null);
-  const blockDone = block.chapters.every((chapter) => completed.includes(chapter.id));
+  const forcedLocks = lockedChapterIds ? new Set(lockedChapterIds) : null;
+  const hiddenIds = hiddenChapterIds ? new Set(hiddenChapterIds) : null;
+  const visibleChapters = hiddenIds
+    ? block.chapters.filter((chapter) => !hiddenIds.has(chapter.id))
+    : block.chapters;
+  const blockDone = visibleChapters.every((chapter) => completed.includes(chapter.id));
   const recap = BLOCK_RECAPS[block.id] ?? [];
   const lexiconIds =
     block.id === "bloc-1"
@@ -1746,20 +1803,21 @@ function BlockScreen({
       </div>
       {lexiconIds && <LexiconBar ids={lexiconIds} label="Mots à connaître" />}
       <ul className="mx-auto grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-3.5">
-        {block.chapters.map((chapter, index) => {
+        {visibleChapters.map((chapter, index) => {
           const done = completed.includes(chapter.id);
-          const previous = block.chapters[index - 1];
+          const previous = visibleChapters[index - 1];
           const locked =
-            !unlockAll &&
-            !done &&
-            !!previous &&
-            !completed.includes(previous.id);
+            (forcedLocks?.has(chapter.id) ?? false) ||
+            (!unlockAll &&
+              !done &&
+              !!previous &&
+              !completed.includes(previous.id));
           const denied = deniedId === chapter.id;
           const tone = activityTone(chapter.format);
           const teaser = chapterTeaser(chapter);
           const lastOdd =
-            block.chapters.length % 2 === 1 &&
-            index === block.chapters.length - 1;
+            visibleChapters.length % 2 === 1 &&
+            index === visibleChapters.length - 1;
           return (
             <li
               key={chapter.id}
@@ -1771,31 +1829,42 @@ function BlockScreen({
             >
               <button
                 type="button"
+                aria-disabled={locked}
                 onClick={() => openOrDeny(chapter.id, locked)}
-                className={`group relative flex h-full min-h-[5rem] w-full flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
+                className={`group relative flex h-full min-h-[5rem] w-full flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out ${
+                  locked
+                    ? "cursor-not-allowed"
+                    : "hover:-translate-y-0.5 hover:shadow-md"
+                } ${
                   denied
                     ? "block-deny border-red-500 bg-red-50 dark:bg-red-950/40"
-                    : done
-                      ? "border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-500"
-                      : tone.card
+                    : locked
+                      ? "border-slate-200 bg-slate-100 text-slate-400 grayscale dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-500"
+                      : done
+                        ? "border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-500"
+                        : tone.card
                 }`}
               >
                 {locked && (
                   <Lock className="absolute top-2.5 right-2.5 h-3.5 w-3.5 text-slate-400" aria-hidden />
                 )}
                 <span className="flex items-center justify-center gap-2 px-2">
-                  {done ? (
+                  {done && !locked ? (
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-white transition-transform duration-300 group-hover:scale-110" />
                   ) : (
                     <Play
                       className={`h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110 ${
-                        locked ? "text-slate-300" : tone.icon
+                        locked ? "text-slate-300 dark:text-slate-600" : tone.icon
                       }`}
                     />
                   )}
                   <span
                     className={`line-clamp-2 text-center text-[0.95rem] font-semibold leading-snug sm:text-base ${
-                      done ? "text-white" : "text-slate-900 dark:text-white"
+                      locked
+                        ? "text-slate-400 dark:text-slate-500"
+                        : done
+                          ? "text-white"
+                          : "text-slate-900 dark:text-white"
                     }`}
                   >
                     {chapter.id} · {chapter.title}
@@ -1803,7 +1872,11 @@ function BlockScreen({
                 </span>
                 <span
                   className={`line-clamp-2 px-2 text-center text-xs leading-relaxed sm:text-[0.8125rem] ${
-                    locked ? "text-slate-400" : done ? "text-emerald-50/90" : tone.meta
+                    locked
+                      ? "text-slate-400 dark:text-slate-500"
+                      : done
+                        ? "text-emerald-50/90"
+                        : tone.meta
                   }`}
                 >
                   {teaser}
@@ -1873,15 +1946,22 @@ function ChapterScreen({
   block,
   chapter,
   done,
+  hiddenChapterIds,
   onBack,
   onComplete,
 }: {
   block: Block;
   chapter: (typeof BLOCKS)[number]["chapters"][number];
   done: boolean;
+  /** Chapitres masqués du rail / barre (démo témoin). */
+  hiddenChapterIds?: readonly string[];
   onBack: () => void;
   onComplete: () => void;
 }) {
+  const hiddenIds = hiddenChapterIds ? new Set(hiddenChapterIds) : null;
+  const railChapters = hiddenIds
+    ? block.chapters.filter((item) => !hiddenIds.has(item.id))
+    : block.chapters;
   const kind = chapter.activity.kind;
   const ackRequired = needsAck(kind, chapter.id, chapter.duration);
   const mountMs = mountDwellMs(kind, chapter.duration, chapter.id);
@@ -1956,8 +2036,8 @@ function ChapterScreen({
     !done && ackRequired && activityComplete && mountReady && holdReady && !acked;
   const waitingTimer = !canContinue && cooldownSec > 0;
   const continueLabel = waitingTimer ? `Continuer (${cooldownSec} s)` : "Continuer";
-  const stepIndex = Math.max(0, block.chapters.findIndex((item) => item.id === chapter.id));
-  const stepCount = block.chapters.length;
+  const stepIndex = Math.max(0, railChapters.findIndex((item) => item.id === chapter.id));
+  const stepCount = railChapters.length;
   const progress = stepCount <= 1 ? 100 : (stepIndex / (stepCount - 1)) * 100;
 
   useEffect(() => {
@@ -1980,7 +2060,7 @@ function ChapterScreen({
   const progressBar = (
     <div className="px-1 rail:hidden">
       <ol className="flex justify-between gap-1">
-        {block.chapters.map((item, index) => {
+        {railChapters.map((item, index) => {
           const current = item.id === chapter.id;
           const reached = index <= stepIndex;
           return (
@@ -2116,16 +2196,16 @@ function ChapterScreen({
             </div>
 
             <ol className="mt-5 border-t border-slate-100 pt-5 text-left dark:border-slate-800">
-              {block.chapters.map((item, index) => {
+              {railChapters.map((item, index) => {
                 const current = item.id === chapter.id;
-                const done = index < stepIndex;
-                const isLast = index === block.chapters.length - 1;
+                const reached = index < stepIndex;
+                const isLast = index === railChapters.length - 1;
                 return (
                   <li key={item.id} className="relative flex gap-3.5 pb-5 last:pb-0">
                     <span className="relative flex w-3 shrink-0 flex-col items-center">
                       <span
                         className={`relative z-10 mt-1.5 h-3 w-3 rounded-full ring-[3px] ${
-                          done
+                          reached
                             ? "bg-emerald-500 ring-emerald-100 dark:ring-emerald-950"
                             : current
                               ? "bg-blue-600 ring-blue-100 dark:ring-blue-950"
@@ -2136,7 +2216,7 @@ function ChapterScreen({
                       {!isLast ? (
                         <span
                           className={`absolute top-[1.35rem] bottom-[-1.25rem] left-1/2 w-0.5 -translate-x-1/2 ${
-                            done ? "bg-emerald-400" : "bg-slate-200 dark:bg-slate-700"
+                            reached ? "bg-emerald-400" : "bg-slate-200 dark:bg-slate-700"
                           }`}
                           aria-hidden
                         />
@@ -2146,7 +2226,7 @@ function ChapterScreen({
                       className={`min-w-0 flex-1 pt-1 text-[13px] leading-relaxed ${
                         current
                           ? "font-semibold text-blue-800 dark:text-blue-200"
-                          : done
+                          : reached
                             ? "font-medium text-slate-600 dark:text-slate-300"
                             : "text-slate-400 dark:text-slate-500"
                       }`}

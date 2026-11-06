@@ -90,10 +90,13 @@ const TRAFFIC_STYLE = {
 
 export default function CareerScreen({
   selected,
+  lockChoices = false,
   onBack,
   onSelect,
 }: {
   selected: string | null;
+  /** Compte témoin : grille visible, aucune fiche ouvrable. */
+  lockChoices?: boolean;
   onBack: () => void;
   onSelect: (id: string) => void;
 }) {
@@ -101,7 +104,7 @@ export default function CareerScreen({
   const [openCases, setOpenCases] = useState<Record<number, boolean>>({});
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>([null, null, null]);
   const [quizRevealed, setQuizRevealed] = useState<boolean[]>([false, false, false]);
-  const path = CAREER_PATHS.find((item) => item.id === openId) ?? null;
+  const path = lockChoices ? null : CAREER_PATHS.find((item) => item.id === openId) ?? null;
   const quizDone = quizAnswers.every((answer) => answer !== null);
   const quizScore = quizAnswers.reduce<number>((score, answer, index) => {
     if (answer === null || !path) return score;
@@ -119,6 +122,7 @@ export default function CareerScreen({
   })();
 
   function openPath(id: string) {
+    if (lockChoices) return;
     setOpenId(id);
     setOpenCases({});
     setQuizAnswers([null, null, null]);
@@ -153,15 +157,25 @@ export default function CareerScreen({
               <li key={item.id}>
                 <button
                   type="button"
+                  aria-disabled={lockChoices}
+                  disabled={lockChoices}
                   onClick={() => openPath(item.id)}
-                  className={`w-full rounded-xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md ${
-                    isSelected ? style.selected : style.card
+                  className={`w-full rounded-xl border px-4 py-3.5 text-center shadow-sm transition duration-300 ease-out ${
+                    lockChoices
+                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 grayscale dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-500"
+                      : `hover:-translate-y-0.5 hover:shadow-md ${isSelected ? style.selected : style.card}`
                   }`}
                 >
                   <span className="mb-1 block text-lg leading-none" aria-hidden>
                     {style.emoji}
                   </span>
-                  <p className="text-center text-sm font-semibold text-slate-900 dark:text-white">
+                  <p
+                    className={`text-center text-sm font-semibold ${
+                      lockChoices
+                        ? "text-slate-400 dark:text-slate-500"
+                        : "text-slate-900 dark:text-white"
+                    }`}
+                  >
                     {item.title}
                   </p>
                 </button>
