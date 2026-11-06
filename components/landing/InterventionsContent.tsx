@@ -13,11 +13,7 @@ import {
   Workflow,
 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
-
-const CONTACT_EMAIL = "contact@lockin-web.online";
-const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-  "Accompagnement IA — LockinIA",
-)}`;
+import { useBookingOptional } from "@/components/landing/BookingModal";
 
 const offerings = [
   {
@@ -343,6 +339,9 @@ function HeroVideo() {
 }
 
 export default function InterventionsContent() {
+  const booking = useBookingOptional();
+  const openAccompagnement = () =>
+    booking?.openBooking({ interest: "accompagnement" });
   return (
     <>
       {/* Hero */}
@@ -381,13 +380,14 @@ export default function InterventionsContent() {
                 {...fadeUp(0.24)}
                 className="flex justify-center pt-1"
               >
-                <a
-                  href={mailtoHref}
+                <button
+                  type="button"
+                  onClick={openAccompagnement}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-blue-700"
                 >
                   Parlons de vos besoins
                   <ArrowRight className="h-4 w-4" />
-                </a>
+                </button>
               </motion.div>
             </div>
 
@@ -492,13 +492,14 @@ export default function InterventionsContent() {
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
             Une tâche à automatiser, une équipe à former ?
           </h2>
-          <a
-            href={mailtoHref}
+          <button
+            type="button"
+            onClick={openAccompagnement}
             className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-blue-700"
           >
             Échanger sur mon projet
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </button>
         </div>
       </section>
     </>

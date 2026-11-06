@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import Badge from "@/components/ui/Badge";
+import { useBookingOptional } from "@/components/landing/BookingModal";
 import VideoPlaceholder from "./VideoPlaceholder";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -17,6 +18,8 @@ function fadeUp(delay: number) {
 }
 
 export default function Hero() {
+  const booking = useBookingOptional();
+
   return (
     <section className="relative bg-white dark:bg-slate-900 overflow-hidden pt-24">
       {/* Background texture */}
@@ -78,13 +81,16 @@ export default function Hero() {
                   whileHover={{ scale: 1.08, y: -8 }}
                   transition={{ type: "spring", stiffness: 380, damping: 15 }}
                 >
-                  <a
-                    href="mailto:contact@lockin-web.online?subject=Demande%20LockinIA"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      booking?.openBooking({ interest: "acces" })
+                    }
                     className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md hover:shadow-[0_18px_40px_-8px_rgba(37,99,235,0.85)] transition-shadow duration-300 group"
                   >
                     Demander un accès
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
-                  </a>
+                  </button>
                 </motion.div>
                 <motion.div
                   id="demo-tour-cta-demo"

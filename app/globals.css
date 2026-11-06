@@ -1114,8 +1114,8 @@ p.text-center {
 }
 
 .predict-brick-roll {
-  /* un peu plus vite que le tapis, sans être brusque */
-  animation: predict-brick-roll 4.2s linear forwards;
+  /* Plus rapide vers la box violette ; le tapis reste à 7s */
+  animation: predict-brick-roll 3.1s linear forwards;
 }
 
 @keyframes predict-drop-glow {

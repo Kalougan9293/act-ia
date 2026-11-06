@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import { useDemoTourOptional } from "@/components/landing/DemoTour";
+import { useBookingOptional } from "@/components/landing/BookingModal";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -15,6 +16,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const onHome = pathname === "/";
   const demoTour = useDemoTourOptional();
+  const booking = useBookingOptional();
   const tourActive =
     demoTour?.phase === "ready" || demoTour?.phase === "running";
 
@@ -23,7 +25,8 @@ export default function Navbar() {
     { label: "Tarifs", href: onHome ? "#pricing" : "/#pricing" },
     {
       label: "Contact",
-      href: "mailto:contact@lockin-web.online?subject=LockinIA%20-%20contact",
+      href: "#contact",
+      action: "contact" as const,
     },
   ];
 
@@ -68,11 +71,18 @@ export default function Navbar() {
                 ? "text-blue-600 dark:text-blue-400"
                 : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white",
             );
-            if (link.href.startsWith("mailto:")) {
+            if ("action" in link && link.action === "contact") {
               return (
-                <a key={link.label} href={link.href} className={className}>
+                <button
+                  key={link.label}
+                  type="button"
+                  className={className}
+                  onClick={() =>
+                    booking?.openBooking({ interest: "question" })
+                  }
+                >
                   {link.label}
-                </a>
+                </button>
               );
             }
             return (
@@ -125,21 +135,24 @@ export default function Navbar() {
           <div className="flex flex-col gap-1">
             {links.map((link) => {
               const className = cn(
-                "rounded-lg px-3 py-2.5 text-sm font-medium",
+                "rounded-lg px-3 py-2.5 text-sm font-medium text-left",
                 pathname === link.href
                   ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
                   : "text-slate-800 dark:text-slate-200",
               );
-              if (link.href.startsWith("mailto:")) {
+              if ("action" in link && link.action === "contact") {
                 return (
-                  <a
+                  <button
                     key={link.label}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
+                    type="button"
                     className={className}
+                    onClick={() => {
+                      setOpen(false);
+                      booking?.openBooking({ interest: "question" });
+                    }}
                   >
                     {link.label}
-                  </a>
+                  </button>
                 );
               }
               return (

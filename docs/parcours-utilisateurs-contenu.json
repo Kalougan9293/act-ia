@@ -1,0 +1,3327 @@
+{
+  "meta": {
+    "title": "LockinIA — Parcours utilisateurs (contenu intégral)",
+    "purpose": "Document de revue pour juriste et formateur. Contient l'intégralité du contenu pédagogique proposé aux apprenants (socle, fiches métiers, banque QCM). Non destiné aux apprenants.",
+    "courseTitle": "Sensibilisation à la maîtrise de l'IA et aux bons usages des données au travail",
+    "promise": "Des réflexes concrets pour utiliser l'IA sans vous faire piéger ni mettre l'entreprise en danger — AI Act (art. 4) et bases du RGPD —, avec une attestation de suivi à la fin.",
+    "duration": "1 h 15",
+    "generatedAt": "2026-11-06T11:59:32.763Z",
+    "source": "lib/formation/* (export automatique)"
+  },
+  "programme": {
+    "intitule": "Sensibilisation à la maîtrise de l'IA et aux bons usages des données au travail",
+    "version": "V1.0",
+    "modalite": "Formation à distance asynchrone (FOAD)",
+    "organisme": "FITOPS AI — plateforme LockinIA",
+    "contact": "contact@lockin-web.online",
+    "phone": "06.62.28.86.56",
+    "statutQualiopi": "Formation réalisable avec un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée dès finalisation des accords contractuels.",
+    "objectifs": [
+      {
+        "label": "Comprendre le fonctionnement de l'IA générative et ses limites",
+        "evaluable": "Distinguer IA classique / générative ; identifier une hallucination ; formuler un prompt utile."
+      },
+      {
+        "label": "Situer les obligations liées à l'AI Act (art. 4) et aux usages au travail",
+        "evaluable": "Citer le rôle de l'article 4 ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant."
+      },
+      {
+        "label": "Protéger données personnelles et secrets d'entreprise face à l'IA",
+        "evaluable": "Classer une information (OK / attention / interdit) ; appliquer un réflexe en cas d'erreur ou d'enregistrement."
+      },
+      {
+        "label": "Garder la décision humaine et les bons usages de publication",
+        "evaluable": "Identifier qui valide ; savoir quand ne pas publier un contenu généré sans contrôle."
+      },
+      {
+        "label": "Repérer deepfakes et urgences manipulées",
+        "evaluable": "Adopter un réflexe de vérification face à une vidéo / voix douteuse ou une demande urgente."
+      },
+      {
+        "label": "Mobiliser les 7 réflexes au quotidien",
+        "evaluable": "Restituer et classer les questions avant / après usage de l'IA."
+      }
+    ],
+    "public": "Salariés, dirigeants et collaborateurs d'entreprises qui utilisent ou sont exposés à des outils d'IA au travail (tous secteurs).",
+    "prerequis": [
+      "Savoir utiliser un navigateur web et une adresse e-mail professionnelle.",
+      "Aucun prérequis technique en IA ni en droit.",
+      "Accès à un poste ou smartphone connecté à Internet."
+    ],
+    "duree": "1 h 15",
+    "dureeDetail": "Durée moyenne indicative du socle (activités + évaluation finale). Le parcours peut être suivi en une ou plusieurs sessions.",
+    "methodes": [
+      "FOAD asynchrone sur plateforme LockinIA",
+      "Vidéos courtes et textes pédagogiques",
+      "Activités interactives (tri, quiz formatifs, mises en situation)",
+      "Test de positionnement non éliminatoire en début de parcours",
+      "Évaluation finale sommative (QCM)",
+      "Assistance pédagogique et technique nommée (voir modalités FOAD)"
+    ],
+    "evaluation": [
+      "Évaluation finale : QCM — seuil de réussite 80 / 100.",
+      "Positionnement initial : non éliminatoire, à visée pédagogique.",
+      "Validation : parcours socle complété + QCM réussi → attestation nominative de suivi.",
+      "L'attestation documente le suivi ; elle n'est ni un diplôme ni une certification officielle de conformité."
+    ],
+    "accessibilite": [
+      "Formation 100 % en ligne, réalisable sur ordinateur ou smartphone.",
+      "En cas de situation de handicap, contactez-nous avant ou pendant le parcours pour étudier les adaptations possibles (rythme, formats, assistance).",
+      "Référent handicap / assistance : Jonathan Seroussi — contact@lockin-web.online — 06.62.28.86.56.",
+      "Délai de réponse : sous 48 heures ouvrées."
+    ],
+    "tarifs": [
+      "Abonnement annuel LockinIA (accès plateforme + parcours + suivi RH + attestations) : Micro 390 € (1–5 accès), TPE 790 € (6–20), PME 1 290 € (21–50), ETI sur devis.",
+      "Options hors abonnement : module métier sur mesure 690 € (format standard) ; atelier usages & automatisation sur devis ; marque blanche sur devis.",
+      "TVA non applicable, art. 293 B du CGI."
+    ],
+    "financements": [
+      "Formation réalisable via un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi.",
+      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise, via ce partenaire (émetteur de l'attestation / certificat de réalisation à définir contractuellement).",
+      "Aucun financement n'est garanti. L'identité du partenaire et les modalités exactes seront confirmées dès finalisation des accords."
+    ],
+    "deroule": [
+      {
+        "etape": "Accueil & introduction",
+        "duree": "≈ 5 min",
+        "detail": "Présentation du parcours, objectifs et modalités."
+      },
+      {
+        "etape": "Test de positionnement",
+        "duree": "≈ 5 min",
+        "detail": "QCM non éliminatoire pour situer le niveau de départ."
+      },
+      {
+        "etape": "Bloc 1 — L'IA, c'est quoi ?",
+        "duree": "10 min",
+        "detail": "Comprendre comment l'outil écrit, pourquoi il peut inventer, et ce que vous venez faire ici. Contenu : Pourquoi vous êtes ici · Comment elle écrit · IA classique ou Générative ? · Les mots à connaître · Quelle suite l'IA choisirait-elle ? · Trouvez ce qui cloche · Avant d'utiliser une réponse."
+      },
+      {
+        "etape": "Bloc 2 — Le code de la route de l'IA",
+        "duree": "8 min",
+        "detail": "Savoir ce que la loi vous demande, quel est votre rôle, et quelles dates comptent vraiment Contenu : Avant la vidéo · La loi en clair · J'utilise ou je vends ? · Quel niveau de risque ? · Les dates qui comptent."
+      },
+      {
+        "etape": "Bloc 3 — Mes données et mes secrets",
+        "duree": "15 min",
+        "detail": "Apprendre ce que vous pouvez saisir dans une IA sans mettre l'entreprise ni les salariés en danger Contenu : Ce que vous pouvez saisir · Donnée perso ou pas ? · Quel niveau d'attention ? · Nettoyez ce prompt · J'envoie ou je corrige ? · Les bons gestes · Quel droit ? · La réunion de 14 h."
+      },
+      {
+        "etape": "Bloc 4 — C'est vous qui décidez",
+        "duree": "10 min",
+        "detail": "L'IA peut proposer, c'est vous qui décidez Contenu : L'IA propose, vous décidez · Qui valide ? · Reliez la bonne règle · Avant de publier ou d'agir · Je publie ou pas ? · Ce qui pourrait faire agir l'IA."
+      },
+      {
+        "etape": "Bloc 5 — Le deepfake",
+        "duree": "9 min",
+        "detail": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA » Contenu : Vrai ou faux ? · Une vidéo peut mentir · Deux situations · Je labelle ou pas ?."
+      },
+      {
+        "etape": "Bloc 6 — Les 7 réflexes",
+        "duree": "5 min",
+        "detail": "Repartir avec les sept questions, expliquées, puis revues dans le jeu Contenu : Les sept questions · Rangez les 7 réflexes."
+      },
+      {
+        "etape": "Évaluation finale",
+        "duree": "≈ 10 min",
+        "detail": "QCM sommative, seuil 80 %."
+      },
+      {
+        "etape": "Attestation de suivi",
+        "duree": "—",
+        "detail": "Émission automatique de l'attestation nominative (date, score, temps de connexion mesuré, modules validés)."
+      },
+      {
+        "etape": "Bonus optionnels",
+        "duree": "variable",
+        "detail": "Module entreprise (charte, outils, référent) et fiche métier — hors validation obligatoire du socle."
+      }
+    ]
+  },
+  "assistance": {
+    "referentPedagogique": {
+      "name": "Jonathan Seroussi",
+      "role": "Référent pédagogique",
+      "mission": "Questions sur le contenu du parcours, les objectifs, les évaluations et la progression."
+    },
+    "referentTechnique": {
+      "name": "Jonathan Seroussi",
+      "role": "Référent technique",
+      "mission": "Accès à la plateforme, connexions, bugs et dysfonctionnements techniques."
+    },
+    "email": "contact@lockin-web.online",
+    "phone": "06.62.28.86.56",
+    "phoneHref": "tel:+33662288656",
+    "responseDelay": "sous 48 heures ouvrées",
+    "responseDelayShort": "48 h ouvrées",
+    "remoteActivities": "Parcours asynchrone en ligne (vidéos, textes, activités interactives, quiz).",
+    "averageDuration": "1 h 15",
+    "evaluation": "Évaluation finale par QCM (seuil de réussite 80 / 100). Positionnement non éliminatoire en début de parcours. Attestation nominative de suivi à la validation."
+  },
+  "evaluationRules": {
+    "quizDrawSize": 20,
+    "passPercent": 80,
+    "passCount": 16,
+    "timerSeconds": 720,
+    "positioningMin": 6,
+    "positioningMax": 8,
+    "bankSize": 44
+  },
+  "reflexes": {
+    "before": [
+      "Cette IA est-elle autorisée chez nous ?",
+      "Est-ce une info sur une personne ?",
+      "Est-ce trop privé (santé, religion…) ?",
+      "Est-ce un secret de l'entreprise ?"
+    ],
+    "after": [
+      "Ai-je vérifié la réponse ?",
+      "Est-ce un humain qui décide vraiment ?",
+      "Dois-je prévenir mon manager ou le référent IA ?"
+    ]
+  },
+  "milestones": [
+    {
+      "date": "2 février 2025",
+      "label": "Article 4 et pratiques interdites",
+      "detail": "Mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026/1744) et pratiques interdites (Art. 5)."
+    },
+    {
+      "date": "2 août 2025",
+      "label": "Modèles à usage général",
+      "detail": "Obligations relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance."
+    },
+    {
+      "date": "2 août 2026",
+      "label": "Article 50 — transparence",
+      "detail": "Obligations de transparence (chatbots, certains contenus synthétiques). Les obligations varient selon le cas."
+    },
+    {
+      "date": "2 décembre 2026",
+      "label": "Interdictions contenus illicites",
+      "detail": "Certaines interdictions spécifiques (ex. contenus intimes non consentis) — distinctes des obligations générales de transparence (Art. 50). En France, la diffusion sans consentement est déjà un délit (loi SREN)."
+    },
+    {
+      "date": "2 décembre 2027",
+      "label": "Haut risque (Annexe III)",
+      "detail": "Règles pour les systèmes concernés (dont emploi / recrutement selon finalité). Tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD art. 22 s'applique déjà."
+    },
+    {
+      "date": "2 août 2028",
+      "label": "Haut risque (Art. 6 §1 / Annexe I)",
+      "detail": "Certaines catégories liées à des produits réglementés couverts par l'annexe I."
+    }
+  ],
+  "blocks": [
+    {
+      "id": "bloc-1",
+      "number": 1,
+      "title": "L'IA, c'est quoi ?",
+      "duration": "10 min",
+      "goal": "Comprendre comment l'outil écrit, pourquoi il peut inventer, et ce que vous venez faire ici.",
+      "chapters": [
+        {
+          "id": "1.1",
+          "title": "Pourquoi vous êtes ici",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/1-1.mp4",
+            "script": "Bonjour à tous ! Vous êtes ici parce que votre entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA, conformément à l'article 4 du règlement européen en vigueur depuis février 2025. Le but de cette formation n'est pas de vous faire passer un examen de droit, mais de vous aider à acquérir des réflexes simples avec, à la fin, une attestation qui prouve que vous avez suivi le parcours.\n\nVous utilisez peut-être déjà ChatGPT, Copilot ou une autre application qui crée des images. Si ce n'est pas votre cas, regardez autour de vous. Beaucoup de collègues s'en servent déjà. L'IA peut vous faire gagner beaucoup de temps. Elle peut rédiger, résumer, traduire ou encore chercher. Mais elle peut aussi se tromper ou faire sortir une information qui devait rester dans l'entreprise.\n\nDans cette formation, on avance un sujet à la fois. D'abord, on explique comment l'outil écrit. Ensuite, on aborde ce que la loi exige. Et enfin, on voit comment utiliser l'outil, ce que vous pouvez y intégrer et les informations qu'il faut garder pour vous."
+          }
+        },
+        {
+          "id": "1.2",
+          "title": "Comment elle écrit",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/1-2.mp4",
+            "script": "Il y a deux familles d'outils quand on parle d'IA.\n\nLa première, c'est l'IA classique. Elle ne rédige pas un texte nouveau. Elle classe, elle trie ou elle calcule. Le filtre qui met un mail dans les indésirables, c'est cette famille. Le GPS qui propose un itinéraire, c'est cette famille aussi.\n\nLa deuxième, c'est l'IA qui crée. On l'appelle aussi IA générative. ChatGPT, Copilot ou Gemini en font partie. Vous lui demandez un mail, une image ou un résumé par exemple et elle produit quelque chose qui n'existait pas.\n\nComment elle écrit ? Eh bien, elle avance mot après mot. À chaque fois, elle choisit le mot qui a le plus de chances de suivre parce qu'elle l'a souvent vu dans d'autres textes. Elle ne sait pas si c'est vrai. Elle devine la suite la plus probable.\n\nQuatre mots suffisent pour en parler. D'abord, le LLM. C'est le moteur qui écrit derrière ChatGPT ou Copilot. L'hallucination ensuite, c'est une réponse bien tournée mais fausse. Le prompt, c'est votre consigne, ce que vous lui demandez de faire. Par exemple : « Écris un mail court, poli et n'invente pas de date. » Enfin, le contexte. Ce sont les informations pour qu'elle sache de quoi vous parlez. Un fichier, un mail d'un client, des faits peuvent être ajoutés à votre conversation. Si vous ne les lui donnez pas, elle ne les a pas. Et si vous ouvrez une nouvelle discussion, elle les perd. Vous devez alors les lui redonner.\n\nPour finir, retenez cette phrase. Une réponse probable n'est pas une réponse vraie. C'est pour ça que vous devez vérifier les informations qu'elle donne avant de les utiliser."
+          }
+        },
+        {
+          "id": "1.3",
+          "title": "IA classique ou Générative ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "sort",
+            "briefing": "On vient de voir les deux familles.\nL'IA classique trie, ou calcule. Elle n'invente pas un texte.\nL'IA générative, c'est celle qui crée. Elle rédige, résume, ou produit une image.\n\nClassez chaque exemple dans la bonne famille.\nLisez d'abord, puis glissez.",
+            "instruction": "Glissez chaque carte dans la bonne famille.",
+            "layout": "tubes",
+            "bins": [
+              {
+                "id": "classic",
+                "label": "IA classique"
+              },
+              {
+                "id": "gen",
+                "label": "IA générative"
+              }
+            ],
+            "cards": [
+              {
+                "id": "spam",
+                "label": "Filtre anti-spam",
+                "binId": "classic",
+                "explanation": "Elle range les mails. Elle n'écrit pas un nouveau message. C'est l'IA classique."
+              },
+              {
+                "id": "gpt",
+                "label": "ChatGPT",
+                "binId": "gen",
+                "explanation": "Elle rédige un texte qui n'existait pas. C'est l'IA générative."
+              },
+              {
+                "id": "gps",
+                "label": "GPS",
+                "binId": "classic",
+                "explanation": "Elle calcule un itinéraire parmi des routes qui existent déjà."
+              },
+              {
+                "id": "meet",
+                "label": "Résumé de réunion",
+                "binId": "gen",
+                "explanation": "Le résumé est un texte nouveau, produit à partir de ce que vous lui avez donné."
+              },
+              {
+                "id": "image",
+                "label": "Image créée par IA",
+                "binId": "gen",
+                "explanation": "L'outil a produit une image. Ce n'est pas un simple classement."
+              },
+              {
+                "id": "reco",
+                "label": "« Vous aimerez aussi… »",
+                "binId": "classic",
+                "explanation": "Elle propose des produits qui sont déjà au catalogue. Elle ne les invente pas."
+              },
+              {
+                "id": "spell",
+                "label": "Correcteur d'orthographe",
+                "binId": "classic",
+                "explanation": "Elle repère et corrige parmi des règles déjà connues. Elle n'invente pas un texte."
+              },
+              {
+                "id": "mail",
+                "label": "Mail rédigé par Copilot",
+                "binId": "gen",
+                "explanation": "Copilot produit un message nouveau à partir de votre consigne. C'est de l'IA générative."
+              }
+            ]
+          }
+        },
+        {
+          "id": "1.4",
+          "title": "Les mots à connaître",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "stamp",
+            "briefing": "On vient de nommer 4 mots : LLM, prompt, hallucination, contexte.\nVous choisissez le mot qui décrit l'exemple.",
+            "stamps": [
+              {
+                "id": "llm",
+                "label": "LLM",
+                "hint": ""
+              },
+              {
+                "id": "prompt",
+                "label": "Prompt",
+                "hint": ""
+              },
+              {
+                "id": "hallu",
+                "label": "Hallucination",
+                "hint": ""
+              },
+              {
+                "id": "ctx",
+                "label": "Contexte",
+                "hint": ""
+              }
+            ],
+            "cards": [
+              {
+                "id": "c1",
+                "label": "Dans le mail, Copilot vous propose la fin de la phrase pendant que vous tapez",
+                "stampId": "llm",
+                "explanation": "C'est le LLM, le moteur qui écrit. Il propose une suite. Il ne vérifie pas si cette suite est vraie."
+              },
+              {
+                "id": "c2",
+                "label": "Vous précisez le ton, la longueur, et ce que l'outil ne doit pas inventer",
+                "stampId": "prompt",
+                "explanation": "C'est le prompt : la consigne que vous écrivez à l'IA. Vous y dites le ton, la longueur, et ce qu'elle ne doit pas inventer. Plus cette consigne est précise, plus la réponse vous sert."
+              },
+              {
+                "id": "c3",
+                "label": "Au travail, vous avez reçu un mail de relance écrit par l'IA. Elle mentionne « pour la réunion du 3 mars ». Cette réunion n'a jamais eu lieu.",
+                "stampId": "hallu",
+                "explanation": "Vous en déduisez que l'IA a inventé la réunion. Le mail a l'air vrai, mais le fait est faux. C'est une hallucination. Vous ne croyez pas la date sans la vérifier."
+              },
+              {
+                "id": "c4",
+                "label": "Vous ouvrez une nouvelle discussion dans l'IA. Elle ne retrouve plus le fichier, tant que vous ne le joignez pas de nouveau",
+                "stampId": "ctx",
+                "explanation": "C'est le contexte. À chaque nouvelle discussion, l'IA perd la mémoire. Pour qu'elle retrouve la situation, vous lui redonnez le fichier."
+              }
+            ]
+          }
+        },
+        {
+          "id": "1.5",
+          "title": "Quelle suite l'IA choisirait-elle ?",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Animation",
+          "activity": {
+            "kind": "predict",
+            "briefing": "L'outil ne cherche pas votre vraie réponse.\nIl complète avec la suite la plus fréquente dans les textes qu'il a vus.\nLisez le début de phrase, et devinez ce qu'il ajouterait.",
+            "hint": "Quelle suite est la plus probable selon la façon dont l'IA réfléchit ?",
+            "rounds": [
+              {
+                "lead": "Le contrat doit être signé avant le…",
+                "options": [
+                  {
+                    "label": "vendredi",
+                    "percent": 38
+                  },
+                  {
+                    "label": "15 mars",
+                    "percent": 22
+                  },
+                  {
+                    "label": "déjeuner",
+                    "percent": 3
+                  },
+                  {
+                    "label": "client",
+                    "percent": 11
+                  }
+                ],
+                "message": "Pourquoi « vendredi », et pas « 15 mars » ? Parce que dans les mails, on lit très souvent « avant vendredi ». « 15 mars » serait peut-être votre vraie date, mais l'outil ne la connaît pas. « Déjeuner » ne termine presque jamais cette phrase, donc il ne le choisit pas. Il reprend une habitude de langage. Il ne lit pas votre contrat."
+              },
+              {
+                "lead": "Merci pour votre retour. Je vous propose de…",
+                "options": [
+                  {
+                    "label": "planifier un créneau",
+                    "percent": 41
+                  },
+                  {
+                    "label": "manger une pizza",
+                    "percent": 2
+                  },
+                  {
+                    "label": "renvoyer le devis",
+                    "percent": 28
+                  },
+                  {
+                    "label": "fermer le dossier",
+                    "percent": 14
+                  }
+                ],
+                "message": "Pourquoi « planifier un créneau », et pas « renvoyer le devis » ? Parce qu'après un « merci », les mails proposent très souvent un rendez-vous. « Renvoyer le devis » peut être ce que vous vouliez vraiment, mais l'outil ne le sait pas. Il choisit la suite qu'il a le plus souvent vue. Il ne lit pas votre intention."
+              },
+              {
+                "lead": "Selon le rapport, le chiffre d'affaires a…",
+                "options": [
+                  {
+                    "label": "augmenté de 12 %",
+                    "percent": 36
+                  },
+                  {
+                    "label": "disparu dans le cloud",
+                    "percent": 1
+                  },
+                  {
+                    "label": "été stable",
+                    "percent": 24
+                  },
+                  {
+                    "label": "baissé légèrement",
+                    "percent": 19
+                  }
+                ],
+                "message": "Pourquoi « 12 % » ? Ce n'est pas le résultat de votre entreprise. Un rapport contient souvent un pourcentage précis, donc cette forme sonne sérieuse. L'outil n'a pas ouvert votre comptabilité. Il a fabriqué une phrase qui a l'air d'un vrai rapport. Le 12 % est inventé. Avant de le citer, vous vérifiez le document."
+              }
+            ]
+          }
+        },
+        {
+          "id": "1.6",
+          "title": "Trouvez ce qui cloche",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "spot",
+            "briefing": "On vient de voir que l'outil peut inventer avec un ton très sûr. Voici un paragraphe qu'il a écrit. Vous allez cliquer sur ce qu'il ne faut pas reprendre tel quel.",
+            "intro": "Cliquez sur les passages à vérifier avant de les envoyer.",
+            "fragments": [
+              {
+                "id": "a",
+                "text": "Selon notre assistant,",
+                "trap": false
+              },
+              {
+                "id": "b",
+                "text": "le chiffre d'affaires a bondi de 340 % en un trimestre",
+                "trap": true,
+                "explanation": "Un pourcentage aussi précis et aussi beau est souvent inventé. Vous le cherchez dans vos vrais chiffres avant de le répéter."
+              },
+              {
+                "id": "c",
+                "text": ", comme le confirme",
+                "trap": false
+              },
+              {
+                "id": "d",
+                "text": "l'étude INSEE-IA 2019 citée en note",
+                "trap": true,
+                "explanation": "Le titre a l'air officiel, mais l'étude peut ne pas exister. Vous la cherchez vraiment, vous ne vous fiez pas au nom."
+              },
+              {
+                "id": "e",
+                "text": ". La réunion a eu lieu mardi,",
+                "trap": false
+              },
+              {
+                "id": "f",
+                "text": "comme l'impose l'article L.123-99 du Code du travail",
+                "trap": true,
+                "explanation": "Un numéro d'article bien présenté peut être faux. Vous ouvrez le texte de loi vous-même."
+              },
+              {
+                "id": "g",
+                "text": ".",
+                "trap": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "1.7",
+          "title": "Avant d'utiliser une réponse",
+          "subtitle": null,
+          "duration": "30 s",
+          "format": "Checklist",
+          "activity": {
+            "kind": "checklist",
+            "intro": "Avant de reprendre une réponse, je vérifie toujours ces quatre points :",
+            "items": [
+              "Les chiffres",
+              "Les sources",
+              "Les citations",
+              "Les textes de loi"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bloc-2",
+      "number": 2,
+      "title": "Le code de la route de l'IA",
+      "duration": "8 min",
+      "goal": "Savoir ce que la loi vous demande, quel est votre rôle, et quelles dates comptent vraiment",
+      "chapters": [
+        {
+          "id": "2.1",
+          "title": "Avant la vidéo",
+          "subtitle": null,
+          "duration": "30 s",
+          "format": "Pré-quiz",
+          "activity": {
+            "kind": "quiz",
+            "briefing": null,
+            "questions": [
+              {
+                "prompt": "Depuis quand l'entreprise doit-elle prendre des mesures pour favoriser le développement de la maîtrise de l'IA ?",
+                "choices": [
+                  {
+                    "label": "Depuis le 2 février 2025",
+                    "correct": true,
+                    "explanation": "Exact. L'article 4 s'applique depuis cette date (pas depuis août 2025). La vidéo vous explique ce que ça change pour vous."
+                  },
+                  {
+                    "label": "Seulement en 2027",
+                    "correct": false,
+                    "explanation": "Pas tout à fait. 2027 concerne surtout le tri automatique de CV. La vidéo vous explique."
+                  },
+                  {
+                    "label": "Il n'y a aucune obligation",
+                    "correct": false,
+                    "explanation": "Si, une obligation existe déjà depuis février 2025. La vidéo vous explique."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "2.2",
+          "title": "La loi en clair",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/2-2.mp4",
+            "script": "Les voitures ont un code de la route pour que chacun sache ce qui est permis. L'Europe a quelque chose de comparable pour l'IA, ce texte s'appelle l'AI Act.\n\nPour votre quotidien, l'AI Act prévoit quatre niveaux de risques. D'abord, le risque inacceptable, c'est interdit. Par exemple, demander à une IA, à partir d'une vidéo ou d'une voix, si un collègue a l'air stressé ou motivé. Autre exemple, analyser la photo d'un collègue pour déduire sa religion ou son origine. Ensuite, il y a le haut risque, des exigences plus strictes. Par exemple, un outil qui trie des CV peut aider, mais un humain doit garder la décision finale. Après, il y a le risque limité, il faut prévenir. Par exemple, avec un chatbot, l'utilisateur doit savoir qu'il parle à une machine, pas à un humain. Il faut clairement l'indiquer. Enfin, il y a le risque minimal, pas d'obligations particulières, comme corriger un mail, résumer une réunion, juste du bon sens.\n\nCe texte regarde aussi votre place face à l'outil. Il y a deux cas de figure. Soit vous utilisez Claude, Gemini ou Copilot pour travailler, vous êtes utilisateur, comme presque tout le monde, soit votre entreprise fabrique une IA et la vend sous son nom. Là, vous êtes vendeur et les règles sont beaucoup plus lourdes."
+          }
+        },
+        {
+          "id": "2.3",
+          "title": "J'utilise ou je vends ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "swipe",
+            "briefing": "Deux rôles.\n« J'utilise » : votre entreprise se sert d'un outil déjà en vente, comme ChatGPT.\n« Je vends » : votre entreprise fabrique une IA, ou la propose à ses clients sous sa marque.\nBalancez chaque situation vers la bonne zone.",
+            "left": {
+              "id": "deploy",
+              "label": "J'utilise"
+            },
+            "right": {
+              "id": "provider",
+              "label": "Je vends"
+            },
+            "cards": [
+              {
+                "id": "mail",
+                "label": "Rédiger mes mails avec ChatGPT",
+                "zoneId": "deploy",
+                "explanation": "Vous vous servez d'un outil qui existe déjà. C'est le cas le plus courant pour un salarié."
+              },
+              {
+                "id": "copilot",
+                "label": "Écrire avec Copilot",
+                "zoneId": "deploy",
+                "explanation": "Copilot est édité par une autre entreprise. Vous l'utilisez, vous ne le vendez pas."
+              },
+              {
+                "id": "hrsaas",
+                "label": "Acheter un logiciel IA de tri de CV",
+                "zoneId": "deploy",
+                "explanation": "Vous achetez un outil déjà sur le marché, et vous vous en servez. Vous êtes dans « j'utilise »."
+              },
+              {
+                "id": "compta",
+                "label": "Utiliser l'assistant IA intégré à votre logiciel de compta",
+                "zoneId": "deploy",
+                "explanation": "L'IA est dans un logiciel que vous achetez. Vous l'utilisez."
+              },
+              {
+                "id": "brand",
+                "label": "Vendre un chatbot sous votre marque",
+                "zoneId": "provider",
+                "explanation": "Vous mettez l'IA sur le marché, sous votre nom. Les obligations sont plus lourdes que pour un simple utilisateur."
+              },
+              {
+                "id": "product",
+                "label": "Intégrer une IA dans un logiciel vendu aux clients",
+                "zoneId": "provider",
+                "explanation": "Vos clients achètent votre offre, et l'IA en fait partie. Vous êtes du côté de ceux qui vendent."
+              }
+            ]
+          }
+        },
+        {
+          "id": "2.4",
+          "title": "Quel niveau de risque ?",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "sort",
+            "briefing": "On reprend les quatre niveaux de la vidéo.\n« Risque minimal » : usages courants, juste du bon sens.\n« Risque limité » : la personne doit savoir que c'est une IA.\n« Haut risque » : un humain doit garder la décision finale.\n« Risque inacceptable » : pratique interdite.\nClassez chaque usage.",
+            "instruction": "Glissez chaque usage sur le bon niveau du thermomètre.",
+            "layout": "thermometer",
+            "bins": [
+              {
+                "id": "low",
+                "label": "Risque minimal"
+              },
+              {
+                "id": "clear",
+                "label": "Risque limité"
+              },
+              {
+                "id": "high",
+                "label": "Haut risque"
+              },
+              {
+                "id": "ban",
+                "label": "Risque inacceptable"
+              }
+            ],
+            "cards": [
+              {
+                "id": "spell",
+                "label": "Correcteur d'orthographe",
+                "binId": "low",
+                "explanation": "Risque minimal : juste du bon sens."
+              },
+              {
+                "id": "meet",
+                "label": "Résumer une réunion avec ChatGPT",
+                "binId": "low",
+                "explanation": "C'est du risque minimal. Usage courant : vous relisez le résumé, et c'est tout."
+              },
+              {
+                "id": "bot",
+                "label": "Chatbot qui parle aux clients",
+                "binId": "clear",
+                "explanation": "C'est du risque limité. Le client doit savoir qu'il parle à une machine."
+              },
+              {
+                "id": "summary",
+                "label": "Un assistant répond aux mails clients en se faisant passer pour une personne",
+                "binId": "clear",
+                "explanation": "Même règle, risque limité. La personne doit savoir qu'elle échange avec une IA, même par mail."
+              },
+              {
+                "id": "cvsort",
+                "label": "Tri automatique de CV",
+                "binId": "high",
+                "explanation": "C'est du haut risque (AI Act). L'outil peut aider à trier, mais un humain garde la décision — déjà exigé par le RGPD (art. 22)."
+              },
+              {
+                "id": "emotion",
+                "label": "Demander à une IA si un collègue a l'air stressé d'après sa voix ou une vidéo",
+                "binId": "ban",
+                "explanation": "C'est un risque inacceptable (Art. 5) : au travail, on ne déduit pas les émotions avec une IA, hors exceptions très limitées (notamment santé ou sécurité)."
+              },
+              {
+                "id": "biocat",
+                "label": "Analyser la photo d'un collègue pour déduire sa religion ou son origine",
+                "binId": "ban",
+                "explanation": "C'est un risque inacceptable (Art. 5). On ne déduit pas la religion, l'origine ou l'orientation à partir d'une photo."
+              }
+            ]
+          }
+        },
+        {
+          "id": "2.5",
+          "title": "Les dates qui comptent",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "timeline",
+            "briefing": null,
+            "items": [
+              {
+                "id": "2025",
+                "shortDate": "Fév. 2025",
+                "date": "2 février 2025",
+                "label": "Déjà en vigueur",
+                "law": "Articles 4 et 5 — déjà en vigueur",
+                "detail": "Article 4 (après Omnibus 2026/1744)\nL'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à garantir le niveau de chacun. Cette formation en fait partie.\n\nPas d'amende plafonnée propre à cet article. Des sanctions restent toutefois possibles.\n\nArticle 5\nCertaines pratiques sont déjà interdites. Exemples : analyser les émotions d'un collègue avec une IA (voix ou vidéo) — sauf rares exceptions —, ou déduire sa religion ou son origine à partir d'une photo."
+              },
+              {
+                "id": "aout26",
+                "shortDate": "Août 2026",
+                "date": "2 août 2026",
+                "label": "Déjà en vigueur",
+                "law": "Article 50 — transparence",
+                "detail": "C'est surtout la transparence.\n\nUn chatbot doit dire dès le début que c'est une machine.\n\nPour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas besoin pour toute image stylisée.\n\nBut : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement."
+              },
+              {
+                "id": "dec26",
+                "shortDate": "Déc. 2026",
+                "date": "2 décembre 2026",
+                "label": "Prochaine échéance",
+                "law": "Interdictions sur certains contenus illicites — AI Act + déjà en France",
+                "detail": "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN).\n\nEn décembre 2026, l'AI Act ajoute des interdictions européennes sur certains systèmes qui produisent ces contenus.\n\nÀ retenir : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation."
+              },
+              {
+                "id": "dec27",
+                "shortDate": "Déc. 2027",
+                "date": "2 décembre 2027",
+                "label": "Recrutement",
+                "law": "Haut risque (annexe III) — calendrier Omnibus",
+                "detail": "Des règles AI Act s'appliquent aux systèmes à haut risque, notamment en emploi et recrutement.\n\nTous les outils RH ne sont pas automatiquement concernés : cela dépend de leur usage.\n\nAttention : le RGPD s'applique déjà. Une machine ne peut pas écarter seule un candidat. Un humain garde la décision finale."
+              },
+              {
+                "id": "aout28",
+                "shortDate": "Août 2028",
+                "date": "2 août 2028",
+                "label": "Plus tard",
+                "law": "IA dans certains produits réglementés (art. 6 §1 / annexe I)",
+                "detail": "D'autres règles arriveront pour certaines IA liées à des produits réglementés.\n\nVous n'avez pas à les connaître en détail. Si ça concerne votre métier, votre entreprise vous le dira."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bloc-3",
+      "number": 3,
+      "title": "Mes données et mes secrets",
+      "duration": "15 min",
+      "goal": "Apprendre ce que vous pouvez saisir dans une IA sans mettre l'entreprise ni les salariés en danger",
+      "chapters": [
+        {
+          "id": "3.1",
+          "title": "Ce que vous pouvez saisir",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/3-1.mp4",
+            "script": "Avant de saisir ou coller un texte dans une IA, retenez une chose : l'outil n'est pas un carnet privé. Dans un outil grand public, votre texte peut être enregistré, relu, réutilisé. La fenêtre est certes sur votre écran, mais l'information, elle, peut sortir de l'entreprise.\n\nDeux textes comptent ici. L'AI Act qui encadre les outils d'IA et le RGPD qui protège les données personnelles, avec ou sans IA.\n\nUne donnée personnelle, c'est tout ce qui permet d'identifier quelqu'un. Un nom bien sûr, mais aussi un e-mail, une voix, une photo, une plaque d'immatriculation, et même une simple description comme par exemple « le directeur de l'agence de Paris » suffit à l'identifier.\n\nPour savoir ce que vous pouvez saisir, il y a 3 degrés de vigilance matérialisés par 3 couleurs. Vert : OK, pas d'informations secrètes, pas de personnes reconnaissables non plus, cela peut concerner une idée de titre ou une question déjà publiée sur votre site par exemple. Orange : la prudence est de mise si une personne est identifiable. Évitez les informations qui permettent de la reconnaître et n'utilisez qu'un outil autorisé. Un exemple concret : au lieu d'écrire à l'IA « Julie Martin », écrivez « une collègue ». Le RGPD appelle cela la minimisation. Enfin, rouge : totalement interdit dans un outil grand public. Les informations relatives à la santé, la religion, l'appartenance syndicale ou l'origine sont des données sensibles. De même pour les secrets de l'entreprise, comme les prix non publics, les contrats, le business plan ou le code en interne. Un outil validé par l'entreprise peut être utilisé pour cela seulement si c'est nécessaire et autorisé.\n\nSi un usage de l'IA devient régulier dans votre équipe, vous en parlez à votre manager ou référent IA, l'entreprise doit avoir absolument connaissance des outils utilisés par ses salariés."
+          }
+        },
+        {
+          "id": "3.2",
+          "title": "Donnée perso ou pas ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "slash",
+            "briefing": "Une donnée personnelle, c'est tout ce qui permet de reconnaître quelqu'un, même sans son nom. Découpez les bulles qui en contiennent une.",
+            "intro": "Une donnée personnelle, c'est tout ce qui permet de reconnaître quelqu'un, même sans son nom. Découpez les cases qui contiennent une donnée personnelle.",
+            "takeaway": "Une donnée personnelle, c'est tout ce qui permet de reconnaître quelqu'un — avec ou sans son nom : mail, voix, photo, plaque, badge, ou même une simple description.\n\nL'exercice sert à les repérer d'un coup d'œil, pour ne pas les coller dans une IA sans y penser.",
+            "items": [
+              {
+                "id": "mail",
+                "label": "L'adresse j.martin@entreprise.fr",
+                "personal": true,
+                "explanation": "Une adresse pro identifie aussi une personne."
+              },
+              {
+                "id": "plaque",
+                "label": "La plaque de la voiture de service attribuée à Paul",
+                "personal": true,
+                "explanation": "Elle renvoie à une personne précise."
+              },
+              {
+                "id": "badge",
+                "label": "Le numéro de badge d'un salarié",
+                "personal": true,
+                "explanation": "Un numéro suffit si on peut retrouver la personne."
+              },
+              {
+                "id": "voix",
+                "label": "L'enregistrement de la voix d'un client",
+                "personal": true,
+                "explanation": "La voix identifie la personne."
+              },
+              {
+                "id": "ip",
+                "label": "L'adresse IP de l'ordinateur d'un client",
+                "personal": true,
+                "explanation": "Elle permet de remonter jusqu'à quelqu'un."
+              },
+              {
+                "id": "brive",
+                "label": "« Le directeur de l'agence de Paris »",
+                "personal": true,
+                "explanation": "Pas de nom, mais on le reconnaît."
+              },
+              {
+                "id": "photo",
+                "label": "Une photo d'équipe au séminaire",
+                "personal": true,
+                "explanation": "Les visages identifient les personnes."
+              },
+              {
+                "id": "ca",
+                "label": "Le chiffre d'affaires annuel de l'entreprise",
+                "personal": false,
+                "explanation": "Il ne vise personne… mais s'il n'est pas publié, c'est un secret : Stop."
+              },
+              {
+                "id": "stats",
+                "label": "« 40 % des salariés utilisent l'IA chaque semaine »",
+                "personal": false,
+                "explanation": "Une statistique globale ne vise personne."
+              },
+              {
+                "id": "ri",
+                "label": "Le règlement intérieur de l'entreprise",
+                "personal": false,
+                "explanation": "Un document général, sans personne visée."
+              }
+            ]
+          }
+        },
+        {
+          "id": "3.3",
+          "title": "Quel niveau d'attention ?",
+          "subtitle": "Peut-on mettre l'information de la voiture dans une IA ?",
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "traffic",
+            "briefing": "Chaque voiture s'arrête devant un feu avec une information.\nÀ vous de choisir :\n\nVert : tout va bien.\nOrange : ça doit rester encadré.\nRouge : c'est interdit.",
+            "items": [
+              {
+                "id": "title",
+                "label": "Idée de titre pour une pub",
+                "level": "green",
+                "explanation": "C'est une idée créative, sans nom et sans secret. Personne n'est reconnaissable, rien ne sort de l'entreprise. Vous pouvez écrire cette idée dans une IA grand public."
+              },
+              {
+                "id": "faq",
+                "label": "FAQ déjà sur le site",
+                "level": "green",
+                "explanation": "Ce texte est déjà sur votre site : n'importe qui peut le lire. Demander à une IA de le reformuler ne révèle ni personne, ni secret — par exemple « comment créer un compte » ou « quels sont vos horaires »."
+              },
+              {
+                "id": "mail",
+                "label": "E-mail d'un collègue",
+                "level": "orange",
+                "explanation": "Vous avez le droit, mais encadré. Une adresse mail (ex. marie.dupont@entreprise.fr) est une donnée personnelle au sens du RGPD : elle désigne quelqu'un. Passez uniquement par un outil autorisé par l'entreprise, et n'écrivez que le minimum utile — pas toute la conversation."
+              },
+              {
+                "id": "cv",
+                "label": "CV d'un candidat",
+                "level": "orange",
+                "explanation": "Vous avez le droit, mais encadré. Un CV porte un nom, un téléphone, un parcours : c'est une donnée personnelle au sens du RGPD. Utilisez un outil autorisé, et ne donnez que ce qui sert — par exemple le poste et les compétences, pas l'adresse ni le numéro « au cas où »."
+              },
+              {
+                "id": "arret",
+                "label": "Arrêt maladie",
+                "level": "red",
+                "explanation": "Donnée sensible (art. 9 RGPD). Règle de prudence : ne la saisissez pas dans une IA grand public non autorisée — même « grippe » ou « opération »."
+              },
+              {
+                "id": "syndicat",
+                "label": "Liste d'adhérents syndicaux",
+                "level": "red",
+                "explanation": "Donnée sensible (art. 9 RGPD). Règle de prudence : cette liste ne va pas dans une IA grand public non autorisée."
+              },
+              {
+                "id": "plan",
+                "label": "Business plan",
+                "level": "red",
+                "explanation": "Secret d'entreprise. Règle de prudence : ne l'écrivez pas dans une IA externe non autorisée — même sans aucun nom."
+              },
+              {
+                "id": "prix",
+                "label": "Grille de prix non publique",
+                "level": "red",
+                "explanation": "Secret d'entreprise. Règle de prudence : remises, marges, tarifs négociés — pas dans une IA externe non autorisée."
+              },
+              {
+                "id": "code",
+                "label": "Code d'un logiciel interne",
+                "level": "red",
+                "explanation": "Secret d'entreprise. Ici, « code » = programme écrit par vos équipes. Règle de prudence : pas dans une IA grand public non autorisée."
+              }
+            ]
+          }
+        },
+        {
+          "id": "3.4",
+          "title": "Nettoyez ce prompt",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "redact",
+            "briefing": "Vous allez retirer ce qui identifie la personne ou parle de sa santé. Le but n'est pas de tout effacer. La demande doit rester utile.",
+            "intro": "Cliquez sur ce qu'il faut enlever.",
+            "tokens": [
+              {
+                "id": "w1",
+                "text": "Rédige",
+                "redact": false
+              },
+              {
+                "id": "w2",
+                "text": "un",
+                "redact": false
+              },
+              {
+                "id": "w3",
+                "text": "mail",
+                "redact": false
+              },
+              {
+                "id": "w4",
+                "text": "pour",
+                "redact": false
+              },
+              {
+                "id": "w5",
+                "text": "Julie Martin",
+                "redact": true,
+                "replacement": "une collègue,"
+              },
+              {
+                "id": "w6",
+                "text": "(julie.martin@mail.com),",
+                "redact": true,
+                "replacement": ""
+              },
+              {
+                "id": "w7",
+                "text": "42 ans,",
+                "redact": true,
+                "replacement": ""
+              },
+              {
+                "id": "w8",
+                "text": "en",
+                "redact": false
+              },
+              {
+                "id": "w8b",
+                "text": "arrêt",
+                "redact": false
+              },
+              {
+                "id": "w8c",
+                "text": "pour",
+                "redact": false
+              },
+              {
+                "id": "w8d",
+                "text": "dépression",
+                "redact": true,
+                "replacement": ""
+              },
+              {
+                "id": "w8e",
+                "text": "depuis",
+                "redact": false
+              },
+              {
+                "id": "w8f",
+                "text": "mars,",
+                "redact": true,
+                "replacement": ""
+              },
+              {
+                "id": "w9",
+                "text": "afin",
+                "redact": false
+              },
+              {
+                "id": "w10",
+                "text": "de",
+                "redact": false
+              },
+              {
+                "id": "w11",
+                "text": "l'accueillir",
+                "redact": false
+              },
+              {
+                "id": "w12",
+                "text": "à",
+                "redact": false
+              },
+              {
+                "id": "w13",
+                "text": "son",
+                "redact": false
+              },
+              {
+                "id": "w14",
+                "text": "retour",
+                "redact": false
+              },
+              {
+                "id": "w15",
+                "text": "la",
+                "redact": false
+              },
+              {
+                "id": "w16",
+                "text": "semaine",
+                "redact": false
+              },
+              {
+                "id": "w17",
+                "text": "prochaine.",
+                "redact": false
+              },
+              {
+                "id": "w18",
+                "text": "Ton",
+                "redact": false
+              },
+              {
+                "id": "w19",
+                "text": "chaleureux,",
+                "redact": false
+              },
+              {
+                "id": "w20",
+                "text": "court",
+                "redact": false
+              },
+              {
+                "id": "w21",
+                "text": "et",
+                "redact": false
+              },
+              {
+                "id": "w22",
+                "text": "professionnel.",
+                "redact": false
+              }
+            ],
+            "explanation": "C'est le principe de minimisation : on ne donne à l'IA que le strict nécessaire.\n« Julie Martin » devient « une collègue ». L'e-mail et l'âge partent.\n« En arrêt » suffit pour le contexte.\n« Pour dépression depuis mars » ne doit pas y figurer : c'est une information de santé — règle de prudence face à un outil grand public non autorisé.\nLa demande reste claire, sans personne reconnaissable."
+          }
+        },
+        {
+          "id": "3.5",
+          "title": "J'envoie ou je corrige ?",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "send",
+            "briefing": "Un prompt s'écrit tout seul.\nS'il est bon : Entrée pour valider.\nS'il est flou ou sensible : Corriger — le texte se réécrit proprement.",
+            "instruction": "« Entrée » si c'est bon. « Corriger » si c'est trop flou ou sensible.",
+            "items": [
+              {
+                "id": "vague",
+                "prompt": "Aide-moi.",
+                "send": false,
+                "fixedPrompt": "Aide-moi à écrire un mail court pour confirmer un rendez-vous. N'invente pas d'horaire.",
+                "explanation": "Ce n'était pas interdit : juste trop flou, cela ne va pas du tout t'aider."
+              },
+              {
+                "id": "mail",
+                "prompt": "Écris un mail court et poli pour confirmer un rendez-vous. N'invente pas d'horaire.",
+                "send": true,
+                "explanation": "Clair, utile, et sans nom ni secret. Entrée suffit."
+              },
+              {
+                "id": "sante",
+                "prompt": "Résume l'arrêt maladie de Marie Dupont pour mon manager.",
+                "send": false,
+                "fixedPrompt": "Résume pour mon manager le retour d'une collègue après un arrêt, sans nom ni motif médical.",
+                "explanation": "Nom + santé retirés. La demande reste utile, sans donnée sensible."
+              },
+              {
+                "id": "faq",
+                "prompt": "Reformule cette FAQ déjà sur notre site, ton plus simple.",
+                "send": true,
+                "explanation": "Texte déjà public. Pas de secret : Entrée."
+              },
+              {
+                "id": "prix",
+                "prompt": "Voici nos marges secrètes et la grille de prix non publique. Analyse.",
+                "send": false,
+                "fixedPrompt": "Analyse comment présenter nos prix au public, sans coller de marges ni de grille interne.",
+                "explanation": "Les secrets d'entreprise restent dehors. On reformule sans les coller."
+              },
+              {
+                "id": "titres",
+                "prompt": "Propose 3 titres pour une page d'accueil, ton professionnel.",
+                "send": true,
+                "explanation": "Idée créative, sans personne ni secret. Entrée."
+              }
+            ]
+          }
+        },
+        {
+          "id": "3.6",
+          "title": "Les bons gestes",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/3-5.mp4",
+            "script": "Trois situations arrivent fréquemment au travail et voici quoi faire si ça survient.\n\nPremière situation : l'erreur. Imaginez que vous venez de coller par erreur un fichier client ou le motif d'un arrêt maladie dans une IA grand public. Vous ne faites pas comme si de rien n'était. Vous prévenez tout de suite votre manager, le référent IA ou le DPO. Pourquoi cette urgence ? Parce que le RGPD, dans son article 33, laisse souvent seulement 72 heures à l'entreprise pour prévenir la CNIL en cas de fuite de données. Plus vous parlez tôt, plus elle peut réagir à temps.\n\nDeuxième situation : la réunion. Avant d'appuyer sur « enregistrer » pour qu'un outil résume l'échange, vous prévenez tout le monde dans la salle, y compris le prestataire ou le client en visio, parce que leur voix est aussi une donnée personnelle. Et ensuite, vous ne laissez pas l'enregistrement dormir des mois dans un dossier partagé. Vous suivez la durée de conservation prévue dans votre entreprise.\n\nEnfin, troisième situation. Un client ou un collègue vous contacte parce qu'il veut consulter les données personnelles que l'entreprise conserve à son sujet, corriger une adresse erronée, ou demander l'effacement de ses informations. Ces droits figurent aux articles 15 à 17 du RGPD. Vous ne traitez pas la demande seul, vous la transmettez tout de suite au DPO ou au référent. L'entreprise dispose en général d'un mois pour répondre."
+          }
+        },
+        {
+          "id": "3.7",
+          "title": "Quel droit ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "match",
+            "briefing": "Chaque personne a des droits sur ses données. Reliez chaque situation au droit qu'elle exerce.",
+            "instruction": "Reliez les 5 situations aux 5 droits.",
+            "pairs": [
+              {
+                "id": "acces",
+                "left": "Un client veut savoir quelles informations l'entreprise a sur lui",
+                "right": "Droit d'accès",
+                "explanation": "Le droit d'accès (article 15 du RGPD) permet à une personne d'obtenir la liste des données que l'entreprise détient sur elle, et à quelles fins."
+              },
+              {
+                "id": "rectif",
+                "left": "Une salariée signale que son adresse est fausse dans le fichier RH",
+                "right": "Droit de rectification",
+                "explanation": "Le droit de rectification (article 16 du RGPD) permet de faire corriger une donnée inexacte ou incomplète, comme une mauvaise adresse."
+              },
+              {
+                "id": "efface",
+                "left": "Un ancien client demande qu'on supprime tout ce qui le concerne",
+                "right": "Droit à l'effacement",
+                "explanation": "Le droit à l'effacement (article 17 du RGPD), parfois appelé « droit à l'oubli », permet de demander la suppression de ses données quand elles ne sont plus nécessaires."
+              },
+              {
+                "id": "oppose",
+                "left": "Un prospect ne veut plus recevoir vos mails commerciaux",
+                "right": "Droit d'opposition",
+                "explanation": "Le droit d'opposition (article 21 du RGPD) permet de refuser un traitement, notamment la prospection commerciale."
+              },
+              {
+                "id": "humain",
+                "left": "Une IA a écarté un candidat automatiquement. Il demande qu'un recruteur humain relise son dossier",
+                "right": "Droit de ne pas être jugé uniquement par une machine",
+                "explanation": "L'article 22 du RGPD protège contre une décision prise uniquement par une machine qui produit des effets importants, comme un refus de candidature. La personne peut exiger qu'un humain revoie le dossier."
+              }
+            ]
+          }
+        },
+        {
+          "id": "3.8",
+          "title": "La réunion de 14 h",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Scénario",
+          "activity": {
+            "kind": "scenario",
+            "briefing": "Une réunion va être enregistrée. Pour chaque étape, choisissez ce qu'il faut faire.",
+            "steps": [
+              {
+                "prompt": "Vous voulez un outil qui enregistre et résume la réunion. Quelle est la première chose à faire ?",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je vérifie qu'il est autorisé, ou j'en parle au référent IA",
+                    "correct": true,
+                    "explanation": "C'est l'entreprise qui valide l'outil. Le fait que tout le monde s'en serve ne remplace pas cette validation."
+                  },
+                  {
+                    "label": "Je choisis un outil payant : c'est plus sûr",
+                    "correct": false,
+                    "explanation": "Payant ne veut pas dire autorisé. C'est la liste de l'entreprise qui décide."
+                  },
+                  {
+                    "label": "Je lance l'enregistrement, parce que tout le monde fait ça",
+                    "correct": false,
+                    "explanation": "L'habitude ne vaut pas une autorisation. Vous vérifiez la liste des outils autorisés par l'entreprise, ou vous demandez avant d'enregistrer des voix."
+                  }
+                ]
+              },
+              {
+                "prompt": "L'outil est autorisé. Des personnes extérieures à l'entreprise sont dans la salle, et leur voix sera enregistrée aussi. Que faites-vous ?",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je préviens tout le monde avant, y compris les personnes extérieures",
+                    "correct": true,
+                    "explanation": "Vous prévenez tout le monde avant d'appuyer sur enregistrer. Les personnes extérieures n'ont pas signé vos règles internes, et leur voix est aussi une information personnelle. Elles ne doivent pas découvrir l'enregistrement après coup."
+                  },
+                  {
+                    "label": "Je préviens seulement mes collègues",
+                    "correct": false,
+                    "explanation": "Vous prévenez tout le monde avant d'appuyer sur enregistrer. Les personnes extérieures n'ont pas signé vos règles internes, et leur voix est aussi une information personnelle. Elles ne doivent pas découvrir l'enregistrement après coup."
+                  }
+                ]
+              },
+              {
+                "prompt": "Le résumé est prêt. Que faites-vous avant de l'envoyer ?",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je le relis, parce que l'outil peut se tromper de personne ou de décision",
+                    "correct": true,
+                    "explanation": "Vous relisez. L'outil peut attribuer une phrase à la mauvaise personne, ou inventer une décision qui n'a pas été prise."
+                  },
+                  {
+                    "label": "Je l'envoie avec la mention « généré par IA, à vérifier »",
+                    "correct": false,
+                    "explanation": "La mention ne remplace pas votre relecture. Vous relisez avant d'envoyer."
+                  },
+                  {
+                    "label": "Je l'envoie tout de suite pour gagner du temps",
+                    "correct": false,
+                    "explanation": "Deux minutes de relecture évitent d'envoyer un faux compte rendu. Le temps gagné ne vaut pas une erreur envoyée à tout le monde."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bloc-4",
+      "number": 4,
+      "title": "C'est vous qui décidez",
+      "duration": "10 min",
+      "goal": "L'IA peut proposer, c'est vous qui décidez",
+      "chapters": [
+        {
+          "id": "4.1",
+          "title": "L'IA propose, vous décidez",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/4-1.mp4",
+            "script": "Jusqu'ici, on a vu ce qu'on peut saisir dans une IA et comment réagir quand quelque chose dérape. Dans cette vidéo, on attire votre attention sur un point essentiel. L'IA peut proposer et aider, mais c'est vous qui restez le décideur final. Et vous devez comprendre ce qu'elle vous propose avant de valider.\n\nCertains usages sont dits haut risque, parce qu'ils touchent fortement les personnes. Par exemple un outil qui trie des CV ou qui note des salariés. C'est pour ça qu'un humain doit garder la décision finale. Voici ce que ça change pour tout le monde au travail, pas seulement pour les RH.\n\nL'IA peut vous préparer un texte, une liste ou une proposition ou vous aider à trier. Mais elle ne décide pas à votre place. Dès qu'une personne est concernée, qu'il s'agisse d'un client, d'un collègue, d'un remboursement, d'une sanction ou d'un paiement, vous devez rester vigilant. Valider sans lire, ce n'est pas décider. Décider concrètement, c'est comprendre ce que l'outil propose, pouvoir le modifier et pouvoir dire non.\n\nUn score ou un classement peut aussi être injuste. Parce que l'IA apprend sur des exemples du passé. Et si ce passé était biaisé, l'outil peut reproduire cette injustice, tout en ayant l'air neutre. Un exemple connu. Chez Amazon, un outil de tri de CV a appris sur des embauches surtout masculines. Et il écartait ou mettait de côté les profils associés aux femmes sans que personne ait écrit cette consigne. Le même risque existe dès qu'un outil classe des personnes, des demandes ou des dossiers.\n\nConcrètement, l'outil peut classer ou vous aider à trier. Mais il ne doit pas faire disparaître une personne ou un dossier sans que vous le sachiez. Vous regardez aussi ce qu'il a écarté ou mis de côté. C'est vous qui choisissez au final et qui pouvez expliquer pourquoi."
+          }
+        },
+        {
+          "id": "4.2",
+          "title": "Qui valide ?",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Scénario",
+          "activity": {
+            "kind": "scenario",
+            "briefing": "Trois situations du quotidien. À chaque fois, demandez-vous qui décide vraiment : vous, ou l'outil.",
+            "steps": [
+              {
+                "prompt": "L'IA propose de refuser automatiquement le remboursement d'un client. Que faites-vous ?",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je laisse l'outil envoyer, parce que c'est plus rapide",
+                    "correct": false,
+                    "explanation": "Un refus qui touche une personne, c'est vous qui validez. L'outil peut préparer le brouillon, pas trancher seul."
+                  },
+                  {
+                    "label": "Je valide tous les refus d'un coup, sans tout relire",
+                    "correct": false,
+                    "explanation": "L'outil peut préparer le refus, mais c'est vous qui lisez et qui décidez d'envoyer."
+                  },
+                  {
+                    "label": "Je lis, et c'est moi qui valide",
+                    "correct": true,
+                    "explanation": "L'outil peut préparer le refus, mais c'est vous qui lisez et qui décidez d'envoyer."
+                  }
+                ]
+              },
+              {
+                "prompt": "L'IA a rédigé un courrier juridique. Le courrier a l'air très propre. Je…",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je l'envoie, parce que le ton est professionnel",
+                    "correct": false,
+                    "explanation": "Un ton propre ne veut pas dire que le droit est juste. Vous le faites relire par la personne compétente avant tout envoi."
+                  },
+                  {
+                    "label": "Je vérifie juste l'orthographe et les dates, puis je l'envoie",
+                    "correct": false,
+                    "explanation": "Des dates justes ne disent rien du fond. Une erreur de droit engage l'entreprise."
+                  },
+                  {
+                    "label": "Je le fais relire par la personne compétente avant de l'envoyer",
+                    "correct": true,
+                    "explanation": "Vous ne signez pas un courrier juridique sur la seule foi de l'outil. Une erreur de droit engage l'entreprise."
+                  }
+                ]
+              },
+              {
+                "prompt": "Un paiement important est prêt. L'IA propose de le lancer. Je…",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je fais confiance à l'IA et je lance tout de suite",
+                    "correct": false,
+                    "explanation": "L'outil peut préparer le paiement, mais c'est vous qui vérifiez le bénéficiaire et le montant avant de valider."
+                  },
+                  {
+                    "label": "Je regarde seulement si le montant est le bon",
+                    "correct": false,
+                    "explanation": "L'outil peut préparer le paiement, mais c'est vous qui vérifiez le bénéficiaire et le montant avant de valider."
+                  },
+                  {
+                    "label": "Je vérifie tout avant de valider",
+                    "correct": true,
+                    "explanation": "L'outil peut préparer le paiement, mais c'est vous qui vérifiez le bénéficiaire et le montant avant de valider."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "4.3",
+          "title": "Reliez la bonne règle",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "match",
+            "briefing": "Reliez chaque situation à la bonne règle.\nCliquez d'un côté, puis de l'autre, pour tracer le trait.",
+            "instruction": "Reliez les 4 situations aux 4 règles.",
+            "pairs": [
+              {
+                "id": "humain",
+                "left": "L'IA propose d'envoyer seule un refus à une cliente",
+                "right": "Rien ne part sans votre feu vert",
+                "explanation": "Dès qu'une personne est concernée, c'est vous qui validez. L'outil peut préparer, pas trancher."
+              },
+              {
+                "id": "bas",
+                "left": "Cinq demandes sont tout en bas du classement, sans explication",
+                "right": "Vous regardez aussi ce que l'outil a écarté",
+                "explanation": "Ce que l'outil a mis de côté peut cacher une personne écartée à tort. Vous ouvrez aussi ces dossiers."
+              },
+              {
+                "id": "score",
+                "left": "L'outil affiche 62/100 pour un entretien, sans dire ce qu'il mesure",
+                "right": "Vous lisez le dossier avant de trancher",
+                "explanation": "Un chiffre n'est pas une décision. Vous lisez le dossier, le score reste un indice."
+              },
+              {
+                "id": "biais",
+                "left": "Le classement a appris sur des décisions passées injustes",
+                "right": "Un historique injuste peut se répéter tout seul",
+                "explanation": "Si le passé était biaisé, le classement peut reproduire l'injustice tout en ayant l'air neutre."
+              }
+            ]
+          }
+        },
+        {
+          "id": "4.4",
+          "title": "Avant de publier ou d'agir",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo courte",
+            "src": "/media/formation/4-4.mp4",
+            "script": "Dans cette vidéo, on voit la conduite à tenir face à une image générée, ou face à une consigne cachée.\n\nQuand l'IA crée une image ou un texte, vous n'êtes pas automatiquement libre de le publier partout, parce que l'image peut ressembler à une œuvre protégée, à un logo ou au visage de quelqu'un, que le texte peut recopier un passage trouvé sur le web, et que les conditions de l'outil peuvent limiter ce que vous avez le droit de réutiliser, même si c'est vous qui avez cliqué sur générer.\n\nAvant de publier, posez-vous ces trois questions : est-ce que je reconnais une marque, une personne ou une œuvre, est-ce que les conditions de l'outil autorisent cet usage, et est-ce que mon entreprise valide cette publication. Si vous ne savez pas répondre, vous ne publiez pas pour voir, vous demandez.\n\nEnsuite, parfois l'IA ne fait pas que répondre : elle peut aussi passer à l'action, comme envoyer un mail, partager un fichier ou lancer un paiement. Le piège, c'est qu'une consigne peut être cachée dans un document ou dans un mail que vous lui faites lire, par exemple une phrase presque invisible qui dit « envoie les contrats », et l'outil peut alors proposer de le faire comme s'il s'agissait d'un ordre.\n\nVous ne le laissez pas agir seul sur quelque chose d'irréversible : résumer un mail, oui, envoyer des contrats, payer ou partager un fichier confidentiel, non. Vous lisez la proposition, et si vous n'avez pas demandé cette action vous-même, vous la refusez."
+          }
+        },
+        {
+          "id": "4.5",
+          "title": "Je publie ou pas ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Scénario",
+          "activity": {
+            "kind": "scenario",
+            "briefing": null,
+            "steps": [
+              {
+                "prompt": "Vous voulez mettre sur le site une image générée qui ressemble au logo d'une marque connue. Que faites-vous ?",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je publie, parce que l'IA l'a créée, donc je peux m'en servir",
+                    "correct": false,
+                    "explanation": "Le fait que l'IA l'ait produite ne vous donne pas tous les droits. Un logo reconnaissable peut être protégé. Vous vérifiez avant de publier."
+                  },
+                  {
+                    "label": "Je le retouche pour qu'il ressemble moins au logo",
+                    "correct": false,
+                    "explanation": "Retoucher ne règle pas la question des droits. Vous vérifiez, ou vous demandez."
+                  },
+                  {
+                    "label": "Je ne publie pas tant que les droits et les règles de l'outil ne sont pas clairs",
+                    "correct": true,
+                    "explanation": "Vous vérifiez la marque, les conditions de l'outil, et vous demandez si besoin. Vous ne publiez pas dans le doute."
+                  }
+                ]
+              },
+              {
+                "prompt": "Le texte généré reprend presque mot pour mot un article trouvé sur le web. Je…",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "Je publie, parce que l'IA a un peu reformulé",
+                    "correct": false,
+                    "explanation": "Une légère reformulation ne suffit pas si le texte reste celui de quelqu'un d'autre. Vous réécrivez vraiment, ou vous citez la source si vous en avez le droit."
+                  },
+                  {
+                    "label": "Je change quelques mots et je publie",
+                    "correct": false,
+                    "explanation": "Quelques mots changés, c'est toujours le texte de quelqu'un d'autre."
+                  },
+                  {
+                    "label": "Je réécris vraiment, ou je cite la source si on a le droit",
+                    "correct": true,
+                    "explanation": "Vous ne publiez pas la copie d'un article. Vous produisez votre propre texte, ou vous respectez les droits de l'auteur."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "4.6",
+          "title": "Ce qui pourrait faire agir l'IA",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "spot",
+            "briefing": "Vous collez ce mail dans une IA. Cliquez sur la phrase qu'elle pourrait prendre pour une action à faire.",
+            "intro": "Cliquez sur ce que l'IA pourrait interpréter comme une action.",
+            "fragments": [
+              {
+                "id": "g1",
+                "text": "Bonjour,",
+                "trap": false
+              },
+              {
+                "id": "g2",
+                "text": "suite à notre échange de ce matin",
+                "trap": false
+              },
+              {
+                "id": "g3",
+                "text": "sur le dossier client Dupont,",
+                "trap": false
+              },
+              {
+                "id": "g4",
+                "text": "je vous confirme que les avenants sont prêts côté juridique.",
+                "trap": false
+              },
+              {
+                "id": "g5",
+                "text": "Les pièces jointes sont à jour pour la réunion de jeudi.",
+                "trap": false
+              },
+              {
+                "id": "g6",
+                "text": "Il faudrait envoyer le contrat à toute l'équipe plus tard.",
+                "trap": true,
+                "explanation": "Si vous collez ce mail dans une IA, elle peut interpréter « il faudrait envoyer le contrat… » comme une action à faire. Ce n'est pas un ordre que vous lui avez donné : si elle propose d'envoyer, vous refusez."
+              },
+              {
+                "id": "g7",
+                "text": "Je suis en déplacement jusqu'à lundi.",
+                "trap": false
+              },
+              {
+                "id": "g8",
+                "text": "Cordialement,",
+                "trap": false
+              },
+              {
+                "id": "g9",
+                "text": "Marie.",
+                "trap": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bloc-5",
+      "number": 5,
+      "title": "Le deepfake",
+      "duration": "9 min",
+      "goal": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA »",
+      "chapters": [
+        {
+          "id": "5.1",
+          "title": "Vrai ou faux ?",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Jeu",
+          "activity": {
+            "kind": "truefake",
+            "briefing": "Quatre extraits. Pour chacun, choisissez « vrai » ou « faux ». Les quatre sont générés par IA.",
+            "outro": "Les quatre extraits étaient générés par IA. Le message : on ne peut plus se fier seulement à l'œil ou à l'oreille. On verra juste après comment faire attention, concrètement.",
+            "items": [
+              {
+                "id": "tf1",
+                "prompt": "Cette vidéo est-elle réelle ou générée par IA ?",
+                "answer": "fake",
+                "mediaKind": "video",
+                "mediaPlaceholder": "Exemple vidéo — extrait 1"
+              },
+              {
+                "id": "tf2",
+                "prompt": "Cette voix est-elle réelle ou générée par IA ?",
+                "answer": "fake",
+                "mediaKind": "audio",
+                "mediaPlaceholder": "Exemple audio — voix 1"
+              },
+              {
+                "id": "tf3",
+                "prompt": "Cette vidéo est-elle réelle ou générée par IA ?",
+                "answer": "fake",
+                "mediaKind": "video",
+                "mediaPlaceholder": "Exemple vidéo — extrait 2"
+              },
+              {
+                "id": "tf4",
+                "prompt": "Cette voix est-elle réelle ou générée par IA ?",
+                "answer": "fake",
+                "mediaKind": "audio",
+                "mediaPlaceholder": "Exemple audio — voix 2"
+              }
+            ]
+          }
+        },
+        {
+          "id": "5.2",
+          "title": "Une vidéo peut mentir",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Vidéo",
+          "activity": {
+            "kind": "video",
+            "format": "vidéo maison",
+            "src": "/media/formation/5-2.mp4",
+            "script": "On l'a vu, l'IA peut clairement soulager votre quotidien, mais utilisée à mauvais escient, elle peut être très dangereuse. Aujourd'hui, on va parler des deepfakes, ce que c'est et ce que l'AI Act prévoit à cet effet.\n\nDéjà, c'est quoi un deepfake ? C'est une voix, une vidéo ou une photo générée par l'IA pour ressembler à une vraie personne. Concrètement, un deepfake, c'est ça. On peut modifier l'apparence comme ceci. Voilà une forme de moi. En plus de l'apparence, on peut également modifier la voix. Et c'est là que ça devient difficile.\n\nEt ces petits effets que je viens de vous présenter sont totalement accessibles. Je n'ai pris que quelques minutes pour les faire. Imaginez si je prends le temps de prendre exactement la bonne voix, le bon visage, même changer l'arrière-plan pour vous faire une illusion parfaite. Ce qui est dangereux, c'est que plus le temps passe, plus la technologie est de plus en plus optimisée et accessible. Du coup, n'importe qui peut faire croire n'importe quoi à tout le monde.\n\nDonc ne vous précipitez pas si vous recevez une vidéo ou un audio de votre patron, par exemple, qui vous demande de faire telle ou telle chose. Vérifiez par un canal, faites attention, soyez méfiants quand vous recevez des ordres directs ou trop gros. Vous avez certainement entendu parler du cas du faux Brad Pitt qui a fait le tour des médias. Même si ce cas est un peu gros, il existe d'autres situations qui sont très réelles. Imaginez si je me fais passer pour un de vos voisins, vos collègues, votre patron, ou même un membre de votre famille, que je mets exactement la bonne voix, le bon type de langage, le bon arrière-plan, je peux faire croire n'importe quoi à n'importe qui. Il faut vraiment être vigilant. Ce n'est pas parce que c'est gros que c'est forcément faux. Il y a des choses qui sont hyper réelles. D'autant plus si on est spécialisé dans le domaine. Et ça arrive même au travail, d'où la vigilance de l'AI Act.\n\nSi votre entreprise génère une vidéo deepfake, elle en a le droit. Néanmoins, elle doit préciser que c'est une vidéo générée par l'IA. Même si c'est hyper évident, même si on sait que c'est faux, il faut le préciser, c'est l'obligation de l'AI Act."
+          }
+        },
+        {
+          "id": "5.3",
+          "title": "Deux situations",
+          "subtitle": null,
+          "duration": "2 min",
+          "format": "Scénario",
+          "activity": {
+            "kind": "scenario",
+            "briefing": null,
+            "steps": [
+              {
+                "prompt": "En visio, le « directeur » demande un virement tout de suite. La voix et le visage correspondent. Je…",
+                "mediaLabel": null,
+                "choices": [
+                  {
+                    "label": "J'obéis : si le visage correspond, c'est lui",
+                    "correct": false,
+                    "explanation": "Un visage net et une voix juste ne prouvent plus rien. L'urgence est le piège. Vous ne faites pas le virement depuis cette visio."
+                  },
+                  {
+                    "label": "Je raccroche et je rappelle sur un numéro déjà connu",
+                    "correct": true,
+                    "explanation": "Vous vérifiez par un canal que vous utilisez déjà. Vous n'utilisez pas le lien ni le numéro affichés dans le message suspect."
+                  }
+                ]
+              },
+              {
+                "prompt": "Votre équipe veut publier une vidéo d'un vrai salarié, générée par IA. Le texte est exact. Que faites-vous ?",
+                "mediaLabel": "Générée par l'IA",
+                "choices": [
+                  {
+                    "label": "On publie : le contenu a été relu, ça suffit",
+                    "correct": false,
+                    "explanation": "Il faut l'accord du salarié et une mention claire « Générée par l'IA ». Relire ne suffit pas."
+                  },
+                  {
+                    "label": "On indique « Générée par l'IA », sans demander au salarié",
+                    "correct": false,
+                    "explanation": "La mention seule ne suffit pas : il faut aussi l'accord de la personne (droit à l'image, RGPD)."
+                  },
+                  {
+                    "label": "On obtient l'accord du salarié et on indique clairement que c'est généré par IA",
+                    "correct": true,
+                    "explanation": "Accord de la personne + mention claire. Les deux sont nécessaires pour publier une vidéo IA d'un vrai salarié."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "5.4",
+          "title": "Je labelle ou pas ?",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "label",
+            "briefing": "On signale surtout ce qui peut passer pour réel.\nPas besoin sur une image clairement stylisée.\nTouchez une image pour poser ou retirer le sticker.",
+            "instruction": "Posez « Généré par l'IA » seulement quand c'est utile.",
+            "sticker": "Généré par l'IA",
+            "items": [
+              {
+                "id": "portrait",
+                "caption": "Portrait réaliste d'une personne",
+                "needsLabel": true,
+                "explanation": "Ça peut passer pour une vraie photo. Si c'est généré ou fortement modifié, on le dit."
+              },
+              {
+                "id": "cartoon",
+                "caption": "Dessin cartoon d'un robot",
+                "needsLabel": false,
+                "explanation": "On précise seulement quand ça peut passer pour réel. Ici, c'est clairement un dessin."
+              },
+              {
+                "id": "scene",
+                "caption": "Photo de rue ultra réaliste",
+                "needsLabel": true,
+                "explanation": "Ça a l'air d'une vraie photo de rue. Si elle est générée, on le dit — même sans personne en gros plan."
+              },
+              {
+                "id": "paint",
+                "caption": "Illustration aquarelle abstraite",
+                "needsLabel": false,
+                "explanation": "On précise seulement quand ça peut passer pour réel. Ici, le style aquarelle se voit tout de suite."
+              },
+              {
+                "id": "news",
+                "caption": "Extrait de JT en direct",
+                "needsLabel": true,
+                "explanation": "Ça ressemble à un vrai journal télévisé. Si c'est synthétique, on le signale."
+              },
+              {
+                "id": "logo",
+                "caption": "Logo stylisé coloré",
+                "needsLabel": false,
+                "explanation": "On précise seulement quand ça peut passer pour réel. Ici, c'est un logo stylisé : pas besoin."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bloc-6",
+      "number": 6,
+      "title": "Les 7 réflexes",
+      "duration": "5 min",
+      "goal": "Repartir avec les sept questions, expliquées, puis revues dans le jeu",
+      "chapters": [
+        {
+          "id": "6.1",
+          "title": "Les sept questions",
+          "subtitle": null,
+          "duration": "1 min 30",
+          "format": "Fiche",
+          "activity": {
+            "kind": "text",
+            "paragraphs": [
+              "Voici les sept questions à garder près de l'écran. Ce n'est pas une nouvelle leçon : c'est le résumé de ce que vous venez de faire."
+            ],
+            "points": [],
+            "beforeAfter": {
+              "beforeTitle": "Avant",
+              "before": [
+                "Cette IA est-elle autorisée chez nous ?",
+                "Est-ce une info sur une personne ?",
+                "Est-ce trop privé (santé, religion…) ?",
+                "Est-ce un secret de l'entreprise ?"
+              ],
+              "afterTitle": "Après",
+              "after": [
+                "Ai-je vérifié la réponse ?",
+                "Est-ce un humain qui décide vraiment ?",
+                "Dois-je prévenir mon manager ou le référent IA ?"
+              ]
+            }
+          }
+        },
+        {
+          "id": "6.2",
+          "title": "Rangez les 7 réflexes",
+          "subtitle": null,
+          "duration": "2 min 30",
+          "format": "Jeu",
+          "activity": {
+            "kind": "tetris",
+            "briefing": null,
+            "intro": "Relisez chaque réflexe en le posant.",
+            "blocks": [
+              {
+                "id": "r1",
+                "label": "Cette IA est-elle autorisée chez nous ?"
+              },
+              {
+                "id": "r2",
+                "label": "Est-ce une info sur une personne ?"
+              },
+              {
+                "id": "r3",
+                "label": "Est-ce trop privé (santé, religion…) ?"
+              },
+              {
+                "id": "r4",
+                "label": "Est-ce un secret de l'entreprise ?"
+              },
+              {
+                "id": "r5",
+                "label": "Ai-je vérifié la réponse ?"
+              },
+              {
+                "id": "r6",
+                "label": "Est-ce un humain qui décide vraiment ?"
+              },
+              {
+                "id": "r7",
+                "label": "Dois-je prévenir mon manager ou le référent IA ?"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "careers": [
+    {
+      "id": "direction",
+      "title": "Direction",
+      "duration": "≈ 8 min",
+      "focus": "Cadre, outils autorisés, contrats, décisions humaines",
+      "whyExposed": "C'est vous qui décidez quelles IA l'entreprise a le droit d'utiliser, et qui signe les contrats avec les éditeurs. Si ce cadre n'existe pas, chacun choisit son outil et des infos sensibles partent dehors. Ce que l'éditeur peut faire de vos données se joue au moment de la signature.",
+      "neverList": [
+        "Business plan et projets stratégiques",
+        "Projets de rachat, de cession ou de levée de fonds",
+        "Comptes et chiffres non publiés",
+        "Négociations en cours avec clients ou fournisseurs",
+        "Rémunérations et dossiers individuels de salariés",
+        "Contentieux et procédures en cours"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler votre mot d'accueil pour la newsletter interne, sans chiffre non publié",
+          "explanation": "Rien de secret, personne de reconnaissable. Vous relisez avant diffusion."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de préparer la trame d'un séminaire d'équipe",
+          "explanation": "Une structure générique ne révèle rien."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire synthétiser par une IA le compte rendu d'un comité de direction",
+          "explanation": "Seulement dans l'outil IA autorisé, noms et chiffres sensibles retirés."
+        },
+        {
+          "level": "red",
+          "situation": "Faire analyser un projet de rachat d'un concurrent par une IA grand public",
+          "explanation": "Secret stratégique : une fuite peut faire échouer l'opération."
+        },
+        {
+          "level": "red",
+          "situation": "Coller la grille des salaires dans une IA pour préparer les augmentations",
+          "explanation": "Données personnelles et secret d'entreprise à la fois."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un vendeur vous pousse à signer cette semaine pour une IA type ChatGPT destinée à toute l'entreprise.",
+          "answer": "Vous ne signez pas sous la pression. Vous vérifiez d'abord à quoi elle servira vraiment, ce que le contrat dit de vos données (réutilisation, entraînement, hébergement), et qui sera responsable en interne. Ensuite seulement, l'outil entre sur la liste autorisée."
+        },
+        {
+          "situation": "Un manager vous apprend que son équipe utilise une IA gratuite depuis trois mois.",
+          "answer": "Vous ne cherchez pas de coupable. Vous faites déclarer l'usage, vous évaluez l'outil, puis vous le validez ou vous proposez une alternative autorisée."
+        },
+        {
+          "situation": "Un tableau de bord IA classe les commerciaux et propose de supprimer la prime des trois derniers.",
+          "answer": "Une décision qui touche une personne reste humaine. Vous regardez les dossiers, vous comprenez le classement, et vous devez pouvoir expliquer votre choix."
+        }
+      ],
+      "tips": [
+        "Demander à une IA une grille « oui / non / à clarifier » pour évaluer un nouvel outil. Vous validez et vous décidez.",
+        "Faire rédiger par une IA un premier brouillon de charte à partir de vos règles, puis le relire avant diffusion.",
+        "Demander à une IA la liste des questions à poser à un éditeur avant d'acheter."
+      ],
+      "quiz": [
+        {
+          "prompt": "Avant d'acheter un outil IA, le point clé du contrat, c'est…",
+          "choices": [
+            "Le prix par utilisateur",
+            "Le design de l'interface",
+            "Ce que l'éditeur fait de vos données"
+          ],
+          "correctIndex": 2,
+          "why": "L'éditeur peut réutiliser vos données ou s'en servir pour entraîner son modèle : c'est le contrat qui le dit."
+        },
+        {
+          "prompt": "Une équipe utilise une IA non autorisée depuis des mois. Vous…",
+          "choices": [
+            "Faites déclarer l'usage et évaluez l'outil",
+            "Sanctionnez le manager",
+            "Laissez faire : ça fonctionne"
+          ],
+          "correctIndex": 0,
+          "why": "L'objectif est de connaître les outils utilisés, pas de punir. Un usage caché est un risque que personne ne gère."
+        },
+        {
+          "prompt": "Un outil propose de supprimer la prime de trois salariés. Qui décide ?",
+          "choices": [
+            "L'outil, il est neutre",
+            "Un humain, après lecture des dossiers",
+            "Le premier qui clique sur valider"
+          ],
+          "correctIndex": 1,
+          "why": "Un classement peut reproduire des biais. Décider, c'est comprendre, pouvoir modifier et pouvoir dire non."
+        }
+      ]
+    },
+    {
+      "id": "rh",
+      "title": "Ressources humaines",
+      "duration": "≈ 8 min",
+      "focus": "Recrutement, paie, dossiers salariés",
+      "whyExposed": "CV, notes d'entretien, paie, arrêts maladie : vous manipulez les données personnelles de toute l'entreprise, et certaines sont sensibles. Une IA grand public n'est pas un coffre-fort. Par ailleurs, dès qu'un outil trie ou note des personnes, c'est un humain qui garde la décision.",
+      "neverList": [
+        "CV et lettres de candidature complets",
+        "Arrêts maladie, visites médicales, situations de handicap",
+        "Bulletins de paie et numéros de sécurité sociale",
+        "Dossiers disciplinaires et enquêtes internes",
+        "Appartenance syndicale",
+        "Notes d'entretien sur un candidat ou un salarié"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler une offre d'emploi sur un ton clair et inclusif",
+          "explanation": "Aucun candidat concerné. Vous relisez avant publication."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de préparer un guide d'entretien pour un poste",
+          "explanation": "Une trame de questions ne vise personne."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire résumer par une IA les compétences d'un CV",
+          "explanation": "Seulement dans l'outil RH autorisé, sans adresse, téléphone ni date de naissance."
+        },
+        {
+          "level": "red",
+          "situation": "Demander à une IA de rédiger un courrier en citant le motif médical d'un arrêt",
+          "explanation": "Donnée de santé : jamais dans une IA grand public, même sans le nom."
+        },
+        {
+          "level": "red",
+          "situation": "Faire analyser par une IA la vidéo d'un entretien pour mesurer la motivation du candidat",
+          "explanation": "Interdit : on ne déduit pas les émotions d'une personne avec une IA au travail, recrutement compris."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "On vous demande de coller 40 CV dans une IA publique pour faire un pré-tri.",
+          "answer": "Vous refusez hors outil autorisé. Vous proposez l'outil validé par l'entreprise, ou un tri humain sur des critères écrits à l'avance."
+        },
+        {
+          "situation": "Un candidat écarté par un tri automatique demande qu'un recruteur relise son dossier.",
+          "answer": "C'est son droit. Vous transmettez la demande, et un humain revoit réellement le dossier."
+        },
+        {
+          "situation": "Un prestataire vous propose un logiciel qui analyse les visios d'entretien pour noter la motivation des candidats.",
+          "answer": "Vous refusez : cette pratique est interdite. Vous en parlez au référent IA ou au DPO."
+        }
+      ],
+      "tips": [
+        "Demander à une IA de reformuler une offre d'emploi : ton clair, inclusif, sans aucun dossier candidat.",
+        "Demander à une IA de construire la trame du parcours d'intégration d'un nouveau poste.",
+        "Faire transformer par une IA une note RH en FAQ simple, puis la vérifier avant diffusion."
+      ],
+      "quiz": [
+        {
+          "prompt": "Un CV, c'est…",
+          "choices": [
+            "Une donnée personnelle",
+            "Une information libre si on retire le prénom",
+            "Une donnée publique"
+          ],
+          "correctIndex": 0,
+          "why": "Un CV porte un nom, un parcours, des coordonnées : il permet de reconnaître la personne."
+        },
+        {
+          "prompt": "Un logiciel mesure la motivation des candidats pendant la visio.",
+          "choices": [
+            "C'est possible si le candidat est prévenu",
+            "C'est possible si seul le recruteur voit le score",
+            "C'est interdit"
+          ],
+          "correctIndex": 2,
+          "why": "Déduire les émotions d'une personne avec une IA est interdit au travail, et le recrutement en fait partie."
+        },
+        {
+          "prompt": "Un candidat écarté automatiquement demande une relecture humaine.",
+          "choices": [
+            "Impossible : le score est définitif",
+            "Vous transmettez : un humain revoit le dossier",
+            "Seulement s'il prouve que le score est faux"
+          ],
+          "correctIndex": 1,
+          "why": "Une personne peut demander qu'un humain intervienne quand une machine a pris seule une décision qui la concerne."
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "title": "Marketing & ventes",
+      "duration": "≈ 8 min",
+      "focus": "Contenus générés, chatbots, fichiers clients et prospects",
+      "whyExposed": "Vous publiez à l'extérieur et vous travaillez avec les fichiers clients. Ce que l'IA produit part au nom de l'entreprise : les droits sur les images, la transparence envers le public et la protection des prospects se jouent chez vous.",
+      "neverList": [
+        "Fichiers clients et prospects, exports du CRM",
+        "Grilles de prix non publiques, remises et marges",
+        "Lancements et campagnes non annoncés",
+        "Propositions commerciales nominatives",
+        "Photos ou voix de clients ou de salariés sans leur accord"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA cinq angles de posts LinkedIn sur un sujet public",
+          "explanation": "Rien de secret. Vous choisissez et adaptez le ton de la marque."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler une fiche produit déjà en ligne",
+          "explanation": "Le texte est public. Vous vérifiez que les caractéristiques restent exactes."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire personnaliser par une IA un mail de prospection",
+          "explanation": "Dans l'outil IA autorisé, avec le minimum : prénom et secteur, pas tout l'historique."
+        },
+        {
+          "level": "red",
+          "situation": "Importer l'export du CRM dans une IA grand public pour segmenter les clients",
+          "explanation": "Fichier de données personnelles et secret commercial : jamais."
+        },
+        {
+          "level": "red",
+          "situation": "Générer avec une IA une vidéo d'un vrai client qui recommande votre produit, sans son accord",
+          "explanation": "Image utilisée sans accord et faux témoignage trompeur : on ne le fait pas."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Votre équipe veut une vidéo promo avec un porte-parole généré par IA, qui a l'air d'une vraie personne.",
+          "answer": "Vous ajoutez une mention claire « générée par IA », vous vérifiez les droits (image, voix, musique) et vous obtenez un accord écrit si la vidéo imite une personne réelle."
+        },
+        {
+          "situation": "Le chatbot du site répond aux clients.",
+          "answer": "Il se présente comme une IA dès le début de l'échange. Une mention cachée dans les conditions générales ne suffit pas."
+        },
+        {
+          "situation": "L'IA propose de rédiger vingt avis clients pour votre fiche en ligne.",
+          "answer": "Vous refusez. De faux avis trompent les clients et sont interdits. Vous sollicitez plutôt de vrais avis."
+        }
+      ],
+      "tips": [
+        "Avant de publier une image, un logo ou une pub générés par IA : vérifier les droits, ne pas copier une marque ou une personne réelle, et indiquer clairement si le contenu est généré.",
+        "Faire décliner par une IA un texte validé en version courte, longue et newsletter.",
+        "Demander à une IA les réponses aux objections fréquentes d'un argumentaire, sans donnée client."
+      ],
+      "quiz": [
+        {
+          "prompt": "Le chatbot du site doit…",
+          "choices": [
+            "Se présenter comme une IA dès le début",
+            "Ne rien dire : le client s'en doute",
+            "Être mentionné dans les conditions générales"
+          ],
+          "correctIndex": 0,
+          "why": "La personne doit savoir qu'elle échange avec une machine, au moment de l'échange."
+        },
+        {
+          "prompt": "Sur LinkedIn ou Instagram, vous publiez une pub générée par IA qui montre une personne qui n'existe pas.",
+          "choices": [
+            "On publie sans rien dire : c'est juste un visuel",
+            "On ajoute une mention claire « générée par IA »",
+            "On publie si la personne a l'air réelle"
+          ],
+          "correctIndex": 1,
+          "why": "Quand un contenu généré peut passer pour réel, la transparence compte — surtout sur les réseaux."
+        },
+        {
+          "prompt": "Un visuel généré ressemble au logo d'une marque connue.",
+          "choices": [
+            "On publie : l'IA l'a créé",
+            "On le retouche un peu",
+            "On ne publie pas dans le doute"
+          ],
+          "correctIndex": 2,
+          "why": "Un logo reconnaissable peut être protégé. Le retoucher ne règle pas la question des droits."
+        }
+      ]
+    },
+    {
+      "id": "managers",
+      "title": "Managers",
+      "duration": "≈ 8 min",
+      "focus": "Équipe, outils déclarés, relecture des livrables",
+      "whyExposed": "Vous êtes l'intermédiaire entre les règles et le terrain. C'est souvent vous qu'on interroge : « On peut utiliser cette IA ? » Et ce que votre équipe envoie aux clients passe souvent par votre validation. Si un outil non autorisé ou un chiffre inventé sort, le risque est pour l'entreprise. Votre rôle : faire déclarer les usages, relire avant envoi, et montrer l'exemple.",
+      "neverList": [
+        "Entretiens annuels et évaluations individuelles",
+        "Santé, vie privée ou situation familiale d'un collaborateur",
+        "Conflits et dossiers disciplinaires",
+        "Objectifs et chiffres internes non publiés",
+        "Documents clients confidentiels"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de préparer l'ordre du jour d'une réunion d'équipe",
+          "explanation": "Rien de personnel ni de secret."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler une consigne pour la rendre plus claire",
+          "explanation": "Vous relisez pour vérifier que le sens n'a pas changé."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire résumer par une IA les retours de l'équipe sur un projet",
+          "explanation": "Dans l'outil IA autorisé, prénoms retirés."
+        },
+        {
+          "level": "red",
+          "situation": "Coller dans une IA les notes d'entretien annuel d'un collaborateur pour rédiger son évaluation",
+          "explanation": "Données personnelles sur une personne précise : jamais dans une IA grand public."
+        },
+        {
+          "level": "red",
+          "situation": "Demander à une IA si un collaborateur a l'air démotivé d'après une vidéo de réunion",
+          "explanation": "Interdit : on ne déduit pas les émotions d'un salarié avec une IA."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un rapport visiblement écrit par une IA, avec des chiffres sans source, doit partir chez un client.",
+          "answer": "Vous bloquez l'envoi. Chaque chiffre doit avoir une source et doit être vérifié. Règle d'équipe : rien ne sort sans relecture."
+        },
+        {
+          "situation": "Un collaborateur utilise une IA gratuite non autorisée depuis des semaines.",
+          "answer": "Vous l'aidez à déclarer l'usage au référent IA, sans chercher de coupable. L'outil sera validé ou remplacé."
+        },
+        {
+          "situation": "Un nouvel arrivant commence lundi.",
+          "answer": "Vous lui montrez la liste des outils autorisés et les réflexes de base avant son premier usage de l'IA."
+        }
+      ],
+      "tips": [
+        "Demander à une IA de reformuler un point d'avancement pour un client : vous vérifiez chaque chiffre et chaque promesse avant envoi.",
+        "Faire rédiger par une IA un compte rendu à partir de vos notes, sans sujet personnel, puis le relire.",
+        "Demander à une IA la trame d'accueil d'un nouvel arrivant."
+      ],
+      "quiz": [
+        {
+          "prompt": "Un livrable rédigé avec l'IA contient des chiffres sans source.",
+          "choices": [
+            "On l'envoie : le style est bon",
+            "On bloque jusqu'à vérification",
+            "On corrige seulement le ton"
+          ],
+          "correctIndex": 1,
+          "why": "Un chiffre sans source peut être inventé. Ce qui part chez un client engage l'entreprise."
+        },
+        {
+          "prompt": "Un collaborateur utilise une IA non autorisée.",
+          "choices": [
+            "Sanction immédiate",
+            "On ferme les yeux",
+            "On l'aide à déclarer l'usage"
+          ],
+          "correctIndex": 2,
+          "why": "Un usage déclaré peut être encadré. Un usage caché, non."
+        },
+        {
+          "prompt": "Rédiger l'évaluation d'un collaborateur avec ses notes d'entretien dans une IA grand public ?",
+          "choices": [
+            "Non",
+            "Oui, sans son nom",
+            "Oui, si l'évaluation est positive"
+          ],
+          "correctIndex": 0,
+          "why": "Même sans le nom, les notes permettent de reconnaître la personne."
+        }
+      ]
+    },
+    {
+      "id": "tech",
+      "title": "Tech, IT & développeurs",
+      "duration": "≈ 8 min",
+      "focus": "Code, logs, secrets, assistants de code",
+      "whyExposed": "L'IA aide sur le code, les bugs et la documentation, et elle peut emporter des secrets. Une clé d'API ou un log client collé par erreur sort de l'entreprise. Et un assistant de code peut proposer des actions, ou des bibliothèques, qu'il faut vérifier.",
+      "neverList": [
+        "Clés d'API, mots de passe, jetons d'accès",
+        "Fichiers de configuration et secrets (.env…)",
+        "Logs contenant des données clients (e-mails, adresses IP)",
+        "Code source propriétaire ou sensible",
+        "Bases de données réelles, même partielles",
+        "Failles de sécurité non corrigées"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA comment fonctionne une commande Git",
+          "explanation": "Question générale, rien d'interne."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA d'expliquer un message d'erreur courant d'une bibliothèque publique",
+          "explanation": "Aucun code ni donnée de l'entreprise."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire relire par une IA un extrait de code nettoyé",
+          "explanation": "Dans l'assistant de code autorisé, sans secret ni donnée réelle."
+        },
+        {
+          "level": "red",
+          "situation": "Coller un fichier .env dans une IA pour déboguer une connexion",
+          "explanation": "Il contient des secrets : ils sortent de l'entreprise."
+        },
+        {
+          "level": "red",
+          "situation": "Coller des logs de production dans une IA pour analyser un incident",
+          "explanation": "Ils contiennent des données clients : jamais dans une IA grand public."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Bug urgent : vous voulez coller les logs et un extrait de code dans une IA grand public.",
+          "answer": "Non. Vous utilisez l'outil autorisé, vous nettoyez les données, puis vous relisez le correctif avant de l'appliquer."
+        },
+        {
+          "situation": "Une extension IA pour votre éditeur de code promet d'aller deux fois plus vite.",
+          "answer": "Vous vérifiez où part votre code et vous demandez avant de l'installer."
+        },
+        {
+          "situation": "L'IA vous recommande une bibliothèque que vous ne connaissez pas.",
+          "answer": "Vous vérifiez qu'elle existe vraiment et qu'elle est fiable. L'IA peut inventer des noms de paquets, et des pirates en profitent."
+        }
+      ],
+      "tips": [
+        "Demander à une IA d'expliquer un diff ou de rédiger des tests, dans l'outil autorisé, sur un extrait anonymisé.",
+        "Demander à une IA de rédiger la documentation d'une fonction.",
+        "Demander à une IA de traduire un message d'erreur technique en explication simple pour un utilisateur."
+      ],
+      "quiz": [
+        {
+          "prompt": "Une clé d'API dans un prompt…",
+          "choices": [
+            "N'a jamais sa place",
+            "C'est possible si on la change après",
+            "C'est possible dans un outil payant"
+          ],
+          "correctIndex": 0,
+          "why": "Une fois envoyée, la clé est hors de votre contrôle."
+        },
+        {
+          "prompt": "L'IA recommande un paquet inconnu.",
+          "choices": [
+            "Je l'installe",
+            "Je vérifie qu'il existe et qu'il est fiable",
+            "Je demande à l'IA s'il est sûr"
+          ],
+          "correctIndex": 1,
+          "why": "L'IA peut inventer un nom de paquet, et elle peut confirmer sa propre erreur."
+        },
+        {
+          "prompt": "Un agent IA propose de déployer en production.",
+          "choices": [
+            "J'accepte : il a testé",
+            "J'accepte si les tests passent",
+            "Je relis et je valide moi-même"
+          ],
+          "correctIndex": 2,
+          "why": "Une action irréversible ne part pas sans validation humaine."
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "title": "Finance & comptabilité",
+      "duration": "≈ 8 min",
+      "focus": "Paiements, factures, trésorerie, fraude",
+      "whyExposed": "L'IA accélère les tableaux, les analyses et les relances, et elle peut inventer des chiffres. Vous tenez aussi les virements : les fraudeurs le savent, et une fausse voix de dirigeant se fabrique en quelques minutes.",
+      "neverList": [
+        "IBAN et coordonnées bancaires",
+        "Fichiers de paie",
+        "Relevés bancaires",
+        "Comptes et résultats non publiés",
+        "Prévisionnel de trésorerie",
+        "Contrats fournisseurs et conditions négociées"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler une relance de facture générique",
+          "explanation": "Sans nom ni montant réel : vous complétez ensuite."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA d'expliquer une formule Excel",
+          "explanation": "Aucune donnée de l'entreprise n'est nécessaire."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire commenter par une IA un tableau de dépenses agrégé",
+          "explanation": "Dans l'outil IA autorisé, sans nom de fournisseur ni de salarié."
+        },
+        {
+          "level": "red",
+          "situation": "Coller le fichier de paie dans une IA pour vérifier les cotisations",
+          "explanation": "Salaires, numéros de sécurité sociale, absences : jamais."
+        },
+        {
+          "level": "red",
+          "situation": "Faire commenter le prévisionnel de trésorerie par une IA grand public",
+          "explanation": "Secret d'entreprise : il ne sort pas."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Message vocal du « DAF », voix crédible : changer l'IBAN d'un fournisseur avant midi.",
+          "answer": "Vous ne touchez à rien. Vous rappelez sur son numéro habituel ou vous suivez la procédure interne. Répondre au vocal, c'est parler au fraudeur."
+        },
+        {
+          "situation": "L'IA calcule une variation de marge dans un tableau.",
+          "answer": "Vous recalculez. L'IA peut se tromper sur des chiffres, avec un ton très sûr."
+        },
+        {
+          "situation": "L'IA propose de lancer le lot de paiements fournisseurs.",
+          "answer": "Vous vérifiez bénéficiaires et montants, puis c'est vous qui validez."
+        }
+      ],
+      "tips": [
+        "Demander à une IA de reformuler une relance client, sans IBAN : les montants viennent de votre logiciel.",
+        "Demander à une IA de rédiger le commentaire d'une analyse à partir de chiffres agrégés déjà validés.",
+        "Demander à une IA d'expliquer une formule ou une macro Excel."
+      ],
+      "quiz": [
+        {
+          "prompt": "Un vocal du DAF demande un changement d'IBAN urgent.",
+          "choices": [
+            "Je réponds au vocal pour confirmer",
+            "Je change : c'est sa voix",
+            "Je rappelle sur son numéro habituel"
+          ],
+          "correctIndex": 2,
+          "why": "Une voix se fabrique. Seul un canal que vous connaissez déjà est fiable."
+        },
+        {
+          "prompt": "L'IA donne un total dans un tableau.",
+          "choices": [
+            "Je recalcule avant de l'utiliser",
+            "Je le reprends tel quel",
+            "Je le reprends s'il semble cohérent"
+          ],
+          "correctIndex": 0,
+          "why": "Une réponse probable n'est pas une réponse vraie, surtout pour un calcul."
+        },
+        {
+          "prompt": "Le fichier de paie dans une IA grand public ?",
+          "choices": [
+            "Oui, sans les noms",
+            "Non, jamais",
+            "Oui, pour un contrôle rapide"
+          ],
+          "correctIndex": 1,
+          "why": "Il contient des données personnelles, et parfois de santé (absences). Retirer les noms ne suffit pas."
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "title": "Relation client & support",
+      "duration": "≈ 8 min",
+      "focus": "Tickets, appels, chatbots, données clients",
+      "whyExposed": "Tickets, appels et mails contiennent des noms, des numéros, parfois des informations de paiement ou de santé. Et l'IA peut promettre un délai ou un geste commercial qui n'existe pas : ce que vous envoyez engage l'entreprise.",
+      "neverList": [
+        "Tickets complets avec coordonnées",
+        "Enregistrements et transcriptions d'appels",
+        "Moyens de paiement et IBAN",
+        "Informations de santé confiées par un client",
+        "Historiques de litiges nominatifs"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de rédiger la réponse type à une question fréquente déjà publiée",
+          "explanation": "Le contenu est public. Vous vérifiez qu'il est à jour."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de corriger l'orthographe d'une réponse sans donnée client",
+          "explanation": "Rien de personnel. Vous relisez avant d'envoyer."
+        },
+        {
+          "level": "orange",
+          "situation": "Demander à une IA de rédiger une réponse à partir d'un résumé du ticket",
+          "explanation": "Dans l'outil IA autorisé, nom et téléphone retirés."
+        },
+        {
+          "level": "red",
+          "situation": "Coller dans une IA un ticket où le client parle de sa maladie pour expliquer un retard de paiement",
+          "explanation": "Information de santé : jamais dans une IA grand public."
+        },
+        {
+          "level": "red",
+          "situation": "Faire transcrire un appel client par une IA grand public",
+          "explanation": "La voix et le contenu de l'appel sont des données personnelles."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un ticket contient un nom, un téléphone et un litige. Vous voulez une réponse rédigée par l'IA.",
+          "answer": "Outil autorisé, superflu retiré, relecture avant envoi : pas de délai inventé, pas de geste commercial fantôme."
+        },
+        {
+          "situation": "L'IA a écrit « nous vous rembourserons sous 48 h ».",
+          "answer": "Vous vérifiez que c'est vrai et autorisé avant d'envoyer. Une promesse écrite engage l'entreprise."
+        },
+        {
+          "situation": "Un client demande quelles données l'entreprise a sur lui.",
+          "answer": "Vous transmettez tout de suite sa demande au DPO ou au référent, sans répondre seul."
+        }
+      ],
+      "tips": [
+        "Demander à une IA trois tons (ferme, empathique, factuel) sur un résumé anonymisé. Vous choisissez ; l'IA ne décide pas du geste.",
+        "Demander à une IA de mettre à jour la FAQ à partir des questions fréquentes, sans donnée client.",
+        "Demander à une IA de résumer une procédure longue en cinq étapes pour un nouvel agent."
+      ],
+      "quiz": [
+        {
+          "prompt": "L'IA promet un remboursement sous 48 h.",
+          "choices": [
+            "J'envoie",
+            "Je vérifie que c'est vrai avant d'envoyer",
+            "J'envoie en ajoutant « sous réserve »"
+          ],
+          "correctIndex": 1,
+          "why": "L'IA peut inventer un délai. Une mention ne remplace pas la vérification."
+        },
+        {
+          "prompt": "Un client veut savoir quelles données vous avez sur lui.",
+          "choices": [
+            "Je transmets au DPO ou au référent",
+            "Je lui envoie l'export du CRM",
+            "Je réponds que c'est impossible"
+          ],
+          "correctIndex": 0,
+          "why": "C'est son droit d'accès. L'entreprise a en général un mois pour répondre, et la réponse se prépare avec le DPO."
+        },
+        {
+          "prompt": "Le chatbot client…",
+          "choices": [
+            "Peut se faire passer pour un agent",
+            "Le dit seulement si on lui demande",
+            "Se présente comme une IA dès le début"
+          ],
+          "correctIndex": 2,
+          "why": "Le client doit savoir qu'il échange avec une machine."
+        }
+      ]
+    },
+    {
+      "id": "tous",
+      "title": "Autres métiers",
+      "duration": "≈ 8 min",
+      "focus": "Accueil, administratif, terrain, atelier",
+      "whyExposed": "Même hors des cases, les mêmes réflexes s'appliquent : outil autorisé, minimum de données, relecture. Ce que vous envoyez part au nom de l'entreprise, et une extension « pour aller plus vite » peut emporter plus que prévu.",
+      "neverList": [
+        "Carnet d'adresses et coordonnées clients",
+        "Photos de pièces d'identité",
+        "Plannings et badges nominatifs",
+        "Plans, procédés et savoir-faire de fabrication",
+        "Informations sur la santé d'un collègue"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de créer un modèle de mail de confirmation de rendez-vous",
+          "explanation": "Un modèle sans nom, réutilisable."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de traduire une consigne de sécurité générale pour un visiteur",
+          "explanation": "Rien de personnel. Vous faites vérifier la traduction si la consigne est importante."
+        },
+        {
+          "level": "orange",
+          "situation": "Demander à une IA de préparer un rappel client à partir de son message",
+          "explanation": "Dans l'outil IA autorisé, avec seulement le motif."
+        },
+        {
+          "level": "red",
+          "situation": "Photographier la pièce d'identité d'un visiteur pour la faire lire par une IA",
+          "explanation": "Document d'identité : jamais dans une IA grand public."
+        },
+        {
+          "level": "red",
+          "situation": "Envoyer à une IA le plan d'une pièce fabriquée à l'atelier pour l'optimiser",
+          "explanation": "Savoir-faire de l'entreprise : il ne sort pas."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un client vous envoie un mail avec son nom, son téléphone et sa demande. Vous voulez préparer un rappel avec l'IA.",
+          "answer": "Outil autorisé. Vous retirez le téléphone, et le nom s'il ne sert pas. Vous relisez avant d'envoyer."
+        },
+        {
+          "situation": "Une extension IA « pour aller plus vite » s'installe en un clic sur votre navigateur.",
+          "answer": "Vous demandez avant de l'installer : certaines lisent tout ce qui s'affiche à l'écran."
+        },
+        {
+          "situation": "Vous avez collé par erreur une liste de clients dans une IA.",
+          "answer": "Vous prévenez tout de suite votre manager ou le référent. En cas de fuite, l'entreprise a parfois seulement 72 h pour agir."
+        }
+      ],
+      "tips": [
+        "Demander à une IA un modèle de mail de confirmation, créé une fois et réutilisé, sans coller le carnet d'adresses.",
+        "Demander à une IA de traduire une consigne générale pour un collègue ou un visiteur.",
+        "Demander à une IA de transformer des notes en procédure claire, sans secret de fabrication."
+      ],
+      "quiz": [
+        {
+          "prompt": "Une extension IA promet de vous faire gagner du temps.",
+          "choices": [
+            "Je demande avant de l'installer",
+            "Je l'installe : elle est gratuite",
+            "Je l'installe si un collègue l'utilise"
+          ],
+          "correctIndex": 0,
+          "why": "Gratuit ne veut pas dire autorisé. Certaines extensions lisent tout ce que vous voyez."
+        },
+        {
+          "prompt": "Vous avez collé par erreur une liste de clients dans une IA.",
+          "choices": [
+            "J'efface l'historique",
+            "J'attends de voir",
+            "Je préviens tout de suite"
+          ],
+          "correctIndex": 2,
+          "why": "Plus l'entreprise est prévenue tôt, plus elle peut réagir à temps."
+        },
+        {
+          "prompt": "Pour préparer un rappel client, vous donnez à l'IA…",
+          "choices": [
+            "Le mail entier",
+            "Seulement l'utile, sans téléphone",
+            "Tout, pour qu'elle soit précise"
+          ],
+          "correctIndex": 1,
+          "why": "On ne donne que ce qui sert à la tâche."
+        }
+      ]
+    },
+    {
+      "id": "expert-comptable",
+      "title": "Expert-comptable",
+      "duration": "≈ 8 min",
+      "focus": "Données financières des clients, secret professionnel",
+      "whyExposed": "Vous manipulez ce qu'une entreprise a de plus confidentiel : sa banque, ses salaires, ses comptes. Et vous êtes tenu au secret professionnel. L'IA peut vous faire gagner des heures, à condition de ne rien lui confier qui sorte du cabinet.",
+      "neverList": [
+        "Relevés bancaires et IBAN",
+        "Bulletins de paie et numéros de sécurité sociale",
+        "Arrêts maladie et mutuelle",
+        "Fichier des écritures comptables (FEC) et liasses fiscales",
+        "Dossiers de clients en difficulté"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de rédiger un mail générique de rappel des échéances fiscales",
+          "explanation": "Sans nom ni montant. Vous vérifiez les dates sur la source officielle."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler la plaquette du cabinet",
+          "explanation": "Document public. Vous relisez avant publication."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire résumer par une IA le mail d'un client",
+          "explanation": "Dans l'outil IA autorisé du cabinet, nom retiré."
+        },
+        {
+          "level": "red",
+          "situation": "Coller un bulletin de paie dans une IA pour vérifier un calcul",
+          "explanation": "Salaire, numéro de sécurité sociale, absences : jamais."
+        },
+        {
+          "level": "red",
+          "situation": "Envoyer le FEC d'un client à une IA pour détecter des anomalies",
+          "explanation": "Toute la comptabilité du client, couverte par le secret professionnel."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un client demande de catégoriser 300 lignes de son relevé bancaire. Vous collez tout dans ChatGPT ?",
+          "answer": "Non. Vous utilisez l'IA intégrée au logiciel comptable validé par le cabinet, ou rien."
+        },
+        {
+          "situation": "L'IA rédige une note sur un seuil de TVA en citant un article du Code général des impôts.",
+          "answer": "Vous vérifiez sur Légifrance ou le BOFiP. Les seuils changent chaque année, et l'IA peut citer un article qui n'existe pas."
+        },
+        {
+          "situation": "Message vocal du dirigeant d'un client : « Change l'IBAN pour le virement des salaires, c'est urgent. »",
+          "answer": "Vous rappelez sur son numéro habituel avant de toucher à quoi que ce soit."
+        }
+      ],
+      "tips": [
+        "Demander à une IA un modèle de mail de relance des pièces manquantes, créé une fois et réutilisé.",
+        "Demander à une IA de vulgariser une nouveauté fiscale pour la newsletter, puis vérifier sur la source officielle.",
+        "Demander à une IA une trame de checklist de clôture, que vous relisez."
+      ],
+      "quiz": [
+        {
+          "prompt": "Un bulletin de paie dans ChatGPT grand public ?",
+          "choices": [
+            "Oui, si on retire le nom",
+            "Non, jamais",
+            "Oui, pour un calcul rapide"
+          ],
+          "correctIndex": 1,
+          "why": "Il reste un numéro de sécurité sociale, un salaire, des absences : la personne est reconnaissable."
+        },
+        {
+          "prompt": "L'IA cite un article du Code général des impôts. Vous…",
+          "choices": [
+            "Le reprenez tel quel",
+            "Demandez à l'IA s'il existe",
+            "Vérifiez sur Légifrance ou le BOFiP"
+          ],
+          "correctIndex": 2,
+          "why": "L'IA peut inventer un article, et confirmer sa propre invention."
+        },
+        {
+          "prompt": "L'IA classe et lettre vos factures automatiquement. Avant la déclaration de TVA…",
+          "choices": [
+            "Je contrôle : c'est moi qui signe",
+            "Je fais confiance à l'outil",
+            "Je vérifie seulement si un client se plaint"
+          ],
+          "correctIndex": 0,
+          "why": "L'outil prépare. La responsabilité reste la vôtre."
+        }
+      ]
+    },
+    {
+      "id": "immobilier",
+      "title": "Immobilier",
+      "duration": "≈ 5 min",
+      "focus": "Mandats, dossiers locataires, photos, négociations",
+      "whyExposed": "Vous manipulez des dossiers complets : identité, revenus, situation familiale, et parfois des secrets de négociation. Une IA grand public n'est pas un coffre-fort pour un bail ou un compromis. Ce que vous publiez (annonce, photo, description) engage l'agence.",
+      "neverList": [
+        "Pièces d'identité et justificatifs de revenus complets",
+        "Dossiers locataires ou acquéreurs nominatifs",
+        "Compromis, promesses et avenants non signés",
+        "Coordonnées bancaires et IBAN de clients",
+        "Photos d'intérieur permettant d'identifier l'adresse sans accord",
+        "Notes de négociation et offres concurrentes non publiques"
+      ],
+      "traffic": [
+        {
+          "level": "green",
+          "situation": "Demander à une IA de reformuler une annonce déjà en ligne, sans donnée perso",
+          "explanation": "Le bien est public. Vous vérifiez surfaces, prix et mentions légales avant republication."
+        },
+        {
+          "level": "green",
+          "situation": "Demander à une IA de préparer une checklist de visite type pour un bien neuf",
+          "explanation": "Une trame générique ne vise personne."
+        },
+        {
+          "level": "orange",
+          "situation": "Faire résumer par une IA le mail d'un prospect pour préparer un rappel",
+          "explanation": "Dans l'outil IA autorisé, avec le minimum : prénom et type de bien, pas tout le dossier."
+        },
+        {
+          "level": "red",
+          "situation": "Coller un dossier locataire complet dans une IA grand public pour « pré-trier »",
+          "explanation": "Identité, revenus, situation familiale : données personnelles, parfois sensibles."
+        },
+        {
+          "level": "red",
+          "situation": "Faire analyser un compromis de vente non signé par une IA ouverte",
+          "explanation": "Secret de négociation et données des parties : il ne sort pas de l'agence."
+        }
+      ],
+      "cases": [
+        {
+          "situation": "Un collègue veut coller dix dossiers locataires dans ChatGPT pour classer les « meilleurs » profils.",
+          "answer": "Vous refusez hors outil autorisé. Proposez un tri sur critères écrits, ou l'outil validé par l'agence — la décision reste humaine."
+        },
+        {
+          "situation": "L'IA propose une description d'annonce qui invente une surface et une vue mer.",
+          "answer": "Vous vérifiez chaque mention sur le mandat et les diagnostics. Une fausse info engage l'agence."
+        },
+        {
+          "situation": "Un acquéreur envoie un vocal urgent : « Change l'IBAN du séquestre avant ce soir. »",
+          "answer": "Vous ne touchez à rien. Vous rappelez sur un numéro déjà connu ou vous suivez la procédure interne."
+        }
+      ],
+      "tips": [
+        "Demander à une IA cinq angles d'annonce à partir d'éléments déjà publics, sans dossier client.",
+        "Demander à une IA une FAQ visite / diagnostics, que vous relisez avant diffusion.",
+        "Demander à une IA un modèle de mail de confirmation de rendez-vous, réutilisable sans carnet d'adresses."
+      ],
+      "quiz": [
+        {
+          "prompt": "Un dossier locataire dans une IA grand public ?",
+          "choices": [
+            "Oui, si on retire le prénom",
+            "Non, jamais hors outil autorisé",
+            "Oui, pour aller plus vite"
+          ],
+          "correctIndex": 1,
+          "why": "Revenus, identité et situation personnelle restent reconnaissables."
+        },
+        {
+          "prompt": "L'IA invente une caractéristique dans une annonce. Vous…",
+          "choices": [
+            "Publiez : le ton est bon",
+            "Vérifiez chaque fait sur le mandat",
+            "Publiez en ajoutant « sous réserve »"
+          ],
+          "correctIndex": 1,
+          "why": "Une mention inexacte engage l'agence. Relire ne suffit pas si on ne vérifie pas."
+        },
+        {
+          "prompt": "Un vocal demande de changer l'IBAN du séquestre.",
+          "choices": [
+            "Je change : c'est urgent",
+            "Je réponds au vocal pour confirmer",
+            "Je rappelle sur un numéro déjà connu"
+          ],
+          "correctIndex": 2,
+          "why": "Une voix se fabrique. Seul un canal déjà connu est fiable."
+        }
+      ]
+    }
+  ],
+  "questionBank": [
+    {
+      "id": "q1",
+      "blockId": "bloc-1",
+      "theme": "art4-why",
+      "famille": "F01",
+      "prompt": "Pourquoi votre entreprise vous propose-t-elle cette formation ?",
+      "choices": [
+        "La loi lui demande de prendre des mesures pour favoriser le développement de la maîtrise de l'IA",
+        "Parce qu'un diplôme européen est obligatoire pour chaque salarié",
+        "Parce que toute IA est interdite sans ce parcours"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit favoriser le développement de la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Cette formation en fait partie. L'attestation est la preuve du suivi."
+    },
+    {
+      "id": "q2",
+      "blockId": "bloc-1",
+      "theme": "gen-def",
+      "famille": "F02",
+      "prompt": "Une IA générative, c'est surtout…",
+      "choices": [
+        "Un outil qui crée du texte, une image ou un résumé",
+        "Uniquement un filtre qui range les mails",
+        "Un outil qui ne fait que calculer un itinéraire"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? ChatGPT, Copilot, Gemini créent. Le filtre anti-spam, lui, classe."
+    },
+    {
+      "id": "q3",
+      "blockId": "bloc-1",
+      "theme": "hallucination",
+      "famille": "F03",
+      "prompt": "L'IA invente un fait avec un ton très sûr. On parle d'…",
+      "choices": [
+        "Hallucination",
+        "Un biais",
+        "Un prompt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Convaincant ≠ vrai. Chiffres, études, dates : on vérifie."
+    },
+    {
+      "id": "q4",
+      "blockId": "bloc-1",
+      "theme": "verify-habit",
+      "famille": "F03",
+      "prompt": "Avant d'utiliser une réponse d'IA au travail, vous…",
+      "choices": [
+        "Vérifiez ce qui compte : chiffres, noms, sources",
+        "Copiez tel quel : le ton est professionnel",
+        "Envoyez d'abord, vérifiez seulement si on se plaint"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Bien écrit ne veut pas dire vrai."
+    },
+    {
+      "id": "q5",
+      "blockId": "bloc-5",
+      "theme": "deepfake-def",
+      "famille": "F19",
+      "prompt": "Un deepfake, c'est…",
+      "choices": [
+        "Un mail urgent du vrai directeur",
+        "Une fausse vidéo, voix ou image faite à l'IA",
+        "Un résumé de réunion un peu imprécis"
+      ],
+      "correctIndex": 1,
+      "explanation": "C'est une vidéo, une photo ou une voix générée qui imite une vraie personne. Une image nette ne prouve plus que c'est vrai."
+    },
+    {
+      "id": "q6",
+      "blockId": "bloc-1",
+      "theme": "llm",
+      "famille": "F02",
+      "prompt": "Un LLM, c'est…",
+      "choices": [
+        "Le moteur texte derrière ChatGPT ou Copilot",
+        "La liste des outils autorisés par l'entreprise",
+        "Le score de confiance affiché par l'outil"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Il prédit le mot suivant, le plus probable. Pas une magie de compréhension."
+    },
+    {
+      "id": "q7",
+      "blockId": "bloc-2",
+      "theme": "art4-date",
+      "famille": "F01",
+      "prompt": "Depuis quand l'article 4 s'applique ?",
+      "choices": [
+        "2 février 2025",
+        "2 août 2025",
+        "2 décembre 2027 seulement"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Depuis le 2 février 2025 — pas le 2 août 2025. L'entreprise doit déjà prendre des mesures pour favoriser le développement de la maîtrise de l'IA. Août 2025 concerne surtout d'autres règles (modèles à usage général). 2027, c'est surtout le haut risque pour certains systèmes RH / recrutement (annexe III)."
+    },
+    {
+      "id": "q8",
+      "blockId": "bloc-2",
+      "theme": "role-user",
+      "famille": "F04",
+      "prompt": "Vous rédigez vos mails avec ChatGPT. Votre rôle ?",
+      "choices": [
+        "J'utilise un outil (cas le plus courant)",
+        "Je vends une IA sous la marque de mon entreprise",
+        "Aucune règle ne me concerne"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Vous utilisez un outil déjà en vente. C'est le cas normal du salarié."
+    },
+    {
+      "id": "q9",
+      "blockId": "bloc-2",
+      "theme": "chatbot-label",
+      "famille": "F07",
+      "prompt": "Un chatbot répond aux clients sur le site. Que retenir ?",
+      "choices": [
+        "Il faut indiquer clairement que c'est une IA",
+        "Rien : le client s'en doute forcément",
+        "Il suffit de le mettre dans les conditions générales"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Art. 50 : la personne doit savoir qu'elle parle à une machine, au moment de l'échange."
+    },
+    {
+      "id": "q10",
+      "blockId": "bloc-5",
+      "theme": "deepfake-label",
+      "famille": "F07",
+      "prompt": "Votre entreprise publie une fausse vidéo d'un vrai salarié. Elle doit…",
+      "choices": [
+        "Publier sans rien dire si l'équipe a relu",
+        "Dire clairement que c'est généré par IA, sans demander au salarié",
+        "Obtenir l'accord du salarié et indiquer clairement que c'est généré par IA"
+      ],
+      "correctIndex": 2,
+      "explanation": "Accord de la personne + mention claire. Relire ou seulement afficher « Générée par l'IA » ne suffit pas."
+    },
+    {
+      "id": "q11",
+      "blockId": "bloc-2",
+      "theme": "high-risk-hr",
+      "famille": "F06",
+      "prompt": "Une IA qui trie des CV, c'est…",
+      "choices": [
+        "Du haut risque : un humain garde la décision finale",
+        "Du risque minimal : aucune règle particulière",
+        "Interdit dans tous les cas"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? L'humain tranche. Les règles AI Act « haut risque » pour certains systèmes RH (annexe III) sont renforcées plus tard ; tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD (art. 22) s'applique déjà aux décisions exclusivement automatisées à effets significatifs."
+    },
+    {
+      "id": "q12",
+      "blockId": "bloc-2",
+      "theme": "forbidden",
+      "famille": "F05",
+      "prompt": "Un prestataire propose un outil qui analyse les visios d'équipe pour repérer qui semble démotivé. Que retenez-vous ?",
+      "choices": [
+        "C'est possible si l'équipe est prévenue",
+        "C'est interdit au travail : on ne l'utilise pas",
+        "C'est possible si seul le manager voit les résultats"
+      ],
+      "correctIndex": 1,
+      "explanation": "Déduire les émotions des salariés avec une IA est en principe interdit au travail (Art. 5), hors exceptions très limitées — même si l'équipe est prévenue."
+    },
+    {
+      "id": "q13",
+      "blockId": "bloc-3",
+      "theme": "health",
+      "famille": "F08",
+      "prompt": "Mettre un arrêt maladie dans ChatGPT grand public ?",
+      "choices": [
+        "Oui si on efface seulement le nom",
+        "Non : c'est « Stop » — jamais dans un outil grand public",
+        "Oui : c'est pour aider la personne"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un arrêt parle de santé. Règle de prudence : pas dans une IA grand public non autorisée — le texte peut être traité selon l'outil et le contrat."
+    },
+    {
+      "id": "q14",
+      "blockId": "bloc-3",
+      "theme": "secret",
+      "famille": "F09",
+      "prompt": "Un business plan sans aucun nom, c'est…",
+      "choices": [
+        "Une info libre, puisqu'il n'y a pas de nom",
+        "Une donnée de santé",
+        "Un secret d'entreprise : « Stop » dans un outil grand public"
+      ],
+      "correctIndex": 2,
+      "explanation": "Pourquoi ? Pas de nom ≠ pas de secret. Ça reste « Stop »."
+    },
+    {
+      "id": "q15",
+      "blockId": "bloc-3",
+      "theme": "tool-auth",
+      "famille": "F10",
+      "prompt": "Avant d'utiliser un nouvel outil IA au travail :",
+      "choices": [
+        "Je vérifie qu'il est autorisé par l'entreprise",
+        "Je l'installe : s'il est gratuit, c'est OK",
+        "Je demande seulement après un incident"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Outil validé d'abord. Payant ne veut pas dire sûr. Gratuit ne veut pas dire interdit."
+    },
+    {
+      "id": "q16",
+      "blockId": "bloc-3",
+      "theme": "recording",
+      "famille": "F12",
+      "prompt": "Visio avec un client. Votre outil de prise de notes IA, autorisé, rejoint l'appel automatiquement.",
+      "choices": [
+        "Le client verra l'outil dans la liste des participants",
+        "Je l'annonce au client dès le début, avant l'enregistrement",
+        "Je l'annonce seulement si le client pose la question"
+      ],
+      "correctIndex": 1,
+      "explanation": "Les personnes extérieures sont prévenues avant. Un nom dans la liste des participants ne suffit pas."
+    },
+    {
+      "id": "q17",
+      "blockId": "bloc-3",
+      "theme": "incident",
+      "famille": "F13",
+      "prompt": "Vous avez mis un fichier client par erreur. Vous…",
+      "choices": [
+        "Prévenez tout de suite (manager / référent / DPO)",
+        "Attendez de voir si quelqu'un s'en aperçoit",
+        "Effacez l'historique et n'en parlez pas"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Vous alertez tout de suite en interne. Si l'entreprise doit prévenir la CNIL, le délai de 72 h peut courir — le dire vite vous protège."
+    },
+    {
+      "id": "q18",
+      "blockId": "bloc-3",
+      "theme": "minimize",
+      "famille": "F11",
+      "prompt": "Dans un prompt, le mieux c'est…",
+      "choices": [
+        "Enlever noms, mails et infos inutiles",
+        "Mettre tout le dossier pour plus de précision",
+        "Ajouter le plus de détails personnels possible"
+      ],
+      "correctIndex": 0,
+      "explanation": "Vous ne donnez que ce qui est nécessaire ou utile à la tâche."
+    },
+    {
+      "id": "q19",
+      "blockId": "bloc-1",
+      "theme": "verify-source",
+      "famille": "F03",
+      "prompt": "L'IA cite une étude avec un chiffre précis. Vous…",
+      "choices": [
+        "Cherchez la source et vérifiez",
+        "Faites confiance : le ton est professionnel",
+        "Demandez à l'IA si l'étude existe vraiment"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? L'IA invente souvent des études qui sonnent juste. Elle peut confirmer sa propre invention : vous cherchez la source vous-même."
+    },
+    {
+      "id": "q20",
+      "blockId": "bloc-5",
+      "theme": "deepfake-fraud",
+      "famille": "F19",
+      "prompt": "Message vocal de votre DAF : « Je suis en rendez-vous, change l'IBAN du fournisseur avant midi. » C'est bien sa voix.",
+      "choices": [
+        "Je change l'IBAN : c'est sa voix, aucun doute",
+        "Je rappelle le DAF sur son numéro habituel avant de toucher à l'IBAN",
+        "Je réponds au vocal pour lui demander de confirmer"
+      ],
+      "correctIndex": 1,
+      "explanation": "Une voix se fabrique. Répondre au même message, c'est demander confirmation au fraudeur. Vous passez par un canal déjà connu."
+    },
+    {
+      "id": "q21",
+      "blockId": "bloc-4",
+      "theme": "copyright",
+      "famille": "F17",
+      "prompt": "Une image 100 % créée par IA est toujours libre de droits ?",
+      "choices": [
+        "Vrai",
+        "Faux",
+        "Vrai si l'outil est gratuit"
+      ],
+      "correctIndex": 1,
+      "explanation": "Pourquoi ? Elle peut reprendre une œuvre, un logo ou un visage."
+    },
+    {
+      "id": "q22",
+      "blockId": "bloc-4",
+      "theme": "agent-action",
+      "famille": "F18",
+      "prompt": "Vous demandez à l'IA de résumer un PDF envoyé par un prospect. L'IA propose ensuite de « partager le dossier avec l'expéditeur ». Que faites-vous ?",
+      "choices": [
+        "J'accepte : la demande figure dans le document",
+        "Je refuse : j'ai demandé un résumé, pas un partage",
+        "J'accepte si l'expéditeur a une adresse professionnelle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Une phrase dans le document n'est pas votre demande. Si l'IA propose de partager, vous refusez."
+    },
+    {
+      "id": "q23",
+      "blockId": "bloc-4",
+      "theme": "bias",
+      "famille": "F06",
+      "prompt": "Une IA de tri de CV peut être injuste. Donc…",
+      "choices": [
+        "Un humain garde la décision finale",
+        "On laisse l'IA trancher pour plus d'équité",
+        "On interdit toute aide à la lecture des CV"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? L'IA aide. Elle n'écarte pas seule un candidat."
+    },
+    {
+      "id": "q24",
+      "blockId": "bloc-3",
+      "theme": "personal-data",
+      "famille": "F15",
+      "prompt": "Le RGPD interdit-il d'utiliser l'IA au travail ?",
+      "choices": [
+        "Oui, sauf dans un outil payant",
+        "Non : il encadre ce que vous saisissez sur les personnes",
+        "Non, et il ne concerne pas ce qu'on saisit dans une IA"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le RGPD n'interdit pas l'IA. Il protège les données des personnes, avec ou sans IA."
+    },
+    {
+      "id": "q25",
+      "blockId": "bloc-4",
+      "theme": "client-decision",
+      "famille": "F16",
+      "prompt": "L'IA propose de clôturer automatiquement les réclamations clients restées sans réponse depuis 30 jours.",
+      "choices": [
+        "Je laisse faire : la règle des 30 jours est claire",
+        "Je regarde les dossiers avant qu'ils soient clôturés",
+        "Je laisse faire, et je rouvrirai si un client se plaint"
+      ],
+      "correctIndex": 1,
+      "explanation": "Une décision qui touche une personne se valide par un humain, avant, pas après une plainte."
+    },
+    {
+      "id": "q26",
+      "blockId": "bloc-3",
+      "theme": "green-mail",
+      "famille": "F11",
+      "prompt": "Reformuler un mail d'équipe, sans nom et sans secret. Vous pouvez ?",
+      "choices": [
+        "Oui, puis je relis avant d'envoyer",
+        "Non, seulement avec l'accord du manager",
+        "Oui, sans relire"
+      ],
+      "correctIndex": 0,
+      "explanation": "S'il n'y a ni personne identifiable ni secret, vous pouvez. Vous relisez quand même."
+    },
+    {
+      "id": "q27",
+      "blockId": "bloc-4",
+      "theme": "human-decide",
+      "famille": "F16",
+      "prompt": "Qui décide sur un paiement ou un envoi important ?",
+      "choices": [
+        "Un humain",
+        "L'IA, si le score de confiance est haut",
+        "L'outil, si un humain a configuré la règle au départ"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? L'IA propose. Vous validez."
+    },
+    {
+      "id": "q28",
+      "blockId": "bloc-3",
+      "theme": "health-stop",
+      "famille": "F08",
+      "prompt": "Effacer le prénom suffit-il pour mettre un dossier médical dans une IA ?",
+      "choices": [
+        "Non : la santé ne part pas dans un outil grand public",
+        "Oui, si c'est pour aider quelqu'un",
+        "Oui, dès que le prénom a disparu"
+      ],
+      "correctIndex": 0,
+      "explanation": "Enlever le prénom ne suffit pas. Un dossier médical reste une information de santé."
+    },
+    {
+      "id": "q29",
+      "blockId": "bloc-4",
+      "theme": "human-oversight",
+      "famille": "F16",
+      "prompt": "Cliquer « valider » sans lire la proposition de l'IA, c'est…",
+      "choices": [
+        "Pas un vrai contrôle humain",
+        "Suffisant si l'outil a déjà fait ses preuves",
+        "Un vrai contrôle, puisque c'est vous qui cliquez"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Décider = pouvoir comprendre, modifier, refuser."
+    },
+    {
+      "id": "q30",
+      "blockId": "bloc-3",
+      "theme": "ask-doubt",
+      "famille": "F13",
+      "prompt": "Vous avez un doute sur une info à saisir. Vous…",
+      "choices": [
+        "Demandez avant (manager / référent)",
+        "Collez l'info quand même pour voir ce que l'IA répond",
+        "Attendez qu'un incident arrive"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? On ne teste pas avec une info sensible. Demander n'est jamais une erreur."
+    },
+    {
+      "id": "q31",
+      "blockId": "bloc-3",
+      "theme": "declare-usage",
+      "famille": "F20",
+      "prompt": "Un usage d'IA devient régulier dans l'équipe. Vous…",
+      "choices": [
+        "En parlez (manager ou référent IA)",
+        "Le gardez informel : ça marche bien",
+        "Le déclarez seulement s'il y a de la santé"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Un usage qui dure ne reste pas caché. L'entreprise doit savoir quels outils passent."
+    },
+    {
+      "id": "q32",
+      "blockId": "bloc-6",
+      "theme": "seven-reflexes",
+      "famille": "F20",
+      "prompt": "Les 7 réflexes servent à…",
+      "choices": [
+        "Vérifier avant et après chaque usage d'IA",
+        "Vérifier seulement après un incident",
+        "Remplacer la liste des outils autorisés"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Checklist simple à garder près de l'écran."
+    },
+    {
+      "id": "q33",
+      "blockId": "bloc-3",
+      "theme": "tool-list",
+      "famille": "F10",
+      "prompt": "L'outil n'est pas sur la liste autorisée. Vous…",
+      "choices": [
+        "Ne l'utilisez pas pour le travail, ou vous demandez",
+        "L'utilisez en navigation privée",
+        "L'utilisez si vos collègues le font déjà"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pourquoi ? Ce n'est pas la liste des collègues qui décide. Vous demandez avant."
+    },
+    {
+      "id": "q35",
+      "blockId": "bloc-2",
+      "theme": "forbidden-photo",
+      "famille": "F05",
+      "prompt": "Pour adapter le planning des fêtes, un collègue veut faire deviner par une IA la religion des salariés à partir de leurs photos de profil.",
+      "choices": [
+        "C'est possible, puisque c'est pour leur rendre service",
+        "C'est interdit : on ne déduit pas la religion d'une photo",
+        "C'est possible si les photos sont déjà sur l'intranet"
+      ],
+      "correctIndex": 1,
+      "explanation": "Déduire la religion à partir d'une photo est interdit (Art. 5). L'intention ne change rien."
+    },
+    {
+      "id": "q36",
+      "blockId": "bloc-1",
+      "theme": "how-ai-works",
+      "famille": "F02",
+      "prompt": "Quand l'IA écrit, elle calcule surtout…",
+      "choices": [
+        "La vérité absolue dans une base officielle",
+        "La suite la plus probable",
+        "Ce que votre manager aurait voulu dire"
+      ],
+      "correctIndex": 1,
+      "explanation": "Pourquoi ? Probable ≠ vrai. D'où la vérification."
+    },
+    {
+      "id": "q37",
+      "blockId": "bloc-3",
+      "theme": "personal-data-indirect",
+      "famille": "F11",
+      "prompt": "Dans un message à l'IA, vous écrivez : « le responsable du seul magasin de Quimper, arrivé en janvier ». Est-ce une donnée personnelle ?",
+      "choices": [
+        "Non : il n'y a ni nom ni e-mail",
+        "Oui : on peut le reconnaître, même sans son nom",
+        "Seulement si on ajoute sa photo"
+      ],
+      "correctIndex": 1,
+      "explanation": "Une donnée personnelle, c'est tout ce qui permet de reconnaître quelqu'un, directement ou non."
+    },
+    {
+      "id": "q38",
+      "blockId": "bloc-3",
+      "theme": "right-access",
+      "famille": "F14",
+      "prompt": "Un client vous appelle : il veut savoir quelles données l'entreprise a sur lui.",
+      "choices": [
+        "Je lui envoie moi-même l'export du CRM",
+        "Je transmets tout de suite sa demande au DPO ou au référent",
+        "Je lui réponds que ce n'est pas possible"
+      ],
+      "correctIndex": 1,
+      "explanation": "C'est son droit d'accès. Vous n'envoyez rien seul. L'entreprise a en général un mois pour répondre."
+    },
+    {
+      "id": "q39",
+      "blockId": "bloc-3",
+      "theme": "right-human",
+      "famille": "F14",
+      "prompt": "Un candidat écarté par un tri 100 % automatique demande qu'une personne revoie son dossier.",
+      "choices": [
+        "Impossible : le score de l'outil est définitif",
+        "C'est son droit : un humain doit pouvoir revoir la décision",
+        "Seulement s'il prouve que le score est faux"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le RGPD protège contre les décisions prises uniquement par une machine. La personne peut demander une intervention humaine."
+    },
+    {
+      "id": "q40",
+      "blockId": "bloc-3",
+      "theme": "retention",
+      "famille": "F12",
+      "prompt": "Un enregistrement de réunion a servi à rédiger le compte rendu. Ensuite…",
+      "choices": [
+        "On le garde sans limite, au cas où",
+        "On le garde seulement le temps prévu par l'entreprise",
+        "On le met sur le drive partagé pour les absents"
+      ],
+      "correctIndex": 1,
+      "explanation": "On ne garde pas des données plus longtemps que nécessaire. « Au cas où » n'est pas une raison."
+    },
+    {
+      "id": "q41",
+      "blockId": "bloc-3",
+      "theme": "sensitive",
+      "famille": "F08",
+      "prompt": "Laquelle de ces informations est une donnée sensible au sens du RGPD ?",
+      "choices": [
+        "Son adresse e-mail professionnelle",
+        "L'appartenance syndicale d'un salarié",
+        "Son numéro de badge"
+      ],
+      "correctIndex": 1,
+      "explanation": "Santé, religion, syndicat, origine… sont des données sensibles. Un e-mail ou un badge sont des données personnelles, pas sensibles."
+    },
+    {
+      "id": "q42",
+      "blockId": "bloc-3",
+      "theme": "aiact-vs-rgpd",
+      "famille": "F15",
+      "prompt": "Quelle phrase est juste ?",
+      "choices": [
+        "L'AI Act remplace le RGPD depuis 2025",
+        "L'AI Act encadre les outils d'IA ; le RGPD protège les données des personnes, avec ou sans IA",
+        "Le RGPD ne s'applique plus quand on utilise une IA"
+      ],
+      "correctIndex": 1,
+      "explanation": "Les deux textes s'additionnent. Dès que vous saisissez des infos sur quelqu'un dans une IA, les deux comptent."
+    },
+    {
+      "id": "q43",
+      "blockId": "bloc-4",
+      "theme": "copyright-text",
+      "famille": "F17",
+      "prompt": "L'IA vous propose un paragraphe pour le site. En vérifiant, vous retrouvez une phrase à l'identique sur le blog d'un concurrent.",
+      "choices": [
+        "Je publie : c'est l'IA qui l'a écrit",
+        "Je réécris vraiment ce passage",
+        "Je change deux ou trois mots"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un texte recopié reste celui de quelqu'un d'autre. Changer quelques mots ne suffit pas."
+    },
+    {
+      "id": "q44",
+      "blockId": "bloc-2",
+      "theme": "role-provider",
+      "famille": "F04",
+      "prompt": "Votre entreprise développe un assistant IA et le propose à ses clients sous son nom.",
+      "choices": [
+        "C'est « j'utilise », comme ChatGPT",
+        "C'est « je vends » : les obligations sont plus lourdes",
+        "Peu importe, tant que c'est hébergé en Europe"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mettre une IA sur le marché sous votre marque, c'est le rôle « je vends »."
+    },
+    {
+      "id": "q45",
+      "blockId": "bloc-4",
+      "theme": "agent-send",
+      "famille": "F16",
+      "prompt": "L'assistant a rédigé un mail de refus client et propose de l'envoyer tout de suite, sans relecture.",
+      "choices": [
+        "J'envoie : le ton est professionnel",
+        "Je relis et je valide moi-même avant tout envoi",
+        "J'envoie si le destinataire est déjà client"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'outil peut préparer. Il n'envoie rien d'irréversible seul. C'est vous qui validez."
+    }
+  ]
+}

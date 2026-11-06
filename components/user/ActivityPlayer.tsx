@@ -1268,10 +1268,14 @@ function SortActivity({
         </div>
 
         {!checked && pool.length > 0 ? (
-          <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 dark:border-slate-600 dark:bg-slate-900/50">
-            {pool.map((card) => (
-              <Bubble key={card.id} cardId={card.id} />
-            ))}
+          <div className="flex items-stretch gap-2.5 sm:gap-3">
+            {/* Même largeur que la colonne thermomètre → cadre aligné sur les 4 cubes */}
+            <div className="w-9 shrink-0 sm:w-10" aria-hidden />
+            <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 dark:border-slate-600 dark:bg-slate-900/50">
+              {pool.map((card) => (
+                <Bubble key={card.id} cardId={card.id} />
+              ))}
+            </div>
           </div>
         ) : null}
 
@@ -2338,7 +2342,7 @@ function PredictActivity({
       window.setTimeout(() => {
         setPhase("mixing");
         timers.current.push(window.setTimeout(() => setPhase("done"), 850));
-      }, 4200),
+      }, 3100),
     );
   }
 

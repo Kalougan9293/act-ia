@@ -1,0 +1,678 @@
+{
+  "meta": {
+    "title": "LockinIA — Plateforme & espaces (hors parcours apprenant)",
+    "purpose": "Document de revue pour juriste / formateur / produit. Décrit le site public, la prise de RDV, l'auth, l'espace RH, l'espace partenaire, la démo, les pages légales et les exports. Exclut le contenu pédagogique du parcours utilisateur (socle, fiches métiers, QCM) et l'espace super-admin.",
+    "promise": "Des réflexes concrets pour utiliser l'IA sans vous faire piéger ni mettre l'entreprise en danger — AI Act (art. 4) et bases du RGPD —, avec une attestation de suivi à la fin.",
+    "generatedAt": "2026-11-06T12:04:15.400Z",
+    "excluded": [
+      "Contenu intégral du socle / chapitres / scripts / jeux",
+      "Fiches métiers détaillées",
+      "Banque QCM",
+      "Espace super-admin (/admin)"
+    ]
+  },
+  "routes": [
+    {
+      "path": "/",
+      "auth": "public",
+      "role": "—",
+      "label": "Landing marketing"
+    },
+    {
+      "path": "/interventions",
+      "auth": "public",
+      "role": "—",
+      "label": "Accompagnement IA"
+    },
+    {
+      "path": "/demo",
+      "auth": "public",
+      "role": "—",
+      "label": "Démo interactive RH + parcours"
+    },
+    {
+      "path": "/programme",
+      "auth": "public",
+      "role": "—",
+      "label": "Fiche programme formation"
+    },
+    {
+      "path": "/ai-act",
+      "auth": "public",
+      "role": "—",
+      "label": "Page pédagogique AI Act"
+    },
+    {
+      "path": "/connexion",
+      "auth": "public",
+      "role": "—",
+      "label": "Connexion / 1ʳᵉ connexion / reset MDP"
+    },
+    {
+      "path": "/rejoindre/[token]",
+      "auth": "public",
+      "role": "—",
+      "label": "Lien structure (RH → collabs)"
+    },
+    {
+      "path": "/invitation/[token]",
+      "auth": "public",
+      "role": "—",
+      "label": "Invitation tokenisée (legacy)"
+    },
+    {
+      "path": "/rh",
+      "auth": "required",
+      "role": "rh",
+      "label": "Espace RH"
+    },
+    {
+      "path": "/partenaire",
+      "auth": "required",
+      "role": "partner",
+      "label": "Espace partenaire OF"
+    },
+    {
+      "path": "/utilisateur",
+      "auth": "required",
+      "role": "employee|rh enrolled",
+      "label": "Parcours collaborateur (non détaillé ici)"
+    },
+    {
+      "path": "/cgu|/cgv|/dpa|/confidentialite|/cookies|/mentions-legales|/rgpd",
+      "auth": "public",
+      "role": "—",
+      "label": "Pages légales"
+    }
+  ],
+  "landing": {
+    "hero": {
+      "badge": "Formation Art. 4 · Données & bons usages",
+      "h1": "La plateforme clé en main pour attester la formation de vos salariés à l'IA et au RGPD en continu",
+      "ctas": [
+        "Demander un accès",
+        "Tester la démo"
+      ]
+    },
+    "trust": [
+      "Dossier de preuves",
+      "Contenu expert",
+      "Attestation de suivi",
+      "Pilotage RH",
+      "100 % en ligne",
+      "Veille AI Act"
+    ],
+    "sections": [
+      "Problème (AI Act / Données / Charge RH)",
+      "Fonctionnalités (salariés / entreprises / responsables métiers)",
+      "Déploiement en 5 minutes",
+      "Tarifs",
+      "Aller plus loin (accompagnement)",
+      "FAQ",
+      "Footer légal"
+    ],
+    "booking": {
+      "to": "contact@lockin-web.online",
+      "rules": "Créneaux mar–jeu 12h–18h Europe/Paris, au plus tôt J+2, pas de 30 min",
+      "interests": [
+        {
+          "value": "acces",
+          "label": "Accès plateforme / formation"
+        },
+        {
+          "value": "devis",
+          "label": "Devis entreprise"
+        },
+        {
+          "value": "module",
+          "label": "Module métier sur mesure"
+        },
+        {
+          "value": "marque-blanche",
+          "label": "Marque blanche"
+        },
+        {
+          "value": "partenaire",
+          "label": "Partenariat (organisme de formation)"
+        },
+        {
+          "value": "accompagnement",
+          "label": "Accompagnement & automatisation"
+        },
+        {
+          "value": "question",
+          "label": "Une question"
+        }
+      ],
+      "fields": [
+        "E-mail",
+        "Société",
+        "Objet",
+        "Jour",
+        "Horaire"
+      ],
+      "note": "Le lien visio est envoyé manuellement par LockinIA après réception du mail."
+    }
+  },
+  "pricing": {
+    "plans": [
+      {
+        "name": "Micro",
+        "seats": "1 à 5 salariés",
+        "price": "390 € / an",
+        "features": [
+          "Jusqu'à 5 accès utilisateurs",
+          "Abonnement annuel, sans frais cachés",
+          "Socle commun et fiches métiers incluses",
+          "Module entreprise (charte, outils, référent)",
+          "Attestations nominatives",
+          "Preuves (attestations + relevés) : année + 3 ans",
+          "Tableau de bord RH, relevés de connexion et export",
+          "Veille incluse : le parcours suit l'actualité",
+          "Renouvellement : nouveaux arrivants + mises à jour",
+          "Référents pédagogique & technique nommés (48 h)"
+        ]
+      },
+      {
+        "name": "TPE",
+        "seats": "6 à 20 salariés",
+        "price": "790 € / an",
+        "features": [
+          "Jusqu'à 20 accès utilisateurs",
+          "Tout le plan Micro inclus",
+          "Assistance prioritaire : réponse sous 24 h ouvrées"
+        ]
+      },
+      {
+        "name": "PME",
+        "seats": "21 à 50 salariés",
+        "price": "1 290 € / an",
+        "features": [
+          "Jusqu'à 50 accès utilisateurs",
+          "Tout le plan TPE inclus"
+        ]
+      },
+      {
+        "name": "ETI",
+        "seats": "+50 salariés",
+        "price": "Sur devis",
+        "features": [
+          "Plus de 50 accès",
+          "Tout le plan PME inclus",
+          "Intégrations sur devis",
+          "Assistance dédiée"
+        ]
+      }
+    ],
+    "options": [
+      {
+        "name": "Module métier sur mesure",
+        "price": "690 € / module",
+        "detail": "Format standard : texte + cas pratique + idée d'usage, intégré au parcours. Demande plus large : sur devis."
+      },
+      {
+        "name": "Atelier usages & automatisation",
+        "price": "Sur devis",
+        "detail": "Session visio ou présentiel : prioriser les usages, automatiser le répétitif. Hors abonnement."
+      },
+      {
+        "name": "Marque blanche (OF)",
+        "price": "500 € (one-shot) + grille / apprenant",
+        "detail": "Tranches partenaires : 1–19 → 35 € ; 20–49 → 30 € ; 50–149 → 24 € ; 150–499 → 19 € ; 500+ sur devis. Co-branding inclus."
+      }
+    ]
+  },
+  "interventions": {
+    "title": "Accompagnement IA",
+    "pitch": "Ne testez pas l'IA. Faites-en un outil de travail.",
+    "offerings": [
+      "Audit",
+      "Formation",
+      "Intégration",
+      "Automatisation",
+      "Canal IA"
+    ],
+    "ctas": [
+      "Parlons de vos besoins",
+      "Échanger sur mon projet"
+    ]
+  },
+  "faq": [
+    {
+      "question": "L'article 4 de l'AI Act concerne-t-il mon entreprise ?",
+      "answer": "Oui, dès que des personnes utilisent une IA pour le travail de l'entreprise, y compris ChatGPT ou Copilot. Depuis le 2 février 2025, l'article 4 impose de prendre des mesures pour favoriser le développement de la maîtrise de l'IA. Le règlement Omnibus (UE) 2026/1744 a clarifié que l'obligation porte sur les mesures mises en œuvre, pas sur la garantie d'un niveau individuel de compétence. Il n'y a pas de seuil de taille : même une TPE est concernée, avec un effort proportionné à ses usages. L'article 4 ne prévoit pas de plafond d'amende qui lui soit propre ; un manquement peut toutefois donner lieu à des mesures d'exécution ou à des sanctions selon le droit applicable."
+    },
+    {
+      "question": "Quel lien entre l'IA et le RGPD dans la formation ?",
+      "answer": "Dès qu'un salarié colle un nom, un e-mail, une voix ou un fichier client dans ChatGPT, Copilot ou un outil similaire, le RGPD s'applique. Le parcours LockinIA rappelle les réflexes concrets : quoi saisir ou ne pas saisir, données personnelles, secrets d'entreprise, et quand alerter le DPO ou le référent. Ce n'est pas un audit RGPD de votre organisation : c'est la sensibilisation utile au quotidien face à l'IA."
+    },
+    {
+      "question": "Faut-il garantir que chaque salarié « maîtrise » l'IA ?",
+      "answer": "Non. La loi ne vous demande pas de prouver que chaque salarié est expert en IA. Elle vous demande de prendre des mesures pour favoriser le développement de la maîtrise de l'IA, adaptées à vos usages, et de pouvoir les documenter. Sans mesures documentées, il devient difficile de montrer que vous avez agi en cas d'audit client, d'incident ou de demande d'assurance."
+    },
+    {
+      "question": "Que se passe-t-il si on n'a rien documenté ?",
+      "answer": "En cas d'audit client, d'incident ou de demande d'assurance, il devient très difficile de prouver que vous avez agi. LockinIA constitue pour vous un suivi clair : attestations nominatives et avancement des parcours, pour documenter concrètement votre démarche Article 4."
+    },
+    {
+      "question": "Faut-il former tous les salariés ?",
+      "answer": "Non. Priorité à celles et ceux qui utilisent l'IA pour le travail de l'entreprise, y compris intérimaires ou prestataires qui s'en servent pour votre compte. Pas besoin de former toute l'organisation si une partie n'utilise pas l'IA."
+    },
+    {
+      "question": "Un parcours en ligne suffit-il ?",
+      "answer": "Oui, si le parcours est adapté aux usages et documenté. Une vidéo générique seule ne suffit pas. LockinIA combine un socle commun, des modules selon le métier et des preuves de suivi, pour vous aider à sensibiliser vos équipes et à documenter votre démarche Article 4."
+    },
+    {
+      "question": "Pourquoi pas seulement les guides gratuits CNIL ou France Num ?",
+      "answer": "Ces ressources sont utiles pour s'informer. Elles ne délivrent pas d'attestations nominatives, ni de suivi RH de qui a terminé, ni d'export de preuves pour un contrôle ou un audit. LockinIA fait gagner du temps : parcours prêt, suivi dans la durée, et traces exploitables pour la direction."
+    },
+    {
+      "question": "Faut-il un organisme certifié ou un volume d'heures imposé ?",
+      "answer": "Non. Le texte n'impose ni organisme, ni label, ni durée. Une formation bien documentée peut faire partie des mesures prises au titre de l'article 4. Si vous visez une prise en charge OPCO, la formation peut être réalisée via un partenaire certifié Qualiopi."
+    },
+    {
+      "question": "Combien de temps dure la formation ?",
+      "answer": "Le socle tient 1 h 15, examen compris, en une fois ou en plusieurs sessions. Accessible sur téléphone, tablette ou ordinateur, sans rien installer. Des fiches métiers courtes s'ajoutent ensuite en bonus."
+    },
+    {
+      "question": "LockinIA est-il un diplôme ou une certification ?",
+      "answer": "Non. C'est une attestation nominative de suivi : qui a suivi le parcours, quand, avec quel résultat. Elle documente votre démarche Article 4. Ce n'est ni un diplôme, ni une certification officielle de conformité à l'AI Act."
+    },
+    {
+      "question": "Que reçoit le DPO ou la direction ?",
+      "answer": "Les attestations individuelles, l'avancement en temps réel, les relevés de connexion (dates, temps passé, résultats par module), et un rapport d'engagement quand le suivi est à jour. Tout est exportable en ZIP et JSON pour vos audits."
+    },
+    {
+      "question": "Comment voir qui n'a pas terminé ?",
+      "answer": "Le tableau de bord RH montre l'avancement de chaque collaborateur (0 à 100 %) et les attestations émises. Vous voyez tout de suite qui n'a pas fini, sans relancer à l'aveugle."
+    },
+    {
+      "question": "La formation est-elle mise à jour si la loi change ?",
+      "answer": "Oui. Les modules suivent l'actualité réglementaire et vous êtes informés des changements. Vos équipes avancent sur le nouveau contenu, sans tout recommencer."
+    },
+    {
+      "question": "Pourquoi renouveler l'abonnement chaque année ?",
+      "answer": "Pour former les nouveaux arrivants, garder le parcours à jour quand la loi ou les usages évoluent, et conserver le suivi RH avec attestations et exports de preuves. Ce n'est pas seulement « refaire la même heure » : c'est maintenir une démarche documentée dans le temps."
+    },
+    {
+      "question": "Combien coûte LockinIA ?",
+      "answer": "390 € par an jusqu'à 5 salariés, 790 € jusqu'à 20, 1 290 € jusqu'à 50. Au-delà, l'offre est sur devis. En option : module métier sur mesure à 690 € le module, atelier usages & automatisation et marque blanche sur devis. La TVA ne s'applique pas."
+    },
+    {
+      "question": "Qu'est-ce que l'option marque blanche ?",
+      "answer": "Une version de la plateforme à l'image de votre entreprise : votre logo et vos couleurs. Vos équipes voient votre marque, le fonctionnement reste le même. Pour un organisme de formation ou un cabinet RH : espace partenaire et marque blanche sur devis. Les données restent hébergées chez LockinIA, isolées par client."
+    },
+    {
+      "question": "Un OPCO peut-il financer la formation ?",
+      "answer": "Oui, une prise en charge OPCO peut être étudiée sous réserve d'éligibilité, via un organisme de formation partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée dès finalisation des accords. Le détail figure dans la fiche programme."
+    },
+    {
+      "question": "Où trouver la fiche programme de la formation ?",
+      "answer": "La fiche programme (objectifs évaluables, public, prérequis, durée, méthodes, évaluation, accessibilité, tarif, déroulé et financements) est disponible sur la page /programme."
+    },
+    {
+      "question": "Peut-on ajouter un module propre à notre métier ?",
+      "answer": "Oui. Les fiches métiers incluses sont dans l'abonnement. Un module sur mesure au format standard (texte, cas pratique, idée d'usage) est facturé 690 €, puis intégré à votre parcours LockinIA. Pour une demande plus large — plusieurs métiers ou contenus longs — le montant est établi sur devis."
+    },
+    {
+      "question": "Quelle différence entre le module sur mesure et l'atelier ?",
+      "answer": "Le module sur mesure est du contenu dans la plateforme : vos équipes le suivent en autonomie. L'atelier usages & automatisation est un accompagnement (visio ou présentiel) pour prioriser les usages et gagner du temps au quotidien. Les deux sont hors abonnement ; l'atelier est sur devis."
+    },
+    {
+      "question": "Qui assure l'assistance pendant la formation ?",
+      "answer": "Jonathan Seroussi est le référent pédagogique et le référent technique. Contact : contact@lockin-web.online ou 06.62.28.86.56. Réponse sous 48 heures ouvrées. Le parcours à distance dure 1 h 15 ; l'évaluation finale est un QCM (seuil 80 %). Le détail figure dans les CGV."
+    },
+    {
+      "question": "Où sont hébergées les données ?",
+      "answer": "Les comptes, la formation et le suivi (Firestore, authentification Firebase) sont stockés dans l'Union européenne (région eur3), sur une plateforme mutualisée isolée par entreprise. L'affichage du site passe par Vercel (États-Unis), encadré par un DPA et les clauses contractuelles types. FITOPS AI n'exploite pas vos données pour du marketing ; les stats agrégées servent au pilotage, l'accès nominatif est limité au support et à la sécurité. Le détail figure dans la politique de confidentialité et le DPA."
+    },
+    {
+      "question": "Comment fonctionne un partenariat organisme de formation ?",
+      "answer": "Le partenaire dispose d'un espace dédié pour créer des entreprises clientes dans la limite de son quota, suivre des statistiques agrégées et les contacts RH. Les apprenants restent sur LockinIA (hébergement FITOPS AI). Marque blanche et tarifs partenaires : sur devis. Cadre juridique : CGU, CGV et DPA."
+    }
+  ],
+  "programme": {
+    "intitule": "Sensibilisation à la maîtrise de l'IA et aux bons usages des données au travail",
+    "version": "V1.0",
+    "modalite": "Formation à distance asynchrone (FOAD)",
+    "organisme": "FITOPS AI — plateforme LockinIA",
+    "contact": "contact@lockin-web.online",
+    "phone": "06.62.28.86.56",
+    "statutQualiopi": "Formation réalisable avec un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi ; l'identité du partenaire sera communiquée dès finalisation des accords contractuels.",
+    "objectifs": [
+      {
+        "label": "Comprendre le fonctionnement de l'IA générative et ses limites",
+        "evaluable": "Distinguer IA classique / générative ; identifier une hallucination ; formuler un prompt utile."
+      },
+      {
+        "label": "Situer les obligations liées à l'AI Act (art. 4) et aux usages au travail",
+        "evaluable": "Citer le rôle de l'article 4 ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant."
+      },
+      {
+        "label": "Protéger données personnelles et secrets d'entreprise face à l'IA",
+        "evaluable": "Classer une information (OK / attention / interdit) ; appliquer un réflexe en cas d'erreur ou d'enregistrement."
+      },
+      {
+        "label": "Garder la décision humaine et les bons usages de publication",
+        "evaluable": "Identifier qui valide ; savoir quand ne pas publier un contenu généré sans contrôle."
+      },
+      {
+        "label": "Repérer deepfakes et urgences manipulées",
+        "evaluable": "Adopter un réflexe de vérification face à une vidéo / voix douteuse ou une demande urgente."
+      },
+      {
+        "label": "Mobiliser les 7 réflexes au quotidien",
+        "evaluable": "Restituer et classer les questions avant / après usage de l'IA."
+      }
+    ],
+    "public": "Salariés, dirigeants et collaborateurs d'entreprises qui utilisent ou sont exposés à des outils d'IA au travail (tous secteurs).",
+    "prerequis": [
+      "Savoir utiliser un navigateur web et une adresse e-mail professionnelle.",
+      "Aucun prérequis technique en IA ni en droit.",
+      "Accès à un poste ou smartphone connecté à Internet."
+    ],
+    "duree": "1 h 15",
+    "dureeDetail": "Durée moyenne indicative du socle (activités + évaluation finale). Le parcours peut être suivi en une ou plusieurs sessions.",
+    "methodes": [
+      "FOAD asynchrone sur plateforme LockinIA",
+      "Vidéos courtes et textes pédagogiques",
+      "Activités interactives (tri, quiz formatifs, mises en situation)",
+      "Test de positionnement non éliminatoire en début de parcours",
+      "Évaluation finale sommative (QCM)",
+      "Assistance pédagogique et technique nommée (voir modalités FOAD)"
+    ],
+    "evaluation": [
+      "Évaluation finale : QCM — seuil de réussite 80 / 100.",
+      "Positionnement initial : non éliminatoire, à visée pédagogique.",
+      "Validation : parcours socle complété + QCM réussi → attestation nominative de suivi.",
+      "L'attestation documente le suivi ; elle n'est ni un diplôme ni une certification officielle de conformité."
+    ],
+    "accessibilite": [
+      "Formation 100 % en ligne, réalisable sur ordinateur ou smartphone.",
+      "En cas de situation de handicap, contactez-nous avant ou pendant le parcours pour étudier les adaptations possibles (rythme, formats, assistance).",
+      "Référent handicap / assistance : Jonathan Seroussi — contact@lockin-web.online — 06.62.28.86.56.",
+      "Délai de réponse : sous 48 heures ouvrées."
+    ],
+    "tarifs": [
+      "Abonnement annuel LockinIA (accès plateforme + parcours + suivi RH + attestations) : Micro 390 € (1–5 accès), TPE 790 € (6–20), PME 1 290 € (21–50), ETI sur devis.",
+      "Options hors abonnement : module métier sur mesure 690 € (format standard) ; atelier usages & automatisation sur devis ; marque blanche sur devis.",
+      "TVA non applicable, art. 293 B du CGI."
+    ],
+    "financements": [
+      "Formation réalisable via un partenaire certifié Qualiopi. LockinIA n'est pas un organisme certifié Qualiopi.",
+      "Une prise en charge OPCO peut être étudiée sous réserve d'éligibilité de l'entreprise, via ce partenaire (émetteur de l'attestation / certificat de réalisation à définir contractuellement).",
+      "Aucun financement n'est garanti. L'identité du partenaire et les modalités exactes seront confirmées dès finalisation des accords."
+    ],
+    "deroule": [
+      {
+        "etape": "Accueil & introduction",
+        "duree": "≈ 5 min",
+        "detail": "Présentation du parcours, objectifs et modalités."
+      },
+      {
+        "etape": "Test de positionnement",
+        "duree": "≈ 5 min",
+        "detail": "QCM non éliminatoire pour situer le niveau de départ."
+      },
+      {
+        "etape": "Bloc 1 — L'IA, c'est quoi ?",
+        "duree": "10 min",
+        "detail": "Comprendre comment l'outil écrit, pourquoi il peut inventer, et ce que vous venez faire ici. Contenu : Pourquoi vous êtes ici · Comment elle écrit · IA classique ou Générative ? · Les mots à connaître · Quelle suite l'IA choisirait-elle ? · Trouvez ce qui cloche · Avant d'utiliser une réponse."
+      },
+      {
+        "etape": "Bloc 2 — Le code de la route de l'IA",
+        "duree": "8 min",
+        "detail": "Savoir ce que la loi vous demande, quel est votre rôle, et quelles dates comptent vraiment Contenu : Avant la vidéo · La loi en clair · J'utilise ou je vends ? · Quel niveau de risque ? · Les dates qui comptent."
+      },
+      {
+        "etape": "Bloc 3 — Mes données et mes secrets",
+        "duree": "15 min",
+        "detail": "Apprendre ce que vous pouvez saisir dans une IA sans mettre l'entreprise ni les salariés en danger Contenu : Ce que vous pouvez saisir · Donnée perso ou pas ? · Quel niveau d'attention ? · Nettoyez ce prompt · J'envoie ou je corrige ? · Les bons gestes · Quel droit ? · La réunion de 14 h."
+      },
+      {
+        "etape": "Bloc 4 — C'est vous qui décidez",
+        "duree": "10 min",
+        "detail": "L'IA peut proposer, c'est vous qui décidez Contenu : L'IA propose, vous décidez · Qui valide ? · Reliez la bonne règle · Avant de publier ou d'agir · Je publie ou pas ? · Ce qui pourrait faire agir l'IA."
+      },
+      {
+        "etape": "Bloc 5 — Le deepfake",
+        "duree": "9 min",
+        "detail": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA » Contenu : Vrai ou faux ? · Une vidéo peut mentir · Deux situations · Je labelle ou pas ?."
+      },
+      {
+        "etape": "Bloc 6 — Les 7 réflexes",
+        "duree": "5 min",
+        "detail": "Repartir avec les sept questions, expliquées, puis revues dans le jeu Contenu : Les sept questions · Rangez les 7 réflexes."
+      },
+      {
+        "etape": "Évaluation finale",
+        "duree": "≈ 10 min",
+        "detail": "QCM sommative, seuil 80 %."
+      },
+      {
+        "etape": "Attestation de suivi",
+        "duree": "—",
+        "detail": "Émission automatique de l'attestation nominative (date, score, temps de connexion mesuré, modules validés)."
+      },
+      {
+        "etape": "Bonus optionnels",
+        "duree": "variable",
+        "detail": "Module entreprise (charte, outils, référent) et fiche métier — hors validation obligatoire du socle."
+      }
+    ]
+  },
+  "assistance": {
+    "referentPedagogique": {
+      "name": "Jonathan Seroussi",
+      "role": "Référent pédagogique",
+      "mission": "Questions sur le contenu du parcours, les objectifs, les évaluations et la progression."
+    },
+    "referentTechnique": {
+      "name": "Jonathan Seroussi",
+      "role": "Référent technique",
+      "mission": "Accès à la plateforme, connexions, bugs et dysfonctionnements techniques."
+    },
+    "email": "contact@lockin-web.online",
+    "phone": "06.62.28.86.56",
+    "phoneHref": "tel:+33662288656",
+    "responseDelay": "sous 48 heures ouvrées",
+    "responseDelayShort": "48 h ouvrées",
+    "remoteActivities": "Parcours asynchrone en ligne (vidéos, textes, activités interactives, quiz).",
+    "averageDuration": "1 h 15",
+    "evaluation": "Évaluation finale par QCM (seuil de réussite 80 / 100). Positionnement non éliminatoire en début de parcours. Attestation nominative de suivi à la validation."
+  },
+  "milestones": [
+    {
+      "date": "2 février 2025",
+      "label": "Article 4 et pratiques interdites",
+      "detail": "Mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026/1744) et pratiques interdites (Art. 5)."
+    },
+    {
+      "date": "2 août 2025",
+      "label": "Modèles à usage général",
+      "detail": "Obligations relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance."
+    },
+    {
+      "date": "2 août 2026",
+      "label": "Article 50 — transparence",
+      "detail": "Obligations de transparence (chatbots, certains contenus synthétiques). Les obligations varient selon le cas."
+    },
+    {
+      "date": "2 décembre 2026",
+      "label": "Interdictions contenus illicites",
+      "detail": "Certaines interdictions spécifiques (ex. contenus intimes non consentis) — distinctes des obligations générales de transparence (Art. 50). En France, la diffusion sans consentement est déjà un délit (loi SREN)."
+    },
+    {
+      "date": "2 décembre 2027",
+      "label": "Haut risque (Annexe III)",
+      "detail": "Règles pour les systèmes concernés (dont emploi / recrutement selon finalité). Tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD art. 22 s'applique déjà."
+    },
+    {
+      "date": "2 août 2028",
+      "label": "Haut risque (Art. 6 §1 / Annexe I)",
+      "detail": "Certaines catégories liées à des produits réglementés couverts par l'annexe I."
+    }
+  ],
+  "auth": {
+    "modes": [
+      "Connexion",
+      "Première connexion (Activer mon compte)",
+      "Mot de passe oublié"
+    ],
+    "passwordRules": [
+      "8 caractères min.",
+      "1 majuscule",
+      "1 caractère spécial"
+    ],
+    "redirects": {
+      "partner": "/partenaire",
+      "rh": "/rh",
+      "employee": "/utilisateur",
+      "note": "Un RH peut aussi suivre la formation s'il est inscrit (formationEnrolled) → /utilisateur"
+    },
+    "joinFlow": {
+      "path": "/rejoindre/[token]",
+      "description": "Lien permanent de la structure. Le collaborateur active son compte seulement si le RH a créé son accès (e-mail)."
+    },
+    "inviteFlow": {
+      "path": "/invitation/[token]",
+      "description": "Flux alternatif d'invitation tokenisée (acceptInvite)."
+    }
+  },
+  "rh": {
+    "route": "/rh",
+    "title": "Pilotage RH",
+    "kpis": [
+      "Inscrits",
+      "En cours",
+      "Terminés",
+      "Limite (used/max)"
+    ],
+    "tableColumns": [
+      "Collaborateur",
+      "E-mail",
+      "Avancement",
+      "Avant/Après (positionnement → QCM)",
+      "Avis",
+      "Dernière connexion"
+    ],
+    "actions": [
+      "Ajouter un collaborateur (Prénom, Nom, E-mail) → Créer l'accès",
+      "Copier le lien /rejoindre/{token}",
+      "Supprimer un collaborateur / invite pending (confirmation)",
+      "Ouvrir / éditer le Module entreprise",
+      "Synthèse Article 4 (aperçu + PDF)",
+      "Exporter le dossier de preuves (ZIP)",
+      "Télécharger une attestation nominative si parcours validé (100 %)"
+    ],
+    "seatsRule": "Un siège est consommé dès qu'une progression > 0 %. Il n'est libéré que si la progression est à 0 %.",
+    "companyModule": {
+      "title": "Module « Votre entreprise »",
+      "toggle": "Afficher aux collaborateurs",
+      "fields": [
+        "Outils autorisés",
+        "Charte / règles",
+        "Référent IA & DPO / contacts",
+        "Procédure de déclaration",
+        "Précisions / interdits (texte libre)"
+      ],
+      "registreColumns": [
+        "Service",
+        "Propriétaire",
+        "Population concernée",
+        "Outil",
+        "Fournisseur",
+        "Usage et finalité",
+        "Données traitées",
+        "Base légale RGPD",
+        "Décision automatisée (art. 22)",
+        "Qualification AI Act",
+        "Justification",
+        "AIPD",
+        "DPA / éditeur",
+        "Transferts"
+      ],
+      "note": "Historique des révisions conservé. Visible dans le parcours collab si activé."
+    },
+    "article4": {
+      "title": "Synthèse de suivi — Article 4",
+      "outputs": [
+        "PDF synthèse entreprise",
+        "Badge web Suivi LockinIA (Discret / Normal / Visible) + HTML à copier",
+        "Versionnement (firstIssuedAt, lastExportedAt, version, registryId)"
+      ]
+    },
+    "proofZip": [
+      "dossier.json",
+      "registre.json",
+      "attestations.json",
+      "releves-connexion.json",
+      "resultats-modules.json",
+      "historique.json",
+      "dossier.pdf"
+    ],
+    "notAvailable": [
+      "Export CSV"
+    ]
+  },
+  "partner": {
+    "route": "/partenaire",
+    "title": "Pilotage partenaire",
+    "kpis": [
+      "Entreprises",
+      "Inscrits",
+      "En cours",
+      "Terminés",
+      "Limite (alloués / seatsMax)"
+    ],
+    "tableColumns": [
+      "Entreprise",
+      "Limite max (±1)",
+      "Apprenants",
+      "Terminés",
+      "Sat. moy.",
+      "RH",
+      "Lien (copier)"
+    ],
+    "actions": [
+      "Créer une entreprise cliente (nom, limite, RH nom/e-mail, SIRET, téléphone)",
+      "Ajuster les sièges de la structure (±1 sous plafond partenaire)",
+      "Copier le lien /rejoindre de chaque entreprise",
+      "Voir le suivi apprenants (lecture) et les avis"
+    ],
+    "notAvailable": [
+      "Module entreprise",
+      "Export ZIP / PDF Art. 4",
+      "Création / suppression de collaborateurs (délégué au RH client)",
+      "Téléchargement d'attestations nominatives"
+    ]
+  },
+  "demo": {
+    "route": "/demo",
+    "description": "Sans compte : bascule Parcours | Espace RH. Données mock (ex. Atelier Lumière). Téléchargements PDF/ZIP désactivés."
+  },
+  "isolation": {
+    "roles": [
+      "partner",
+      "rh",
+      "employee"
+    ],
+    "noteExcluded": "super_admin exclu de ce document",
+    "rules": [
+      "RH : strictement limité à sa structureId",
+      "Partenaire : strictement limité à son partnerId et aux structures rattachées",
+      "Collaborateur : son parcours / sa progression",
+      "Hébergement données formation : Firebase/Firestore UE (eur3) ; site Vercel (DPA / CCT)"
+    ]
+  },
+  "legalPages": {
+    "mentions-legales": "return ( Éditeur Le site LockinIA, plateforme de formation et de traçabilité relative à la maîtrise de l'IA (article 4 du règlement européen sur l'IA), est édité par : FITOPS AI 119 rue Jules Parent Rueil-Malmaison (92500) SIRET 853 780 906 00063 Micro-entreprise, sans capital social. Non immatriculée au RCS. TVA non applicable, article 293 B du CGI. Directeur de la publication : Jonathan Seroussi. Contact : contact@lockin-web.online · 06.62.28.86.56 Hébergement Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis. Les données de la plateforme (comptes, formation, registre) sont hébergées de façon mutualisée par Google Firebase / Google Cloud pour le compte de FITOPS AI. La base Firestore est située dans l'Union européenne (région eur3). Le détail des traitements et des rôles (entreprise, partenaire, FITOPS AI) figure dans la politique de confidentialité et le DPA . Responsabilité LockinIA fournit une formation à distance et des outils pour documenter le suivi des parcours. Le contenu ne constitue pas un conseil juridique. L'attestation de suivi nominative et la synthèse Article 4 documentent des mesures prises au titre de l'article 4 ; elles ne certifient pas l'entreprise. Propriété intellectuelle Les contenus, marques et éléments de la plateforme sont protégés. Toute reproduction non autorisée est interdite. Les conditions d'usage figurent dans les CGU et les CGV . ); }",
+    "confidentialite": "return ( Responsable Les données sont traitées par FITOPS AI, 119 rue Jules Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063, éditeur de la plateforme LockinIA. Contact : Jonathan Seroussi, contact@lockin-web.online · 06.62.28.86.56 . Aucun délégué à la protection des données n'est désigné pour le moment. Les demandes se font à ce contact. Pour les données des collaborateurs formés via LockinIA, FITOPS AI agit en sous-traitant pour le compte de l'entreprise cliente (et, le cas échéant, dans le cadre d'un partenariat avec un organisme de formation). Voir l' accord de sous-traitance (DPA) . Données traitées Compte : nom, e-mail, mot de passe (hashé), rôle, structure, partenaire le cas échéant, fonction métier le cas échéant. Formation : progression, scores, attestation de suivi, temps de connexion mesuré, résultats par module. Structure : identifiant de suivi (REG-LIA-…), module entreprise (outils, charte, contacts, cas d'usage), synthèse Article 4 (dates figées, version d'export, compteurs, empreinte). Invitations en attente (e-mail / nom fournis par le RH) et quotas / sièges. Preuves archivées après retrait d'un accès (rétention année civile + 3). Espace RH / admin / partenaire : listes et indicateurs selon le rôle. Lorsqu'un collaborateur est invité, son nom et son e-mail sont d'abord fournis par son employeur (ou, le cas échéant, préparés via le partenaire / le RH). Sur la démo publique ou un compte témoin, certaines données restent locales au navigateur et ne sont pas traitées comme preuves contractuelles d'une entreprise cliente. Finalités et bases Compte de l'entreprise, accès, formation, attestations, synthèse Article 4 et module entreprise : exécution du contrat d'abonnement ou de partenariat. Données des collaborateurs : traitées pour le compte de l'entreprise cliente. C'est elle qui décide de la formation, au titre de ses propres obligations, notamment l'article 4 de l'AI Act. Cadre détaillé dans le DPA . Factures et pièces comptables : obligation légale. Pilotage technique (volumes, sièges, disponibilité) et support : intérêt légitime / exécution du contrat, limité à ces finalités. Journaux techniques (connexions, erreurs, sécurité) : intérêt légitime, limité à la protection du service. Hébergement mutualisé et qui voit quoi LockinIA est hébergée de façon mutualisée sur l'infrastructure de FITOPS AI. Les données de chaque entreprise (et de chaque partenaire) sont isolées logiquement. Apprenant : son compte et son parcours. RH : les collaborateurs, le module entreprise et la synthèse de sa structure uniquement. Partenaire : ses entreprises clientes, quotas, statistiques agrégées et contacts RH nécessaires au déploiement — pas d'usage commercial du détail nominatif de tous les apprenants hors cadre du service. FITOPS AI (super-admin) : indicateurs agrégés pour le pilotage ; accès nominatif limité au support, à la sécurité, à la facturation, aux obligations légales et à la maintenance. Pas de revente ni de marketing sur ces données. Conservation Pendant le contrat : compte, progression, module entreprise, synthèse Article 4 et attestations restent disponibles. Preuves de formation (attestations, résultats par module, relevés de connexion liés au parcours, synthèses encore dues) : conservées pendant l'année civile de réalisation de l'action de formation et les trois années civiles suivantes, puis supprimées, sauf obligation légale plus longue. La même durée s'applique lorsqu'un accès collaborateur est retiré : les preuves restent archivées pour l'employeur. Factures : 10 ans, durée comptable. Journaux techniques de sécurité (erreurs, supervision infrastructure) : 12 mois, puis suppression — distincts des relevés de connexion pédagogiques ci-dessus. La suppression d'un compte se demande par e-mail à contact@lockin-web.online . L'entreprise demande la fermeture de sa structure. Un collaborateur demande la suppression de son accès. Les preuves encore dues à l'employeur et les factures sont conservées dans les durées ci-dessus (pas d'effacement définitif des preuves pendant la période de rétention). Vos droits Accès, rectification, effacement, opposition, limitation, portabilité : contactez contact@lockin-web.online . Vous pouvez aussi saisir la CNIL. Pour les données traitées pour le compte de votre employeur, certaines demandes peuvent être réorientées vers lui. Destinataires Selon le rôle : employeur (espace RH), partenaire (espace partenaire, périmètre de ses clients), et FITOPS AI dans les limites décrites ci-dessus. Sous-traitants techniques : Vercel (affichage du site) et Google Firebase / Google Cloud (authentification et Firestore). Les données de compte, de formation et de suivi sont stockées dans l'Union européenne (Firestore, région eur3), dans le cadre du contrat de traitement de Google Cloud. L'affichage du site passe par Vercel Inc., établi aux États-Unis. Ce transfert est encadré par son accord de traitement et les clauses contractuelles types de la Commission européenne (décision 2021/914), publiés sur vercel.com/legal/dpa . Le détail des cookies et du stockage local figure sur la page Cookies . ); }",
+    "cgu": "return ( Éditeur LockinIA est édité par FITOPS AI, 119 rue Jules Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063. Micro-entreprise, sans capital social. TVA non applicable, article 293 B du CGI. Directeur de la publication : Jonathan Seroussi. Contact : contact@lockin-web.online · 06.62.28.86.56 . Objet et acceptation Les présentes CGU régissent l'accès à LockinIA : parcours de formation à distance, attestations de suivi nominatives, synthèse de suivi entreprise au titre de l'article 4 du règlement (UE) 2024/1689 (« AI Act »), module entreprise (outils, charte, cas d'usage), outils de pilotage RH et, le cas échéant, espace partenaire (organismes de formation ou revendeurs). L'utilisation de la plateforme (création de compte, première connexion ou poursuite d'usage après information) vaut acceptation des présentes CGU. Les conditions commerciales figurent dans les CGV . Compte L'abonnement peut être souscrit directement par l'entreprise cliente, ou via un partenaire (organisme de formation / revendeur) disposant d'un espace dédié. Dans tous les cas, l'accès des collaborateurs est réservé aux personnes invitées ou rattachées à leur structure. Chacun est responsable de la confidentialité de ses identifiants et de l'exactitude des informations qu'il saisit. Rôles principaux : super-administrateur LockinIA (FITOPS AI) ; partenaire (pilotage de ses entreprises clientes et quotas) ; RH (pilotage des collaborateurs de sa structure) ; apprenant (parcours et attestation). Démo publique et compte témoin La démo publique et les comptes témoins éventuellement mis à disposition à des fins de présentation commerciale permettent d'explorer l'interface. Dans ces modes, les validations de parcours ne sont pas enregistrées comme preuves contractuelles pour une entreprise cliente, et les documents affichés (y compris une attestation ou une synthèse) peuvent être des spécimens. Ils ne constituent pas une attestation de suivi délivrée au titre d'un abonnement. Hébergement mutualisé et isolation LockinIA est une plateforme mutualisée : les comptes, parcours et suivis sont hébergés sur l'infrastructure de FITOPS AI (Firebase / Google Cloud en Union européenne pour les données de compte et de formation ; Vercel pour l'affichage du site). Les données de chaque entreprise (et, le cas échéant, de chaque partenaire) sont isolées logiquement par contrôles d'accès : un RH ne voit que sa structure ; un partenaire ne voit que ses entreprises clientes. FITOPS AI n'exploite pas les données des clients à des fins commerciales propres (prospection, revente, profilage marketing). L'accès technique ou nominatif par FITOPS AI est limité au support, à la sécurité, à la facturation, à la maintenance et aux obligations légales. Les indicateurs agrégés (volumes, sièges, taux de complétion) peuvent être consultés pour le pilotage du service. Assistance pédagogique et technique Pendant le parcours à distance, une assistance nommée est disponible : et — . Contact : · . Délai de réponse : . Les modalités FOAD (activités, durée moyenne, évaluations) figurent dans les CGV et la fiche programme . Usage La plateforme doit être utilisée conformément à sa destination, sans détournement, sans tentative d'accès non autorisé et sans extraction abusive des contenus. L'employeur est responsable des invitations qu'il envoie et du contenu qu'il saisit dans le module entreprise (outils, charte, cas d'usage). Contenu, attestation et synthèse Article 4 Les contenus pédagogiques sont indicatifs et évolutifs. Ils ne constituent pas un conseil juridique. Attestation de suivi nominative : prouve qu'un collaborateur a suivi et validé le parcours (évaluation finale). Elle documente une mesure prise au titre de l'article 4. Elle ne constitue ni diplôme, ni certification professionnelle officielle. Synthèse de suivi entreprise : document RH (écran et/ou PDF versionné) qui consigne le suivi des attestations et un récapitulatif nominatif. Elle ne certifie pas l'entreprise et ne remplace pas un audit de conformité. L'identifiant de suivi structure (type REG-LIA-…) et les empreintes associées servent à la traçabilité du dossier ; ils n'emportent aucune homologation publique. Exports Le RH peut télécharger des attestations individuelles, une synthèse Article 4 et, le cas échéant, un export groupé de preuves. Ces fichiers sont destinés au dossier interne de l'employeur. L'utilisateur s'engage à ne pas les altérer pour tromper un tiers sur le statut réel des parcours. Propriété Les contenus pédagogiques, la marque LockinIA et l'interface appartiennent à FITOPS AI. L'entreprise cliente (ou le partenaire pour le périmètre qu'il gère) reste responsable et « propriétaire » de ses données opérationnelles : liste des collaborateurs, module entreprise, registre des usages, attestations et synthèses. FITOPS AI ne les revend pas et ne les réutilise pas pour un autre client. La licence d'usage du contenu pédagogique n'emporte aucun transfert de propriété intellectuelle. Partenaires (OF / revendeurs) Un partenaire peut créer et suivre des entreprises clientes dans les limites de son quota contractuel, consulter des statistiques agrégées et les contacts RH nécessaires au déploiement. Sauf besoin de support ou stipulation contraire au contrat, le partenaire n'utilise pas le détail nominatif des parcours de tous les apprenants comme un fichier commercial. Face au client final, le partenaire demeure responsable de sa relation commerciale et, le cas échéant, de son statut d'organisme de formation ; FITOPS AI fournit la plateforme et le parcours sous licence. Durée et résiliation L'abonnement dure douze mois à compter de la mise en service. Il se reconduit tacitement pour une nouvelle période d'un an, sauf résiliation par e-mail à contact@lockin-web.online au moins trente jours avant l'échéance. L'accès reste ouvert jusqu'à la fin de la période déjà facturée. Le temps restant n'est pas remboursé. Les prix, le paiement et cette reconduction sont détaillés dans les conditions générales de vente . Suspension et suppression L'accès peut être suspendu en cas d'impayé après relance, ou d'usage contraire aux présentes. Il reprend lorsque la situation est régularisée. La suppression du compte se demande par e-mail au même contact. L'entreprise demande la fermeture de sa structure. Un collaborateur demande la suppression de son accès. Les preuves de formation restent disponibles pour l'employeur pendant l'année civile de réalisation de l'action et les trois années civiles suivantes, et les factures pendant dix ans. Modification des CGU FITOPS AI peut modifier les CGU. Le contact RH en est informé par e-mail au moins trente jours avant. Le changement s'applique à la reconduction suivante, sauf correction exigée par la loi ou par la sécurité du service, qui peut s'appliquer dès l'information. Si l'entreprise refuse le changement, elle résilie avant l'échéance, dans les conditions ci-dessus. Responsabilité LockinIA est tenue à une obligation de moyens dans la fourniture de ses services de sensibilisation, de cartographie et d'aide à la documentation. Ces services ne constituent pas un conseil juridique et ne garantissent pas à eux seuls la conformité réglementaire. Chaque fiche d'usage doit être validée par le DPO ou le référent juridique de l'entreprise. La responsabilité globale de LockinIA au titre de ces services est plafonnée aux montants effectivement versés par l'entreprise cliente au cours des douze (12) derniers mois, sauf en cas de faute lourde ou de dol. L'entreprise cliente demeure responsable de ses décisions, de ses validations et de la mise en œuvre des obligations qui lui sont applicables. Données Le traitement des données personnelles est décrit dans la politique de confidentialité . Lorsque FITOPS AI traite des données de collaborateurs pour le compte de l'entreprise (et, le cas échéant, dans le cadre d'un partenariat OF), l' accord de sous-traitance (DPA) s'applique. Les cookies et le stockage local sont décrits sur la page Cookies . Disponibilité Nous visons une disponibilité continue, sans garantie d'absence d'interruption. Des maintenances peuvent intervenir. Droit applicable Droit français. En cas de litige, et à défaut d'accord amiable, les tribunaux compétents seront saisis selon les règles en vigueur. ); }",
+    "cgv": "return ( Vendeur Les abonnements LockinIA sont vendus par FITOPS AI, micro-entreprise, 119 rue Jules Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063. TVA non applicable, article 293 B du CGI. Contact : contact@lockin-web.online · 06.62.28.86.56 . Champ d'application Les présentes CGV s'appliquent à toute commande d'abonnement, de partenariat (organisme de formation / revendeur) ou de prestation LockinIA passée par un professionnel. Elles prévalent sur tout document du client, sauf accord écrit contraire. Les CGU régissent l'usage de la plateforme ; l' accord de sous-traitance (DPA) encadre le traitement des données des collaborateurs. Commande La commande se forme par e-mail, devis accepté ou confirmation écrite (y compris après un échange téléphonique). FITOPS AI confirme la mise en service et ouvre les accès (compte RH, espace partenaire le cas échéant, invitations, sièges selon l'offre). Le client garantit l'exactitude des informations de facturation fournies. Partenariats (OF / revendeurs) Les modalités partenaires (tarif partenaire, marque blanche, quota de sièges, durée de licence) sont fixées par devis ou conditions particulières. Le partenaire peut créer des entreprises clientes dans la limite de son quota. Les stagiaires et suivis restent hébergés sur la plateforme LockinIA opérée par FITOPS AI. Sauf cession écrite du contenu, le partenaire reçoit une licence d'usage / de commercialisation, sans transfert de propriété intellectuelle sur le parcours. Le partenaire reste responsable de sa relation avec ses clients finaux et, le cas échéant, de son statut d'organisme de formation. FITOPS AI fournit la plateforme, le contenu pédagogique sous licence et l'hébergement technique. Prix Le prix est celui affiché sur le site au jour de la commande, pour douze mois : : € / an — jusqu'à sièges. : € / an — jusqu'à sièges. : € / an — jusqu'à sièges. : sur devis. Hors abonnement : le module métier sur mesure au format standard est facturé 690 € par module (texte, cas pratique et idée d'usage intégrés au parcours) ; une demande plus large est établie sur devis ; l'atelier usages et automatisation (visio ou présentiel) est établi sur devis. La marque blanche et les partenariats organismes de formation / cabinets RH sont établis sur devis (forfait et/ou sièges). Il n'y a pas encore de paiement en ligne : la facture est envoyée par e-mail et se règle par virement ou par carte. TVA non applicable, article 293 B du CGI. Prestations incluses Accès à la plateforme selon le nombre de sièges de l'offre. Parcours de formation socle, attestations de suivi nominatives, synthèse de suivi Article 4 (écran et export PDF versionné) et espace RH de pilotage. Module entreprise (outils, charte, cas d'usage) renseigné par le RH, visible dans le parcours lorsque activé. Exports de preuves à usage interne (attestation individuelle, synthèse, archive groupée le cas échéant). Assistance pédagogique et technique nommée (voir ci-dessous), délai de réponse . Sauf mention contraire sur devis : LockinIA ne fournit pas de conseil juridique, d'audit de conformité, ni de certification officielle de l'entreprise. L'attestation documente le parcours suivi ; la synthèse Article 4 consigne le suivi des attestations. Ni l'une ni l'autre ne constitue un diplôme ni une certification de l'entreprise. Modalités de formation à distance (FOAD) Le parcours LockinIA est dispensé à distance, en asynchrone. Conformément au Code du travail, les modalités suivantes s'appliquent. La fiche programme détaille objectifs, public, prérequis, déroulé, accessibilité et tarifs. Activités à distance : Durée moyenne : (socle). Évaluations : : — : — Contact : · Délai de réponse : . Paiement Le prix est dû à réception de la facture, sauf délai différent indiqué sur la facture ou le devis. Le règlement s'effectue par virement bancaire ou par carte, selon les modalités communiquées avec la facture. En cas de retard de paiement, et conformément aux articles L.441-10 et D.441-5 du code de commerce : pénalités de retard au taux de trois fois le taux d'intérêt légal, et indemnité forfaitaire de recouvrement de 40 €. FITOPS AI se réserve le droit de réclamer une indemnité complémentaire si les frais de recouvrement dépassent ce montant. Durée et reconduction L'abonnement est conclu pour douze mois à compter de la mise en service. Il se reconduit tacitement pour un an, aux conditions de prix alors affichées, sauf résiliation par e-mail au moins trente jours avant l'échéance. Sans résiliation, une nouvelle facture annuelle est émise. Impayé À défaut de paiement dans les trente jours de la facture, une relance est envoyée. L'accès peut ensuite être suspendu jusqu'au règlement, puis résilié si l'impayé demeure. Les sommes déjà facturées restent dues, y compris pénalités et indemnité forfaitaire le cas échéant. Fin de contrat À l'échéance, les accès sont fermés. Les preuves de formation (attestations, résultats par module, relevés de connexion liés au parcours, synthèses Article 4 encore dues) restent disponibles pour l'entreprise cliente pendant l'année civile de réalisation de l'action et les trois années civiles suivantes, puis sont supprimées. Un rappel est adressé avant reconduction tacite. Les factures sont conservées dix ans. La fermeture anticipée se demande par e-mail ; la période déjà payée n'est pas remboursée. Rétractation Les présentes CGV s'adressent à des professionnels. Le droit de rétractation prévu pour les consommateurs ne s'applique pas. Responsabilité FITOPS AI est tenu à une obligation de moyens. Sa responsabilité globale au titre d'un abonnement ou d'une prestation est plafonnée aux montants effectivement versés par le client au cours des douze derniers mois, sauf faute lourde ou dol. LockinIA ne garantit pas à elle seule la conformité réglementaire de l'entreprise. Force majeure Aucune partie n'est responsable d'un manquement dû à un événement de force majeure au sens de l'article 1218 du code civil (y compris panne majeure d'infrastructure hors de son contrôle raisonnable). Données personnelles Les données sont hébergées de façon mutualisée chez FITOPS AI, avec isolation logique par entreprise et, le cas échéant, par partenaire. FITOPS AI agit en sous-traitant : pas de revente ni d'usage marketing des données clients. Les indicateurs agrégés (volumes, sièges, complétion) sont consultables pour le pilotage ; l'accès nominatif par FITOPS AI est limité au support, à la sécurité, à la facturation, aux obligations légales et à la maintenance. Ce cadre est détaillé dans l' accord de sous-traitance (DPA) et la politique de confidentialité . Modification des CGV FITOPS AI peut modifier les CGV. Le contact RH en est informé par e-mail au moins trente jours avant. Le changement s'applique à la reconduction suivante, sauf correction exigée par la loi, qui peut s'appliquer dès l'information. En cas de refus, le client résilie avant l'échéance dans les conditions ci-dessus. Droit applicable Droit français. En cas de litige, et à défaut d'accord amiable, les tribunaux compétents seront saisis selon les règles en vigueur. ); }",
+    "dpa": "return ( Objet Le présent accord encadre le traitement de données personnelles confié par l'entreprise cliente (« responsable de traitement ») à FITOPS AI (« sous-traitant »), éditeur de LockinIA, au titre de l'article 28 du RGPD. Il complète les CGV , les CGU et la politique de confidentialité . En souscrivant un abonnement LockinIA, en utilisant la plateforme pour former ses collaborateurs, ou en déployant LockinIA via un partenaire (organisme de formation / revendeur), l'entreprise accepte le présent accord. Parties Responsable de traitement : l'entreprise cliente qui décide des finalités (formation de ses salariés, suivi RH, registre des usages), qu'elle souscrive directement ou via un partenaire. Sous-traitant : FITOPS AI, micro-entreprise, 119 rue Jules Parent, Rueil-Malmaison (92500), SIRET 853 780 906 00063. Contact : contact@lockin-web.online · 06.62.28.86.56 . Lorsqu'un partenaire (organisme de formation ou revendeur) déploie LockinIA pour le compte d'entreprises clientes, ce partenaire peut agir comme responsable de traitement ou co-responsable selon sa relation contractuelle avec l'entreprise finale. FITOPS AI demeure sous-traitant technique pour l'hébergement et la mise à disposition de la plateforme. Traitement confié Objet : hébergement mutualisé et mise à disposition de la plateforme LockinIA (comptes, formation, attestations, synthèse Article 4, module entreprise / registre des usages, espaces RH et partenaire, invitations et quotas). Durée : pendant le contrat d'abonnement (ou de partenariat), puis conservation des preuves de formation pendant l'année civile de réalisation de l'action et les trois années civiles suivantes (sauf obligation légale plus longue pour les factures). Nature : collecte, enregistrement, conservation, consultation, extraction (exports), suppression. Finalité : exécution du service LockinIA pour le compte du client ; FITOPS AI ne réutilise pas ces données pour un autre client ni pour du marketing. Personnes concernées : collaborateurs, administrateurs RH, contacts partenaires, et le cas échéant administrateurs LockinIA pour le support. Données : identité, e-mail, rôle, structure / partenaire, progression de formation, scores, attestations, métadonnées de synthèse Article 4 (dates, version, empreinte, compteurs), indicateurs de suivi, quotas / sièges, invitations, contenu du module entreprise / registre des usages renseigné par le client, preuves archivées pendant la rétention due. Hébergement, isolation et accès FITOPS AI Les données sont hébergées sur l'infrastructure de FITOPS AI (Firebase / Google Cloud, région eur3 — Union européenne — pour les données de compte et de formation). L'isolation est logique (contrôles d'accès par structure et par partenaire) : un client ne peut pas accéder aux données d'un autre client. FITOPS AI peut consulter des indicateurs agrégés (nombre d'entreprises, d'inscrits, de parcours en cours ou terminés, consommation de sièges) pour le pilotage du service, la facturation et la capacité. L'accès nominatif par FITOPS AI (identité d'un apprenant, détail d'un parcours) est limité aux cas suivants : support demandé par le client ou le partenaire, sécurité / incidents, facturation et contentieux, obligations légales ou demandes d'autorité compétente, maintenance technique nécessaire. FITOPS AI ne consulte pas ces données à des fins commerciales propres. Obligations de FITOPS AI Ne traiter les données que sur instruction documentée du client (abonnement, partenariat, usage de la plateforme, demandes écrites). Garantir la confidentialité des personnes autorisées à accéder aux données. Mettre en œuvre des mesures de sécurité raisonnables (authentification, contrôle d'accès par structure / partenaire, hébergement Firestore en UE). Aider le client, dans la mesure du possible, à répondre aux demandes des personnes concernées. Informer le client sans délai injustifié en cas de violation de données personnelles affectant ses données. À la fin du contrat : supprimer les données du client dans les délais prévus, sauf conservation légale (factures) ou preuves encore dues au client (année de formation + 3 années civiles). Mettre à disposition les informations nécessaires pour démontrer le respect du présent accord, sur demande écrite raisonnable. Obligations du client Déterminer les finalités et la base légale du traitement (notamment formation au titre de l'article 4 de l'AI Act). Informer ses collaborateurs de l'usage de LockinIA et de leurs droits. Ne fournir que les données nécessaires (nom, e-mail, rôle) et s'assurer qu'il est en droit de les transmettre. Gérer les accès RH et les invitations de manière sécurisée. Partenaires (organismes de formation / revendeurs) Le partenaire peut créer des entreprises clientes, suivre les quotas et consulter des statistiques agrégées ainsi que les contacts RH nécessaires au déploiement. Sauf besoin de support ou stipulation contraire au contrat de partenariat, le partenaire n'exploite pas le détail nominatif de l'ensemble des apprenants à des fins autres que l'exécution du service. Le partenaire informe ses propres clients finaux de l'hébergement chez FITOPS AI et des rôles respectifs. Sous-traitants ultérieurs Le client autorise FITOPS AI à recourir aux sous-traitants suivants, nécessaires au service : Google Firebase / Google Cloud — authentification et base Firestore (région eur3, Union européenne). Vercel Inc. — hébergement et affichage du site (États-Unis), encadré par son accord de traitement et les clauses contractuelles types (voir vercel.com/legal/dpa ). Tout nouveau sous-traitant ultérieur est signalé au client (mise à jour de la politique de confidentialité ou e-mail). Le client peut s'y opposer pour motif légitime ; à défaut d'accord, il peut résilier selon les CGV. Transferts Les données de compte, de formation et de registre sont stockées dans l'Union européenne. L'affichage du site peut impliquer un transfert vers Vercel aux États-Unis, encadré comme indiqué ci-dessus. Durée et fin Le présent accord s'applique pendant toute la durée du contrat LockinIA (abonnement ou partenariat). Il prend fin avec la suppression des données du client, sous réserve des conservations légales et des preuves encore dues. Droit applicable Droit français. Litiges : tribunaux compétents selon les règles en vigueur. ); }",
+    "cookies": "return ( En bref LockinIA n'utilise pas de cookies publicitaires ni de traceurs analytics tiers. Aucun bandeau de consentement n'est requis pour les seuls éléments techniques indispensables au service. Ce qui est utilisé Authentification Firebase : session nécessaire pour rester connecté (mécanismes techniques du fournisseur d'auth). Préférence de thème (clair / sombre) enregistrée dans le navigateur ( localStorage ). Cache de progression formation en local pour éviter une perte en cas de coupure réseau, synchronisé ensuite avec le serveur (comptes abonnés). Démo publique / compte témoin : progression et spécimens peuvent rester uniquement locaux au navigateur, sans valeur de preuve contractuelle. Gestion Vous pouvez effacer les données du site via les paramètres de votre navigateur. La déconnexion met fin à la session active. Pour le traitement des données personnelles hors cookies, voir la politique de confidentialité . Contact : contact@lockin-web.online . ); }",
+    "rgpd": "return ( Deux sujets distincts 1. LockinIA en tant que prestataire — nous hébergeons de façon mutualisée des données de compte et de formation (identité, e-mail, progression, attestations, synthèse Article 4, module entreprise) pour délivrer le service, avec isolation par entreprise / partenaire. FITOPS AI agit en sous-traitant : indicateurs agrégés pour le pilotage ; accès nominatif limité au support, à la sécurité, à la facturation et aux obligations légales. Les finalités, durées et droits figurent dans la politique de confidentialité . Le cadre de sous-traitance est décrit dans le DPA . 2. Le parcours pédagogique — dès qu'un salarié colle un nom, un e-mail, une voix ou un fichier client dans une IA, le RGPD s'applique. La formation rappelle les réflexes concrets : quoi saisir ou ne pas saisir, données personnelles, secrets d'entreprise, et quand alerter le référent ou le DPO. Ce que le parcours couvre Données personnelles vs secrets d'entreprise Minimisation et outils autorisés Décision humaine et publication de contenus générés Que faire en cas d'erreur (alerte rapide) Ce n'est pas un audit RGPD de votre organisation, ni un substitut à un DPO ou à un conseil juridique. Hébergement Les comptes, la formation et le suivi sont stockés dans l'Union européenne (Firebase / Firestore, région eur3). L'affichage du site passe par Vercel. Le détail des sous-traitants, des rôles (RH, partenaire, FITOPS AI) et des accès figure dans la politique de confidentialité et le DPA. ); }",
+    "ai-act": "return ( De quoi parle-t-on ? Le règlement européen sur l'intelligence artificielle (AI Act, règlement (UE) 2024/1689) encadre les systèmes d'IA selon leur niveau de risque. L'article 4, applicable depuis le 2 février 2025 , impose aux fournisseurs et aux déployeurs de systèmes d'IA de prendre des mesures pour favoriser le développement de la maîtrise de l'IA de leur personnel et des personnes qui utilisent ou font fonctionner ces systèmes pour leur compte — y compris avec des outils grand public comme ChatGPT ou Copilot. Depuis le règlement (UE) 2026/1744 (Digital Omnibus on AI, en vigueur), le texte précise que l'obligation porte sur les mesures mises en œuvre , et non sur la garantie d'un niveau individuel déterminé de compétence. L'article 4 ne prévoit pas de plafond d'amende qui lui soit propre (pas de barème type « 15 M€ ou 3 % » attaché à cette seule obligation). Toutefois, le non-respect peut donner lieu à des mesures d'exécution ou à des sanctions selon le droit applicable : l'absence de barème autonome ne signifie pas une absence de risque juridique. Il n'y a pas de seuil de taille d'entreprise, ni de durée minimale imposée, ni d'organisme obligatoire. En cas de contrôle, d'incident ou d'audit client, pouvoir montrer que des mesures ont été prises et documentées devient décisif. Calendrier (jalons utiles) 2 août 2025 — obligations relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance 2 août 2026 — obligations de transparence de l'article 50 (chatbots, certains contenus synthétiques) 2 décembre 2026 — certaines interdictions spécifiques sur des contenus illicites (ex. contenus intimes non consentis), distinctes des obligations générales de transparence 2 décembre 2027 — règles applicables aux systèmes d'IA à haut risque concernés par l'annexe III (dont emploi / recrutement), selon la finalité du système — tous les outils RH intégrant de l'IA ne sont pas automatiquement à haut risque 2 août 2028 — certaines catégories liées à l'article 6, paragraphe 1, et aux produits réglementés de l'annexe I Indépendamment de ce calendrier, l'article 22 du RGPD encadre déjà les décisions individuelles fondées exclusivement sur un traitement automatisé lorsqu'elles produisent des effets juridiques ou affectent significativement une personne de manière similaire — y compris certains usages RH. Ce que LockinIA fournit Un parcours de sensibilisation (1 h 15) adapté aux usages au travail Des attestations nominatives de suivi (qui, quand, résultat) Un tableau de bord RH et un export de preuves (ZIP / JSON) Des fiches métiers et un module entreprise (charte, outils, registre) LockinIA aide à structurer et documenter une démarche au titre de l'article 4 (sensibilisation, formation, suivi). Ce n'est ni un diplôme, ni une certification officielle, ni une attestation de conformité juridique de l'entreprise : un parcours seul ne garantit pas la conformité. Ce que LockinIA ne remplace pas Un accompagnement juridique, un audit de conformité de vos systèmes d'IA, ni la responsabilité de l'employeur dans le choix des outils et des règles internes. Pour le détail du service : CGU . ); }"
+  }
+}
