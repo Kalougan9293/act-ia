@@ -58,7 +58,8 @@ export const DEMO_TOUR_STEPS = [
     id: "hero-expertise",
     selector: "#demo-tour-hero-expertise",
     label: "Expertise",
-    comment: "Contenu relu : formateur + juriste AI Act / RGPD.",
+    comment:
+      "Contenu : formateur certifié RS6776 et RS6601 + juriste AI Act / RGPD.",
     placement: "below" as const,
   },
   {

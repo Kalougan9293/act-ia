@@ -337,7 +337,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "swipe",
           briefing:
-            "Deux rôles.\n« J'utilise » : votre entreprise se sert d'un outil déjà en vente, comme ChatGPT.\n« Je vends » : votre entreprise fabrique une IA, ou la propose à ses clients sous sa marque.\nBalancez chaque situation vers la bonne zone.",
+            "Deux rôles.\n« J'utilise » : votre entreprise se sert d'un outil déjà en vente, comme ChatGPT.\n« Je vends » : votre entreprise fabrique une IA, ou la propose à ses clients sous sa marque.\nVocabulaire AI Act : « J'utilise » = déployeur · « Je vends » = fournisseur.\nBalancez chaque situation vers la bonne zone.",
           left: { id: "deploy", label: "J'utilise" },
           right: { id: "provider", label: "Je vends" },
           cards: [
@@ -415,7 +415,7 @@ export const BLOCKS: Block[] = [
               label: "Résumer une réunion avec ChatGPT",
               binId: "low",
               explanation:
-                "C'est du risque minimal. Usage courant : vous relisez le résumé, et c'est tout.",
+                "Risque minimal au sens de l'AI Act (usage courant, vous relisez). Attention : le RGPD peut quand même s'appliquer — voix, noms, propos tenus en réunion.",
             },
             {
               id: "bot",
@@ -1273,6 +1273,8 @@ export const BLOCKS: Block[] = [
           src: "/media/formation/5-2.mp4",
           script:
             "On l'a vu, l'IA peut clairement soulager votre quotidien, mais utilisée à mauvais escient, elle peut être très dangereuse. Aujourd'hui, on va parler des deepfakes, ce que c'est et ce que l'AI Act prévoit à cet effet.\n\nDéjà, c'est quoi un deepfake ? C'est une voix, une vidéo ou une photo générée par l'IA pour ressembler à une vraie personne. Concrètement, un deepfake, c'est ça. On peut modifier l'apparence comme ceci. Voilà une forme de moi. En plus de l'apparence, on peut également modifier la voix. Et c'est là que ça devient difficile.\n\nEt ces petits effets que je viens de vous présenter sont totalement accessibles. Je n'ai pris que quelques minutes pour les faire. Imaginez si je prends le temps de prendre exactement la bonne voix, le bon visage, même changer l'arrière-plan pour vous faire une illusion parfaite. Ce qui est dangereux, c'est que plus le temps passe, plus la technologie est de plus en plus optimisée et accessible. Du coup, n'importe qui peut faire croire n'importe quoi à tout le monde.\n\nDonc ne vous précipitez pas si vous recevez une vidéo ou un audio de votre patron, par exemple, qui vous demande de faire telle ou telle chose. Vérifiez par un canal, faites attention, soyez méfiants quand vous recevez des ordres directs ou trop gros. Vous avez certainement entendu parler du cas du faux Brad Pitt qui a fait le tour des médias. Même si ce cas est un peu gros, il existe d'autres situations qui sont très réelles. Imaginez si je me fais passer pour un de vos voisins, vos collègues, votre patron, ou même un membre de votre famille, que je mets exactement la bonne voix, le bon type de langage, le bon arrière-plan, je peux faire croire n'importe quoi à n'importe qui. Il faut vraiment être vigilant. Ce n'est pas parce que c'est gros que c'est forcément faux. Il y a des choses qui sont hyper réelles. D'autant plus si on est spécialisé dans le domaine. Et ça arrive même au travail, d'où la vigilance de l'AI Act.\n\nSi votre entreprise génère une vidéo deepfake, elle en a le droit. Néanmoins, elle doit préciser que c'est une vidéo générée par l'IA. Même si c'est hyper évident, même si on sait que c'est faux, il faut le préciser, c'est l'obligation de l'AI Act.",
+          noteAfter:
+            "Précision Art. 50 : la mention « généré par l'IA » s'impose surtout quand le contenu peut passer pour authentique. Pour une fiction clairement artistique, satirique ou fictionnelle, le régime de transparence est allégé — ce n'est pas le même cas qu'un deepfake crédible.",
         },
       },
       {
@@ -1352,7 +1354,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-portrait-v4.jpg",
               needsLabel: true,
               explanation:
-                "Ça peut passer pour une vraie photo. Si c'est généré ou fortement modifié, on le dit.",
+                "Bonne pratique : si ça peut passer pour une vraie photo, on le dit. L'obligation est plus nette quand l'image imite une vraie personne ou un vrai événement (deepfake) — même si le visage « inventé » n'existe pas, la transparence reste utile.",
             },
             {
               id: "cartoon",
@@ -1361,7 +1363,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-cartoon-robot.jpg",
               needsLabel: false,
               explanation:
-                "On précise seulement quand ça peut passer pour réel. Ici, c'est clairement un dessin.",
+                "On précise surtout quand ça peut passer pour réel. Ici, c'est clairement un dessin : pas besoin.",
             },
             {
               id: "scene",
@@ -1370,7 +1372,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-scene-v1.jpg",
               needsLabel: true,
               explanation:
-                "Ça a l'air d'une vraie photo de rue. Si elle est générée, on le dit — même sans personne en gros plan.",
+                "Ça a l'air d'une vraie photo de rue. Si elle est générée, la mention est une bonne pratique de transparence — et d'autant plus utile si elle peut faire croire à un lieu ou un événement réel.",
             },
             {
               id: "paint",
@@ -1379,7 +1381,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-paint-v2.jpg",
               needsLabel: false,
               explanation:
-                "On précise seulement quand ça peut passer pour réel. Ici, le style aquarelle se voit tout de suite.",
+                "Fiction clairement artistique : le style aquarelle se voit tout de suite. Pas le même cas qu'un contenu qui pourrait passer pour authentique.",
             },
             {
               id: "news",
@@ -1388,7 +1390,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-news-v2.jpg",
               needsLabel: true,
               explanation:
-                "Ça ressemble à un vrai journal télévisé. Si c'est synthétique, on le signale.",
+                "Ça ressemble à un vrai journal télévisé. Ici la mention compte vraiment : un contenu qui imite l'info peut tromper — régime plus proche du deepfake / Art. 50.",
             },
             {
               id: "logo",
@@ -1397,7 +1399,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-logo-v2.jpg",
               needsLabel: false,
               explanation:
-                "On précise seulement quand ça peut passer pour réel. Ici, c'est un logo stylisé : pas besoin.",
+                "Logo stylisé : personne ne le prend pour une photo réelle. Pas besoin de sticker.",
             },
           ],
         },

@@ -62,7 +62,7 @@ const pricing = {
       features: [
         "Jusqu'à 20 accès utilisateurs",
         "Tout le plan Micro inclus",
-        "Assistance prioritaire : réponse sous 24 h ouvrées",
+        "Assistance prioritaire : réponse sous 48 h ouvrées",
       ],
     },
     {
@@ -141,7 +141,7 @@ const payload = {
   landing: {
     hero: {
       badge: "Formation Art. 4 · Données & bons usages",
-      h1: "La plateforme clé en main pour attester la formation de vos salariés à l'IA et au RGPD en continu",
+      h1: "La plateforme clé en main pour documenter la formation de vos salariés à l'IA (AI Act) et au RGPD",
       ctas: ["Demander un accès", "Tester la démo"],
     },
     trust: [

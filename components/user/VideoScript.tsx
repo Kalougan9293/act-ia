@@ -37,6 +37,8 @@ export default function VideoScript({
   onComplete,
   /** Coupe la lecture avant la fin du fichier (0–1), ex. extrait démo. */
   endRatio,
+  /** Note sous la colonne vidéo uniquement (même largeur). */
+  noteAfter,
 }: {
   format: string;
   duration?: string;
@@ -44,6 +46,7 @@ export default function VideoScript({
   src?: string;
   onComplete?: () => void;
   endRatio?: number;
+  noteAfter?: string;
 }) {
   const [charIndex, setCharIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -278,134 +281,146 @@ export default function VideoScript({
     </div>
   );
 
+  const noteBlock = noteAfter ? (
+    <p className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-2 text-center text-[11px] leading-snug text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-200 sm:text-xs">
+      {noteAfter}
+    </p>
+  ) : null;
+
   return (
     <div className="grid items-start gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-5">
       {src ? (
-        <div
-          ref={mediaColRef}
-          className="mx-auto flex w-full max-w-[min(100%,16.5rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg dark:border-slate-700"
-        >
-          <div className="relative">
-            <video
-              ref={videoRef}
-              className="max-h-[calc(100dvh-14rem)] w-full object-contain"
-              style={{ aspectRatio: "9 / 16" }}
-              playsInline
-              preload="auto"
-              src={src}
-              controls={false}
-              disablePictureInPicture
-              disableRemotePlayback
-              onContextMenu={(event) => event.preventDefault()}
-              onWaiting={() => setBuffering(true)}
-              onStalled={() => setBuffering(true)}
-              onPlaying={() => {
-                setBuffering(false);
-                setPlaying(true);
-              }}
-              onCanPlay={() => setBuffering(false)}
-              onEnded={() => {
-                setPlaying(false);
-                setBuffering(false);
-                setEnded(true);
-                applyProgress(1);
-                markComplete();
-              }}
-              onPlay={() => setPlaying(true)}
-              onPause={() => {
-                setPlaying(false);
-                setBuffering(false);
-              }}
-            >
-              Votre navigateur ne lit pas la vidéo.
-            </video>
-            {buffering ? (
-              <div
-                className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"
-                aria-live="polite"
-                aria-label="Chargement de la vidéo"
-              >
-                <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/25 border-t-white" />
-              </div>
-            ) : null}
-          </div>
-
-          {/* Barre de progression = rythme réel de la vidéo (non cliquable) */}
+        <div className="mx-auto flex w-full max-w-[min(100%,16.5rem)] flex-col gap-2">
           <div
-            className="h-1.5 bg-white/15"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(progress * 100)}
-            aria-label="Progression de la vidéo"
+            ref={mediaColRef}
+            className="flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-black shadow-lg dark:border-slate-700"
           >
-            <div
-              ref={progressFillRef}
-              className="h-full origin-left bg-blue-500 will-change-transform"
-              style={{ transform: `scaleX(${progress})` }}
-            />
-          </div>
+            <div className="relative">
+              <video
+                ref={videoRef}
+                className="max-h-[calc(100dvh-14rem)] w-full object-contain"
+                style={{ aspectRatio: "9 / 16" }}
+                playsInline
+                preload="auto"
+                src={src}
+                controls={false}
+                disablePictureInPicture
+                disableRemotePlayback
+                onContextMenu={(event) => event.preventDefault()}
+                onWaiting={() => setBuffering(true)}
+                onStalled={() => setBuffering(true)}
+                onPlaying={() => {
+                  setBuffering(false);
+                  setPlaying(true);
+                }}
+                onCanPlay={() => setBuffering(false)}
+                onEnded={() => {
+                  setPlaying(false);
+                  setBuffering(false);
+                  setEnded(true);
+                  applyProgress(1);
+                  markComplete();
+                }}
+                onPlay={() => setPlaying(true)}
+                onPause={() => {
+                  setPlaying(false);
+                  setBuffering(false);
+                }}
+              >
+                Votre navigateur ne lit pas la vidéo.
+              </video>
+              {buffering ? (
+                <div
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"
+                  aria-live="polite"
+                  aria-label="Chargement de la vidéo"
+                >
+                  <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/25 border-t-white" />
+                </div>
+              ) : null}
+            </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-2">
-            <button
-              type="button"
-              onClick={togglePlay}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white transition hover:bg-white/10"
-              aria-label={playing ? "Pause" : ended ? "Relancer" : "Lecture"}
+            {/* Barre de progression = rythme réel de la vidéo (non cliquable) */}
+            <div
+              className="h-1.5 bg-white/15"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(progress * 100)}
+              aria-label="Progression de la vidéo"
             >
-              {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </button>
-            <button
-              type="button"
-              onClick={restart}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/90 transition hover:bg-white/10"
-              aria-label="Remettre au début"
-              title="Remettre au début"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setMuted((value) => !value)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/90 transition hover:bg-white/10"
-              aria-label={muted || volume === 0 ? "Activer le son" : "Couper le son"}
-            >
-              {muted || volume === 0 ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              value={muted ? 0 : volume}
-              onChange={(event) => {
-                const next = Number(event.target.value);
-                setVolume(next);
-                setMuted(next === 0);
-              }}
-              className="h-1 w-16 cursor-pointer accent-blue-500 sm:w-20"
-              aria-label="Volume"
-            />
+              <div
+                ref={progressFillRef}
+                className="h-full origin-left bg-blue-500 will-change-transform"
+                style={{ transform: `scaleX(${progress})` }}
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-2">
+              <button
+                type="button"
+                onClick={togglePlay}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white transition hover:bg-white/10"
+                aria-label={playing ? "Pause" : ended ? "Relancer" : "Lecture"}
+              >
+                {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={restart}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/90 transition hover:bg-white/10"
+                aria-label="Remettre au début"
+                title="Remettre au début"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMuted((value) => !value)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/90 transition hover:bg-white/10"
+                aria-label={muted || volume === 0 ? "Activer le son" : "Couper le son"}
+              >
+                {muted || volume === 0 ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={muted ? 0 : volume}
+                onChange={(event) => {
+                  const next = Number(event.target.value);
+                  setVolume(next);
+                  setMuted(next === 0);
+                }}
+                className="h-1 w-16 cursor-pointer accent-blue-500 sm:w-20"
+                aria-label="Volume"
+              />
+            </div>
           </div>
+          {noteBlock}
         </div>
       ) : (
-        <div
-          ref={mediaColRef}
-          className="relative mx-auto flex w-full max-w-[16.5rem] flex-col overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white shadow-lg dark:border-blue-800"
-        >
-          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_20%,#3b82f6,transparent_45%),radial-gradient(circle_at_80%_70%,#1d4ed8,transparent_40%)]" />
-          <div className="relative flex aspect-[9/16] max-h-[calc(100dvh-11rem)] flex-col items-center justify-center gap-2 px-5 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.2em] uppercase backdrop-blur">
-              <Film className="h-3.5 w-3.5" />
-              VIDEO
-            </span>
-            <p className="text-sm text-blue-100/90">{format}</p>
-            {duration ? <p className="text-xs text-slate-300">{duration}</p> : null}
+        <div className="mx-auto flex w-full max-w-[16.5rem] flex-col gap-2">
+          <div
+            ref={mediaColRef}
+            className="relative flex w-full flex-col overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white shadow-lg dark:border-blue-800"
+          >
+            <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_20%,#3b82f6,transparent_45%),radial-gradient(circle_at_80%_70%,#1d4ed8,transparent_40%)]" />
+            <div className="relative flex aspect-[9/16] max-h-[calc(100dvh-11rem)] flex-col items-center justify-center gap-2 px-5 text-center">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.2em] uppercase backdrop-blur">
+                <Film className="h-3.5 w-3.5" />
+                VIDEO
+              </span>
+              <p className="text-sm text-blue-100/90">{format}</p>
+              {duration ? <p className="text-xs text-slate-300">{duration}</p> : null}
+            </div>
           </div>
+          {noteBlock}
         </div>
       )}
 

@@ -32,9 +32,9 @@ const plans: Plan[] = [
       "Tableau de bord RH, relevés de connexion et export",
       "Veille incluse : le parcours suit l'actualité",
       "Renouvellement : nouveaux arrivants + mises à jour",
-      "Référents pédagogique & technique nommés (48 h)",
+      "Référents pédagogique & technique nommés (48 h ouvrées)",
     ],
-    cta: "Démarrer maintenant",
+    cta: "Prendre rendez-vous",
   },
   {
     name: "TPE",
@@ -45,9 +45,9 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 20 accès utilisateurs",
       "Tout le plan Micro inclus",
-      "Assistance prioritaire : réponse sous 24 h ouvrées (mêmes référents)",
+      "Assistance prioritaire : réponse sous 48 h ouvrées (mêmes référents)",
     ],
-    cta: "Démarrer maintenant",
+    cta: "Prendre rendez-vous",
   },
   {
     name: "PME",
@@ -59,7 +59,7 @@ const plans: Plan[] = [
       "Jusqu'à 50 accès utilisateurs",
       "Tout le plan TPE inclus",
     ],
-    cta: "Démarrer maintenant",
+    cta: "Prendre rendez-vous",
   },
   {
     name: "ETI",
@@ -72,7 +72,7 @@ const plans: Plan[] = [
       "Intégrations sur devis",
       "Assistance dédiée (référents nommés)",
     ],
-    cta: "Démarrer maintenant",
+    cta: "Prendre rendez-vous",
   },
 ];
 
@@ -135,10 +135,16 @@ export default function PricingSection() {
           </h2>
         </motion.div>
 
-        <p className="mx-auto mb-4 max-w-6xl text-center text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
-          Formation réalisable avec un partenaire certifié{" "}
-          <span className="text-blue-600 dark:text-blue-400">Qualiopi</span>
-        </p>
+        <div className="mb-4 flex w-full flex-col items-center justify-center gap-1.5 px-4 text-center">
+          <p className="max-w-3xl text-center text-lg font-semibold tracking-tight text-slate-900 dark:text-white sm:text-xl">
+            Formation réalisable avec un partenaire certifié{" "}
+            <span className="text-blue-600 dark:text-blue-400">Qualiopi</span>
+          </p>
+          <p className="max-w-2xl text-center text-sm font-medium text-slate-600 dark:text-slate-300">
+            LockinIA n&apos;est pas un organisme certifié Qualiopi ; la prise en
+            charge OPCO passe par un partenaire.
+          </p>
+        </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {plans.map((plan, i) => (

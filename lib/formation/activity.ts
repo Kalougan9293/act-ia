@@ -24,7 +24,14 @@ export type Activity =
         after: string[];
       };
     }
-  | { kind: "video"; format: string; script: string; src?: string }
+  | {
+      kind: "video";
+      format: string;
+      script: string;
+      src?: string;
+      /** Précision affichée sous la vidéo (ex. nuance juridique sans re-tournage). */
+      noteAfter?: string;
+    }
   | ({ kind: "quiz"; questions: { prompt: string; choices: ActivityChoice[] }[] } & Brief)
   | {
       kind: "sort";

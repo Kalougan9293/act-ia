@@ -54,12 +54,11 @@ export default function Hero() {
                 className="scroll-mt-28 text-[1.85rem] sm:text-[2.15rem] lg:text-[2.55rem] font-extrabold text-slate-900 dark:text-white leading-[1.2] tracking-tight text-justify hyphens-auto"
               >
                 La plateforme clé en main pour{" "}
-                <span className="text-blue-600 dark:text-blue-400">attester</span>{" "}
+                <span className="text-blue-600 dark:text-blue-400">documenter</span>{" "}
                 la formation de vos salariés à l&apos;
-                <span className="text-blue-600 dark:text-blue-400">IA</span> et
-                au{" "}
-                <span className="text-blue-600 dark:text-blue-400">RGPD</span> en
-                continu
+                <span className="text-blue-600 dark:text-blue-400">IA</span>{" "}
+                (AI Act) et au{" "}
+                <span className="text-blue-600 dark:text-blue-400">RGPD</span>
               </h1>
             </motion.div>
 
@@ -111,8 +110,9 @@ export default function Hero() {
                 id="demo-tour-hero-expertise"
                 className="scroll-mt-28 max-w-md text-xs leading-relaxed text-slate-400 dark:text-slate-500"
               >
-                Contenu conçu et relu avec un formateur agréé et un juriste AI Act / RGPD.
-                Les retours des premières sessions seront bientôt publiés.
+                Contenu conçu avec un formateur certifié RS6776 et RS6601, relu
+                par un juriste AI Act / RGPD. Les retours des premières sessions
+                seront bientôt publiés.
               </p>
             </motion.div>
           </div>

@@ -5592,6 +5592,7 @@ export default function ActivityPlayer({
         src={activity.src}
         onComplete={onReady}
         endRatio={videoEndRatio}
+        noteAfter={activity.noteAfter}
       />
     );
   }
