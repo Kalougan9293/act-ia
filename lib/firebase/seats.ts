@@ -32,11 +32,6 @@ export function seatIsRecoverable(progressPercent?: number | null): boolean {
   return (progressPercent ?? 0) <= 0;
 }
 
-/** @deprecated préférer userConsumesSeat */
-export function roleConsumesSeat(role: string | null | undefined): boolean {
-  return role === "employee";
-}
-
 /** Compte les accès formation encore présents dans une structure. */
 export async function countEmployeeSeats(structureId: string): Promise<number> {
   const db = requireDb();

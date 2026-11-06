@@ -34,6 +34,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -42,10 +43,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
-.env*
-
 # local tooling / exports
 .tools/
 .cursor/
 exports/
+frontend/
+
+# python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# media backups
+*.tri-backup.mp4
+*-backup.mp4
