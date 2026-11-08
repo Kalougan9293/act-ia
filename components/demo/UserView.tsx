@@ -116,7 +116,7 @@ function buildDemoActivity(id: SampleId): {
       activity: {
         ...chapter.activity,
         briefing: "Regardez l'extrait, puis choisissez.",
-        outro: "C'était généré par IA. On ne peut plus se fier seulement à l'œil.",
+        outro: "C'était généré par l'IA. On ne peut plus se fier seulement à l'œil.",
         items: [
           {
             ...item,

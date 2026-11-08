@@ -1,10 +1,14 @@
 /** Lexique « zéro jargon » — définitions courtes + exemple. */
 
+export type LexiconLaw = "AI Act" | "RGPD";
+
 export type LexiconEntry = {
   id: string;
   term: string;
   definition: string;
   example?: string;
+  /** Texte de loi concerné — affiché sur la fiche pour lever l'ambiguïté. */
+  law?: LexiconLaw;
 };
 
 export const LEXICON: LexiconEntry[] = [
@@ -13,34 +17,47 @@ export const LEXICON: LexiconEntry[] = [
     term: "AI Act",
     definition: "La loi européenne qui encadre l'IA.",
     example:
-      "Elle demande des mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4).",
+      "Elle demande des mesures pour favoriser le développement de la maîtrise de l'IA (AI Act, art. 4).",
+    law: "AI Act",
+  },
+  {
+    id: "rgpd",
+    term: "RGPD",
+    definition:
+      "La loi européenne qui protège les données personnelles, avec ou sans IA.",
+    example: "Nom, mail, photo, voix : ce sont des données personnelles.",
+    law: "RGPD",
   },
   {
     id: "art4",
     term: "Article 4",
     definition:
-      "Depuis fév. 2025 : prendre des mesures pour favoriser le développement de la maîtrise de l'IA — pas garantir un niveau individuel. Pas de plafond d'amende propre à cet article ; des sanctions ou mesures d'exécution restent possibles.",
-    example: "Cette formation en fait partie. L'attestation prouve le suivi.",
+      "Dans l'AI Act : depuis février 2025, l'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à certifier le niveau de chaque personne : elle doit surtout proposer des mesures concrètes.",
+    example: "Cette formation en est une. L'attestation prouve le suivi.",
+    law: "AI Act",
   },
   {
     id: "art5",
     term: "Pratiques interdites",
-    definition: "Usages d'IA carrément interdits (Art. 5).",
+    definition: "Ce que l'IA n'a pas le droit de faire (AI Act, art. 5).",
     example:
       "Inférer les émotions d'un collègue (hors exceptions limitées), ou déduire sa religion d'une photo.",
+    law: "AI Act",
   },
   {
     id: "art50",
     term: "Transparence",
-    definition: "Dire clairement quand c'est une IA (Art. 50).",
+    definition: "Dire clairement quand c'est une IA (AI Act, art. 50).",
     example: "Un chatbot doit se présenter comme une IA.",
+    law: "AI Act",
   },
   {
     id: "haut-risque",
     term: "Haut risque",
     definition:
-      "Niveau AI Act (annexe III) selon la finalité du système — ex. certains outils de recrutement. Un humain décide. Tous les outils RH ne sont pas automatiquement à haut risque.",
-    example: "Tri de CV, évaluation de salariés…",
+      "Usage d'IA qui touche fort les personnes : un humain doit garder la décision finale.",
+    example: "Tri de CV, évaluation de salariés… Pas tous les outils RH.",
+    law: "AI Act",
   },
   {
     id: "ia-generative",
@@ -84,12 +101,14 @@ export const LEXICON: LexiconEntry[] = [
     definition:
       "Utilisateur = j'utilise une IA déjà en vente. Vendeur = je la fabrique ou la mets sur le marché sous ma marque.",
     example: "ChatGPT au bureau = vous utilisez. Cas le plus courant.",
+    law: "AI Act",
   },
   {
     id: "donnee-perso",
     term: "Donnée personnelle",
     definition: "Info qui permet de reconnaître une personne.",
     example: "Nom, mail, photo, téléphone.",
+    law: "RGPD",
   },
   {
     id: "shadow-ai",
@@ -109,6 +128,7 @@ export const LEXICON: LexiconEntry[] = [
     definition:
       "Délégué à la protection des données : la personne qui veille au respect du RGPD dans l'entreprise.",
     example: "En cas d'erreur avec des données personnelles, vous le prévenez aussi.",
+    law: "RGPD",
   },
   {
     id: "supervision-humaine",
@@ -120,7 +140,8 @@ export const LEXICON: LexiconEntry[] = [
     id: "omnibus",
     term: "Omnibus",
     definition:
-      "Règlement (UE) 2026/1744 (Digital Omnibus on AI), adopté et en vigueur : reformule l'art. 4 (« favoriser le développement de la maîtrise ») et reporte certaines échéances haut risque (ex. emploi / recrutement).",
+      "Règlement (UE) 2026/1744 (Digital Omnibus on AI), adopté et en vigueur : reformule l'art. 4 de l'AI Act (« favoriser le développement de la maîtrise ») et reporte certaines échéances haut risque (ex. emploi / recrutement).",
     example: "Le geste du quotidien ne change pas : un humain garde la décision.",
+    law: "AI Act",
   },
 ];

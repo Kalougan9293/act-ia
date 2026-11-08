@@ -44,7 +44,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis fév. 2025 (Art. 4), l'entreprise doit favoriser le développement de la maîtrise de l'IA — pas garantir un niveau pour chaque personne. Cette formation en fait partie. L'attestation est la preuve du suivi.",
+      "Depuis février 2025, l'AI Act (art. 4) demande à l'entreprise d'aider celles et ceux qui utilisent l'IA au travail. Pas de diplôme obligatoire pour chaque salarié : des mesures concrètes suffisent, comme cette formation. L'attestation prouve que vous l'avez suivie.",
   },
   {
     id: "q2",
@@ -122,7 +122,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     blockId: "bloc-2",
     theme: "art4-date",
     famille: "F01",
-    prompt: "Depuis quand l'article 4 s'applique ?",
+    prompt: "Depuis quand l'article 4 de l'AI Act s'applique ?",
     choices: [
       "2 février 2025",
       "2 août 2025",
@@ -130,7 +130,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? Depuis le 2 février 2025 — pas le 2 août 2025. L'entreprise doit déjà prendre des mesures pour favoriser le développement de la maîtrise de l'IA. Août 2025 concerne surtout d'autres règles (modèles à usage général). 2027, c'est surtout le haut risque pour certains systèmes RH / recrutement (annexe III).",
+      "Depuis le 2 février 2025 (AI Act, art. 4). L'entreprise doit déjà aider son personnel à mieux utiliser l'IA. Les autres dates portent sur d'autres règles de l'AI Act, pas sur cette obligation.",
   },
   {
     id: "q8",
@@ -158,7 +158,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "Il suffit de le mettre dans les conditions générales",
     ],
     correctIndex: 0,
-    explanation: "Pourquoi ? Art. 50 : la personne doit savoir qu'elle parle à une machine, au moment de l'échange.",
+    explanation: "Pourquoi ? AI Act, art. 50 : la personne doit savoir qu'elle parle à une machine, au moment de l'échange.",
   },
   {
     id: "q10",
@@ -168,8 +168,8 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     prompt: "Votre entreprise publie une fausse vidéo d'un vrai salarié. Elle doit…",
     choices: [
       "Publier sans rien dire si l'équipe a relu",
-      "Dire clairement que c'est généré par IA, sans demander au salarié",
-      "Obtenir l'accord du salarié et indiquer clairement que c'est généré par IA",
+      "Indiquer clairement « Générée par l'IA », sans demander au salarié",
+      "Obtenir l'accord du salarié et indiquer clairement « Générée par l'IA »",
     ],
     correctIndex: 2,
     explanation:
@@ -188,7 +188,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 0,
     explanation:
-      "Pourquoi ? L'humain tranche. Les règles AI Act « haut risque » pour certains systèmes RH (annexe III) sont renforcées plus tard ; tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD (art. 22) s'applique déjà aux décisions exclusivement automatisées à effets significatifs.",
+      "L'IA peut aider à lire les CV, mais c'est un humain qui décide. Le RGPD le dit déjà : une machine n'écarte pas un candidat toute seule. L'AI Act ajoute des règles plus strictes pour certains outils de recrutement — pas pour tous les outils RH.",
   },
   {
     id: "q12",
@@ -204,7 +204,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
     ],
     correctIndex: 1,
     explanation:
-      "Déduire les émotions des salariés avec une IA est en principe interdit au travail (Art. 5), hors exceptions très limitées — même si l'équipe est prévenue.",
+      "Déduire les émotions des salariés avec une IA est en principe interdit au travail (AI Act, art. 5), hors exceptions très limitées — même si l'équipe est prévenue.",
   },
   {
     id: "q13",
@@ -527,7 +527,7 @@ export const SOCLE_QUESTION_BANK: QuizQuestion[] = [
       "C'est possible si les photos sont déjà sur l'intranet",
     ],
     correctIndex: 1,
-    explanation: "Déduire la religion à partir d'une photo est interdit (Art. 5). L'intention ne change rien.",
+    explanation: "Déduire la religion à partir d'une photo est interdit (AI Act, art. 5). L'intention ne change rien.",
   },
   {
     id: "q36",

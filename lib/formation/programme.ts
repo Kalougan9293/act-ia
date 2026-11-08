@@ -21,7 +21,7 @@ export const PROGRAMME = {
     {
       label: "Situer les obligations liées à l'AI Act (art. 4) et aux usages au travail",
       evaluable:
-        "Citer le rôle de l'article 4 ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant.",
+        "Citer le rôle de l'article 4 de l'AI Act ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant.",
     },
     {
       label: "Protéger données personnelles et secrets d'entreprise face à l'IA",

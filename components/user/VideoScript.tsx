@@ -15,14 +15,24 @@ function parseDurationSeconds(duration?: string): number {
 
 function renderWithLexicon(text: string): ReactNode {
   if (!text) return null;
-  const parts = text.split(/(DPO)/g);
-  return parts.map((part, index) =>
-    part === "DPO" ? (
-      <LexiconInlineTerm key={`dpo-${index}`} id="dpo" />
+  const parts = text.split(/(AI Act|RGPD|DPO|Omnibus)/g);
+  return parts.map((part, index) => {
+    const id =
+      part === "AI Act"
+        ? "ai-act"
+        : part === "RGPD"
+          ? "rgpd"
+          : part === "DPO"
+            ? "dpo"
+            : part === "Omnibus"
+              ? "omnibus"
+              : null;
+    return id ? (
+      <LexiconInlineTerm key={`${id}-${index}`} id={id} label={part} />
     ) : (
       <Fragment key={`t-${index}`}>{part}</Fragment>
-    )
-  );
+    );
+  });
 }
 
 /** Hauteur de repli mobile quand la vidéo n'est pas encore mesurée. */

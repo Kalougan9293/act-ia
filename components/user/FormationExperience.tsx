@@ -1637,7 +1637,7 @@ function chapterTeaser(chapter: Block["chapters"][number]): string {
     "5.1": "Vrai ou faux ?",
     "5.2": "Ce qu'est un deepfake",
     "5.3": "Le faux directeur, puis la publication",
-    "5.4": "Je labelle ou pas ?",
+    "5.4": "J'indique ou pas ?",
     "6.1": "Les sept questions, expliquées",
     "6.2": "Relisez-les dans le jeu",
   };
@@ -1758,13 +1758,13 @@ function BlockScreen({
     block.id === "bloc-1"
       ? ["ia-generative", "prompt", "hallucination", "llm", "contexte", "ai-act", "art4"]
       : block.id === "bloc-2"
-        ? ["ai-act", "art4", "art5", "art50", "haut-risque", "deployeur"]
+        ? ["ai-act", "rgpd", "art4", "art5", "art50", "haut-risque", "deployeur"]
         : block.id === "bloc-3"
-          ? ["donnee-perso", "shadow-ai", "referent", "dpo"]
+          ? ["rgpd", "donnee-perso", "shadow-ai", "referent", "dpo"]
           : block.id === "bloc-4"
-            ? ["supervision-humaine", "referent"]
+            ? ["supervision-humaine", "referent", "rgpd"]
             : block.id === "bloc-5"
-              ? ["deepfake", "art50"]
+              ? ["deepfake", "art50", "ai-act"]
               : block.id === "bloc-6"
                 ? ["referent", "shadow-ai"]
                 : undefined;

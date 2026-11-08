@@ -63,7 +63,7 @@ export type Activity =
       cards: { id: string; label: string; stampId: string; explanation: string }[];
     }
   | {
-      /** Une carte au centre : on la balance à gauche ou à droite. */
+      /** Une carte au centre : on l'envoie à gauche ou à droite. */
       kind: "swipe";
       briefing?: string;
       left: { id: string; label: string };
@@ -93,7 +93,7 @@ export type Activity =
       }[];
     }
   | {
-      /** Vrai / faux : révèle la bonne réponse (réel ou généré par IA). */
+      /** Vrai / faux : révèle la bonne réponse (réel ou générée par l'IA). */
       kind: "truefake";
       briefing?: string;
       outro: string;
@@ -147,6 +147,8 @@ export type Activity =
         trap: boolean;
         /** Ordre presque invisible (encre pâle), à repérer. */
         veiled?: boolean;
+        /** Après vérif : toujours en rouge (ex. nom à ne pas coller), hors piège à cliquer. */
+        issue?: boolean;
         explanation?: string;
       }[];
     }
@@ -159,7 +161,7 @@ export type Activity =
       explanation: string;
     }
   | {
-      /** Poser (ou non) le sticker « Généré par l'IA » sur chaque image. */
+      /** Poser (ou non) le sticker « Générée par l'IA » sur chaque image. */
       kind: "label";
       briefing?: string;
       instruction: string;

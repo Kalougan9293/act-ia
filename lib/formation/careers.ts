@@ -303,9 +303,9 @@ export const CAREER_PATHS: CareerPath[] = [
     cases: [
       {
         situation:
-          "Votre équipe veut une vidéo promo avec un porte-parole généré par IA, qui a l'air d'une vraie personne.",
+          "Votre équipe veut une vidéo promo avec un porte-parole généré par l'IA, qui a l'air d'une vraie personne.",
         answer:
-          "Vous ajoutez une mention claire « générée par IA », vous vérifiez les droits (image, voix, musique) et vous obtenez un accord écrit si la vidéo imite une personne réelle.",
+          "Vous ajoutez une mention claire « Générée par l'IA », vous vérifiez les droits (image, voix, musique) et vous obtenez un accord écrit si la vidéo imite une personne réelle.",
       },
       {
         situation: "Le chatbot du site répond aux clients.",
@@ -320,7 +320,7 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     tips: [
-      "Avant de publier une image, un logo ou une pub générés par IA : vérifier les droits, ne pas copier une marque ou une personne réelle, et indiquer clairement si le contenu est généré.",
+      "Avant de publier une image, un logo ou une pub générés par l'IA : vérifier les droits, ne pas copier une marque ou une personne réelle, et indiquer clairement si le contenu est généré.",
       "Faire décliner par une IA un texte validé en version courte, longue et newsletter.",
       "Demander à une IA les réponses aux objections fréquentes d'un argumentaire, sans donnée client.",
     ],
@@ -337,10 +337,10 @@ export const CAREER_PATHS: CareerPath[] = [
       },
       {
         prompt:
-          "Sur LinkedIn ou Instagram, vous publiez une pub générée par IA qui montre une personne qui n'existe pas.",
+          "Sur LinkedIn ou Instagram, vous publiez une pub générée par l'IA qui montre une personne qui n'existe pas.",
         choices: [
           "On publie sans rien dire : c'est juste un visuel",
-          "On ajoute une mention claire « générée par IA »",
+          "On ajoute une mention claire « Générée par l'IA »",
           "On publie si la personne a l'air réelle",
         ],
         correctIndex: 1,

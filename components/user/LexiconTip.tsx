@@ -25,7 +25,14 @@ function TipPanel({
       }
     >
       <span className="flex items-start justify-between gap-2">
-        <span className="text-sm font-bold text-blue-700 dark:text-blue-300">{entry.term}</span>
+        <span className="min-w-0">
+          <span className="block text-sm font-bold text-blue-700 dark:text-blue-300">{entry.term}</span>
+          {entry.law ? (
+            <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              {entry.law}
+            </span>
+          ) : null}
+        </span>
         <button
           type="button"
           aria-label="Fermer"
@@ -84,6 +91,9 @@ function TipChip({ entry }: { entry: LexiconEntry }) {
         className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-100"
       >
         {entry.term}
+        {entry.law ? (
+          <span className="ml-1 font-bold text-slate-400 dark:text-slate-500">· {entry.law}</span>
+        ) : null}
       </button>
       {open && <TipPanel entry={entry} panelId={panelId} onClose={() => setOpen(false)} />}
     </span>
@@ -91,7 +101,7 @@ function TipChip({ entry }: { entry: LexiconEntry }) {
 }
 
 /** Mot dans une phrase : survol (desktop) ou tap (mobile) pour la définition. */
-export function LexiconInlineTerm({ id }: { id: string }) {
+export function LexiconInlineTerm({ id, label }: { id: string; label?: string }) {
   const entry = LEXICON.find((item) => item.id === id);
   const { open, setOpen, rootRef } = useTipOpen();
   const panelId = useId();
@@ -116,7 +126,7 @@ export function LexiconInlineTerm({ id }: { id: string }) {
         onClick={() => setOpen((v) => !v)}
         className="font-semibold text-blue-700 underline decoration-blue-400 decoration-dotted underline-offset-2 hover:text-blue-800 dark:text-blue-300 dark:decoration-blue-500 dark:hover:text-blue-200"
       >
-        {entry.term}
+        {label ?? entry.term}
       </button>
       {open && (
         <TipPanel
@@ -131,13 +141,15 @@ export function LexiconInlineTerm({ id }: { id: string }) {
 }
 
 const INLINE_TERMS: Record<string, string> = {
+  "AI Act": "ai-act",
+  RGPD: "rgpd",
   DPO: "dpo",
   Omnibus: "omnibus",
 };
 
-/** Remplace **gras**, et les termes connus (DPO, Omnibus…) par un mot cliquable / survolable. */
+/** Remplace **gras**, et les termes connus (AI Act, RGPD, DPO…) par un mot cliquable / survolable. */
 export function withLexiconTips(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*|DPO|Omnibus)/g).map((part, index) => {
+  return text.split(/(\*\*[^*]+\*\*|AI Act|RGPD|DPO|Omnibus)/g).map((part, index) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={`bold-${index}`} className="font-bold">
@@ -146,7 +158,7 @@ export function withLexiconTips(text: string): ReactNode[] {
       );
     }
     const id = INLINE_TERMS[part];
-    if (id) return <LexiconInlineTerm key={`${id}-${index}`} id={id} />;
+    if (id) return <LexiconInlineTerm key={`${id}-${index}`} id={id} label={part} />;
     return <Fragment key={`text-${index}`}>{part}</Fragment>;
   });
 }
@@ -182,6 +194,7 @@ export default function LexiconBar({
 
 const FAB_CORE = [
   "ai-act",
+  "rgpd",
   "art4",
   "art5",
   "art50",
@@ -265,7 +278,14 @@ export function FloatingLexiconFab({
           <ul className="max-h-64 space-y-2.5 overflow-y-auto text-left">
             {entries.map((entry) => (
               <li key={entry.id}>
-                <p className="text-xs font-bold text-slate-900 dark:text-white">{entry.term}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">
+                  {entry.term}
+                  {entry.law ? (
+                    <span className="ml-1.5 align-middle text-[10px] font-bold tracking-wide text-slate-500 dark:text-slate-400">
+                      · {entry.law}
+                    </span>
+                  ) : null}
+                </p>
                 <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                   {entry.definition}
                 </p>

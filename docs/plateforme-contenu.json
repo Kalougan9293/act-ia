@@ -2,8 +2,8 @@
   "meta": {
     "title": "LockinIA — Plateforme & espaces (hors parcours apprenant)",
     "purpose": "Document de revue pour juriste / formateur / produit. Décrit le site public, la prise de RDV, l'auth, l'espace RH, l'espace partenaire, la démo, les pages légales et les exports. Exclut le contenu pédagogique du parcours utilisateur (socle, fiches métiers, QCM) et l'espace super-admin.",
-    "promise": "Des réflexes concrets pour utiliser l'IA sans vous faire piéger ni mettre l'entreprise en danger — AI Act (art. 4) et bases du RGPD —, avec une attestation de suivi à la fin.",
-    "generatedAt": "2026-11-06T12:04:15.400Z",
+    "promise": "Des réflexes concrets, les bases de l'AI Act (art. 4) et du RGPD, et une attestation de suivi à la fin.",
+    "generatedAt": "2026-11-08T13:49:07.229Z",
     "excluded": [
       "Contenu intégral du socle / chapitres / scripts / jeux",
       "Fiches métiers détaillées",
@@ -88,7 +88,7 @@
   "landing": {
     "hero": {
       "badge": "Formation Art. 4 · Données & bons usages",
-      "h1": "La plateforme clé en main pour attester la formation de vos salariés à l'IA et au RGPD en continu",
+      "h1": "La plateforme clé en main pour documenter la formation de vos salariés à l'IA (AI Act) et au RGPD",
       "ctas": [
         "Demander un accès",
         "Tester la démo"
@@ -180,7 +180,7 @@
         "features": [
           "Jusqu'à 20 accès utilisateurs",
           "Tout le plan Micro inclus",
-          "Assistance prioritaire : réponse sous 24 h ouvrées"
+          "Assistance prioritaire : réponse sous 48 h ouvrées"
         ]
       },
       {
@@ -346,7 +346,7 @@
       },
       {
         "label": "Situer les obligations liées à l'AI Act (art. 4) et aux usages au travail",
-        "evaluable": "Citer le rôle de l'article 4 ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant."
+        "evaluable": "Citer le rôle de l'article 4 de l'AI Act ; distinguer usage et mise sur le marché ; repérer un niveau de risque courant."
       },
       {
         "label": "Protéger données personnelles et secrets d'entreprise face à l'IA",
@@ -437,7 +437,7 @@
       {
         "etape": "Bloc 5 — Le deepfake",
         "duree": "9 min",
-        "detail": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA » Contenu : Vrai ou faux ? · Une vidéo peut mentir · Deux situations · Je labelle ou pas ?."
+        "detail": "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Générée par l'IA » Contenu : Vrai ou faux ? · Une vidéo peut mentir · Deux situations · J'indique ou pas ?."
       },
       {
         "etape": "Bloc 6 — Les 7 réflexes",
@@ -484,33 +484,33 @@
   "milestones": [
     {
       "date": "2 février 2025",
-      "label": "Article 4 et pratiques interdites",
-      "detail": "Mesures pour favoriser le développement de la maîtrise de l'IA (Art. 4, précisé par l'Omnibus 2026/1744) et pratiques interdites (Art. 5)."
+      "label": "AI Act — article 4 et pratiques interdites",
+      "detail": "Mesures pour favoriser le développement de la maîtrise de l'IA (AI Act, art. 4, précisé par l'Omnibus 2026/1744) et pratiques interdites (AI Act, art. 5)."
     },
     {
       "date": "2 août 2025",
-      "label": "Modèles à usage général",
-      "detail": "Obligations relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance."
+      "label": "AI Act — modèles à usage général",
+      "detail": "Obligations AI Act relatives aux modèles d'IA à usage général (GPAI) et certaines dispositions de gouvernance."
     },
     {
       "date": "2 août 2026",
-      "label": "Article 50 — transparence",
-      "detail": "Obligations de transparence (chatbots, certains contenus synthétiques). Les obligations varient selon le cas."
+      "label": "AI Act, article 50 — transparence",
+      "detail": "Obligations de transparence de l'AI Act (chatbots, certains contenus synthétiques). Les obligations varient selon le cas."
     },
     {
       "date": "2 décembre 2026",
-      "label": "Interdictions contenus illicites",
-      "detail": "Certaines interdictions spécifiques (ex. contenus intimes non consentis) — distinctes des obligations générales de transparence (Art. 50). En France, la diffusion sans consentement est déjà un délit (loi SREN)."
+      "label": "AI Act — interdictions contenus illicites",
+      "detail": "Certaines interdictions spécifiques de l'AI Act (ex. contenus intimes non consentis) — distinctes des obligations générales de transparence (AI Act, art. 50). En France, la diffusion sans consentement est déjà un délit (loi SREN)."
     },
     {
       "date": "2 décembre 2027",
-      "label": "Haut risque (Annexe III)",
-      "detail": "Règles pour les systèmes concernés (dont emploi / recrutement selon finalité). Tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD art. 22 s'applique déjà."
+      "label": "AI Act — haut risque (Annexe III)",
+      "detail": "Règles AI Act pour les systèmes concernés (dont emploi / recrutement selon finalité). Tous les outils RH ne sont pas automatiquement à haut risque. Le RGPD art. 22 s'applique déjà."
     },
     {
       "date": "2 août 2028",
-      "label": "Haut risque (Art. 6 §1 / Annexe I)",
-      "detail": "Certaines catégories liées à des produits réglementés couverts par l'annexe I."
+      "label": "AI Act — haut risque (art. 6 §1 / Annexe I)",
+      "detail": "Certaines catégories AI Act liées à des produits réglementés couverts par l'annexe I."
     }
   ],
   "auth": {

@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
@@ -707,16 +708,33 @@ function SlashActivity({
     toastTimer.current = window.setTimeout(() => setToast(null), 700);
   }
 
+  function inflateRect(rect: DOMRect, pad: number) {
+    return {
+      left: rect.left - pad,
+      right: rect.right + pad,
+      top: rect.top - pad,
+      bottom: rect.bottom + pad,
+      width: rect.width + pad * 2,
+      height: rect.height + pad * 2,
+      x: rect.x - pad,
+      y: rect.y - pad,
+      toJSON: rect.toJSON?.bind(rect),
+    } as DOMRect;
+  }
+
   function applySlash(x1: number, y1: number, x2: number, y2: number) {
     const dist = Math.hypot(x2 - x1, y2 - y1);
-    if (dist < 36) return;
+    // Doigt : geste plus court qu’à la souris
+    const minDist = narrow ? 24 : 36;
+    if (dist < minDist) return;
+    const hitPad = narrow ? 14 : 6;
     let hitPersonal: string | null = null;
     let hitOther: string | null = null;
     for (const item of items) {
       if (cutOk.includes(item.id) || cutBad.includes(item.id)) continue;
       const el = bubbleRefs.current[item.id];
       if (!el) continue;
-      const rect = el.getBoundingClientRect();
+      const rect = inflateRect(el.getBoundingClientRect(), hitPad);
       if (!lineHitsRect(x1, y1, x2, y2, rect)) continue;
       if (item.personal) hitPersonal = item.id;
       else hitOther = item.id;
@@ -734,6 +752,8 @@ function SlashActivity({
 
   function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if (done) return;
+    // Empêche le scroll mobile de voler le geste (sinon pointercancel → rien ne coupe)
+    event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     strokeRef.current = { x: event.clientX, y: event.clientY };
     setTrail({ x1: event.clientX, y1: event.clientY, x2: event.clientX, y2: event.clientY });
@@ -741,6 +761,7 @@ function SlashActivity({
 
   function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     if (!strokeRef.current) return;
+    event.preventDefault();
     setTrail({
       x1: strokeRef.current.x,
       y1: strokeRef.current.y,
@@ -771,10 +792,12 @@ function SlashActivity({
       <div
         ref={arenaRef}
         className="relative h-[24rem] w-full touch-none select-none overflow-hidden rounded-3xl border-2 border-slate-200 bg-gradient-to-b from-indigo-50 via-sky-50 to-emerald-50 dark:border-slate-600 dark:from-slate-900 dark:via-slate-950 dark:to-emerald-950/40 sm:h-[30rem]"
+        style={{ touchAction: "none" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onContextMenu={(event) => event.preventDefault()}
       >
         {items.map((item, index) => {
           const look = bubbleLooks[index]!;
@@ -1836,10 +1859,10 @@ function TrueFakeActivity({
     ? ""
     : isCorrect
       ? correct === "fake"
-        ? "Oui : généré par IA. Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
+        ? "Oui : générée par l'IA. Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
         : "Oui : c'était réel. Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
       : correct === "fake"
-        ? "Non : c'était faux (généré par IA). Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
+        ? "Non : c'était faux (générée par l'IA). Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus."
         : "Non : c'était vrai (réel). Beaucoup d'apprenants se trompent — l'œil et l'oreille ne suffisent plus.";
 
   return (
@@ -1901,7 +1924,7 @@ function TrueFakeActivity({
         {(
           [
             { id: "real" as const, label: "Vrai (réel)" },
-            { id: "fake" as const, label: "Faux (généré par IA)" },
+            { id: "fake" as const, label: "Faux (générée par l'IA)" },
           ] as const
         ).map((choice) => {
           const selected = picked === choice.id;
@@ -2479,7 +2502,7 @@ function PredictActivity({
         </div>
 
         <div
-          className={`ml-1.5 flex h-14 w-[5.75rem] shrink-0 items-center justify-center rounded-xl border-2 px-1.5 text-center sm:h-16 sm:ml-2 sm:w-28 ${
+          className={`ml-1.5 grid h-14 w-[5.75rem] shrink-0 place-items-center rounded-xl border-2 px-1 sm:h-16 sm:ml-2 sm:w-28 ${
             phase === "done" && pickedOption
               ? correct
                 ? "predict-eject border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50"
@@ -2488,11 +2511,11 @@ function PredictActivity({
           }`}
         >
           {phase === "done" && pickedOption ? (
-            <div>
-              <p className="text-[11px] font-extrabold leading-snug text-slate-900 dark:text-white sm:text-xs">
+            <div className="grid w-full place-items-center gap-0 text-center leading-none">
+              <span className="max-w-full text-balance text-[10px] font-extrabold leading-tight text-slate-900 dark:text-white sm:text-[11px]">
                 {pickedOption.label}
-              </p>
-              <p
+              </span>
+              <span
                 className={`text-sm font-black tabular-nums sm:text-base ${
                   correct
                     ? "text-emerald-700 dark:text-emerald-300"
@@ -2500,7 +2523,7 @@ function PredictActivity({
                 }`}
               >
                 {pickedOption.percent}&nbsp;%
-              </p>
+              </span>
             </div>
           ) : phase === "mixing" ? (
             <span className="text-xs font-semibold text-slate-400">…</span>
@@ -2622,7 +2645,12 @@ function SpotActivity({
   const [picked, setPicked] = useState<string[]>([]);
   const [checked, setChecked] = useState(false);
   const traps = activity.fragments.filter((fragment) => fragment.trap);
-  const takeaways = traps.filter((trap) => trap.explanation);
+  const takeaways = [
+    ...traps.filter((fragment) => fragment.explanation),
+    ...activity.fragments.filter(
+      (fragment) => fragment.issue && !fragment.trap && fragment.explanation,
+    ),
+  ];
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5">
       <p className="text-center text-base font-semibold leading-snug text-slate-900 dark:text-white">
@@ -2636,12 +2664,13 @@ function SpotActivity({
             const gap = index > 0 && !/^[,.;:!?]/.test(text) ? " " : "";
             const found = checked && fragment.trap && on;
             const missed = checked && fragment.trap && !on;
-            const extra = checked && !fragment.trap && on;
+            const issue = checked && Boolean(fragment.issue);
+            const extra = checked && !fragment.trap && !fragment.issue && on;
             const veiled = Boolean(fragment.veiled) && !checked && !on;
             const tone = checked
               ? found
                 ? "rounded bg-emerald-500 px-0.5 font-semibold text-white"
-                : missed
+                : missed || issue
                   ? "rounded bg-red-600 px-0.5 font-semibold text-white"
                   : extra
                     ? "rounded bg-red-200 px-0.5 font-semibold text-red-900 line-through"
@@ -2685,7 +2714,12 @@ function SpotActivity({
       </div>
       {checked && takeaways.length > 0 ? (
         <Feedback
-          points={takeaways.map((trap) => trap.explanation!).filter(Boolean)}
+          points={takeaways.flatMap((fragment) =>
+            (fragment.explanation ?? "")
+              .split(/\n\s*\n/)
+              .map((part) => part.trim())
+              .filter(Boolean),
+          )}
         />
       ) : null}
       {!checked && (
@@ -3776,16 +3810,29 @@ function MatchActivity({
     onReady();
   }
 
+  /** Une teinte par paire : après vérif, gauche et bonne réponse à droite partagent la couleur. */
+  const pairHueById = Object.fromEntries(
+    pairs.map((pair, index) => [pair.id, lineHues[index % lineHues.length]!]),
+  );
+
+  function pairRevealStyle(pairId: string): CSSProperties {
+    const hue = pairHueById[pairId] ?? 210;
+    return {
+      borderColor: `hsl(${hue} 72% 42%)`,
+      backgroundColor: `hsl(${hue} 80% 94%)`,
+      color: `hsl(${hue} 45% 20%)`,
+      boxShadow: `0 0 0 1px hsl(${hue} 70% 70% / 0.35)`,
+    };
+  }
+
   const cardTone = (state: {
     checked: boolean;
-    ok: boolean | null;
     selected: boolean;
     linked: boolean;
   }) => {
     if (state.checked) {
-      return state.ok
-        ? "border-emerald-500 bg-emerald-50 text-emerald-950 shadow-sm dark:bg-emerald-950/40 dark:text-emerald-100"
-        : "border-red-500 bg-red-50 text-red-950 shadow-sm dark:bg-red-950/40 dark:text-red-100";
+      // Couleur appliquée via style (pairRevealStyle) — base neutre ici
+      return "shadow-sm dark:brightness-90";
     }
     if (state.selected) {
       return "border-blue-600 bg-blue-50 text-blue-950 shadow-md shadow-blue-500/15 dark:bg-blue-950/50 dark:text-blue-100";
@@ -3896,7 +3943,6 @@ function MatchActivity({
             const pair = byId[id]!;
             const linked = Boolean(links[id]);
             const selected = selectedLeft === id;
-            const ok = checked ? links[id] === id : null;
             return (
               <button
                 key={`left-${id}`}
@@ -3906,7 +3952,8 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickLeft(id)}
-                className={`${cardClass} ${cardTone({ checked, ok, selected, linked })}`}
+                className={`${cardClass} ${cardTone({ checked, selected, linked })}`}
+                style={checked ? pairRevealStyle(id) : undefined}
               >
                 {pair.left}
               </button>
@@ -3921,8 +3968,6 @@ function MatchActivity({
             const pair = byId[id]!;
             const linked = linkedRight.has(id);
             const selected = selectedRight === id;
-            const leftForRight = Object.entries(links).find(([, rightId]) => rightId === id)?.[0];
-            const ok = checked && leftForRight ? leftForRight === id : null;
             return (
               <button
                 key={`right-${id}`}
@@ -3932,7 +3977,8 @@ function MatchActivity({
                 }}
                 disabled={checked}
                 onClick={() => pickRight(id)}
-                className={`${cardClass} ${cardTone({ checked, ok, selected, linked })}`}
+                className={`${cardClass} ${cardTone({ checked, selected, linked })}`}
+                style={checked ? pairRevealStyle(id) : undefined}
               >
                 {pair.right}
               </button>
@@ -3942,7 +3988,7 @@ function MatchActivity({
       </div>
 
       {checked ? (
-        <Feedback points={leftOrder.map((id) => byId[id]!.explanation)} />
+        <Feedback points={pairs.map((pair) => pair.explanation)} />
       ) : null}
 
       {!checked && (

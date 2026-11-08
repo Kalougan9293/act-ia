@@ -37,7 +37,7 @@ export const BLOCKS: Block[] = [
           format: "vidéo courte",
           src: "/media/formation/1-1.mp4",
           script:
-            "Bonjour à tous ! Vous êtes ici parce que votre entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA, conformément à l'article 4 du règlement européen en vigueur depuis février 2025. Le but de cette formation n'est pas de vous faire passer un examen de droit, mais de vous aider à acquérir des réflexes simples avec, à la fin, une attestation qui prouve que vous avez suivi le parcours.\n\nVous utilisez peut-être déjà ChatGPT, Copilot ou une autre application qui crée des images. Si ce n'est pas votre cas, regardez autour de vous. Beaucoup de collègues s'en servent déjà. L'IA peut vous faire gagner beaucoup de temps. Elle peut rédiger, résumer, traduire ou encore chercher. Mais elle peut aussi se tromper ou faire sortir une information qui devait rester dans l'entreprise.\n\nDans cette formation, on avance un sujet à la fois. D'abord, on explique comment l'outil écrit. Ensuite, on aborde ce que la loi exige. Et enfin, on voit comment utiliser l'outil, ce que vous pouvez y intégrer et les informations qu'il faut garder pour vous.",
+            "Bonjour à tous ! Vous êtes ici parce que votre entreprise doit prendre des mesures pour que vous sachiez utiliser l'IA, conformément à l'article 4 de l'AI Act, en vigueur depuis février 2025. Le but de cette formation n'est pas de vous faire passer un examen de droit, mais de vous aider à acquérir des réflexes simples avec, à la fin, une attestation qui prouve que vous avez suivi le parcours.\n\nVous utilisez peut-être déjà ChatGPT, Copilot ou une autre application qui crée des images. Si ce n'est pas votre cas, regardez autour de vous. Beaucoup de collègues s'en servent déjà. L'IA peut vous faire gagner beaucoup de temps. Elle peut rédiger, résumer, traduire ou encore chercher. Mais elle peut aussi se tromper ou faire sortir une information qui devait rester dans l'entreprise.\n\nDans cette formation, on avance un sujet à la fois. D'abord, on explique comment l'outil écrit. Ensuite, on aborde ce que la loi exige. Et enfin, on voit comment utiliser l'outil, ce que vous pouvez y intégrer et les informations qu'il faut garder pour vous.",
         },
       },
       {
@@ -48,7 +48,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "video",
           format: "vidéo courte",
-          src: "/media/formation/1-2.mp4",
+          src: "/media/formation/1-2-v8.mp4",
           script:
             "Il y a deux familles d'outils quand on parle d'IA.\n\nLa première, c'est l'IA classique. Elle ne rédige pas un texte nouveau. Elle classe, elle trie ou elle calcule. Le filtre qui met un mail dans les indésirables, c'est cette famille. Le GPS qui propose un itinéraire, c'est cette famille aussi.\n\nLa deuxième, c'est l'IA qui crée. On l'appelle aussi IA générative. ChatGPT, Copilot ou Gemini en font partie. Vous lui demandez un mail, une image ou un résumé par exemple et elle produit quelque chose qui n'existait pas.\n\nComment elle écrit ? Eh bien, elle avance mot après mot. À chaque fois, elle choisit le mot qui a le plus de chances de suivre parce qu'elle l'a souvent vu dans d'autres textes. Elle ne sait pas si c'est vrai. Elle devine la suite la plus probable.\n\nQuatre mots suffisent pour en parler. D'abord, le LLM. C'est le moteur qui écrit derrière ChatGPT ou Copilot. L'hallucination ensuite, c'est une réponse bien tournée mais fausse. Le prompt, c'est votre consigne, ce que vous lui demandez de faire. Par exemple : « Écris un mail court, poli et n'invente pas de date. » Enfin, le contexte. Ce sont les informations pour qu'elle sache de quoi vous parlez. Un fichier, un mail d'un client, des faits peuvent être ajoutés à votre conversation. Si vous ne les lui donnez pas, elle ne les a pas. Et si vous ouvrez une nouvelle discussion, elle les perd. Vous devez alors les lui redonner.\n\nPour finir, retenez cette phrase. Une réponse probable n'est pas une réponse vraie. C'est pour ça que vous devez vérifier les informations qu'elle donne avant de les utiliser.",
         },
@@ -192,7 +192,7 @@ export const BLOCKS: Block[] = [
                 { label: "client", percent: 11 },
               ],
               message:
-                "Pourquoi « vendredi », et pas « 15 mars » ? Parce que dans les mails, on lit très souvent « avant vendredi ». « 15 mars » serait peut-être votre vraie date, mais l'outil ne la connaît pas. « Déjeuner » ne termine presque jamais cette phrase, donc il ne le choisit pas. Il reprend une habitude de langage. Il ne lit pas votre contrat.",
+                "Pourquoi « vendredi », et pas « 15 mars » ? Parce que dans les mails, on lit très souvent « avant vendredi ». « 15 mars » serait peut-être votre vraie date, mais l'outil ne la connaît pas. « Client » non plus : on lit rarement « signé avant le client », ce n'est pas une suite habituelle. « Déjeuner » ne termine presque jamais cette phrase, donc il ne le choisit pas. Il reprend une habitude de langage. Il ne lit pas votre contrat.",
             },
             {
               lead: "Merci pour votre retour. Je vous propose de…",
@@ -295,7 +295,7 @@ export const BLOCKS: Block[] = [
                   calendar: { day: "2", month: "FÉV 2025" },
                   correct: true,
                   explanation:
-                    "Exact. L'article 4 s'applique depuis cette date (pas depuis août 2025). La vidéo vous explique ce que ça change pour vous.",
+                    "Exact. L'article 4 de l'AI Act s'applique depuis cette date. La vidéo vous explique ce que ça change pour vous.",
                 },
                 {
                   label: "Seulement en 2027",
@@ -337,7 +337,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "swipe",
           briefing:
-            "Deux rôles.\n« J'utilise » : votre entreprise se sert d'un outil déjà en vente, comme ChatGPT.\n« Je vends » : votre entreprise fabrique une IA, ou la propose à ses clients sous sa marque.\nVocabulaire AI Act : « J'utilise » = déployeur · « Je vends » = fournisseur.\nBalancez chaque situation vers la bonne zone.",
+            "Deux rôles.\n« J'utilise » : votre entreprise se sert d'un outil déjà en vente, comme ChatGPT.\n« Je vends » : votre entreprise fabrique une IA, ou la propose à ses clients sous sa marque.\nVocabulaire AI Act : « J'utilise » = déployeur · « Je vends » = fournisseur.\nEnvoyez chaque situation vers la bonne zone.",
           left: { id: "deploy", label: "J'utilise" },
           right: { id: "provider", label: "Je vends" },
           cards: [
@@ -391,7 +391,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "sort",
           briefing:
-            "On reprend les quatre niveaux de la vidéo.\n« Risque minimal » : usages courants, juste du bon sens.\n« Risque limité » : la personne doit savoir que c'est une IA.\n« Haut risque » : un humain doit garder la décision finale.\n« Risque inacceptable » : pratique interdite.\nClassez chaque usage.",
+            "On reprend les quatre niveaux de risque de l'AI Act.\n« Risque minimal » : usages courants, juste du bon sens.\n« Risque limité » : la personne doit savoir que c'est une IA (AI Act, art. 50).\n« Haut risque » : un humain doit garder la décision finale.\n« Risque inacceptable » : pratique interdite (AI Act, art. 5).\nClassez chaque usage.",
           instruction: "Glissez chaque usage sur le bon niveau du thermomètre.",
           colorful: true,
           /** Remettre `layout: "tubes"` pour l'ancienne version en colonnes. */
@@ -408,7 +408,7 @@ export const BLOCKS: Block[] = [
               label: "Correcteur d'orthographe",
               binId: "low",
               explanation:
-                "Risque minimal : juste du bon sens.",
+                "Risque minimal (AI Act) : juste du bon sens.",
             },
             {
               id: "meet",
@@ -422,35 +422,35 @@ export const BLOCKS: Block[] = [
               label: "Chatbot qui parle aux clients",
               binId: "clear",
               explanation:
-                "C'est du risque limité. Le client doit savoir qu'il parle à une machine.",
+                "Risque limité (AI Act, art. 50). Le client doit savoir qu'il parle à une machine.",
             },
             {
               id: "summary",
               label: "Un assistant répond aux mails clients en se faisant passer pour une personne",
               binId: "clear",
               explanation:
-                "Même règle, risque limité. La personne doit savoir qu'elle échange avec une IA, même par mail.",
+                "Même règle : risque limité (AI Act, art. 50). La personne doit savoir qu'elle échange avec une IA, même par mail.",
             },
             {
               id: "cvsort",
               label: "Tri automatique de CV",
               binId: "high",
               explanation:
-                "C'est du haut risque (AI Act). L'outil peut aider à trier, mais un humain garde la décision — déjà exigé par le RGPD (art. 22).",
+                "Haut risque (AI Act). L'outil peut aider à trier, mais un humain garde la décision — déjà exigé aussi par le RGPD (art. 22).",
             },
             {
               id: "emotion",
               label: "Demander à une IA si un collègue a l'air stressé d'après sa voix ou une vidéo",
               binId: "ban",
               explanation:
-                "C'est un risque inacceptable (Art. 5) : au travail, on ne déduit pas les émotions avec une IA, hors exceptions très limitées (notamment santé ou sécurité).",
+                "Risque inacceptable (AI Act, art. 5) : au travail, on ne déduit pas les émotions avec une IA, hors exceptions très limitées (notamment santé ou sécurité).",
             },
             {
               id: "biocat",
               label: "Analyser la photo d'un collègue pour déduire sa religion ou son origine",
               binId: "ban",
               explanation:
-                "C'est un risque inacceptable (Art. 5). On ne déduit pas la religion, l'origine ou l'orientation à partir d'une photo.",
+                "Risque inacceptable (AI Act, art. 5). On ne déduit pas la religion, l'origine ou l'orientation à partir d'une photo.",
             },
           ],
         },
@@ -468,18 +468,18 @@ export const BLOCKS: Block[] = [
               shortDate: "Fév. 2025",
               date: "2 février 2025",
               label: "Déjà en vigueur",
-              law: "Articles 4 et 5 — déjà en vigueur",
+              law: "AI Act, articles 4 et 5 — déjà en vigueur",
               detail:
-                "Article 4 (après Omnibus 2026/1744)\nL'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à garantir le niveau de chacun. Cette formation en fait partie.\n\nPas d'amende plafonnée propre à cet article. Des sanctions restent toutefois possibles.\n\nArticle 5\nCertaines pratiques sont déjà interdites. Exemples : analyser les émotions d'un collègue avec une IA (voix ou vidéo) — sauf rares exceptions —, ou déduire sa religion ou son origine à partir d'une photo.",
+                "AI Act, article 4 (après Omnibus 2026/1744)\nL'entreprise doit aider celles et ceux qui utilisent l'IA à mieux la maîtriser. Elle n'a pas à certifier le niveau de chaque personne : elle doit surtout proposer des mesures concrètes — comme cette formation.\n\nPas d'amende plafonnée propre à cet article. Des sanctions restent toutefois possibles.\n\nAI Act, article 5\nCertaines pratiques sont déjà interdites. Exemples : analyser les émotions d'un collègue avec une IA (voix ou vidéo) — sauf rares exceptions —, ou déduire sa religion ou son origine à partir d'une photo.",
             },
             {
               id: "aout26",
               shortDate: "Août 2026",
               date: "2 août 2026",
               label: "Déjà en vigueur",
-              law: "Article 50 — transparence",
+              law: "AI Act, article 50 — transparence",
               detail:
-                "C'est surtout la transparence.\n\nUn chatbot doit dire dès le début que c'est une machine.\n\nPour une image, une vidéo ou une voix générée : on signale surtout ce qui peut passer pour réel (deepfake). Pas besoin pour toute image stylisée.\n\nBut : personne ne doit croire à tort que c'est un humain ou un vrai enregistrement.",
+                "AI Act, article 50 — transparence.\n\nL'idée est simple : personne ne doit croire à tort qu'il parle à un humain, ou qu'une image, une vidéo ou une voix est réelle.\n\nConcrètement, un chatbot doit se présenter comme une machine dès le début. Pour un contenu généré, on signale surtout ce qui peut tromper (un deepfake crédible). Une image clairement stylisée ou fictive n'a pas le même besoin de mention.",
             },
             {
               id: "dec26",
@@ -488,23 +488,23 @@ export const BLOCKS: Block[] = [
               label: "Prochaine échéance",
               law: "Interdictions sur certains contenus illicites — AI Act + déjà en France",
               detail:
-                "En France, diffuser un deepfake sexuel sans consentement est déjà un délit (loi SREN).\n\nEn décembre 2026, l'AI Act ajoute des interdictions européennes sur certains systèmes qui produisent ces contenus.\n\nÀ retenir : on ne fait pas ça — c'est déjà interdit en France.\n\n* On y revient plus tard dans la formation.",
+                "En France, c'est déjà interdit (loi SREN) : on ne diffuse pas un deepfake sexuel sans consentement.\n\nEn décembre 2026, l'AI Act ajoute la même logique au niveau européen, pour certains systèmes qui produisent ces contenus.\n\nÀ retenir : on ne fait pas ça. On y revient plus loin dans la formation.",
             },
             {
               id: "dec27",
               shortDate: "Déc. 2027",
               date: "2 décembre 2027",
               label: "Recrutement",
-              law: "Haut risque (annexe III) — calendrier Omnibus",
+              law: "AI Act — haut risque (annexe III) — calendrier Omnibus",
               detail:
-                "Des règles AI Act s'appliquent aux systèmes à haut risque, notamment en emploi et recrutement.\n\nTous les outils RH ne sont pas automatiquement concernés : cela dépend de leur usage.\n\nAttention : le RGPD s'applique déjà. Une machine ne peut pas écarter seule un candidat. Un humain garde la décision finale.",
+                "À cette date, l'AI Act renforce les règles pour certaines IA utilisées pour recruter ou gérer des salariés (haut risque).\n\nAttention : ce n'est pas « tous les outils RH ». Seuls certains usages sont concernés.\n\nLe RGPD s'applique déjà (art. 22) : une machine ne peut pas écarter seule un candidat. Un humain garde la décision finale.",
             },
             {
               id: "aout28",
               shortDate: "Août 2028",
               date: "2 août 2028",
               label: "Plus tard",
-              law: "IA dans certains produits réglementés (art. 6 §1 / annexe I)",
+              law: "AI Act — IA dans certains produits réglementés (art. 6 §1 / annexe I)",
               detail:
                 "D'autres règles arriveront pour certaines IA liées à des produits réglementés.\n\nVous n'avez pas à les connaître en détail. Si ça concerne votre métier, votre entreprise vous le dira.",
             },
@@ -528,7 +528,7 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "video",
           format: "vidéo courte",
-          src: "/media/formation/3-1.mp4",
+          src: "/media/formation/3-1-v9.mp4",
           script:
             "Avant de saisir ou coller un texte dans une IA, retenez une chose : l'outil n'est pas un carnet privé. Dans un outil grand public, votre texte peut être enregistré, relu, réutilisé. La fenêtre est certes sur votre écran, mais l'information, elle, peut sortir de l'entreprise.\n\nDeux textes comptent ici. L'AI Act qui encadre les outils d'IA et le RGPD qui protège les données personnelles, avec ou sans IA.\n\nUne donnée personnelle, c'est tout ce qui permet d'identifier quelqu'un. Un nom bien sûr, mais aussi un e-mail, une voix, une photo, une plaque d'immatriculation, et même une simple description comme par exemple « le directeur de l'agence de Paris » suffit à l'identifier.\n\nPour savoir ce que vous pouvez saisir, il y a 3 degrés de vigilance matérialisés par 3 couleurs. Vert : OK, pas d'informations secrètes, pas de personnes reconnaissables non plus, cela peut concerner une idée de titre ou une question déjà publiée sur votre site par exemple. Orange : la prudence est de mise si une personne est identifiable. Évitez les informations qui permettent de la reconnaître et n'utilisez qu'un outil autorisé. Un exemple concret : au lieu d'écrire à l'IA « Julie Martin », écrivez « une collègue ». Le RGPD appelle cela la minimisation. Enfin, rouge : totalement interdit dans un outil grand public. Les informations relatives à la santé, la religion, l'appartenance syndicale ou l'origine sont des données sensibles. De même pour les secrets de l'entreprise, comme les prix non publics, les contrats, le business plan ou le code en interne. Un outil validé par l'entreprise peut être utilisé pour cela seulement si c'est nécessaire et autorisé.\n\nSi un usage de l'IA devient régulier dans votre équipe, vous en parlez à votre manager ou référent IA, l'entreprise doit avoir absolument connaissance des outils utilisés par ses salariés.",
         },
@@ -777,8 +777,8 @@ export const BLOCKS: Block[] = [
               prompt: "Voici nos marges secrètes et la grille de prix non publique. Analyse.",
               send: false,
               fixedPrompt:
-                "Analyse comment présenter nos prix au public, sans coller de marges ni de grille interne.",
-              explanation: "Les secrets d'entreprise restent dehors. On reformule sans les coller.",
+                "Propose 3 façons simples de présenter nos tarifs publics sur le site. N'invente pas de prix et n'utilise aucun chiffre interne.",
+              explanation: "Les secrets d'entreprise restent dehors. On demande de l'aide sur le ton, pas sur les marges.",
             },
             {
               id: "titres",
@@ -918,7 +918,7 @@ export const BLOCKS: Block[] = [
                     "Vous relisez. L'outil peut attribuer une phrase à la mauvaise personne, ou inventer une décision qui n'a pas été prise.",
                 },
                 {
-                  label: "Je l'envoie avec la mention « généré par IA, à vérifier »",
+                  label: "Je l'envoie avec la mention « Générée par l'IA, à vérifier »",
                   correct: false,
                   explanation:
                     "La mention ne remplace pas votre relecture. Vous relisez avant d'envoyer.",
@@ -953,7 +953,7 @@ export const BLOCKS: Block[] = [
           format: "vidéo courte",
           src: "/media/formation/4-1.mp4",
           script:
-            "Jusqu'ici, on a vu ce qu'on peut saisir dans une IA et comment réagir quand quelque chose dérape. Dans cette vidéo, on attire votre attention sur un point essentiel. L'IA peut proposer et aider, mais c'est vous qui restez le décideur final. Et vous devez comprendre ce qu'elle vous propose avant de valider.\n\nCertains usages sont dits haut risque, parce qu'ils touchent fortement les personnes. Par exemple un outil qui trie des CV ou qui note des salariés. C'est pour ça qu'un humain doit garder la décision finale. Voici ce que ça change pour tout le monde au travail, pas seulement pour les RH.\n\nL'IA peut vous préparer un texte, une liste ou une proposition ou vous aider à trier. Mais elle ne décide pas à votre place. Dès qu'une personne est concernée, qu'il s'agisse d'un client, d'un collègue, d'un remboursement, d'une sanction ou d'un paiement, vous devez rester vigilant. Valider sans lire, ce n'est pas décider. Décider concrètement, c'est comprendre ce que l'outil propose, pouvoir le modifier et pouvoir dire non.\n\nUn score ou un classement peut aussi être injuste. Parce que l'IA apprend sur des exemples du passé. Et si ce passé était biaisé, l'outil peut reproduire cette injustice, tout en ayant l'air neutre. Un exemple connu. Chez Amazon, un outil de tri de CV a appris sur des embauches surtout masculines. Et il écartait ou mettait de côté les profils associés aux femmes sans que personne ait écrit cette consigne. Le même risque existe dès qu'un outil classe des personnes, des demandes ou des dossiers.\n\nConcrètement, l'outil peut classer ou vous aider à trier. Mais il ne doit pas faire disparaître une personne ou un dossier sans que vous le sachiez. Vous regardez aussi ce qu'il a écarté ou mis de côté. C'est vous qui choisissez au final et qui pouvez expliquer pourquoi.",
+            "Jusqu'ici, on a vu ce qu'on peut saisir dans une IA et comment réagir quand quelque chose dérape. Dans cette vidéo, on attire votre attention sur un point essentiel. L'IA peut proposer et aider, mais c'est vous qui restez le décideur final. Et vous devez comprendre ce qu'elle vous propose avant de valider.\n\nCertains usages sont dits haut risque au sens de l'AI Act, parce qu'ils touchent fortement les personnes. Par exemple un outil qui trie des CV ou qui note des salariés. C'est pour ça qu'un humain doit garder la décision finale. Voici ce que ça change pour tout le monde au travail, pas seulement pour les RH.\n\nL'IA peut vous préparer un texte, une liste ou une proposition ou vous aider à trier. Mais elle ne décide pas à votre place. Dès qu'une personne est concernée, qu'il s'agisse d'un client, d'un collègue, d'un remboursement, d'une sanction ou d'un paiement, vous devez rester vigilant. Valider sans lire, ce n'est pas décider. Décider concrètement, c'est comprendre ce que l'outil propose, pouvoir le modifier et pouvoir dire non.\n\nUn score ou un classement peut aussi être injuste. Parce que l'IA apprend sur des exemples du passé. Et si ce passé était biaisé, l'outil peut reproduire cette injustice, tout en ayant l'air neutre. Un exemple connu. Chez Amazon, un outil de tri de CV a appris sur des embauches surtout masculines. Et il écartait ou mettait de côté les profils associés aux femmes sans que personne ait écrit cette consigne. Le même risque existe dès qu'un outil classe des personnes, des demandes ou des dossiers.\n\nConcrètement, l'outil peut classer ou vous aider à trier. Mais il ne doit pas faire disparaître une personne ou un dossier sans que vous le sachiez. Vous regardez aussi ce qu'il a écarté ou mis de côté. C'est vous qui choisissez au final et qui pouvez expliquer pourquoi.",
         },
       },
       {
@@ -1061,28 +1061,28 @@ export const BLOCKS: Block[] = [
               left: "L'IA propose d'envoyer seule un refus à une cliente",
               right: "Rien ne part sans votre feu vert",
               explanation:
-                "Dès qu'une personne est concernée, c'est vous qui validez. L'outil peut préparer, pas trancher.",
+                "Vous relisez le message et vous validez (ou corrigez) avant envoi. L'IA peut préparer un refus, pas l'envoyer seule.",
             },
             {
               id: "bas",
               left: "Cinq demandes sont tout en bas du classement, sans explication",
               right: "Vous regardez aussi ce que l'outil a écarté",
               explanation:
-                "Ce que l'outil a mis de côté peut cacher une personne écartée à tort. Vous ouvrez aussi ces dossiers.",
+                "Ouvrez aussi les dossiers tout en bas, pas seulement le haut du classement. Une personne peut avoir été écartée à tort.",
             },
             {
               id: "score",
               left: "L'outil affiche 62/100 pour un entretien, sans dire ce qu'il mesure",
               right: "Vous lisez le dossier avant de trancher",
               explanation:
-                "Un chiffre n'est pas une décision. Vous lisez le dossier, le score reste un indice.",
+                "Lisez le dossier (et ce que mesure le score) avant de décider. Le 62/100 est un indice, pas la décision.",
             },
             {
               id: "biais",
               left: "Le classement a appris sur des décisions passées injustes",
               right: "Un historique injuste peut se répéter tout seul",
               explanation:
-                "Si le passé était biaisé, le classement peut reproduire l'injustice tout en ayant l'air neutre.",
+                "Si les décisions d'avant étaient injustes, l'outil peut les recopier en silence. Vous restez vigilant et vous ne suivez pas le classement les yeux fermés.",
             },
           ],
         },
@@ -1097,7 +1097,7 @@ export const BLOCKS: Block[] = [
           format: "vidéo courte",
           src: "/media/formation/4-4.mp4",
           script:
-            "Dans cette vidéo, on voit la conduite à tenir face à une image générée, ou face à une consigne cachée.\n\nQuand l'IA crée une image ou un texte, vous n'êtes pas automatiquement libre de le publier partout, parce que l'image peut ressembler à une œuvre protégée, à un logo ou au visage de quelqu'un, que le texte peut recopier un passage trouvé sur le web, et que les conditions de l'outil peuvent limiter ce que vous avez le droit de réutiliser, même si c'est vous qui avez cliqué sur générer.\n\nAvant de publier, posez-vous ces trois questions : est-ce que je reconnais une marque, une personne ou une œuvre, est-ce que les conditions de l'outil autorisent cet usage, et est-ce que mon entreprise valide cette publication. Si vous ne savez pas répondre, vous ne publiez pas pour voir, vous demandez.\n\nEnsuite, parfois l'IA ne fait pas que répondre : elle peut aussi passer à l'action, comme envoyer un mail, partager un fichier ou lancer un paiement. Le piège, c'est qu'une consigne peut être cachée dans un document ou dans un mail que vous lui faites lire, par exemple une phrase presque invisible qui dit « envoie les contrats », et l'outil peut alors proposer de le faire comme s'il s'agissait d'un ordre.\n\nVous ne le laissez pas agir seul sur quelque chose d'irréversible : résumer un mail, oui, envoyer des contrats, payer ou partager un fichier confidentiel, non. Vous lisez la proposition, et si vous n'avez pas demandé cette action vous-même, vous la refusez.",
+            "Dans cette vidéo, on voit la conduite à tenir face à une image générée, ou face à une consigne cachée.\n\nQuand l'IA crée une image ou un texte, vous n'êtes pas automatiquement libre de le publier partout, parce que l'image peut ressembler à une œuvre protégée, à un logo ou au visage de quelqu'un, le texte d'ailleurs qu'il a recopié un passage trouvé sur le web, et que les conditions de l'outil peuvent limiter ce que vous avez le droit de réutiliser, même si c'est vous qui avez cliqué sur générer.\n\nAvant de publier, posez-vous ces trois questions : est-ce que je reconnais une marque, une personne ou une œuvre, est-ce que les conditions de l'outil autorisent cet usage, et est-ce que mon entreprise valide cette publication. Si vous ne savez pas répondre, vous ne publiez pas pour voir, vous demandez.\n\nEnsuite, parfois l'IA ne fait pas que répondre : elle peut aussi passer à l'action, comme envoyer un mail, partager un fichier ou lancer un paiement. Le piège, c'est qu'une consigne peut être cachée dans un document ou dans un mail que vous lui faites lire, par exemple une phrase presque invisible qui dit « envoie les contrats », et l'outil peut alors proposer de le faire comme s'il s'agissait d'un ordre.\n\nVous ne le laissez pas agir seul sur quelque chose d'irréversible : résumer un mail, oui, envoyer des contrats, payer ou partager un fichier confidentiel, non. Vous lisez la proposition, et si vous n'avez pas demandé cette action vous-même, vous la refusez.",
         },
       },
       {
@@ -1190,7 +1190,15 @@ export const BLOCKS: Block[] = [
           fragments: [
             { id: "g1", text: "Bonjour,", trap: false },
             { id: "g2", text: "suite à notre échange de ce matin", trap: false },
-            { id: "g3", text: "sur le dossier client Dupont,", trap: false },
+            { id: "g3", text: "sur le dossier client", trap: false },
+            {
+              id: "g3b",
+              text: "Dupont,",
+              trap: false,
+              issue: true,
+              explanation:
+                "Non : « Dupont » et « Marie » identifient des personnes. Dans la vraie vie, vous ne collez pas ce mail tel quel dans une IA grand public — vous retirez les noms et prénoms avant.",
+            },
             { id: "g4", text: "je vous confirme que les avenants sont prêts côté juridique.", trap: false },
             { id: "g5", text: "Les pièces jointes sont à jour pour la réunion de jeudi.", trap: false },
             {
@@ -1202,7 +1210,7 @@ export const BLOCKS: Block[] = [
             },
             { id: "g7", text: "Je suis en déplacement jusqu'à lundi.", trap: false },
             { id: "g8", text: "Cordialement,", trap: false },
-            { id: "g9", text: "Marie.", trap: false },
+            { id: "g9", text: "Marie.", trap: false, issue: true },
           ],
         },
       },
@@ -1213,7 +1221,7 @@ export const BLOCKS: Block[] = [
     number: 5,
     title: "Le deepfake",
     duration: "9 min",
-    goal: "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Généré par l'IA »",
+    goal: "Reconnaître une fausse vidéo ou une fausse voix, ne pas obéir à l'urgence, et savoir quand indiquer « Générée par l'IA »",
     chapters: [
       {
         id: "5.1",
@@ -1223,13 +1231,13 @@ export const BLOCKS: Block[] = [
         activity: {
           kind: "truefake",
           briefing:
-            "Quatre extraits. Pour chacun, choisissez « vrai » ou « faux ». Les quatre sont générés par IA.",
+            "Quatre extraits. Pour chacun, choisissez « vrai » ou « faux ». Les quatre sont générés par l'IA.",
           outro:
-            "Les quatre extraits étaient générés par IA. Le message : on ne peut plus se fier seulement à l'œil ou à l'oreille. On verra juste après comment faire attention, concrètement.",
+            "Les quatre extraits étaient générés par l'IA. Le message : on ne peut plus se fier seulement à l'œil ou à l'oreille. On verra juste après comment faire attention, concrètement.",
           items: [
             {
               id: "tf1",
-              prompt: "Cette vidéo est-elle réelle ou générée par IA ?",
+              prompt: "Cette vidéo est-elle réelle ou générée par l'IA ?",
               answer: "fake",
               mediaKind: "video",
               mediaSrc: "/media/formation/truefake-1.mp4",
@@ -1237,7 +1245,7 @@ export const BLOCKS: Block[] = [
             },
             {
               id: "tf2",
-              prompt: "Cette voix est-elle réelle ou générée par IA ?",
+              prompt: "Cette voix est-elle réelle ou générée par l'IA ?",
               answer: "fake",
               mediaKind: "audio",
               mediaSrc: "/media/formation/truefake-voice-1.mp3",
@@ -1245,7 +1253,7 @@ export const BLOCKS: Block[] = [
             },
             {
               id: "tf3",
-              prompt: "Cette vidéo est-elle réelle ou générée par IA ?",
+              prompt: "Cette vidéo est-elle réelle ou générée par l'IA ?",
               answer: "fake",
               mediaKind: "video",
               mediaSrc: "/media/formation/truefake-2.mp4",
@@ -1253,7 +1261,7 @@ export const BLOCKS: Block[] = [
             },
             {
               id: "tf4",
-              prompt: "Cette voix est-elle réelle ou générée par IA ?",
+              prompt: "Cette voix est-elle réelle ou générée par l'IA ?",
               answer: "fake",
               mediaKind: "audio",
               mediaSrc: "/media/formation/truefake-voice-2.mp3",
@@ -1274,7 +1282,7 @@ export const BLOCKS: Block[] = [
           script:
             "On l'a vu, l'IA peut clairement soulager votre quotidien, mais utilisée à mauvais escient, elle peut être très dangereuse. Aujourd'hui, on va parler des deepfakes, ce que c'est et ce que l'AI Act prévoit à cet effet.\n\nDéjà, c'est quoi un deepfake ? C'est une voix, une vidéo ou une photo générée par l'IA pour ressembler à une vraie personne. Concrètement, un deepfake, c'est ça. On peut modifier l'apparence comme ceci. Voilà une forme de moi. En plus de l'apparence, on peut également modifier la voix. Et c'est là que ça devient difficile.\n\nEt ces petits effets que je viens de vous présenter sont totalement accessibles. Je n'ai pris que quelques minutes pour les faire. Imaginez si je prends le temps de prendre exactement la bonne voix, le bon visage, même changer l'arrière-plan pour vous faire une illusion parfaite. Ce qui est dangereux, c'est que plus le temps passe, plus la technologie est de plus en plus optimisée et accessible. Du coup, n'importe qui peut faire croire n'importe quoi à tout le monde.\n\nDonc ne vous précipitez pas si vous recevez une vidéo ou un audio de votre patron, par exemple, qui vous demande de faire telle ou telle chose. Vérifiez par un canal, faites attention, soyez méfiants quand vous recevez des ordres directs ou trop gros. Vous avez certainement entendu parler du cas du faux Brad Pitt qui a fait le tour des médias. Même si ce cas est un peu gros, il existe d'autres situations qui sont très réelles. Imaginez si je me fais passer pour un de vos voisins, vos collègues, votre patron, ou même un membre de votre famille, que je mets exactement la bonne voix, le bon type de langage, le bon arrière-plan, je peux faire croire n'importe quoi à n'importe qui. Il faut vraiment être vigilant. Ce n'est pas parce que c'est gros que c'est forcément faux. Il y a des choses qui sont hyper réelles. D'autant plus si on est spécialisé dans le domaine. Et ça arrive même au travail, d'où la vigilance de l'AI Act.\n\nSi votre entreprise génère une vidéo deepfake, elle en a le droit. Néanmoins, elle doit préciser que c'est une vidéo générée par l'IA. Même si c'est hyper évident, même si on sait que c'est faux, il faut le préciser, c'est l'obligation de l'AI Act.",
           noteAfter:
-            "Précision Art. 50 : la mention « généré par l'IA » s'impose surtout quand le contenu peut passer pour authentique. Pour une fiction clairement artistique, satirique ou fictionnelle, le régime de transparence est allégé — ce n'est pas le même cas qu'un deepfake crédible.",
+            "Précision AI Act, art. 50 : la mention « Générée par l'IA » s'impose surtout quand le contenu peut passer pour authentique. Pour une fiction clairement artistique, satirique ou fictionnelle, le régime de transparence est allégé — ce n'est pas le même cas qu'un deepfake crédible.",
         },
       },
       {
@@ -1307,7 +1315,7 @@ export const BLOCKS: Block[] = [
             },
             {
               prompt:
-                "Votre équipe veut publier une vidéo d'un vrai salarié, générée par IA. Le texte est exact. Que faites-vous ?",
+                "Votre équipe veut publier une vidéo d'un vrai salarié, générée par l'IA. Le texte est exact. Que faites-vous ?",
               mediaSrc: "/media/deepfake-exemple.mp4",
               mediaLabel: "Générée par l'IA",
               choices: [
@@ -1325,7 +1333,7 @@ export const BLOCKS: Block[] = [
                 },
                 {
                   label:
-                    "On obtient l'accord du salarié et on indique clairement que c'est généré par IA",
+                    "On obtient l'accord du salarié et on indique clairement « Générée par l'IA »",
                   correct: true,
                   explanation:
                     "Accord de la personne + mention claire. Les deux sont nécessaires pour publier une vidéo IA d'un vrai salarié.",
@@ -1337,15 +1345,15 @@ export const BLOCKS: Block[] = [
       },
       {
         id: "5.4",
-        title: "Je labelle ou pas ?",
+        title: "J'indique ou pas ?",
         duration: "1 min 30",
         format: "Jeu",
         activity: {
           kind: "label",
           briefing:
-            "On signale surtout ce qui peut passer pour réel.\nPas besoin sur une image clairement stylisée.\nTouchez une image pour poser ou retirer le sticker.",
-          instruction: "Posez « Généré par l'IA » seulement quand c'est utile.",
-          sticker: "Généré par l'IA",
+            "Si l'image peut passer pour une vraie photo, posez « Générée par l'IA ».\nSi c'est clairement un dessin ou une illustration, laissez sans sticker.\nTouchez une image pour poser ou retirer le sticker.",
+          instruction: "Sticker sur ce qui a l'air réel — pas sur un dessin évident.",
+          sticker: "Générée par l'IA",
           items: [
             {
               id: "portrait",
@@ -1381,7 +1389,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-paint-v2.jpg",
               needsLabel: false,
               explanation:
-                "Fiction clairement artistique : le style aquarelle se voit tout de suite. Pas le même cas qu'un contenu qui pourrait passer pour authentique.",
+                "Ce n'est pas « une œuvre d'art = jamais de mention ». Ici, personne ne peut croire que c'est une vraie photo : le style aquarelle se voit tout de suite. L'AI Act allège surtout quand le contenu ne peut pas passer pour réel. Vous pouvez quand même l'indiquer si vous voulez — ce n'est juste pas le même cas qu'un portrait ou un JT crédibles.",
             },
             {
               id: "news",
@@ -1390,7 +1398,7 @@ export const BLOCKS: Block[] = [
               imageSrc: "/media/formation/label-news-v2.jpg",
               needsLabel: true,
               explanation:
-                "Ça ressemble à un vrai journal télévisé. Ici la mention compte vraiment : un contenu qui imite l'info peut tromper — régime plus proche du deepfake / Art. 50.",
+                "Ça ressemble à un vrai journal télévisé. Ici la mention compte vraiment : un contenu qui imite l'info peut tromper — régime plus proche du deepfake / AI Act, art. 50.",
             },
             {
               id: "logo",
