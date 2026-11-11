@@ -29,6 +29,8 @@ export type Activity =
       format: string;
       script: string;
       src?: string;
+      /** Mention discrète sur la vidéo (ex. « Générée par l'IA »). */
+      mediaLabel?: string;
       /** Précision affichée sous la vidéo (ex. nuance juridique sans re-tournage). */
       noteAfter?: string;
     }

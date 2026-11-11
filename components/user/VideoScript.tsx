@@ -47,6 +47,8 @@ export default function VideoScript({
   onComplete,
   /** Coupe la lecture avant la fin du fichier (0–1), ex. extrait démo. */
   endRatio,
+  /** Mention discrète sur la vidéo (ex. « Générée par l'IA »). */
+  mediaLabel,
   /** Note sous la colonne vidéo uniquement (même largeur). */
   noteAfter,
 }: {
@@ -56,6 +58,7 @@ export default function VideoScript({
   src?: string;
   onComplete?: () => void;
   endRatio?: number;
+  mediaLabel?: string;
   noteAfter?: string;
 }) {
   const [charIndex, setCharIndex] = useState(0);
@@ -339,6 +342,11 @@ export default function VideoScript({
               >
                 Votre navigateur ne lit pas la vidéo.
               </video>
+              {mediaLabel ? (
+                <span className="pointer-events-none absolute top-2 right-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-white/80 bg-black/35 backdrop-blur-[1px] sm:top-2.5 sm:right-2.5">
+                  {mediaLabel}
+                </span>
+              ) : null}
               {buffering ? (
                 <div
                   className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"

@@ -408,14 +408,14 @@ export default function CompanyCertificate({
 
                 <Seal />
 
-                <h2 className="mt-5 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                <h2 className="mt-5 text-center text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
                   Synthèse de suivi — Article 4
                 </h2>
-                <p className="mt-1.5 text-sm text-slate-600">
+                <p className="mt-1.5 text-center text-sm text-slate-600">
                   Attestations de suivi · AI Act (article 4)
                 </p>
                 <p
-                  className={`mt-2 text-xs font-semibold ${
+                  className={`mt-2 text-center text-xs font-semibold ${
                     unlocked ? "text-emerald-800" : "text-amber-800"
                   }`}
                 >
@@ -425,20 +425,20 @@ export default function CompanyCertificate({
 
                 <div className="mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-amber-700/50 to-transparent" />
 
-                <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                <p className="mt-6 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                   Raison sociale
                 </p>
-                <p className="mt-1.5 text-2xl font-semibold tracking-tight sm:text-3xl">
+                <p className="mt-1.5 text-center text-2xl font-semibold tracking-tight sm:text-3xl">
                   {company}
                 </p>
 
-                <div className="mx-auto mt-6 max-w-lg rounded-xl border border-emerald-800/20 bg-emerald-50/80 px-4 py-3.5">
-                  <p className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-emerald-900">
+                <div className="mx-auto mt-6 max-w-lg rounded-xl border border-emerald-800/20 bg-emerald-50/80 px-4 py-3.5 text-center">
+                  <p className="inline-flex items-center justify-center gap-2 text-center text-sm font-semibold text-emerald-900">
                     <ShieldCheck className="h-4 w-4 shrink-0" />
                     {done} / {total} collaborateurs formés ·{" "}
                     {total === 0 ? 0 : Math.round((done / total) * 100)} %
                   </p>
-                  <p className="mt-1 text-xs text-slate-600">
+                  <p className="mt-1 text-center text-xs text-slate-600">
                     {Number.isInteger(hours) ? hours : hours.toLocaleString("fr-FR")} h de
                     formation · {certified} attestation
                     {certified > 1 ? "s" : ""} émise{certified > 1 ? "s" : ""}

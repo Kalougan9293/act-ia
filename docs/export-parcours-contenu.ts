@@ -41,6 +41,8 @@ function flattenActivity(activity: Activity): Record<string, unknown> {
         kind: "video",
         format: activity.format,
         src: activity.src ?? null,
+        mediaLabel: activity.mediaLabel ?? null,
+        noteAfter: activity.noteAfter ?? null,
         script: activity.script,
       };
     case "quiz":
